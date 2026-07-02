@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en-MY" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f9f9f9" media="(prefers-color-scheme: light)" />
+
+    <!-- PWA meta -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DriveMy" />
+
+    <!-- SEO -->
+    <meta name="description" content="Bilingual (EN/BM) study companion for Malaysian learner drivers preparing for JPJ KPP1 theory exam and practical driving test." />
+    <meta name="keywords" content="JPJ, KPP, KPP1, driving test, Malaysia, learner driver, theory exam, road signs" />
+    <meta name="author" content="DriveMy" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="DriveMy – JPJ KPP Theory & Driving Test" />
+    <meta property="og:description" content="Prepare for your Malaysian driving test with bilingual quizzes, road signs, and practice exams." />
+    <meta property="og:locale" content="en_MY" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Preload critical PWA icon -->
+    <link rel="preload" href="/pwa-192x192.png" as="image">
+
+    <!-- Preconnect to font domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+
+    <title>DriveMy – JPJ KPP Theory & Driving Test</title>
+
+    <!-- Inline theme script — prevents flash of wrong theme -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("drivemy-theme");
+          var theme = stored ? JSON.parse(stored).state?.theme : null;
+          var resolved =
+            theme === "dark" ? "dark" :
+            theme === "light" ? "light" :
+            window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.classList.remove("light", "dark");
+          document.documentElement.classList.add(resolved);
+        } catch (e) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

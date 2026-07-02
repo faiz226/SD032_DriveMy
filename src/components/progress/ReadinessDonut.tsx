@@ -1,0 +1,83 @@
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from "recharts";
+import { useLanguage } from "@/hooks/useLanguage";
+
+interface ReadinessDonutProps {
+  theoryPct: number;
+  mockPct: number;
+  simPct: number;
+  composite: number;
+  status: string;
+}
+
+export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }: ReadinessDonutProps) {
+  const { t } = useLanguage();
+
+  const chartData = [
+    { name: t("progress.chart.theory"), value: theoryPct * 0.3 },
+    { name: t("progress.chart.mockTest"), value: mockPct * 0.3 },
+    { name: t("progress.chart.simulations"), value: simPct * 0.4 },
+  ];
+
+  const COLORS = [
+    "rgb(var(--primary))",
+    "rgb(var(--primary) / 0.7)",
+    "rgb(var(--primary) / 0.4)"
+  ];
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="h-[250px] w-full" aria-label={t("progress.readinessChartAria")}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              innerRadius={70}
+              outerRadius={90}
+              paddingAngle={2}
+              dataKey="value"
+              animationBegin={0}
+              animationDuration={800}
+              stroke="none"
+            >
+              {chartData.map((item, index) => (
+                <Cell key={`cell-${index}`} name={item.name} fill={COLORS[index % COLORS.length]} />
+              ))}
+              <Label
+                value={`${Math.round(composite)}%`}
+                position="centerBottom"
+                className="text-4xl font-bold font-mono font-tabular-nums fill-foreground"
+                dy={-10}
+              />
+              <Label
+                value={status}
+                position="centerTop"
+                className="text-sm fill-muted-foreground"
+                dy={15}
+              />
+            </Pie>
+            <Tooltip 
+              formatter={(val, name) => [`${Number(val ?? 0).toFixed(1)}%`, name]}
+              contentStyle={{ backgroundColor: "rgb(var(--card))", borderColor: "rgb(var(--border))", borderRadius: "8px" }}
+              itemStyle={{ color: "rgb(var(--foreground))" }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex justify-center gap-4 mt-2">
+        {chartData.map((d, index) => (
+          <div key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
+            {d.name}
+          </div>
+        ))}
+      </div>
+      {composite < 50 && (
+        <p className="mt-4 text-xs text-center text-muted-foreground max-w-[200px]">
+          {t("progress.readinessIncomplete")}
+        </p>
+      )}
+    </div>
+  );
+}

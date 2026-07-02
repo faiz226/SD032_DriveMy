@@ -1,0 +1,7 @@
+# DriveMy
+
+DriveMy is a progressive web application (PWA) for managing driving school bookings, instructors, and exams.
+
+## Documentation Links
+- [Home](https://drivemy.local/)
+- [About](https://drivemy.local/about)

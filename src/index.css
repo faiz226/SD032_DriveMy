@@ -1,0 +1,443 @@
+/* -----------------------------------------------------------------------------
+   DriveMy - Global Design System (white canvas)
+   Fonts: Cal Sans (display) · Inter Variable (prose) · JetBrains Mono (tabular)
+   Tokens: shadcn/ui RGB triple convention
+   ----------------------------------------------------------------------------- */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Design Tokens ---------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Canvas & surfaces */
+    --background: 249 249 249; /* #f9f9f9 Soft Alabaster */
+    --foreground: 32 32 32; /* #202020 */
+
+    --card: 252 252 252; /* #fcfcfc */
+    --card-foreground: 32 32 32;
+
+    --popover: 252 252 252;
+    --popover-foreground: 32 32 32;
+
+    /* Brand actions */
+    --primary: 17 17 17; /* #111111 Deep Ink */
+    --primary-foreground: 255 255 255;
+
+    --secondary: 255 223 181; /* #ffdfb5 Cream Biscuit */
+    --secondary-foreground: 88 45 29; /* #582d1d Burnt Umber */
+
+    --muted: 239 239 239; /* #efefef */
+    --muted-foreground: 100 100 100; /* #646464 */
+
+    --accent: 232 232 232; /* #e8e8e8 Soft Biscuit */
+    --accent-foreground: 32 32 32;
+
+    --destructive: 239 68 68; /* #ef4444 */
+    --destructive-foreground: 255 255 255;
+
+    --border: 216 216 216; /* #d8d8d8 */
+    --input: 216 216 216;
+    --ring: 17 17 17;
+
+    --radius: 0.5rem; /* 8px global */
+
+    /* Semantic */
+    --success: 5 150 105;
+    --success-foreground: 255 255 255;
+    --warning: 180 83 9;
+    --warning-foreground: 255 255 255;
+    --info: 100 74 64;
+    --info-foreground: 255 255 255;
+
+    --surface: 252 252 252;
+    --surface-card: 245 245 245;
+    --surface-elevated: 239 239 239;
+    --overlay: 32 32 32;
+
+    /* Sidebar (light editorial shell — surface-card) */
+    --sidebar-background: 245 245 245; /* #f5f5f5 */
+    --sidebar-foreground: 32 32 32;
+    --sidebar-border: 235 235 235; /* #ebebeb */
+    --sidebar-accent: 232 232 232;
+    --sidebar-accent-foreground: 32 32 32;
+    --sidebar-primary: 52 52 52; /* #343434 active line */
+    --sidebar-ring: 17 17 17;
+
+    /* Chart sequence */
+    --chart-1: 17 17 17;
+    --chart-2: 136 96 72;
+    --chart-3: 180 120 72;
+    --chart-4: 210 150 90;
+    --chart-5: 239 68 68;
+    --hud-highlight: 255 255 255 / 0.65;
+  }
+
+  .dark {
+    /* Canvas & surfaces */
+    --background: 17 17 17; /* #111111 Deep Ink */
+    --foreground: 245 245 245; /* #f5f5f5 Alabaster */
+
+    --card: 26 26 26; /* #1a1a1a */
+    --card-foreground: 245 245 245;
+
+    --popover: 26 26 26;
+    --popover-foreground: 245 245 245;
+
+    /* Brand actions (inverted: white action button in dark mode) */
+    --primary: 255 255 255;
+    --primary-foreground: 17 17 17;
+
+    --secondary: 40 35 30; /* Dark warm biscuit */
+    --secondary-foreground: 255 223 181;
+
+    --muted: 34 34 34; /* #222222 */
+    --muted-foreground: 156 163 175; /* Gray 400 */
+
+    --accent: 40 40 40; /* #282828 */
+    --accent-foreground: 245 245 245;
+
+    --destructive: 239 68 68; /* #ef4444 */
+    --destructive-foreground: 255 255 255;
+
+    --border: 45 45 45; /* #2d2d2d */
+    --input: 45 45 45;
+    --ring: 245 245 245;
+
+    /* Semantic */
+    --success: 16 185 129;
+    --success-foreground: 255 255 255;
+    --warning: 245 158 11;
+    --warning-foreground: 17 17 17;
+    --info: 139 92 246;
+    --info-foreground: 255 255 255;
+
+    --surface: 26 26 26;
+    --surface-card: 34 34 34;
+    --surface-elevated: 40 40 40;
+    --overlay: 0 0 0;
+
+    /* Sidebar (dark editorial shell) */
+    --sidebar-background: 14 14 14; /* #0e0e0e */
+    --sidebar-foreground: 245 245 245;
+    --sidebar-border: 26 26 26; /* #1a1a1a */
+    --sidebar-accent: 30 30 30;
+    --sidebar-accent-foreground: 245 245 245;
+    --sidebar-primary: 200 200 200;
+    --sidebar-ring: 245 245 245;
+
+    /* Chart sequence */
+    --chart-1: 255 255 255;
+    --chart-2: 180 120 72;
+    --chart-3: 136 96 72;
+    --chart-4: 90 60 45;
+    --chart-5: 239 68 68;
+    --hud-highlight: 0 0 0 / 0.3;
+  }
+}
+
+/* --- Base resets & typography ----------------------------------------------- */
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: theme("fontFamily.body");
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: theme("fontFamily.heading");
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    @apply text-foreground;
+  }
+
+  h1 { @apply text-4xl md:text-5xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-2xl md:text-3xl; }
+  h4 { @apply text-xl md:text-2xl; }
+  h5 { @apply text-lg md:text-xl; }
+  h6 { @apply text-base md:text-lg; }
+
+  p {
+    @apply text-base leading-relaxed;
+  }
+
+  code, kbd, samp, pre {
+    font-family: theme("fontFamily.mono");
+  }
+
+  a {
+    @apply text-primary underline-offset-4 hover:underline;
+    transition: color 150ms ease;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea,
+  [role="checkbox"],
+  [role="radio"],
+  [role="switch"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="option"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  p a,
+  li a,
+  .inline-link {
+    min-height: unset;
+    min-width: unset;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+/* --- Utility classes -------------------------------------------------------- */
+@layer utilities {
+  .font-heading { font-family: theme("fontFamily.heading"); }
+  .font-body    { font-family: theme("fontFamily.body"); }
+  .font-mono    { font-family: theme("fontFamily.mono"); }
+
+  .font-tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .max-w-readable {
+    max-width: 64ch;
+  }
+
+  .touch-target {
+    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .badge-success { @apply bg-success/10 text-success border-success/20; }
+  .badge-warning { @apply bg-warning/10 text-warning border-warning/20; }
+  .badge-info    { @apply bg-info/10 text-info border-info/20; }
+  .badge-destructive { @apply bg-destructive/10 text-destructive border-destructive/20; }
+
+  .transition-base {
+    @apply transition-all duration-150 ease-in-out;
+  }
+  .transition-slow {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .ease-out-quart {
+    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .page-enter {
+    animation: page-enter 300ms cubic-bezier(0.25, 1, 0.5, 1) both;
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-muted rounded-md;
+  }
+
+  .disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+
+  .perspective-1000 { perspective: 1000px; }
+  .transform-style-3d { transform-style: preserve-3d; }
+  .backface-hidden { backface-visibility: hidden; }
+  .rotate-y-180 { transform: rotateY(180deg); }
+
+  .anim-stagger-0 { animation-delay: 0ms; animation-fill-mode: both; }
+  .anim-stagger-1 { animation-delay: 50ms; animation-fill-mode: both; }
+  .anim-stagger-2 { animation-delay: 100ms; animation-fill-mode: both; }
+  .anim-stagger-3 { animation-delay: 150ms; animation-fill-mode: both; }
+  .anim-stagger-4 { animation-delay: 200ms; animation-fill-mode: both; }
+  .anim-stagger-5 { animation-delay: 250ms; animation-fill-mode: both; }
+  .anim-stagger-6 { animation-delay: 300ms; animation-fill-mode: both; }
+  .anim-stagger-7 { animation-delay: 350ms; animation-fill-mode: both; }
+  .anim-stagger-8 { animation-delay: 400ms; animation-fill-mode: both; }
+  .anim-stagger-9 { animation-delay: 450ms; animation-fill-mode: both; }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Premium product surfaces (DriveMy design system) */
+  .canvas-subtle {
+    background-color: rgb(var(--background));
+    background-image:
+      radial-gradient(ellipse 90% 60% at 50% -30%, rgb(var(--primary) / 0.045), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 100% 0%, rgb(var(--chart-2) / 0.05), transparent 50%);
+  }
+
+  .surface-card {
+    background-color: rgb(var(--surface-card));
+  }
+
+  .card-premium {
+    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
+  }
+
+  .metric-tile {
+    @apply rounded-lg border border-border bg-card p-4 flex flex-col justify-between min-h-[96px] shadow-sm;
+  }
+
+  .feature-link {
+    @apply rounded-lg border border-border bg-card p-5 transition-[border-color,box-shadow] duration-200 ease-out-quart;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+  .feature-link:hover {
+    @apply shadow-sm border-border;
+  }
+
+  .feature-link-emphasis {
+    @apply rounded-lg border border-border/80 p-5 transition-[border-color,box-shadow] duration-200 ease-out-quart;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    background-color: rgb(var(--surface-card));
+  }
+  .feature-link-emphasis:hover {
+    @apply shadow-sm;
+  }
+
+  .hud-panel {
+    @apply rounded-lg border border-border bg-card font-mono text-xs shadow-sm;
+    box-shadow:
+      0 1px 2px rgb(var(--foreground) / 0.04),
+      inset 0 1px 0 rgb(var(--hud-highlight));
+  }
+
+  .page-shell {
+    @apply p-4 sm:p-6 max-w-6xl mx-auto space-y-8 page-enter;
+  }
+
+  .page-header {
+    @apply max-w-readable space-y-2;
+  }
+  .page-title {
+    @apply font-heading text-3xl font-semibold tracking-tight text-foreground;
+  }
+  .page-lead {
+    @apply text-muted-foreground text-sm sm:text-base leading-relaxed;
+  }
+}
+
+/* Progress PDF capture — resolved light-theme colors for html2canvas */
+[data-print-mode="true"] {
+  --background: 249 249 249;
+  --foreground: 32 32 32;
+  --card: 252 252 252;
+  --card-foreground: 32 32 32;
+  --popover: 252 252 252;
+  --popover-foreground: 32 32 32;
+  --primary: 17 17 17;
+  --primary-foreground: 255 255 255;
+  --secondary: 255 223 181;
+  --secondary-foreground: 88 45 29;
+  --muted: 239 239 239;
+  --muted-foreground: 100 100 100;
+  --accent: 232 232 232;
+  --accent-foreground: 32 32 32;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --border: 216 216 216;
+  --input: 216 216 216;
+  --ring: 17 17 17;
+  --surface: 252 252 252;
+  --surface-card: 245 245 245;
+  --surface-elevated: 239 239 239;
+  background-color: rgb(var(--background)) !important;
+  color: rgb(var(--foreground)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
