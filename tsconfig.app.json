@@ -2,11 +2,18 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
-    "types": ["vite/client", "vite-plugin-pwa/client"],
+    "types": [
+      "vite/client",
+      "vite-plugin-pwa/client"
+    ],
     "skipLibCheck": true,
-
+    "ignoreDeprecations": "6.0",
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -14,26 +21,42 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
-
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*":            ["./src/*"],
-      "@components/*":  ["./src/components/*"],
-      "@pages/*":       ["./src/pages/*"],
-      "@hooks/*":       ["./src/hooks/*"],
-      "@lib/*":         ["./src/lib/*"],
-      "@stores/*":      ["./src/stores/*"],
-      "@types/*":       ["./src/types/*"],
-      "@assets/*":      ["./src/assets/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@pages/*": [
+        "./src/pages/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@stores/*": [
+        "./src/stores/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
