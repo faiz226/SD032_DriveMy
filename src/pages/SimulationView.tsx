@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useLayoutEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type Phaser from "phaser";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Lightbulb, Gear, ArrowUp, ArrowDown, ArrowLeft as ArrowLeftIcon, ArrowRight, Disc } from "phosphor-react";
@@ -176,6 +177,7 @@ export function SimulationView() {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
   const saveResult = useSaveSimulationResult();
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const phaserGameRef = useRef<Phaser.Game | null>(null);
@@ -254,6 +256,11 @@ export function SimulationView() {
       {
         onSuccess: () => {
           toast.success(t("sim.resultSaved"));
+          if (user?.id) {
+            queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
+            queryClient.invalidateQueries({ queryKey: ["progress", "sim", user.id] });
+            queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
+          }
         },
         onError: () => {
           savedRef.current = false;
@@ -261,7 +268,7 @@ export function SimulationView() {
         },
       }
     );
-  }, [user, maneuverId, mode, language, saveResult.mutate, t]);
+  }, [user, maneuverId, mode, language, saveResult.mutate, t, queryClient]);
 
   useLayoutEffect(() => {
     hudCallbacksRef.current = {

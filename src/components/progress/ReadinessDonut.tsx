@@ -12,16 +12,22 @@ interface ReadinessDonutProps {
 export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }: ReadinessDonutProps) {
   const { t } = useLanguage();
 
-  const chartData = [
+  const hasData = composite > 0;
+
+  const chartData = hasData ? [
     { name: t("progress.chart.theory"), value: theoryPct * 0.3 },
     { name: t("progress.chart.mockTest"), value: mockPct * 0.3 },
     { name: t("progress.chart.simulations"), value: simPct * 0.4 },
+  ] : [
+    { name: "Empty", value: 100 }
   ];
 
-  const COLORS = [
+  const COLORS = hasData ? [
     "rgb(var(--primary))",
     "rgb(var(--primary) / 0.7)",
     "rgb(var(--primary) / 0.4)"
+  ] : [
+    "rgb(var(--muted))"
   ];
 
   return (
@@ -57,21 +63,38 @@ export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }
                 dy={15}
               />
             </Pie>
-            <Tooltip 
-              formatter={(val, name) => [`${Number(val ?? 0).toFixed(1)}%`, name]}
-              contentStyle={{ backgroundColor: "rgb(var(--card))", borderColor: "rgb(var(--border))", borderRadius: "8px" }}
-              itemStyle={{ color: "rgb(var(--foreground))" }}
-            />
+            {hasData && (
+              <Tooltip 
+                formatter={(val, name) => [`${Number(val ?? 0).toFixed(1)}%`, name]}
+                contentStyle={{ backgroundColor: "rgb(var(--card))", borderColor: "rgb(var(--border))", borderRadius: "8px" }}
+                itemStyle={{ color: "rgb(var(--foreground))" }}
+              />
+            )}
           </PieChart>
         </ResponsiveContainer>
       </div>
       <div className="flex justify-center gap-4 mt-2">
-        {chartData.map((d, index) => (
+        {hasData ? chartData.map((d, index) => (
           <div key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
             {d.name}
           </div>
-        ))}
+        )) : (
+          <div className="flex gap-4">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "rgb(var(--primary))" }} />
+              {t("progress.chart.theory")}
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "rgb(var(--primary) / 0.7)" }} />
+              {t("progress.chart.mockTest")}
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "rgb(var(--primary) / 0.4)" }} />
+              {t("progress.chart.simulations")}
+            </div>
+          </div>
+        )}
       </div>
       {composite < 50 && (
         <p className="mt-4 text-xs text-center text-muted-foreground max-w-[200px]">

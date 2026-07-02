@@ -37,6 +37,10 @@ export function MockTestPage() {
       toast.success(t("exam.saved"));
       queryClient.invalidateQueries({ queryKey: ["mockBest"] });
       queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: ["progress", "mock", user.id] });
+        queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
+      }
     },
   });
 

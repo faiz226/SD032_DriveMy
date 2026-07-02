@@ -37,6 +37,10 @@ export function QuizPage() {
       toast.success(t("exam.saved"));
       queryClient.invalidateQueries({ queryKey: ["quizBest"] });
       queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: ["progress", "quiz", user.id] });
+        queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
+      }
     },
   });
 
