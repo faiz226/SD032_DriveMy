@@ -219,13 +219,13 @@ export function SafetyPage() {
             ) : (
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-4 rounded-md bg-[#f5f5f5] border border-border">
-                    <div className="text-xs text-muted-foreground mb-1">{t("safety.your.position", { val: ethicsValue })}</div>
-                    <div className="text-xl font-bold font-mono text-primary font-tabular-nums">{ethicsValue}</div>
+                  <div className="p-4 rounded-md bg-muted border border-border">
+                    <div className="text-xs text-muted-foreground mb-1">{t("safety.your.position", { val: ethicsValue.toFixed(2) })}</div>
+                    <div className="text-xl font-bold font-mono text-primary font-tabular-nums">{ethicsValue.toFixed(2)}</div>
                   </div>
-                  <div className="p-4 rounded-md bg-[#f5f5f5] border border-border">
-                    <div className="text-xs text-muted-foreground mb-1">{t("safety.community.avg", { avg: mockAvg })}</div>
-                    <div className="text-xl font-bold font-mono text-muted-foreground font-tabular-nums">{mockAvg}</div>
+                  <div className="p-4 rounded-md bg-muted border border-border">
+                    <div className="text-xs text-muted-foreground mb-1">{t("safety.community.avg", { avg: mockAvg.toFixed(2) })}</div>
+                    <div className="text-xl font-bold font-mono text-muted-foreground font-tabular-nums">{mockAvg.toFixed(2)}</div>
                   </div>
                 </div>
                 <Button onClick={handleCaseNext} className="w-full">
