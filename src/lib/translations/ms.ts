@@ -31,6 +31,7 @@ export const ms: Record<TranslationKey, string> = {
   "auth.signUp":             "Buat Akaun",
   "auth.signOut":            "Log Keluar",
   "auth.signInWithGoogle":   "Teruskan dengan Google",
+  "auth.signUpWithGoogle":   "Daftar dengan Google",
   "auth.email":              "Alamat e-mel",
   "auth.password":           "Kata laluan",
   "auth.confirmPassword":    "Sahkan kata laluan",

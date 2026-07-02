@@ -30,6 +30,7 @@ export const en = {
   "auth.signUp":             "Create Account",
   "auth.signOut":            "Sign Out",
   "auth.signInWithGoogle":   "Continue with Google",
+  "auth.signUpWithGoogle":   "Sign up with Google",
   "auth.email":              "Email address",
   "auth.password":           "Password",
   "auth.confirmPassword":    "Confirm password",

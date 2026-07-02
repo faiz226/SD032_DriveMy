@@ -177,19 +177,21 @@ function LoginForm() {
       {/* Server error */}
       {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
-      {/* Captcha */}
-      <div className="flex justify-center my-2">
-        <Turnstile 
-          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
-          onSuccess={(token) => setCaptchaToken(token)}
-        />
-      </div>
+      {/* Captcha — only when site key is configured */}
+      {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
+        <div className="flex justify-center my-2">
+          <Turnstile
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+            onSuccess={(token) => setCaptchaToken(token)}
+          />
+        </div>
+      )}
 
       <Button
         type="submit"
         className="w-full h-11"
         loading={isPending}
-        disabled={!captchaToken}
+        disabled={!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !captchaToken}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signIn")}
@@ -266,10 +268,10 @@ function RegisterForm() {
         onClick={handleGoogle}
         loading={isGooglePending}
         loadingLabel={t("common.loading")}
-        aria-label={t("auth.signInWithGoogle")}
+        aria-label={t("auth.signUpWithGoogle")}
       >
         <GoogleLogo className="h-4 w-4" />
-        {t("auth.signInWithGoogle")}
+        {t("auth.signUpWithGoogle")}
       </Button>
 
       {/* Divider */}
@@ -343,19 +345,21 @@ function RegisterForm() {
       {/* Server error */}
       {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
-      {/* Captcha */}
-      <div className="flex justify-center my-2">
-        <Turnstile 
-          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
-          onSuccess={(token) => setCaptchaToken(token)}
-        />
-      </div>
+      {/* Captcha — only when site key is configured */}
+      {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
+        <div className="flex justify-center my-2">
+          <Turnstile
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+            onSuccess={(token) => setCaptchaToken(token)}
+          />
+        </div>
+      )}
 
       <Button
         type="submit"
         className="w-full h-11"
         loading={isPending}
-        disabled={!captchaToken}
+        disabled={!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !captchaToken}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signUp")}
