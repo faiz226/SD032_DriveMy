@@ -14,6 +14,7 @@ import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage }  from "@/pages/auth/ResetPasswordPage";
 import { VerifyEmailPage }    from "@/pages/auth/VerifyEmailPage";
 import { AuthCallbackPage }   from "@/pages/auth/AuthCallbackPage";
+import { MfaEnrollmentPage }  from "@/pages/auth/MfaEnrollmentPage";
 
 // Lazy-load all heavy app pages to split vendor chunks
 const LazyDashboardPage   = lazy(() => import("@/pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
@@ -129,6 +130,7 @@ function App() {
                     <Route path={ROUTES.SAFETY}               element={<LazySafetyPage />} />
                     <Route path={ROUTES.PROFILE}              element={<LazyProfilePage />} />
                     <Route path={ROUTES.SETTINGS}             element={<LazySettingsPage />} />
+                    <Route path={ROUTES.MFA}                  element={<MfaEnrollmentPage />} />
                   </Route>
 
                   {/* ── Fallbacks ─────────────────────────────────────────── */}

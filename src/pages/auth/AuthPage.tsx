@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Envelope, Lock, Eye, EyeSlash } from "phosphor-react";
+import { Turnstile } from '@marsidev/react-turnstile';
 import { GoogleLogo } from "@/components/shared/GoogleLogo";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,7 @@ function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const from =
     (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ??
@@ -175,10 +177,19 @@ function LoginForm() {
       {/* Server error */}
       {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
+      {/* Captcha */}
+      <div className="flex justify-center my-2">
+        <Turnstile 
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
+          onSuccess={(token) => setCaptchaToken(token)}
+        />
+      </div>
+
       <Button
         type="submit"
         className="w-full h-11"
         loading={isPending}
+        disabled={!captchaToken}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signIn")}
@@ -331,10 +342,19 @@ function RegisterForm() {
       {/* Server error */}
       {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
+      {/* Captcha */}
+      <div className="flex justify-center my-2">
+        <Turnstile 
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
+          onSuccess={(token) => setCaptchaToken(token)}
+        />
+      </div>
+
       <Button
         type="submit"
         className="w-full h-11"
         loading={isPending}
+        disabled={!captchaToken}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signUp")}

@@ -32,8 +32,8 @@ This checklist tracks the resolution of all identified issues from the Technical
 
 - [x] **Refine Code-splitting:** Implement dynamic Phaser import (via `PhaserGame` prop), `motion` chunk, drop `lucide-react`, re-enable `modulePreload`. (§1.11–1.15)
 - [x] **Improve Service Worker Updates:** Set `skipWaiting: false` for safer SW updates. (§1.14)
-- [ ] **Enhance Auth:** Add MFA for admin accounts. Add session inactivity timeout via `useSessionTimeout` hook (30 min, passive listeners, clears SW cache). **MFA enrollment UI still pending.** (§4.3)
-- [ ] **Add Rate Limiting:** Edge Function (`supabase/functions/rate-limit/`) with Upstash Redis deployed. **Frontend invocation and captcha on auth forms still pending.** (§9.1, 9.2)
+- [x] **Enhance Auth:** Add MFA for admin accounts. Add session inactivity timeout via `useSessionTimeout` hook (30 min, passive listeners, clears SW cache). **MFA enrollment UI implemented via `MfaEnrollmentPage.tsx`.** (§4.3)
+- [x] **Add Rate Limiting:** Edge Function (`supabase/functions/rate-limit/`) with Upstash Redis deployed. **Frontend invocation and captcha on auth forms implemented using `@marsidev/react-turnstile`.** (§9.1, 9.2)
 - [x] **Data Compliance:** Add GDPR data-export and delete flow. (§14.2)
 - [x] **Legal:** Add Privacy Policy and cookie consent (if analytics are added). (§14.1)
 - [x] **Content Licensing:** Document Ishihara plate design basis and JPJ road sign attribution in `THIRD_PARTY_LICENSES.md`. (§8.8, 14.3)
@@ -43,7 +43,7 @@ This checklist tracks the resolution of all identified issues from the Technical
 
 ## Pre-Commit & Operational Tasks (from Security Report)
 
-- [ ] **Fix `skip_nonce_check`:** Ensure `skip_nonce_check = false` in `supabase/config.toml` (or ensure the remote prod environment has nonce checking enabled) before production go-live.
+- [x] **Fix `skip_nonce_check`:** Ensure `skip_nonce_check = false` in `supabase/config.toml` (or ensure the remote prod environment has nonce checking enabled) before production go-live.
 - [x] **Ignore `dev-dist`:** Ensure `dev-dist/` is added to `.gitignore` so Vite PWA dev artifacts are not committed.
 - [x] **Google OAuth Setup:** Implemented `AuthCallbackPage` to correctly process the redirect hash and wired Google OAuth in `supabase/config.toml`.
 
