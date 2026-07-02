@@ -254,10 +254,10 @@ function RegisterForm() {
         onClick={handleGoogle}
         loading={isGooglePending}
         loadingLabel={t("common.loading")}
-        aria-label={t("auth.signUpWithGoogle", "Sign up with Google")}
+        aria-label={t("auth.signInWithGoogle")}
       >
         <GoogleLogo className="h-4 w-4" />
-        {t("auth.signUpWithGoogle", "Sign up with Google")}
+        {t("auth.signInWithGoogle")}
       </Button>
 
       {/* Divider */}

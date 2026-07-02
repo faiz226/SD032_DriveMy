@@ -12,8 +12,13 @@ export function DataExportDelete() {
 
   const handleExportData = async () => {
     setIsExporting(true);
+    if (!user?.id) {
+      toast.error('User not authenticated.');
+      setIsExporting(false);
+      return;
+    }
     try {
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', user?.id).single();
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
       if (error) throw error;
       
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

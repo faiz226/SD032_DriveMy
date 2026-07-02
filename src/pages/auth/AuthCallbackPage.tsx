@@ -42,7 +42,7 @@ export function AuthCallbackPage() {
           onClick={() => navigate(ROUTES.AUTH)} 
           className="text-sm text-primary hover:underline"
         >
-          {t("common.back", "Back")}
+          {t("common.back")}
         </button>
       </div>
     );
