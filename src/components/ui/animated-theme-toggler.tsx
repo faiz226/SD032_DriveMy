@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun } from "phosphor-react"
 
 import { cn } from "@/lib/utils"
 

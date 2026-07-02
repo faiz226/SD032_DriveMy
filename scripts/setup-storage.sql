@@ -10,7 +10,7 @@ VALUES (
   'kpp-images',
   true,
   2097152,  -- 2 MB
-  ARRAY['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+  ARRAY['image/png', 'image/jpeg', 'image/webp']
 )
 ON CONFLICT (id) DO UPDATE SET
   public = EXCLUDED.public,

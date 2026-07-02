@@ -33,6 +33,9 @@ export const useAuthStore = create<AuthState>()(
       },
       signOut: async () => {
         await signOutService();
+        if ('caches' in window) {
+          await caches.delete('supabase-api');
+        }
         set({ user: null, session: null, isAuthenticated: false });
       },
     }),

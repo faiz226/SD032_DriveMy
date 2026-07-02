@@ -11,7 +11,7 @@ export default defineConfig({
 
     // ─── Progressive Web App ─────────────────────────────────────────────
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: [
         "favicon.png",
         "apple-touch-icon.png",
@@ -144,10 +144,10 @@ export default defineConfig({
               networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                maxAgeSeconds: 300, // 5 minutes
               },
               cacheableResponse: {
-                statuses: [0, 200],
+                statuses: [200],
               },
             },
           },
@@ -169,9 +169,9 @@ export default defineConfig({
         navigateFallback: "index.html",
         navigateFallbackDenylist: [/^\/api\//, /^\/supabase\//],
 
-        // Skip waiting and claim clients immediately on update
-        skipWaiting: true,
-        clientsClaim: true,
+        // Prompt user for update instead of forcefully claiming clients
+        skipWaiting: false,
+        clientsClaim: false,
       },
 
       devOptions: {
@@ -198,14 +198,17 @@ export default defineConfig({
   // ─── Build optimisation — manual chunk splitting ───────────────────────
   build: {
     target: "esnext",
-    sourcemap: true,
-    modulePreload: false,
+    sourcemap: "hidden",
     rollupOptions: {
       output: {
         manualChunks: (id) => {
           // Phaser game engine — large, isolated
           if (id.includes("node_modules/phaser")) {
             return "vendor-phaser";
+          }
+          // Framer Motion chunk
+          if (id.includes("framer-motion") || id.includes("motion")) {
+            return "vendor-motion";
           }
           // PDF generation (only needed on specific pages)
           if (

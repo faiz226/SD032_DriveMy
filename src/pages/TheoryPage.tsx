@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Star, Repeat, CheckCircle2, Search, ChevronRight } from 'lucide-react';
+import { Star, ArrowsClockwise as Repeat, CheckCircle as CheckCircle2, MagnifyingGlass as Search, CaretRight as ChevronRight } from 'phosphor-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/constants';
 import { useLanguage } from '@/hooks/useLanguage';

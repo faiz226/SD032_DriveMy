@@ -3,6 +3,15 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { toast } from "sonner";
+import * as Sentry from "@sentry/react";
+
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.MODE,
+    tracesSampleRate: 0.1,
+  });
+}
 
 // ─── PWA service worker registration ─────────────────────────────────────────
 import { registerSW } from "virtual:pwa-register";

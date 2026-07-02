@@ -13,6 +13,7 @@ import { AuthPage }           from "@/pages/auth/AuthPage";
 import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage }  from "@/pages/auth/ResetPasswordPage";
 import { VerifyEmailPage }    from "@/pages/auth/VerifyEmailPage";
+import { AuthCallbackPage }   from "@/pages/auth/AuthCallbackPage";
 
 // Lazy-load all heavy app pages to split vendor chunks
 const LazyDashboardPage   = lazy(() => import("@/pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
@@ -34,6 +35,7 @@ import { useAuthStore }  from "@/stores/authStore";
 import { supabase }      from "@/lib/supabase";
 import { ROUTES }        from "@/lib/constants";
 import { useTheme }      from "@/hooks/useTheme";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 
 // ─── TanStack Query client ────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -52,6 +54,8 @@ const queryClient = new QueryClient({
 // used by ProtectedRoute and every page that calls useAuthStore().
 function AuthInit({ children }: { children: React.ReactNode }) {
   const { setUser, setSession, setLoading } = useAuthStore();
+
+  useSessionTimeout();
 
   useEffect(() => {
     // Hydrate on mount
@@ -128,7 +132,7 @@ function App() {
                   </Route>
 
                   {/* ── Fallbacks ─────────────────────────────────────────── */}
-                  <Route path="/auth/callback" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+                  <Route path="/auth/callback" element={<AuthCallbackPage />} />
                   <Route path="*"             element={<LazyNotFoundPage />} />
 
                 </Routes>

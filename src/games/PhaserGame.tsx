@@ -1,15 +1,17 @@
 import { useEffect, useRef } from "react";
-import Phaser from "phaser";
+import type PhaserType from "phaser";
 
 interface PhaserGameProps {
-  config: Phaser.Types.Core.GameConfig & Record<string, unknown>;
+  /** The dynamically-imported Phaser namespace — passed in by SimulationView. */
+  Phaser: typeof PhaserType;
+  config: PhaserType.Types.Core.GameConfig & Record<string, unknown>;
   className?: string;
-  onGameReady?: (game: Phaser.Game) => void;
+  onGameReady?: (game: PhaserType.Game) => void;
 }
 
-export function PhaserGame({ config, className, onGameReady }: PhaserGameProps) {
+export function PhaserGame({ Phaser, config, className, onGameReady }: PhaserGameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const gameRef = useRef<Phaser.Game | null>(null);
+  const gameRef = useRef<PhaserType.Game | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;

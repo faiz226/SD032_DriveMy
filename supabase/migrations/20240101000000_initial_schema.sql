@@ -9,7 +9,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- 1. kpp_questions
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.kpp_questions (
-  id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   category        text        NOT NULL,
   set_id          text        NOT NULL,                  -- 'quiz-pool', 'mock-1', 'mock-2', 'mock-3'
   order_index     integer     NOT NULL,
@@ -45,7 +45,7 @@ CREATE POLICY "kpp_questions_select_authenticated"
 -- 2. quiz_results
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.quiz_results (
-  id                uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id           uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   quiz_title        text        NOT NULL,
   score             integer     NOT NULL CHECK (score >= 0),
@@ -74,7 +74,7 @@ CREATE POLICY "quiz_results_all_own"
 -- 3. mock_test_results
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.mock_test_results (
-  id                uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id           uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   set_id            text        NOT NULL,               -- 'mock-1', 'mock-2', 'mock-3'
   score             integer     NOT NULL CHECK (score >= 0),
@@ -103,7 +103,7 @@ CREATE POLICY "mock_test_results_all_own"
 -- 4. simulation_results
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.simulation_results (
-  id                  uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   maneuver_id         text        NOT NULL,
   mode                text        NOT NULL CHECK (mode IN ('practice', 'assessment')),
@@ -137,7 +137,7 @@ CREATE POLICY "simulation_results_all_own"
 -- 5. theory_progress
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.theory_progress (
-  id            uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   module_id     text        NOT NULL,
   completed     boolean     NOT NULL DEFAULT false,
@@ -158,7 +158,7 @@ CREATE POLICY "theory_progress_all_own"
 -- 6. colorblind_results
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.colorblind_results (
-  id            uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       uuid        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   score         integer     NOT NULL CHECK (score >= 0),
   total_plates  integer     NOT NULL CHECK (total_plates > 0),

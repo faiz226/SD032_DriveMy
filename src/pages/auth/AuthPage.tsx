@@ -10,20 +10,12 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
-import { useSignIn, useSignUp, useSignInWithGoogle } from "@/hooks/useAuth";
+import { signIn, signUp, signInWithGoogle } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
 
-// ─── Dev bypass mock user (DEV only — never reaches production) ───────────────
-const DEV_MOCK_USER = {
-  id:     "dev-mock-user-001",
-  email:  "dev@drivemy.local",
-  name:   "Dev User",
-  avatar: null,
-} as const;
-
-const DEV_BYPASS_KEY = "drivemy-dev-bypass";
+// ─── Dev bypass ───────────────
 
 // ─── Zod schemas ──────────────────────────────────────────────────────────────
 const loginSchema = z.object({
@@ -50,11 +42,11 @@ function LoginForm() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser, setSession, setDevBypass } = useAuthStore();
-  const signIn = useSignIn();
-  const signInWithGoogle = useSignInWithGoogle();
+  const { setDevBypass } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [isGooglePending, setIsGooglePending] = useState(false);
 
   const from =
     (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ??
@@ -69,26 +61,16 @@ function LoginForm() {
   const onSubmit = async (values: LoginValues) => {
     setServerError(null);
     try {
-      const data = await signIn.mutateAsync(values);
+      setIsPending(true);
+      const data = await signIn(values.email, values.password);
       if (data.session) {
-        setSession(data.session);
-        setUser(data.user);
         navigate(from, { replace: true });
       }
     } catch (err: unknown) {
       // Dev bypass: on any failure in DEV, fall back to a mock user
       if (import.meta.env.DEV) {
         try {
-          const stored = localStorage.getItem(DEV_BYPASS_KEY);
-          const mockUser = stored ? (JSON.parse(stored) as typeof DEV_MOCK_USER) : DEV_MOCK_USER;
           setDevBypass(true);
-          setUser({
-            ...mockUser,
-            app_metadata:  {},
-            user_metadata: {},
-            aud:           "authenticated",
-            created_at:    "",
-          } as never);
           navigate(from, { replace: true });
           return;
         } catch {
@@ -101,15 +83,20 @@ function LoginForm() {
       } else {
         setServerError(t("auth.error.generic"));
       }
+    } finally {
+      setIsPending(false);
     }
   };
 
   const handleGoogle = async () => {
     setServerError(null);
+    setIsGooglePending(true);
     try {
-      await signInWithGoogle.mutateAsync();
+      await signInWithGoogle();
     } catch {
       setServerError(t("auth.error.generic"));
+    } finally {
+      setIsGooglePending(false);
     }
   };
 
@@ -121,7 +108,7 @@ function LoginForm() {
         variant="outline"
         className="w-full"
         onClick={handleGoogle}
-        loading={signInWithGoogle.isPending}
+        loading={isGooglePending}
         loadingLabel={t("common.loading")}
         aria-label={t("auth.signInWithGoogle")}
       >
@@ -191,7 +178,7 @@ function LoginForm() {
       <Button
         type="submit"
         className="w-full h-11"
-        loading={signIn.isPending}
+        loading={isPending}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signIn")}
@@ -204,11 +191,11 @@ function LoginForm() {
 function RegisterForm() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { setUser, setSession } = useAuthStore();
-  const signUp = useSignUp();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [isGooglePending, setIsGooglePending] = useState(false);
 
   const {
     register,
@@ -216,17 +203,25 @@ function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterValues>({ resolver: zodResolver(registerSchema) });
 
+  const handleGoogle = async () => {
+    setServerError(null);
+    setIsGooglePending(true);
+    try {
+      await signInWithGoogle();
+    } catch {
+      setServerError(t("auth.error.generic"));
+    } finally {
+      setIsGooglePending(false);
+    }
+  };
+
   const onSubmit = async (values: RegisterValues) => {
     setServerError(null);
+    setIsPending(true);
     try {
-      const data = await signUp.mutateAsync({
-        email:    values.email,
-        password: values.password,
-      });
+      const data = await signUp(values.email, values.password);
       if (data.session) {
         // Email confirmation disabled — user is immediately signed in
-        setSession(data.session);
-        setUser(data.user);
         navigate(ROUTES.DASHBOARD, { replace: true });
       } else {
         // Email confirmation required — redirect to dedicated holding page
@@ -244,11 +239,33 @@ function RegisterForm() {
       } else {
         setServerError(t("auth.error.generic"));
       }
+    } finally {
+      setIsPending(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+      {/* Google OAuth */}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={handleGoogle}
+        loading={isGooglePending}
+        loadingLabel={t("common.loading")}
+        aria-label={t("auth.signUpWithGoogle", "Sign up with Google")}
+      >
+        <GoogleLogo className="h-4 w-4" />
+        {t("auth.signUpWithGoogle", "Sign up with Google")}
+      </Button>
+
+      {/* Divider */}
+      <div className="relative flex items-center gap-3" aria-hidden>
+        <div className="flex-1 border-t border-border" />
+        <span className="text-xs text-muted-foreground">{t("auth.orContinueWith")}</span>
+        <div className="flex-1 border-t border-border" />
+      </div>
       {/* Email */}
       <FormField
         label={t("auth.email")}
@@ -317,7 +334,7 @@ function RegisterForm() {
       <Button
         type="submit"
         className="w-full h-11"
-        loading={signUp.isPending}
+        loading={isPending}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signUp")}

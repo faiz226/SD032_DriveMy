@@ -29,7 +29,7 @@
     --secondary-foreground: 88 45 29; /* #582d1d Burnt Umber */
 
     --muted: 239 239 239; /* #efefef */
-    --muted-foreground: 100 100 100; /* #646464 */
+    --muted-foreground: 75 75 75; /* #4b4b4b */
 
     --accent: 232 232 232; /* #e8e8e8 Soft Biscuit */
     --accent-foreground: 32 32 32;
@@ -413,7 +413,7 @@
   --secondary: 255 223 181;
   --secondary-foreground: 88 45 29;
   --muted: 239 239 239;
-  --muted-foreground: 100 100 100;
+  --muted-foreground: 75 75 75;
   --accent: 232 232 232;
   --accent-foreground: 32 32 32;
   --destructive: 239 68 68;

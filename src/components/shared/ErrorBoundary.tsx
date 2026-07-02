@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Warning, ArrowClockwise } from "phosphor-react";
 import { Button } from "@/components/ui/button";
+import * as Sentry from "@sentry/react";
 
 interface Props {
   children:  ReactNode;
@@ -30,9 +31,21 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("[ErrorBoundary]", error, info.componentStack);
+    if (import.meta.env.VITE_SENTRY_DSN) {
+      Sentry.captureException(error, { extra: { componentStack: info.componentStack } });
+    }
   }
 
   handleReset = () => {
+    // If it's a chunk load error, reload the page
+    if (
+      this.state.error?.message?.includes("Failed to fetch dynamically imported module") ||
+      this.state.error?.message?.includes("Importing a module script failed") ||
+      this.state.error?.name === "ChunkLoadError"
+    ) {
+      window.location.reload();
+      return;
+    }
     this.setState({ hasError: false, error: null });
   };
 

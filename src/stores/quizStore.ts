@@ -3,6 +3,15 @@ import { persist } from "zustand/middleware";
 import { STORAGE_KEYS } from "@/lib/constants";
 import type { QuizSession, Question } from "@/types/quiz";
 
+/** Compute remaining seconds from the session's startedAt + timeLimitSeconds. */
+function computeTimeRemaining(session: QuizSession | null): number {
+  if (!session?.timeLimitSeconds || !session.startedAt) return 0;
+  const elapsed = Math.floor(
+    (Date.now() - new Date(session.startedAt).getTime()) / 1000
+  );
+  return Math.max(0, session.timeLimitSeconds - elapsed);
+}
+
 interface QuizState {
   activeSession: QuizSession | null;
   currentQuestionIndex: number;
@@ -116,12 +125,19 @@ export const useQuizStore = create<QuizState>()(
     }),
     {
       name: STORAGE_KEYS.QUIZ_PROGRESS,
-      // Only persist the active session — not derived state
+      // Only persist the active session — not derived state.
+      // timeRemainingSeconds is intentionally excluded; it is recomputed on
+      // rehydration from startedAt + timeLimitSeconds so a page refresh never
+      // resumes from a stale countdown value.
       partialize: (state) => ({
         activeSession: state.activeSession,
         currentQuestionIndex: state.currentQuestionIndex,
-        timeRemainingSeconds: state.timeRemainingSeconds,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.timeRemainingSeconds = computeTimeRemaining(state.activeSession);
+        }
+      },
     }
   )
 );

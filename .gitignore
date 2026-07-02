@@ -34,3 +34,12 @@ dist-ssr
 # PWA generated files (regenerated on build)
 dist/sw.js
 dist/workbox-*.js
+dev-dist/
+
+# AI Agent & Graphify Data
+.agents/
+graphify-out/
+.graphify_*
+
+# Supabase CLI temp files (never commit)
+supabase/.temp/

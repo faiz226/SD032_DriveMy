@@ -22,6 +22,8 @@ import {
 } from "phosphor-react";
 import { LanguageToggle } from "./LanguageToggle";
 import { OfflineBanner } from "./OfflineBanner";
+import { ErrorBoundary } from "./ErrorBoundary";
+import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useLanguage } from "@/hooks/useLanguage";
 import { VerticalDock, DockItem, DockIcon, DockLabel } from "@/components/ui/vertical-dock";
@@ -438,23 +440,19 @@ export function AppLayout({ showSidebar = true }: AppLayoutProps) {
         </aside>
       )}
 
-      {showSidebar && mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 md:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("a11y.openMenu")}
-          id={mobileMenuId}
-        >
-          <div
-            className="absolute inset-0 bg-overlay/50"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <div className="fixed inset-y-0 left-0 z-20 h-full w-64 flex-shrink-0 shadow-2xl">
-            <Sidebar isMobile onClose={() => setMobileOpen(false)} />
-          </div>
-        </div>
+      {showSidebar && (
+        <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 z-40 bg-overlay/50 md:hidden" />
+            <Dialog.Content 
+              aria-describedby={undefined}
+              className="fixed inset-y-0 left-0 z-50 h-full w-64 flex-shrink-0 shadow-2xl md:hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full duration-300"
+            >
+              <Dialog.Title className="sr-only">{t("a11y.openMenu")}</Dialog.Title>
+              <Sidebar isMobile onClose={() => setMobileOpen(false)} />
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
       )}
 
       <div className="flex flex-1 flex-col overflow-hidden min-w-0 transition-all duration-300 ease-in-out relative">
@@ -492,7 +490,9 @@ export function AppLayout({ showSidebar = true }: AppLayoutProps) {
           tabIndex={-1}
         >
           <div className="page-enter min-h-full">
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </main>
 

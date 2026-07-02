@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useLayoutEffect } from "react";
-import Phaser from "phaser";
+import type Phaser from "phaser";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Lightbulb, Gear, ArrowUp, ArrowDown, ArrowLeft as ArrowLeftIcon, ArrowRight, Disc } from "phosphor-react";
 import { toast } from "sonner";
@@ -10,8 +10,7 @@ import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { SimulationHUD } from "@/components/simulation/SimulationHUD";
 import { SimulationResults } from "@/components/simulation/SimulationResults";
-import { DrivingScene } from "@/games/scenes";
-import type { HudCallbacks } from "@/games/scenes";
+import type { DrivingScene, HudCallbacks } from "@/games/scenes";
 
 interface ManeuverConfig {
   name: string;
@@ -282,9 +281,16 @@ export function SimulationView() {
     let game: Phaser.Game | null = null;
     let resizeHandler: (() => void) | null = null;
 
-    const mountGame = () => {
+    const mountGame = async () => {
       const container = gameContainerRef.current;
       if (!container || cancelled) return;
+
+      // Dynamically import Phaser and scenes only when play starts
+      const PhaserModule = await import("phaser");
+      const Phaser = PhaserModule.default || PhaserModule;
+      const { DrivingScene } = await import("@/games/scenes");
+
+      if (cancelled) return;
 
       const scene = new DrivingScene(maneuverId);
       const width = Math.max(container.clientWidth, 320);
