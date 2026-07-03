@@ -192,8 +192,8 @@ export async function getSimStats(userId: string, dateRange?: number) {
 export async function getTheoryProgressStats(userId: string) {
   const { data, error } = await supabase.from("theory_progress").select("*").eq("user_id", userId);
   if (error) throw error;
-  // Total KPP1 theory modules — update if the module count changes
-  const totalModules = 12;
+  // One row per theory tab: theory-signs, theory-rules, theory-safety
+  const totalModules = 3;
   const rows = (data ?? []) as { completed: boolean }[];
   const completedModules = rows.filter((d) => d.completed).length;
   const percentage = (completedModules / totalModules) * 100;

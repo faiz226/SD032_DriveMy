@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,8 @@ import { Star, ArrowsClockwise as Repeat, CheckCircle as CheckCircle2, Magnifyin
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/constants';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useAuthStore } from '@/stores/authStore';
+import { useUpdateTheoryProgress } from '@/hooks/useProgress';
 
 // ── Regulatory / Prohibitory – vector renders, confirmed correct by browser audit
 import imgStop        from '@/assets/signs/svg/stop.png';          
@@ -159,9 +161,29 @@ export function TheoryPage() {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const lang = language === 'en' ? 'en' : 'bm';
+  const { user } = useAuthStore();
+  const { mutate: markCompleted } = useUpdateTheoryProgress();
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
+  const [activeTab, setActiveTab] = useState('signs');
+
+  // Mark the visited tab as a completed theory module in Supabase
+  const handleTabChange = useCallback((tab: string) => {
+    setActiveTab(tab);
+    if (!user?.id) return;
+    markCompleted({
+      user_id: user.id,
+      module_id: `theory-${tab}`,
+      completed: true,
+      completed_at: new Date().toISOString(),
+    });
+  }, [user?.id, markCompleted]);
+
+  // Mark the default tab ("signs") as completed when the page first mounts
+  // onValueChange only fires when switching tabs, so the initial tab needs this.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { handleTabChange('signs'); }, []);
 
   const toggleBookmark = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -216,7 +238,7 @@ export function TheoryPage() {
       </div>
 
       <div className="px-4 md:px-8 mt-6">
-        <Tabs defaultValue="signs">
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="sticky top-[73px] sm:top-[73px] z-10 bg-background/95 backdrop-blur py-2 -mx-4 px-4 md:mx-0 md:px-0">
             <TabsList className="w-full sm:w-auto overflow-x-auto justify-start inline-flex flex-nowrap hide-scrollbar">
               <TabsTrigger value="signs">{lang === 'en' ? 'Road Signs' : 'Papan Tanda'}</TabsTrigger>
