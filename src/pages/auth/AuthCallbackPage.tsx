@@ -5,41 +5,79 @@ import { ROUTES } from "@/lib/constants";
 import { useLanguage } from "@/hooks/useLanguage";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
 
+/**
+ * AuthCallbackPage — handles the OAuth redirect from Google (and email magic
+ * links / password-reset links) after Supabase's PKCE flow.
+ *
+ * Supabase PKCE flow returns:
+ *   https://drivemy-rho.vercel.app/auth/callback?code=<auth_code>
+ *
+ * We must call supabase.auth.exchangeCodeForSession(code) to swap the
+ * one-time code for a real access + refresh token pair. Once that succeeds,
+ * onAuthStateChange fires SIGNED_IN and we redirect to the dashboard.
+ */
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Supabase automatically parses the URL hash for session data on init.
-    // By staying on this component, we ensure React Router doesn't strip
-    // the hash before Supabase can read it.
-    
-    // Check if session is already present
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (error) {
-        setError(error.message);
-      } else if (data.session) {
-        navigate(ROUTES.DASHBOARD, { replace: true });
-      }
-    });
+    let cancelled = false;
 
-    // Also listen for the SIGNED_IN event from the hash parser
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        navigate(ROUTES.DASHBOARD, { replace: true });
-      }
-    });
+    async function handleCallback() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      const errorParam = params.get("error");
+      const errorDescription = params.get("error_description");
 
-    return () => subscription.unsubscribe();
+      // ── Handle OAuth error returned by provider ──────────────────────────
+      if (errorParam) {
+        setError(errorDescription ?? errorParam);
+        return;
+      }
+
+      // ── PKCE: exchange ?code= for a session ──────────────────────────────
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (cancelled) return;
+        if (exchangeError) {
+          setError(exchangeError.message);
+          return;
+        }
+        // Session is now active; onAuthStateChange (in AuthInit) will update
+        // the store. Navigate to dashboard immediately.
+        navigate(ROUTES.DASHBOARD, { replace: true });
+        return;
+      }
+
+      // ── Implicit / magic-link fallback: check if session already hydrated ─
+      // Supabase JS auto-parses the hash fragment (#access_token=...) on init.
+      // Give it a tick, then check.
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (sessionError) {
+        setError(sessionError.message);
+        return;
+      }
+      if (data.session) {
+        navigate(ROUTES.DASHBOARD, { replace: true });
+        return;
+      }
+
+      // Nothing in URL and no active session — redirect to login
+      navigate(ROUTES.AUTH, { replace: true });
+    }
+
+    handleCallback();
+    return () => { cancelled = true; };
   }, [navigate]);
 
   if (error) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 space-y-4">
         <AuthFormAlert>{error}</AuthFormAlert>
-        <button 
-          onClick={() => navigate(ROUTES.AUTH)} 
+        <button
+          onClick={() => navigate(ROUTES.AUTH)}
           className="text-sm text-primary hover:underline"
         >
           {t("common.back")}

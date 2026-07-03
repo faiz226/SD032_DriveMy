@@ -8,7 +8,14 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Missing Supabase environment variables. Check .env.local or production config");
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+  auth: {
+    // Use PKCE (Proof Key for Code Exchange) — the secure default for SPAs
+    // with Supabase projects created after 2023-04. Google OAuth returns a
+    // ?code= query param; PKCE flow exchanges it for a session automatically.
+    flowType: "pkce",
+  },
+});
 
 /**
  * Passively checks if the 'kpp-images' Supabase Storage bucket exists.
