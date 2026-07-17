@@ -159,7 +159,7 @@ export function useThemeAnimation(options: {
       return isDark ? "light" : "dark";
     };
     const nextTheme = getNextTheme();
-    const nextIsDark = nextTheme === "dark" || (nextTheme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const nextIsDark = nextTheme === "dark";
 
     const applyThemeDOM = () => {
       document.documentElement.classList.remove("light", "dark");
