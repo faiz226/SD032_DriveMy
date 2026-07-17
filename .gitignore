@@ -43,3 +43,10 @@ graphify-out/
 
 # Supabase CLI temp files (never commit)
 supabase/.temp/
+
+# Temp files and models
+*.glb
+mmm.md
+error_log.txt
+temp_interior.gltf
+
