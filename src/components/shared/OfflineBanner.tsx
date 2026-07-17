@@ -19,9 +19,24 @@ export function OfflineBanner() {
     const handleOffline = () => setIsOnline(false);
     window.addEventListener("online",  handleOnline);
     window.addEventListener("offline", handleOffline);
+
+    const interval = setInterval(async () => {
+      if (!navigator.onLine) {
+        setIsOnline(false);
+        return;
+      }
+      try {
+        const res = await fetch(`/favicon.png?_=${Date.now()}`, { method: "HEAD", cache: "no-store" });
+        setIsOnline(res.ok);
+      } catch {
+        setIsOnline(false);
+      }
+    }, 15000);
+
     return () => {
       window.removeEventListener("online",  handleOnline);
       window.removeEventListener("offline", handleOffline);
+      clearInterval(interval);
     };
   }, []);
 

@@ -375,7 +375,7 @@ export function SettingsPage() {
                 </div>
                 <div className="shrink-0">
 
-                  <Drawer onOpenChange={(open) => { 
+                  <Drawer onOpenChange={(open: boolean) => { 
                     if (!open) { 
                       setResetConfirmText("");
                       setResetStep(1);
@@ -464,7 +464,7 @@ export function SettingsPage() {
                 </div>
                 <div className="shrink-0">
 
-                  <Drawer onOpenChange={(open) => { 
+                  <Drawer onOpenChange={(open: boolean) => { 
                     if (!open) {
                       setDeleteConfirmText("");
                       setDeleteStep(1);

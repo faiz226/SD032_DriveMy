@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,29 +32,42 @@ export function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (navTimerRef.current) clearTimeout(navTimerRef.current);
+    };
+  }, []);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
 
   useEffect(() => {
+    const hashStr = window.location.hash.substring(1);
+    const searchStr = window.location.search;
+    
+    if (hashStr.includes("error=access_denied")) {
+      setTokenError(t("auth.resetLinkInvalid"));
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setTokenError(null);
       }
     });
 
-    const timer = setTimeout(() => {
-      supabase.auth.getSession().then(({ data }) => {
-        if (!data.session) {
-          setTokenError(t("auth.resetLinkInvalid"));
-        }
-      });
-    }, 3000);
+    supabase.auth.getSession().then(({ data }) => {
+      const hasAuthParams = hashStr.includes('access_token') || searchStr.includes('code');
+      if (!data.session && !hasAuthParams) {
+        setTokenError(t("auth.resetLinkInvalid"));
+      }
+    });
 
     return () => {
       subscription.unsubscribe();
-      clearTimeout(timer);
     };
   }, [t]);
 
@@ -64,9 +77,16 @@ export function ResetPasswordPage() {
     try {
       await updatePassword(values.password);
       setSuccess(true);
-      setTimeout(() => navigate(ROUTES.DASHBOARD, { replace: true }), 2000);
-    } catch {
-      setServerError(t("auth.error.generic"));
+      navTimerRef.current = setTimeout(() => navigate(ROUTES.DASHBOARD, { replace: true }), 2000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
+        setServerError(t("auth.error.rateLimit"));
+      } else if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        setServerError(t("auth.error.network"));
+      } else {
+        setServerError(t("auth.error.generic"));
+      }
     } finally {
       setLoading(false);
     }

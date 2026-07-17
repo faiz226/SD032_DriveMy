@@ -4,7 +4,8 @@ import type { Language } from "@/lib/constants";
 export type BilingualString = Record<Language, string>;
 
 /** Translation namespace keys */
-export type TranslationKey = string;
+import { en } from "@/lib/translations/en";
+export type TranslationKey = keyof typeof en;
 
 /** i18n context value */
 export interface I18nContext {

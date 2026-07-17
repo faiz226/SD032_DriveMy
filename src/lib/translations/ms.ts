@@ -54,6 +54,10 @@ export const ms: Record<TranslationKey, string> = {
   "auth.error.weakPassword":       "Kata laluan mestilah sekurang-kurangnya 8 aksara.",
   "auth.error.emailNotFound":      "Tiada akaun dijumpai dengan e-mel ini.",
   "auth.error.generic":            "Sesuatu telah berlaku. Sila cuba lagi.",
+  "auth.error.rateLimit":          "Terlalu banyak percubaan. Sila cuba lagi nanti.",
+  "auth.error.captchaFailed":      "Pengesahan keselamatan gagal. Sila muat semula dan cuba lagi.",
+  "auth.error.network":            "Ralat rangkaian. Sila semak sambungan anda dan cuba lagi.",
+  "auth.error.oauthFailed":        "Log masuk pihak ketiga gagal. Sila cuba lagi.",
   "auth.forgotPasswordDesc":       "Masukkan e-mel anda dan kami akan hantar pautan tetapan semula.",
   "auth.resetPasswordDesc":        "Masukkan kata laluan baharu anda di bawah.",
   "auth.resetLinkInvalid":         "Pautan tetapan semula ini tidak sah atau telah tamat tempoh. Sila minta pautan baharu.",
@@ -394,6 +398,7 @@ export const ms: Record<TranslationKey, string> = {
   "progress.modulesCount":         "{{completed}} / {{total}} Modul",
   "progress.bestScoresByManeuver": "Skor Terbaik Mengikut Manuver",
   "progress.chart.theory":         "Teori",
+  "progress.chart.quiz":           "Kuiz",
   "progress.chart.mockTest":       "Ujian Mock",
   "progress.chart.simulations":    "Simulasi",
   "progress.chart.contribution":   "Sumbangan",
@@ -452,6 +457,22 @@ export const ms: Record<TranslationKey, string> = {
   "settings.signOut":              "Log Keluar",
   "settings.signOutDesc":          "Log keluar daripada akaun anda pada peranti ini.",
   "settings.deleteAccountHint":    "Hubungi sokongan untuk memohon pemadaman akaun.",
+  "settings.deleteAccountConfirm": "Adakah anda pasti? Semua data anda akan dipadamkan secara kekal. Tindakan ini tidak boleh dibatalkan.",
+  "settings.accountDeleted":       "Akaun anda telah dipadamkan secara kekal.",
+  "settings.resetProgress":        "Tetapkan Semula Kemajuan",
+  "settings.resetProgressDesc":    "Padamkan semua data kemajuan pembelajaran dan simulasi anda.",
+  "settings.resetProgressConfirm": "Adakah anda pasti mahu menetapkan semula semua kemajuan pembelajaran dan simulasi anda? Ini akan memadamkan secara kekal skor kuiz, sejarah ujian percubaan, percubaan simulator, dan kemajuan teori anda. Tindakan ini tidak boleh dibatalkan.",
+  "settings.progressResetSuccess": "Kemajuan anda telah berjaya ditetapkan semula.",
+  "settings.mfa":                  "Pengesahan Pelbagai Faktor",
+  "settings.mfaDesc":              "Lindungi akaun anda dengan aplikasi pengesah.",
+  "settings.mfaEnabled":           "MFA diaktifkan pada akaun anda.",
+  "settings.mfaDisable":           "Nyahaktifkan MFA",
+  "settings.mfaReturn":            "Kembali ke Papan Pemuka",
+  "settings.mfaSetup":             "Sediakan Aplikasi Pengesah",
+  "settings.mfaQrAlt":             "Kod QR untuk persediaan MFA",
+  "settings.mfaScanDesc":          "Imbas kod QR ini dengan Google Authenticator atau Authy, kemudian masukkan kod 6 digit di bawah.",
+  "settings.mfaCode":              "Kod Pengesahan",
+  "settings.mfaVerify":            "Sahkan dan Aktifkan",
 
   // ── Profile ────────────────────────────────────────────────────────────
   "profile.identity":              "Identiti",
@@ -477,6 +498,8 @@ export const ms: Record<TranslationKey, string> = {
 
   // ── Common ─────────────────────────────────────────────────────────────
   "common.loading":                "Memuatkan…",
+  "common.deleting":               "Memadamkan…",
+  "common.resetting":              "Menetapkan semula…",
   "common.error":                  "Sesuatu telah berlaku.",
   "common.retry":                  "Cuba lagi",
   "common.cancel":                 "Batal",
@@ -658,4 +681,10 @@ export const ms: Record<TranslationKey, string> = {
 
   "a11y.previousPage":             "Halaman sebelumnya",
   "a11y.nextPage":                 "Halaman seterusnya",
+
+  // ── PWA ────────────────────────────────────────────────────────────────
+  "pwa.updateAvailable":           "Kemas kini tersedia",
+  "pwa.updateDesc":                "Versi baharu DriveMy sudah sedia.",
+  "pwa.reload":                    "Muat semula",
+  "pwa.offlineReady":              "Sedia untuk berfungsi luar talian",
 };

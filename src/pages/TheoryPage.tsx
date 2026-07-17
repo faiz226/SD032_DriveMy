@@ -2,12 +2,13 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Star, ArrowsClockwise as Repeat, CheckCircle as CheckCircle2, MagnifyingGlass as Search, CaretRight as ChevronRight } from 'phosphor-react';
+import { Star, ArrowsClockwise as Repeat, MagnifyingGlass as Search, CaretRight as ChevronRight } from 'phosphor-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuthStore } from '@/stores/authStore';
 import { useUpdateTheoryProgress } from '@/hooks/useProgress';
+import { toast } from 'sonner';
 
 // ── Regulatory / Prohibitory – vector renders, confirmed correct by browser audit
 import imgStop        from '@/assets/signs/svg/stop.png';          
@@ -163,7 +164,7 @@ export function TheoryPage() {
   const lang = language === 'en' ? 'en' : 'bm';
   const { user } = useAuthStore();
   const { mutate: markCompleted } = useUpdateTheoryProgress();
-  const [bookmarks, setBookmarks] = useState<string[]>([]);
+  const [learned, setLearned] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState('signs');
@@ -185,13 +186,27 @@ export function TheoryPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { handleTabChange('signs'); }, []);
 
-  const toggleBookmark = (e: React.MouseEvent, id: string) => {
+  // Toggle learned state for a sign (star button)
+  const toggleLearned = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setBookmarks((prev) => prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]);
+    setLearned((prev) => {
+      const nowLearned = !prev[id];
+      if (nowLearned) {
+        toast.success(lang === 'en' ? 'Marked as learned! ⭐' : 'Ditandai sebagai dipelajari! ⭐', { duration: 1500 });
+      }
+      return { ...prev, [id]: nowLearned };
+    });
   };
 
   const toggleFlip = (id: string) => {
-    setFlipped((prev) => ({ ...prev, [id]: !prev[id] }));
+    setFlipped((prev) => {
+      const nowFlipped = !prev[id];
+      // Auto-mark as learned on first flip to reveal the answer
+      if (nowFlipped && !learned[id]) {
+        setLearned((l) => ({ ...l, [id]: true }));
+      }
+      return { ...prev, [id]: nowFlipped };
+    });
   };
 
   const filteredSigns = useMemo(() => {
@@ -252,7 +267,7 @@ export function TheoryPage() {
               const categorySigns = filteredSigns.filter(s => s.type === category);
               if (categorySigns.length === 0) return null;
 
-              const masteredCount = categorySigns.filter(s => flipped[s.id]).length;
+              const masteredCount = categorySigns.filter(s => learned[s.id]).length;
 
               return (
                 <div key={category} className="space-y-4">
@@ -292,11 +307,11 @@ export function TheoryPage() {
                           {/* Front */}
                           <Card className="rounded-xl border-border/60 text-card-foreground duration-300 hover:shadow-lg absolute inset-0 backface-hidden flex flex-col items-center justify-center bg-card border hover:border-primary/50 transition-colors shadow-sm overflow-hidden">
                             <button
-                              onClick={(e) => toggleBookmark(e, sign.id)}
+                              onClick={(e) => toggleLearned(e, sign.id)}
                               className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center hover:bg-muted transition-colors hover:scale-110 active:scale-95 duration-200"
-                              aria-label="Bookmark sign"
+                              aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
                             >
-                              <Star className={`w-4 h-4 ${bookmarks.includes(sign.id) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} aria-hidden="true" />
+                              <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-muted-foreground hover:text-yellow-400'}`} aria-hidden="true" />
                             </button>
                             <div className="w-full flex-1 flex items-center justify-center p-6 bg-muted/10 transition-colors duration-300 group-hover:bg-muted/30">
                               <img src={sign.img} alt={sign.name} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-500 ease-out-back" loading="lazy" />
@@ -307,13 +322,23 @@ export function TheoryPage() {
                             </div>
                           </Card>
 
-                          {/* Back */}
+                          {/* Back face — star marks as learned */}
                           <Card className="rounded-xl border border-border/60 transition-all duration-300 hover:shadow-lg absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-primary text-primary-foreground border-none p-5 shadow-lg">
                             <div className="flex items-center justify-between mb-4">
                               <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-none transition-colors">
                                 {category}
                               </Badge>
-                              <CheckCircle2 className="w-5 h-5 text-green-300" aria-hidden="true" />
+                              {/* Star on back face: tap to toggle learned */}
+                              <button
+                                onClick={(e) => toggleLearned(e, sign.id)}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+                                aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
+                              >
+                                <Star
+                                  className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-300 text-yellow-300 scale-110' : 'text-primary-foreground/60 hover:text-yellow-300'}`}
+                                  aria-hidden="true"
+                                />
+                              </button>
                             </div>
                             <h3 className="font-heading font-bold text-xl mb-2 text-primary-foreground">{lang === 'en' ? sign.name : sign.nameMs}</h3>
                             <p className="text-sm leading-relaxed text-primary-foreground/90 overflow-y-auto pr-1">

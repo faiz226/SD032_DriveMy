@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { useLanguageStore } from "@/stores/languageStore";
 
 /**
  * Merge Tailwind classes safely — combines clsx conditional logic
@@ -14,8 +15,9 @@ export function cn(...inputs: ClassValue[]): string {
  */
 export function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  // Simple formatter — replace with date-fns format() in components
-  return d.toLocaleDateString("en-MY", {
+  const lang = useLanguageStore.getState().language === "ms" ? "ms-MY" : "en-MY";
+  
+  return d.toLocaleDateString(lang, {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -26,7 +28,9 @@ export function formatDate(date: Date | string): string {
  * Clamp a number between min and max.
  */
 export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
+  const actualMin = Math.min(min, max);
+  const actualMax = Math.max(min, max);
+  return Math.min(Math.max(value, actualMin), actualMax);
 }
 
 /**
@@ -46,6 +50,7 @@ export function shuffle<T>(array: T[]): T[] {
  */
 export function truncate(str: string, maxLength: number): string {
   if (str.length <= maxLength) return str;
+  if (maxLength <= 3) return str.slice(0, maxLength);
   return `${str.slice(0, maxLength - 3)}...`;
 }
 
@@ -67,8 +72,9 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  * Convert seconds to MM:SS display string.
  */
 export function formatDuration(seconds: number): string {
+  if (seconds < 0) return `-${formatDuration(-seconds)}`;
   const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
+  const s = Math.floor(seconds % 60);
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
@@ -87,24 +93,7 @@ export function uid(prefix = "id"): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-/**
- * Check if the app is running in a PWA standalone context.
- */
-export function isPWA(): boolean {
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    ("standalone" in window.navigator && (window.navigator as { standalone?: boolean }).standalone === true)
-  );
-}
 
-/**
- * Get the user's preferred language (en or ms).
- */
-export function getPreferredLanguage(): "en" | "ms" {
-  const lang = navigator.language.toLowerCase();
-  if (lang.startsWith("ms") || lang.startsWith("id")) return "ms";
-  return "en";
-}
 
 /**
  * Trigger a file download from a Blob, with cross-browser compatibility.
@@ -130,5 +119,7 @@ export function downloadBlob(blob: Blob, filename: string): void {
     document.body.removeChild(link);
   }
 
-  URL.revokeObjectURL(url);
+  // Delay revocation so the browser has time to initiate the download
+  // before the blob URL is garbage-collected (fixes race on iOS + Chromium)
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }

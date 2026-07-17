@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "phosphor-react";
+import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { 
@@ -42,25 +43,32 @@ export function ProgressPage() {
       const { exportProgressReportFromFrame } = await import("@/lib/exportProgressReport");
       await exportProgressReportFromFrame("progress-report-print-frame");
     } catch {
-      if (!quiz || !mock || !sim || !theory || !user) return;
-      const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
-      await generateProgressPDF({
-        language,
-        userName: user.email?.split("@")[0] || "Student",
-        theory,
-        quiz,
-        mock,
-        sim,
-      });
+      if (!user) {
+        toast.error(t("common.error"));
+        return;
+      }
+      try {
+        const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
+        await generateProgressPDF({
+          language,
+          userName: user.email?.split("@")[0] || "Student",
+          theory: theory || { completedModules: 0, totalModules: 3, percentage: 0 },
+          quiz: quiz || { average: 0, totalDuration: 0, history: [], trend: [] },
+          mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
+          sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
+        });
+      } catch (fallbackErr) {
+        toast.error(t("common.error"));
+      }
     }
   };
 
   const hasData = quiz?.count || mock?.count || sim?.completed;
 
-  const dummyCategoryData = [
-    { category: "road-signs", averageScore: 88, attempts: 5 },
-    { category: "traffic-rules", averageScore: 72, attempts: 4 },
-    { category: "safety-principles", averageScore: 95, attempts: 3 },
+  const categoryData = quiz?.categoryPerformance || [
+    { category: "road-signs", averageScore: 0, attempts: 0 },
+    { category: "traffic-rules", averageScore: 0, attempts: 0 },
+    { category: "safety-principles", averageScore: 0, attempts: 0 },
   ];
 
   return (
@@ -179,9 +187,10 @@ export function ProgressPage() {
               </div>
             ) : (
               <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
-                {quiz && mock && sim ? 
-                  `${Math.floor(((quiz.totalDuration + mock.totalDuration + sim.totalDuration) / 60) / 60)}h ${Math.floor(((quiz.totalDuration + mock.totalDuration + sim.totalDuration) / 60) % 60)}m` 
-                  : "0h 0m"}
+                {(() => {
+                  const total = (quiz?.totalDuration || 0) + (mock?.totalDuration || 0) + (sim?.totalDuration || 0);
+                  return `${Math.floor(total / 3600)}h ${Math.floor((total / 60) % 60)}m`;
+                })()}
               </div>
             )}
           </div>
@@ -199,7 +208,7 @@ export function ProgressPage() {
         <TabsContent value="theory" className="space-y-6">
           <div className="card-premium p-6">
             <h3 className="text-lg font-semibold mb-4">{t("progress.categoryPerformance")}</h3>
-            <CategoryBreakdownBar key={activeTab} data={dummyCategoryData} />
+            <CategoryBreakdownBar key={activeTab} data={categoryData} />
           </div>
         </TabsContent>
 

@@ -1,21 +1,26 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from "recharts";
 import { useLanguage } from "@/hooks/useLanguage";
 
+import { useChartColors } from "@/hooks/useChartColors";
+
 interface ReadinessDonutProps {
   theoryPct: number;
+  quizPct: number;
   mockPct: number;
   simPct: number;
   composite: number;
   status: string;
 }
 
-export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }: ReadinessDonutProps) {
+export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite, status }: ReadinessDonutProps) {
   const { t } = useLanguage();
+  const colors = useChartColors();
 
   const hasData = composite > 0;
 
   const chartData = hasData ? [
-    { name: t("progress.chart.theory"), value: theoryPct * 0.3 },
+    { name: t("progress.chart.theory"), value: theoryPct * 0.1 },
+    { name: t("progress.chart.quiz"), value: quizPct * 0.2 },
     { name: t("progress.chart.mockTest"), value: mockPct * 0.3 },
     { name: t("progress.chart.simulations"), value: simPct * 0.4 },
   ] : [
@@ -23,11 +28,12 @@ export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }
   ];
 
   const COLORS = hasData ? [
-    "rgb(var(--primary))",
-    "rgb(var(--primary) / 0.7)",
-    "rgb(var(--primary) / 0.4)"
+    colors.primary,
+    colors.primary70,
+    colors.primary40,
+    colors.primary10 || "#e2e8f0" // Added fourth color
   ] : [
-    "rgb(var(--muted))"
+    colors.muted
   ];
 
   return (
@@ -66,8 +72,8 @@ export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }
             {hasData && (
               <Tooltip 
                 formatter={(val, name) => [`${Number(val ?? 0).toFixed(1)}%`, name]}
-                contentStyle={{ backgroundColor: "rgb(var(--card))", borderColor: "rgb(var(--border))", borderRadius: "8px" }}
-                itemStyle={{ color: "rgb(var(--foreground))" }}
+                contentStyle={{ backgroundColor: colors.card, borderColor: colors.border, borderRadius: "8px" }}
+                itemStyle={{ color: colors.foreground }}
               />
             )}
           </PieChart>
@@ -82,15 +88,15 @@ export function ReadinessDonut({ theoryPct, mockPct, simPct, composite, status }
         )) : (
           <div className="flex gap-4">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "rgb(var(--primary))" }} />
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.primary }} />
               {t("progress.chart.theory")}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "rgb(var(--primary) / 0.7)" }} />
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.primary70 }} />
               {t("progress.chart.mockTest")}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "rgb(var(--primary) / 0.4)" }} />
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.primary40 }} />
               {t("progress.chart.simulations")}
             </div>
           </div>

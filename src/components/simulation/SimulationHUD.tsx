@@ -10,6 +10,7 @@ interface SimulationHUDProps {
   mirrorChecked: boolean;
   errors: number;
   speed: number;
+  gear: number;
   onMirrorCheck: () => void;
   onLeftSignal: () => void;
   onRightSignal: () => void;
@@ -21,6 +22,7 @@ export function SimulationHUD({
   mirrorChecked,
   errors,
   speed,
+  gear,
   onMirrorCheck,
   onLeftSignal,
   onRightSignal,
@@ -96,6 +98,8 @@ export function SimulationHUD({
         <Gauge className="w-4 h-4 text-muted-foreground" weight="regular" aria-hidden />
         {speed}
         <span className="text-muted-foreground font-normal">km/h</span>
+        <div className="w-px h-4 bg-border mx-1" />
+        <span className="text-primary">{gear === 0 ? "N" : gear === -1 ? "R" : `G${gear}`}</span>
       </div>
     </div>
   );

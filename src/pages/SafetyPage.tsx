@@ -97,29 +97,37 @@ export function SafetyPage() {
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const [ethicsTotal, setEthicsTotal] = useState(0);
 
   const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
   const [ethicsValue, setEthicsValue] = useState(5);
   const [ethicsSubmitted, setEthicsSubmitted] = useState(false);
   const [mockAvg, setMockAvg] = useState(0);
 
-  // Fire confetti when results phase is reached and score >= 60
+  // Blended final score: defensive (max 80) + ethics avg mapped to 0-20
+  const blendedScore = Math.min(score + Math.round((ethicsTotal / ETHICS_CASE_KEYS.length) * 2), 100);
+
+  // Fire confetti when results phase is reached and blendedScore >= 60
   useEffect(() => {
-    if (phase === "results" && score >= 60) {
+    let animationFrameId: number;
+    if (phase === "results" && blendedScore >= 60) {
       const end = Date.now() + 2.5 * 1000;
       const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
       const frame = () => {
         if (Date.now() > end) return;
         confetti({ particleCount: 2, angle: 60, spread: 55, startVelocity: 60, origin: { x: 0, y: 0.5 }, colors });
         confetti({ particleCount: 2, angle: 120, spread: 55, startVelocity: 60, origin: { x: 1, y: 0.5 }, colors });
-        requestAnimationFrame(frame);
+        animationFrameId = requestAnimationFrame(frame);
       };
       frame();
     }
-  }, [phase, score]);
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [phase, blendedScore]);
 
   const handleScenarioNext = (isCorrect: boolean) => {
-    if (isCorrect) setScore((prev) => prev + 20);
+    if (isCorrect) setScore((prev) => prev + 16); // 5 scenarios × 16 pts = 80 pts max
 
     setIsExiting(true);
     setTimeout(() => {
@@ -134,7 +142,9 @@ export function SafetyPage() {
   };
 
   const submitEthics = () => {
-    setMockAvg(Number((Math.random() * (9.0 - 5.0) + 5.0).toFixed(1)));
+    const avgs = [7.2, 6.5, 8.1];
+    setMockAvg(avgs[currentCaseIndex]);
+    setEthicsTotal((prev) => prev + ethicsValue);
     setEthicsSubmitted(true);
   };
 
@@ -171,9 +181,18 @@ export function SafetyPage() {
         <h1 className="page-title">{t("safety.title")}</h1>
         <Card className="p-8 text-center space-y-6 border border-border bg-card">
           <div className="flex justify-center mb-4">
-            <ResultsBadge score={score} />
+            <ResultsBadge score={blendedScore} />
           </div>
-          <div className="text-5xl font-bold font-mono text-primary font-tabular-nums">{score}/100</div>
+          {/* Final blended score: defensive (max 80) + ethics (max 20) */}
+          <div className="text-5xl font-bold font-mono text-primary font-tabular-nums">
+            {blendedScore}/100
+          </div>
+          <div className="mt-8 p-4 rounded-xl border border-border bg-muted/30">
+            <div className="text-sm text-muted-foreground uppercase tracking-wide font-bold mb-1">{t("safety.ethics.title")}</div>
+            <div className="text-3xl font-bold font-mono text-secondary-foreground font-tabular-nums">
+              {(ethicsTotal / ETHICS_CASE_KEYS.length).toFixed(1)}/10.0
+            </div>
+          </div>
           <p className="text-muted-foreground max-w-md mx-auto">
             {t("safety.resultsDesc")}
           </p>

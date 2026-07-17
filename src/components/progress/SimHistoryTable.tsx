@@ -118,7 +118,7 @@ export function SimHistoryTable({ data }: SimHistoryTableProps) {
                     {row.errors}
                   </td>
                   <td className="px-4 py-3 text-warning">
-                    {row.stall_count}
+                    {row.stall_count ?? "-"}
                   </td>
                 </tr>
               );

@@ -422,8 +422,13 @@ export function ColorVisionPage() {
           }
           // tritanMisses: how many tritan plates the user got wrong (high = tritan deficiency)
           if (tritanMisses >= 2) {
-            classification = t("color.results.class.tritan");
-            diagnosis = t("color.results.diagnosis.tritan");
+            if (classification === t("color.results.class.normal")) {
+              classification = t("color.results.class.tritan");
+              diagnosis = t("color.results.diagnosis.tritan");
+            } else {
+              classification += " & " + t("color.results.class.tritan");
+              diagnosis += " & " + t("color.results.diagnosis.tritan");
+            }
           }
         }
       }
@@ -596,19 +601,23 @@ export function ColorVisionPage() {
               className="w-full text-center text-xl font-bold font-tabular-nums p-3 rounded-md border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring bg-background"
               aria-label={t("color.input.ariaLabel")}
             />
-            <span className="text-muted-foreground">{t("color.input.or")}</span>
-            <button
-              type="button"
-              onClick={() => setUserAnswer("nothing")}
-              className={cn(
-                "px-4 py-3 rounded-md border font-medium shrink-0 transition-colors min-h-[44px]",
-                userAnswer === "nothing"
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border text-muted-foreground hover:border-primary/40"
-              )}
-            >
-              {t("color.nothing")}
-            </button>
+            {currentPlate.type !== "control" && (
+              <>
+                <span className="text-muted-foreground">{t("color.input.or")}</span>
+                <button
+                  type="button"
+                  onClick={() => setUserAnswer("nothing")}
+                  className={cn(
+                    "px-4 py-3 rounded-md border font-medium shrink-0 transition-colors min-h-[44px]",
+                    userAnswer === "nothing"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:border-primary/40"
+                  )}
+                >
+                  {t("color.nothing")}
+                </button>
+              </>
+            )}
           </div>
           <button
             onClick={handleSubmit}

@@ -172,6 +172,12 @@ export default defineConfig({
         // Prompt user for update instead of forcefully claiming clients
         skipWaiting: false,
         clientsClaim: false,
+
+        // The 3D simulation vendor chunk (Three.js + Rapier physics) exceeds
+        // the default 2 MiB precache limit. Raise it to 6 MiB so the build
+        // succeeds. The large chunk is loaded lazily via dynamic import so
+        // it does NOT block the initial page paint.
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
       },
 
       devOptions: {

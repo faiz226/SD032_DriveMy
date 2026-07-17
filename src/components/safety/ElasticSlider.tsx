@@ -91,6 +91,7 @@ function Slider({
   const handlePointerMove = (e: React.PointerEvent) => {
     if (e.buttons > 0 && sliderRef.current) {
       const { left, width } = sliderRef.current.getBoundingClientRect();
+      if (width === 0) return;
       let newValue = startingValue + ((e.clientX - left) / width) * (maxValue - startingValue);
 
       if (isStepped) {

@@ -15,22 +15,32 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 
 // ─── PWA service worker registration ─────────────────────────────────────────
 import { registerSW } from "virtual:pwa-register";
+import { useLanguageStore } from "./stores/languageStore";
 
 let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined;
 
 updateSW = registerSW({
   onNeedRefresh() {
-    toast.info("Update available", {
-      description: "A new version of DriveMy is ready.",
+    const t = useLanguageStore.getState().t;
+    toast.info(t("pwa.updateAvailable"), {
+      description: t("pwa.updateDesc"),
       action: {
-        label: "Reload",
-        onClick: () => updateSW?.(true),
+        label: t("pwa.reload"),
+        onClick: async () => {
+          try {
+            await updateSW?.(true);
+          } catch (err) {
+            console.error("Failed to update SW:", err);
+            window.location.reload();
+          }
+        },
       },
       duration: Infinity,
     });
   },
   onOfflineReady() {
-    toast.success("Ready to work offline", { duration: 3000 });
+    const t = useLanguageStore.getState().t;
+    toast.success(t("pwa.offlineReady"), { duration: 3000 });
   },
   onRegistered(registration: ServiceWorkerRegistration | undefined) {
     console.info("[DriveMy] Service worker registered:", registration?.scope);

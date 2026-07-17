@@ -9,10 +9,24 @@ interface LanguageState {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
+const getInitialLanguage = (): Language => {
+  if (typeof window === "undefined") return "en";
+  try {
+    const stored = localStorage.getItem("drivemy-language");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.state?.language) return parsed.state.language;
+    }
+  } catch (e) {}
+  const lang = navigator.language.toLowerCase();
+  if (lang.startsWith("ms") || lang.startsWith("id")) return "ms";
+  return "en";
+};
+
 export const useLanguageStore = create<LanguageState>()(
   persist(
     (set, get) => ({
-      language: "en",
+      language: getInitialLanguage(),
       setLanguage: (language) => set({ language }),
       t: (key, params) => translate(key, get().language, params),
     }),

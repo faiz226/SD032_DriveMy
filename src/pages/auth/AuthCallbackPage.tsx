@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { ROUTES } from "@/lib/constants";
@@ -20,6 +20,7 @@ export function AuthCallbackPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [error, setError] = useState<string | null>(null);
+  const exchangedRef = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,24 +30,35 @@ export function AuthCallbackPage() {
       const code = params.get("code");
       const errorParam = params.get("error");
       const errorDescription = params.get("error_description");
+      const nextUrl = params.get("next") || ROUTES.DASHBOARD;
+
+      const sanitizeError = (msg: string | null) => {
+        if (!msg) return t("auth.error.generic");
+        const lower = msg.toLowerCase();
+        if (lower.includes("invalid_grant") || lower.includes("invalid login")) return t("auth.error.invalidCredentials");
+        if (lower.includes("already registered") || lower.includes("already exists")) return t("auth.error.emailInUse");
+        return t("auth.error.generic");
+      };
 
       // ── Handle OAuth error returned by provider ──────────────────────────
       if (errorParam) {
-        setError(errorDescription ?? errorParam);
+        setError(sanitizeError(errorDescription ?? errorParam));
         return;
       }
 
       // ── PKCE: exchange ?code= for a session ──────────────────────────────
       if (code) {
+        if (exchangedRef.current === code) return;
+        exchangedRef.current = code;
         const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         if (cancelled) return;
         if (exchangeError) {
-          setError(exchangeError.message);
+          setError(sanitizeError(exchangeError.message));
           return;
         }
         // Session is now active; onAuthStateChange (in AuthInit) will update
         // the store. Navigate to dashboard immediately.
-        navigate(ROUTES.DASHBOARD, { replace: true });
+        navigate(nextUrl, { replace: true });
         return;
       }
 
@@ -56,11 +68,11 @@ export function AuthCallbackPage() {
       const { data, error: sessionError } = await supabase.auth.getSession();
       if (cancelled) return;
       if (sessionError) {
-        setError(sessionError.message);
+        setError(sanitizeError(sessionError.message));
         return;
       }
       if (data.session) {
-        navigate(ROUTES.DASHBOARD, { replace: true });
+        navigate(nextUrl, { replace: true });
         return;
       }
 

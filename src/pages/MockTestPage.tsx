@@ -24,7 +24,7 @@ export function MockTestPage() {
   const [result, setResult] = useState<ExamResult | null>(null);
 
   // Fetch questions for selected set
-  const { data: questions = [], isLoading, refetch } = useQuery({
+  const { data: questions = [], isLoading } = useQuery({
     queryKey: QUESTIONS_BY_SET(selectedSet),
     queryFn: () => fetchMockQuestionsBySet(selectedSet),
     enabled: false, // manual trigger
@@ -42,17 +42,30 @@ export function MockTestPage() {
         queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
       }
     },
+    onError: (error) => {
+      console.error("Failed to save mock result", error);
+      toast.error(t("common.error")); // Or a more specific error key if available
+    }
   });
 
   const handleStart = async ({ language, setId }: { language: "en" | "ms"; setId?: string }) => {
     setExamLang(language);
+    const targetSet = setId || selectedSet;
     if (setId) setSelectedSet(setId);
-    // Fetch questions then transition
-    const { data } = await refetch();
-    if (data && data.length > 0) {
-      setPhase("testing");
-    } else {
-      toast.error("No questions found for this set.");
+    
+    // Fetch questions explicitly for the target set to avoid stale closure state
+    try {
+      const data = await queryClient.fetchQuery({
+        queryKey: QUESTIONS_BY_SET(targetSet),
+        queryFn: () => fetchMockQuestionsBySet(targetSet),
+      });
+      if (data && data.length > 0) {
+        setPhase("testing");
+      } else {
+        toast.error("No questions found for this set.");
+      }
+    } catch (error) {
+      toast.error(t("common.error"));
     }
   };
 

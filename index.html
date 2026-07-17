@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-MY" class="dark">
+<html lang="en-MY">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -41,20 +41,37 @@
 
     <title>DriveMy – JPJ KPP Theory & Driving Test</title>
 
-    <!-- Inline theme script — prevents flash of wrong theme -->
+    <!-- Inline scripts — prevents flash of wrong theme and lang -->
     <script>
       (function () {
         try {
           var stored = localStorage.getItem("drivemy-theme");
           var theme = stored ? JSON.parse(stored).state?.theme : null;
+          var isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
           var resolved =
             theme === "dark" ? "dark" :
             theme === "light" ? "light" :
-            window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            isDark ? "dark" : "light";
           document.documentElement.classList.remove("light", "dark");
           document.documentElement.classList.add(resolved);
         } catch (e) {
-          document.documentElement.classList.add("dark");
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.add("light");
+          }
+        }
+
+        try {
+          var langStored = localStorage.getItem("drivemy-language");
+          var lang = langStored ? JSON.parse(langStored).state?.language : null;
+          if (!lang) {
+            var browserLang = navigator.language.toLowerCase();
+            lang = (browserLang.startsWith("ms") || browserLang.startsWith("id")) ? "ms" : "en";
+          }
+          document.documentElement.lang = lang === "ms" ? "ms-MY" : "en-MY";
+        } catch (e) {
+          document.documentElement.lang = "en-MY";
         }
       })();
     </script>

@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface ManeuverScoresBarProps {
   data: { maneuver: string; bestScore: number; attempts: number }[];
@@ -19,12 +20,13 @@ const MANEUVER_KEYS: Record<string, { key: TranslationKey; difficulty: string }>
 
 export function ManeuverScoresBar({ data }: ManeuverScoresBarProps) {
   const { t } = useLanguage();
+  const colors = useChartColors();
 
   const chartData = data.map(d => {
     const meta = MANEUVER_KEYS[d.maneuver];
-    let color = "rgb(var(--success))";
-    if (meta?.difficulty === "medium") color = "rgb(var(--warning))";
-    if (meta?.difficulty === "hard") color = "rgb(var(--destructive))";
+    let color = colors.success;
+    if (meta?.difficulty === "medium") color = colors.warning;
+    if (meta?.difficulty === "hard") color = colors.destructive;
 
     return {
       name: meta ? t(meta.key) : d.maneuver,
@@ -38,25 +40,25 @@ export function ManeuverScoresBar({ data }: ManeuverScoresBarProps) {
     <div className="h-[300px] w-full" aria-label={t("progress.maneuverChartAria")}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgb(var(--border))" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.border} />
           <XAxis 
             dataKey="name" 
             angle={-45} 
             textAnchor="end" 
             height={60} 
-            tick={{ fill: "rgb(var(--muted-foreground))", fontSize: 12 }} 
-            axisLine={{ stroke: "rgb(var(--border))" }}
+            tick={{ fill: colors.mutedForeground, fontSize: 12 }} 
+            axisLine={{ stroke: colors.border }}
             tickLine={false}
           />
           <YAxis 
             domain={[0, 100]} 
-            tick={{ fill: "rgb(var(--muted-foreground))", fontSize: 12 }}
+            tick={{ fill: colors.mutedForeground, fontSize: 12 }}
             axisLine={false}
             tickLine={false}
           />
           <Tooltip 
-            contentStyle={{ backgroundColor: "rgb(var(--card))", borderColor: "rgb(var(--border))", borderRadius: "8px" }}
-            itemStyle={{ color: "rgb(var(--foreground))" }}
+            contentStyle={{ backgroundColor: colors.card, borderColor: colors.border, borderRadius: "8px" }}
+            itemStyle={{ color: colors.foreground }}
             formatter={(value, _name, props) => [
               `${Number(value ?? 0)}% (${props?.payload?.attempts ?? 0} attempts)`,
               t("progress.chart.score")

@@ -21,6 +21,7 @@ export function QuizPage() {
 
   const [phase, setPhase] = useState<Phase>("launch");
   const [examLang, setExamLang] = useState<"en" | "ms">(globalLang);
+  const [selectedSection, setSelectedSection] = useState<string>("A");
   const [result, setResult] = useState<ExamResult | null>(null);
   const [activeQuestions, setActiveQuestions] = useState<KppQuestion[]>([]);
 
@@ -42,20 +43,37 @@ export function QuizPage() {
         queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
       }
     },
+    onError: (error) => {
+      console.error("Failed to save quiz result", error);
+      toast.error(t("common.error"));
+    }
   });
 
   // Randomize and pick N questions
   const pickQuestions = useCallback(
     (pool: KppQuestion[], count: number) => {
-      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+      const shuffled = [...pool].map(q => ({ ...q })); // Fresh copy
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
       return shuffled.slice(0, count);
     },
     []
   );
 
-  const handleStart = ({ language }: { language: "en" | "ms" }) => {
+  const handleStart = ({ language, setId }: { language: "en" | "ms"; setId?: string }) => {
     setExamLang(language);
-    const picked = pickQuestions(allQuestions, QUIZ_QUESTION_COUNT);
+    const section = setId || "A";
+    setSelectedSection(section);
+    
+    // Map section A, B, C to categories:
+    let category = "road-signs";
+    if (section === "B") category = "traffic-rules";
+    if (section === "C") category = "safety-principles";
+
+    const pool = allQuestions.filter(q => q.category === category);
+    const picked = pickQuestions(pool.length > 0 ? pool : allQuestions, QUIZ_QUESTION_COUNT);
     setActiveQuestions(picked);
     setPhase("testing");
   };
@@ -66,9 +84,13 @@ export function QuizPage() {
 
     // Save to DB
     if (user) {
+      let category = "road-signs";
+      if (selectedSection === "B") category = "traffic-rules";
+      if (selectedSection === "C") category = "safety-principles";
+
       saveMutation.mutate({
         user_id: user.id,
-        quiz_title: "Practice Quiz",
+        quiz_title: category,
         score: examResult.score,
         total_questions: examResult.total,
         percentage: examResult.percentage,
@@ -86,7 +108,9 @@ export function QuizPage() {
   };
 
   const handleRetryWrong = (wrongIds: string[]) => {
-    const wrongQs = allQuestions.filter((q) => wrongIds.includes(q.id));
+    const wrongQs = allQuestions
+      .filter((q) => wrongIds.includes(q.id))
+      .map((q) => ({ ...q })); // Fresh copy to prevent mutation
     if (wrongQs.length === 0) return;
     setActiveQuestions(wrongQs);
     setResult(null);
@@ -126,7 +150,7 @@ export function QuizPage() {
           questions={activeQuestions}
           timeLimit={undefined} // Quizzes have no time limit
           mode="quiz"
-          language="en"
+          language={examLang}
           t={t}
           onComplete={handleComplete}
         />

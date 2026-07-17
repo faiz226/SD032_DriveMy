@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react"
+import React, { useCallback, useRef } from "react"
 import { Moon, Sun } from "phosphor-react"
 
 import { cn } from "@/lib/utils"
@@ -123,94 +123,92 @@ function getThemeTransitionClipPaths(
   }
 }
 
-import { useThemeStore } from "@/stores/themeStore"
+import { useTheme } from "@/hooks/useTheme"
 
-export const AnimatedThemeToggler = ({
-  className,
-  duration = 400,
-  variant,
-  fromCenter = false,
-  children,
-  ...props
-}: AnimatedThemeTogglerProps & { children?: React.ReactNode }) => {
-  const shape = variant ?? "circle"
-  const { theme, setTheme } = useThemeStore()
-  const isDark = theme === "dark" || (theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
-  const buttonRef = useRef<HTMLButtonElement>(null)
+export function useThemeAnimation(options: {
+  duration?: number;
+  variant?: TransitionVariant;
+  fromCenter?: boolean;
+} = {}) {
+  const { duration = 400, variant = "circle", fromCenter = false } = options;
+  const { theme, setTheme, isDark } = useTheme();
 
-  const toggleTheme = useCallback(() => {
-    const button = buttonRef.current
-    if (!button) return
+  const toggleTheme = useCallback((element?: HTMLElement | null) => {
+    if (!element && !fromCenter) return;
 
-    const viewportWidth = window.visualViewport?.width ?? window.innerWidth
-    const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
 
-    let x: number
-    let y: number
-    if (fromCenter) {
-      x = viewportWidth / 2
-      y = viewportHeight / 2
+    let x: number;
+    let y: number;
+    if (fromCenter || !element) {
+      x = viewportWidth / 2;
+      y = viewportHeight / 2;
     } else {
-      const { top, left, width, height } = button.getBoundingClientRect()
-      x = left + width / 2
-      y = top + height / 2
+      const { top, left, width, height } = element.getBoundingClientRect();
+      x = left + width / 2;
+      y = top + height / 2;
     }
 
     const maxRadius = Math.hypot(
       Math.max(x, viewportWidth - x),
       Math.max(y, viewportHeight - y)
-    )
+    );
+
+    const getNextTheme = () => {
+      return isDark ? "light" : "dark";
+    };
+    const nextTheme = getNextTheme();
+    const nextIsDark = nextTheme === "dark" || (nextTheme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
     const applyThemeDOM = () => {
-      const newTheme = !isDark ? "dark" : "light"
-      document.documentElement.classList.remove("light", "dark")
-      document.documentElement.classList.add(newTheme)
-    }
+      document.documentElement.classList.remove("light", "dark");
+      document.documentElement.classList.add(nextIsDark ? "dark" : "light");
+    };
 
     if (typeof document.startViewTransition !== "function") {
-      applyThemeDOM()
-      setTheme(!isDark ? "dark" : "light")
-      return
+      applyThemeDOM();
+      setTheme(nextTheme);
+      return;
     }
 
     const clipPath = getThemeTransitionClipPaths(
-      shape,
+      variant,
       x,
       y,
       maxRadius,
       viewportWidth,
       viewportHeight
-    )
+    );
 
-    const root = document.documentElement
-    root.dataset.magicuiThemeVt = "active"
+    const root = document.documentElement;
+    root.dataset.magicuiThemeVt = "active";
     root.style.setProperty(
       "--magicui-theme-toggle-vt-duration",
       `${duration}ms`
-    )
-    root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0])
+    );
+    root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0]);
     const cleanup = () => {
-      delete root.dataset.magicuiThemeVt
-      root.style.removeProperty("--magicui-theme-toggle-vt-duration")
-      root.style.removeProperty("--magicui-theme-vt-clip-from")
-    }
+      delete root.dataset.magicuiThemeVt;
+      root.style.removeProperty("--magicui-theme-toggle-vt-duration");
+      root.style.removeProperty("--magicui-theme-vt-clip-from");
+    };
 
     const transition = document.startViewTransition(() => {
-      applyThemeDOM()
-    })
+      applyThemeDOM();
+    });
     
     if (typeof transition?.finished?.finally === "function") {
       transition.finished.finally(() => {
-        cleanup()
-        // Sync React state AFTER animation completes to prevent frame drops
-        setTheme(!isDark ? "dark" : "light")
-      })
+        cleanup();
+        setTheme(nextTheme);
+      });
     } else {
-      cleanup()
-      setTheme(!isDark ? "dark" : "light")
+      cleanup();
+      setTheme(nextTheme);
     }
 
-    const ready = transition?.ready
+    const ready = transition?.ready;
     if (ready && typeof ready.then === "function") {
       ready.then(() => {
         document.documentElement.animate(
@@ -219,14 +217,48 @@ export const AnimatedThemeToggler = ({
           },
           {
             duration,
-            easing: shape === "star" ? "linear" : "ease-in-out",
+            easing: variant === "star" ? "linear" : "ease-in-out",
             fill: "forwards",
             pseudoElement: "::view-transition-new(root)",
           }
-        )
-      })
+        );
+      });
     }
-  }, [shape, fromCenter, duration, isDark, setTheme])
+  }, [variant, fromCenter, duration, isDark, setTheme, theme]);
+
+  return toggleTheme;
+}
+
+export const AnimatedThemeToggler = React.forwardRef<HTMLButtonElement, AnimatedThemeTogglerProps & { children?: React.ReactNode }>(({
+  className,
+  duration = 400,
+  variant,
+  fromCenter = false,
+  children,
+  onClick,
+  ...props
+}, forwardedRef) => {
+  const shape = variant ?? "circle"
+  const { isDark } = useTheme()
+  
+  const internalRef = useRef<HTMLButtonElement>(null)
+  
+  // Merge the refs
+  const buttonRef = useCallback((node: HTMLButtonElement | null) => {
+    internalRef.current = node
+    if (typeof forwardedRef === "function") {
+      forwardedRef(node)
+    } else if (forwardedRef) {
+      forwardedRef.current = node
+    }
+  }, [forwardedRef])
+  
+  const runAnimation = useThemeAnimation({ duration, variant: shape, fromCenter });
+
+  const toggleTheme = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    runAnimation(internalRef.current);
+    if (onClick) onClick(e);
+  }, [runAnimation, onClick]);
 
   return (
     <button
@@ -244,4 +276,5 @@ export const AnimatedThemeToggler = ({
       )}
     </button>
   )
-}
+})
+AnimatedThemeToggler.displayName = "AnimatedThemeToggler"

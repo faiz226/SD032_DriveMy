@@ -10,6 +10,10 @@
 
 /* --- Design Tokens ---------------------------------------------------------- */
 @layer base {
+  html, body {
+    @apply overflow-x-hidden;
+  }
+
   :root {
     /* Canvas & surfaces */
     --background: 249 249 249; /* #f9f9f9 Soft Alabaster */

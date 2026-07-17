@@ -53,6 +53,10 @@ export const en = {
   "auth.error.weakPassword":       "Password must be at least 8 characters.",
   "auth.error.emailNotFound":      "No account found with this email.",
   "auth.error.generic":            "Something went wrong. Please try again.",
+  "auth.error.rateLimit":          "Too many attempts. Please try again later.",
+  "auth.error.captchaFailed":      "Security check failed. Please refresh and try again.",
+  "auth.error.network":            "Network error. Please check your connection and try again.",
+  "auth.error.oauthFailed":        "Third-party login failed. Please try again.",
   "auth.forgotPasswordDesc":       "Enter your email and we will send you a reset link.",
   "auth.resetPasswordDesc":        "Enter your new password below.",
   "auth.resetLinkInvalid":         "This reset link is invalid or has expired. Please request a new one.",
@@ -393,6 +397,7 @@ export const en = {
   "progress.modulesCount":         "{{completed}} / {{total}} Modules",
   "progress.bestScoresByManeuver": "Best Scores by Maneuver",
   "progress.chart.theory":         "Theory",
+  "progress.chart.quiz":           "Quiz",
   "progress.chart.mockTest":       "Mock Test",
   "progress.chart.simulations":    "Simulations",
   "progress.chart.contribution":   "Contribution",
@@ -451,6 +456,22 @@ export const en = {
   "settings.signOut":              "Sign Out",
   "settings.signOutDesc":          "Log out of your account on this device.",
   "settings.deleteAccountHint":    "Contact support to request account removal.",
+  "settings.deleteAccountConfirm": "Are you absolutely sure? All your data will be permanently erased. This action cannot be undone.",
+  "settings.accountDeleted":       "Your account has been permanently deleted.",
+  "settings.resetProgress":        "Reset Progress",
+  "settings.resetProgressDesc":    "Clear all your learning and simulation progress data.",
+  "settings.resetProgressConfirm": "Are you sure you want to reset all your learning and simulation progress? This will permanently erase your quiz scores, mock test history, simulator attempts, and theory progress. This action cannot be undone.",
+  "settings.progressResetSuccess": "Your progress has been successfully reset.",
+  "settings.mfa":                  "Multi-Factor Auth",
+  "settings.mfaDesc":              "Secure your account with an authenticator app.",
+  "settings.mfaEnabled":           "MFA is enabled on your account.",
+  "settings.mfaDisable":           "Disable MFA",
+  "settings.mfaReturn":            "Return to Dashboard",
+  "settings.mfaSetup":             "Set up Authenticator App",
+  "settings.mfaQrAlt":             "QR Code for MFA setup",
+  "settings.mfaScanDesc":          "Scan this QR code with Google Authenticator or Authy, then enter the 6-digit code below.",
+  "settings.mfaCode":              "Verification Code",
+  "settings.mfaVerify":            "Verify and Enable",
 
   // ── Profile ────────────────────────────────────────────────────────────
   "profile.identity":              "Identity",
@@ -476,6 +497,8 @@ export const en = {
 
   // ── Common ─────────────────────────────────────────────────────────────
   "common.loading":                "Loading…",
+  "common.deleting":               "Deleting…",
+  "common.resetting":              "Resetting…",
   "common.error":                  "Something went wrong.",
   "common.retry":                  "Try again",
   "common.cancel":                 "Cancel",
@@ -657,6 +680,12 @@ export const en = {
   "a11y.expandSidebar":           "Expand sidebar",
   "a11y.previousPage":            "Previous page",
   "a11y.nextPage":                  "Next page",
+
+  // ── PWA ────────────────────────────────────────────────────────────────
+  "pwa.updateAvailable":           "Update available",
+  "pwa.updateDesc":                "A new version of DriveMy is ready.",
+  "pwa.reload":                    "Reload",
+  "pwa.offlineReady":              "Ready to work offline",
 } as const;
 
 export type TranslationKey = keyof typeof en;

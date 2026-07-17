@@ -18,10 +18,16 @@ export function DataExportDelete() {
       return;
     }
     try {
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      if (error) throw error;
+      const tables = ['profiles', 'quiz_results', 'mock_test_results', 'simulation_results', 'colorblind_results', 'theory_progress'];
+      const exportData: Record<string, any> = {};
       
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      for (const table of tables) {
+        const idCol = table === 'profiles' ? 'id' : 'user_id';
+        const { data } = await supabase.from(table).select('*').eq(idCol, user.id);
+        exportData[table] = data || [];
+      }
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -37,9 +43,19 @@ export function DataExportDelete() {
   };
 
   const handleDeleteAccount = async () => {
+    if (!user?.id) {
+      toast.error('User not authenticated.');
+      return;
+    }
     if (!window.confirm('Are you absolutely sure? This action cannot be undone.')) return;
     setIsDeleting(true);
     try {
+      const tables = ['quiz_results', 'mock_test_results', 'simulation_results', 'colorblind_results', 'theory_progress'];
+      await Promise.all(
+        tables.map(t => supabase.from(t).delete().eq('user_id', user.id))
+      );
+      await supabase.from('profiles').delete().eq('id', user.id);
+
       // Typically account deletion must be handled via an Edge Function using the Service Role Key
       // as Supabase prevents users from deleting their own auth.users record via the client API.
       const { error } = await supabase.rpc('delete_user');

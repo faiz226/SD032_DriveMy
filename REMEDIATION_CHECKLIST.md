@@ -48,9 +48,9 @@ This checklist tracks the resolution of all identified issues from the Technical
 - [x] **Google OAuth Setup:** Implemented `AuthCallbackPage` to correctly process the redirect hash and wired Google OAuth in `supabase/config.toml`.
 
 ### Post-Commit / External Action Items
-- [ ] **GitHub Secrets:** Add `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID` for CI.
-- [ ] **Vercel Env Vars:** Add `VITE_SENTRY_DSN`.
-- [ ] **Supabase Edge Function Secrets:** Set `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN` via CLI/Dashboard.
-- [ ] **Supabase Dashboard:** Enable MFA, verify PITR backups (Pro plan), and configure Google OAuth Client ID/Secret.
-- [ ] **Content Licensing:** Manually source licensed/public-domain Ishihara plates for `src/assets/color-vision/`.
-- [ ] **Uptime Monitoring:** Set up BetterStack/UptimeRobot synthetic monitor pointing to the live Vercel URL.
+- [x] **GitHub Secrets:** Add `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID` for CI.
+- [x] **Vercel Env Vars:** Add `VITE_SENTRY_DSN`.
+- [x] **Supabase Edge Function Secrets:** Set `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN` via CLI/Dashboard.
+- [x] **Supabase Dashboard:** Enable MFA, verify PITR backups (Pro plan), and configure Google OAuth Client ID/Secret.
+- [x] **Content Licensing:** Manually source licensed/public-domain Ishihara plates for `src/assets/color-vision/`.
+- [x] **Uptime Monitoring:** Set up BetterStack/UptimeRobot synthetic monitor pointing to the live Vercel URL.

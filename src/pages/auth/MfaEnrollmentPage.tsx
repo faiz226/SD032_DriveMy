@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { toast } from "sonner";
 import { ShieldCheck, QrCode } from "phosphor-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export function MfaEnrollmentPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [factorId, setFactorId] = useState<string | null>(null);
   const [verifyCode, setVerifyCode] = useState("");
@@ -102,9 +104,9 @@ export function MfaEnrollmentPage() {
     <div className="max-w-md mx-auto space-y-6 mt-10 p-6 bg-card border rounded-lg shadow-sm">
       <div className="text-center space-y-2">
         <ShieldCheck className="w-12 h-12 text-primary mx-auto" />
-        <h2 className="text-2xl font-semibold font-heading">Multi-Factor Auth</h2>
+        <h2 className="text-2xl font-semibold font-heading">{t("settings.mfa")}</h2>
         <p className="text-muted-foreground text-sm">
-          Secure your account by requiring a code from an authenticator app.
+          {t("settings.mfaDesc")}
         </p>
       </div>
 
@@ -117,7 +119,7 @@ export function MfaEnrollmentPage() {
       {isEnrolled ? (
         <div className="space-y-4">
           <div className="p-4 bg-green-500/10 text-green-600 dark:text-green-400 rounded-md border border-green-500/20 text-center">
-            MFA is enabled on your account.
+            {t("settings.mfaEnabled")}
           </div>
           <Button 
             variant="destructive" 
@@ -125,28 +127,30 @@ export function MfaEnrollmentPage() {
             onClick={handleUnenroll}
             loading={isPending}
           >
-            Disable MFA
+            {t("settings.mfaDisable")}
           </Button>
           <Button variant="outline" className="w-full" onClick={() => navigate(ROUTES.DASHBOARD)}>
-            Return to Dashboard
+            {t("settings.mfaReturn")}
           </Button>
         </div>
       ) : !qrCode ? (
         <Button className="w-full" onClick={startEnrollment} loading={isPending}>
-          <QrCode className="mr-2" /> Set up Authenticator App
+          <QrCode className="mr-2" /> {t("settings.mfaSetup")}
         </Button>
       ) : (
         <form onSubmit={handleVerify} className="space-y-4">
           <div className="p-4 bg-white rounded-md flex justify-center">
-            <img src={qrCode} alt="QR Code for MFA" className="w-48 h-48" />
+            <img src={qrCode} alt={t("settings.mfaQrAlt")} className="w-48 h-48" />
           </div>
           <p className="text-sm text-center text-muted-foreground">
-            Scan this QR code with Google Authenticator or Authy, then enter the 6-digit code below.
+            {t("settings.mfaScanDesc")}
           </p>
           
           <FormField
-            label="Verification Code"
+            label={t("settings.mfaCode")}
             type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
             required
             value={verifyCode}
             onChange={(e) => setVerifyCode(e.target.value)}
@@ -155,10 +159,10 @@ export function MfaEnrollmentPage() {
           />
           
           <Button type="submit" className="w-full" loading={isPending}>
-            Verify and Enable
+            {t("settings.mfaVerify")}
           </Button>
           <Button type="button" variant="ghost" className="w-full" onClick={() => setQrCode(null)}>
-            Cancel
+            {t("common.cancel")}
           </Button>
         </form>
       )}

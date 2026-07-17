@@ -29,20 +29,49 @@ export const useAuthStore = create<AuthState>()(
       setLoading: (isLoading) => set({ isLoading }),
       setDevBypass: (isDevBypass) => {
         if (!import.meta.env.DEV) return;
-        set({ isDevBypass });
+        if (isDevBypass) {
+          const mockUser: User = {
+            id: "00000000-0000-0000-0000-000000000000",
+            email: "dev@bypass.local",
+            created_at: new Date().toISOString(),
+            app_metadata: {},
+            user_metadata: { full_name: "Local Developer" },
+            aud: "authenticated",
+            role: "authenticated",
+            updated_at: new Date().toISOString(),
+            phone: "",
+            confirmation_sent_at: "",
+            confirmed_at: "",
+            recovery_sent_at: "",
+            email_confirmed_at: "",
+            phone_confirmed_at: "",
+            last_sign_in_at: "",
+            factors: [],
+            identities: []
+          };
+          set({ isDevBypass, user: mockUser, isAuthenticated: true });
+        } else {
+          set({ isDevBypass, user: null, isAuthenticated: false });
+        }
       },
       signOut: async () => {
-        await signOutService();
-        if ('caches' in window) {
-          await caches.delete('supabase-api');
+        try {
+          await signOutService();
+        } catch (error) {
+          console.warn("Failed to sign out on server, clearing locally", error);
+        } finally {
+          set({ user: null, session: null, isAuthenticated: false });
         }
-        set({ user: null, session: null, isAuthenticated: false });
       },
     }),
     {
       name: "drivemy-auth-store",
-      // Persist nothing — Supabase manages the session independently via cookies/storage.
-      partialize: () => ({}),
+      // Persist only isDevBypass and mock user — Supabase manages the actual session independently.
+      partialize: (state) => ({ 
+        isDevBypass: state.isDevBypass,
+        user: state.isDevBypass ? state.user : null,
+        isAuthenticated: state.isDevBypass ? true : false,
+      }),
     }
   )
 );

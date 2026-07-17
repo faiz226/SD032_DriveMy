@@ -38,8 +38,15 @@ export function ForgotPasswordPage() {
       await sendPasswordResetEmail(values.email);
       setSentEmail(values.email);
       setSent(true);
-    } catch {
-      setServerError(t("auth.error.generic"));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
+        setServerError(t("auth.error.rateLimit"));
+      } else if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        setServerError(t("auth.error.network"));
+      } else {
+        setServerError(t("auth.error.generic"));
+      }
     } finally {
       setLoading(false);
     }

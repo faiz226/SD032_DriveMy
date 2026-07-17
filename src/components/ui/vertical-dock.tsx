@@ -7,7 +7,7 @@ import {
   type SpringOptions,
   AnimatePresence
 } from 'motion/react';
-import React, { Children, cloneElement, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Children, cloneElement, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export type DockItemData = {
@@ -157,21 +157,14 @@ export function VerticalDock({
   magnification = 60,
   distance = 150,
   panelWidth = 68,
-  dockWidth = 256,
+  dockWidth: _dockWidth = 256,
   baseItemSize = 40
 }: DockProps) {
   const mouseY = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
 
-  const maxWidth = useMemo(
-    () => Math.max(dockWidth, magnification + magnification / 2 + 4),
-    [magnification, dockWidth]
-  );
-  const widthRow = useTransform(isHovered, [0, 1], [panelWidth, maxWidth]);
-  const width = useSpring(widthRow, spring);
-
   return (
-    <motion.div style={{ width, scrollbarWidth: 'none' }} className="flex justify-center items-center h-full w-full">
+    <motion.div style={{ width: panelWidth, scrollbarWidth: 'none' }} className="flex justify-center items-center h-full w-full">
       <motion.div
         onMouseMove={({ pageY }) => {
           isHovered.set(1);

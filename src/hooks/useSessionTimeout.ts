@@ -22,10 +22,11 @@ const ACTIVITY_EVENTS = [
  */
 export function useSessionTimeout() {
   const { user, signOut } = useAuthStore();
+  const userId = user?.id;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
 
     const resetTimeout = () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -51,5 +52,5 @@ export function useSessionTimeout() {
         document.removeEventListener(event, resetTimeout)
       );
     };
-  }, [user, signOut]);
+  }, [userId, signOut]);
 }

@@ -35,6 +35,38 @@ function applyPrintTheme(root: HTMLElement) {
   root.querySelectorAll<HTMLElement>(".border-border").forEach((el) => {
     el.style.borderColor = PRINT_THEME.border;
   });
+
+  // Force dark mode chart colors to light mode for printing
+  const replaceDarkColorsToLight = (val: string | null) => {
+    if (!val) return val;
+    let res = val;
+    res = res.replace(/#ffffff/gi, "#111111"); // primary / chart1
+    res = res.replace(/rgba\(255,\s*255,\s*255,\s*0\.7\)/gi, "rgba(17, 17, 17, 0.7)");
+    res = res.replace(/rgba\(255,\s*255,\s*255,\s*0\.4\)/gi, "rgba(17, 17, 17, 0.4)");
+    res = res.replace(/#222222/gi, "#efefef"); // muted
+    res = res.replace(/#9ca3af/gi, "#4b4b4b"); // muted-foreground
+    res = res.replace(/#2d2d2d/gi, "#d8d8d8"); // border
+    res = res.replace(/#1a1a1a/gi, "#fcfcfc"); // card
+    res = res.replace(/#f5f5f5/gi, "#202020"); // foreground
+    res = res.replace(/#10b981/gi, "#059669"); // success
+    res = res.replace(/#f59e0b/gi, "#b45309"); // warning
+    return res;
+  };
+
+  root.querySelectorAll("path, rect, circle, text, line, polyline, polygon").forEach((el) => {
+    const fill = el.getAttribute("fill");
+    if (fill) el.setAttribute("fill", replaceDarkColorsToLight(fill) || fill);
+    
+    const stroke = el.getAttribute("stroke");
+    if (stroke) el.setAttribute("stroke", replaceDarkColorsToLight(stroke) || stroke);
+  });
+
+  root.querySelectorAll<HTMLElement>("span, div").forEach(el => {
+    const bg = el.style.backgroundColor;
+    if (bg) {
+      el.style.backgroundColor = replaceDarkColorsToLight(bg) || bg;
+    }
+  });
 }
 
 

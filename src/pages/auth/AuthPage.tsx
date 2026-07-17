@@ -62,6 +62,11 @@ function LoginForm() {
 
   const onSubmit = async (values: LoginValues) => {
     setServerError(null);
+    if (import.meta.env.DEV && values.email === "dev@bypass.local") {
+      setDevBypass(true);
+      navigate(from, { replace: true });
+      return;
+    }
     try {
       setIsPending(true);
       const data = await signIn(values.email, values.password);
@@ -69,18 +74,12 @@ function LoginForm() {
         navigate(from, { replace: true });
       }
     } catch (err: unknown) {
-      // Dev bypass: on any failure in DEV, fall back to a mock user
-      if (import.meta.env.DEV) {
-        try {
-          setDevBypass(true);
-          navigate(from, { replace: true });
-          return;
-        } catch {
-          // fall through to show real error
-        }
-      }
       const msg = err instanceof Error ? err.message : "";
-      if (msg.includes("Invalid login") || msg.includes("invalid_credentials")) {
+      if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
+        setServerError(t("auth.error.rateLimit"));
+      } else if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        setServerError(t("auth.error.network"));
+      } else if (msg.includes("Invalid login") || msg.includes("invalid_credentials")) {
         setServerError(t("auth.error.invalidCredentials"));
       } else {
         setServerError(t("auth.error.generic"));
@@ -94,9 +93,14 @@ function LoginForm() {
     setServerError(null);
     setIsGooglePending(true);
     try {
-      await signInWithGoogle();
-    } catch {
-      setServerError(t("auth.error.generic"));
+      await signInWithGoogle(from);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        setServerError(t("auth.error.network"));
+      } else {
+        setServerError(t("auth.error.oauthFailed"));
+      }
     } finally {
       setIsGooglePending(false);
     }
@@ -183,6 +187,8 @@ function LoginForm() {
           <Turnstile
             siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
             onSuccess={(token) => setCaptchaToken(token)}
+            onError={() => setCaptchaToken(null)}
+            onExpire={() => setCaptchaToken(null)}
           />
         </div>
       )}
@@ -211,6 +217,11 @@ function RegisterForm() {
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
+  const location = useLocation();
+  const from =
+    (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ??
+    ROUTES.DASHBOARD;
+
   const {
     register,
     handleSubmit,
@@ -221,9 +232,14 @@ function RegisterForm() {
     setServerError(null);
     setIsGooglePending(true);
     try {
-      await signInWithGoogle();
-    } catch {
-      setServerError(t("auth.error.generic"));
+      await signInWithGoogle(from);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        setServerError(t("auth.error.network"));
+      } else {
+        setServerError(t("auth.error.oauthFailed"));
+      }
     } finally {
       setIsGooglePending(false);
     }
@@ -246,7 +262,11 @@ function RegisterForm() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
-      if (msg.includes("already registered") || msg.includes("already exists")) {
+      if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
+        setServerError(t("auth.error.rateLimit"));
+      } else if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        setServerError(t("auth.error.network"));
+      } else if (msg.includes("already registered") || msg.includes("already exists")) {
         setServerError(t("auth.error.emailInUse"));
       } else if (msg.includes("Password should be")) {
         setServerError(t("auth.error.weakPassword"));
@@ -351,6 +371,8 @@ function RegisterForm() {
           <Turnstile
             siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
             onSuccess={(token) => setCaptchaToken(token)}
+            onError={() => setCaptchaToken(null)}
+            onExpire={() => setCaptchaToken(null)}
           />
         </div>
       )}
@@ -383,6 +405,8 @@ export function AuthPage() {
   useEffect(() => {
     if (isAuthenticated) navigate(from, { replace: true });
   }, [isAuthenticated, navigate, from]);
+
+  if (isAuthenticated) return null;
 
   return (
     <div className="space-y-6 max-w-readable mx-auto w-full">

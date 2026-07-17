@@ -2,9 +2,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Envelope, ArrowLeft, CheckCircle } from "phosphor-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
-import { sendPasswordResetEmail } from "@/services/auth.service";
+import { resendEmailConfirmation } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { useState } from "react";
+import { toast } from "sonner";
 
 /**
  * Post-registration holding page.
@@ -22,10 +23,10 @@ export function VerifyEmailPage() {
     if (!email || resending) return;
     setResending(true);
     try {
-      await sendPasswordResetEmail(email);
+      await resendEmailConfirmation(email);
       setResent(true);
-    } catch {
-      // Silently fail — user can try again
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to resend email. Please try again.");
     } finally {
       setResending(false);
     }

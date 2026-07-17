@@ -52,7 +52,8 @@ export function useOverallReadiness() {
     queryFn: async () => {
       if (!user) throw new Error("No user");
 
-      const [quiz, mock, sim] = await Promise.all([
+      const [theory, quiz, mock, sim] = await Promise.all([
+        getTheoryProgressStats(user.id),
         getQuizStats(user.id),
         getMockStats(user.id),
         getSimStats(user.id),
@@ -61,9 +62,10 @@ export function useOverallReadiness() {
       const simScore = sim ? (sim.completed / TOTAL_SIMULATION_MANEUVERS) * 100 : 0;
       const quizScore = quiz ? quiz.best : 0;
       const mockScore = mock ? mock.best : 0;
+      const theoryScore = theory ? theory.percentage : 0;
 
       const composite = Math.min(Math.max(
-        simScore * 0.4 + quizScore * 0.3 + mockScore * 0.3,
+        simScore * 0.4 + mockScore * 0.3 + quizScore * 0.2 + theoryScore * 0.1,
         0
       ), 100);
 
@@ -73,7 +75,8 @@ export function useOverallReadiness() {
       else if (composite >= 50) status = "Getting There";
 
       return {
-        theoryPct: quizScore,
+        theoryPct: theoryScore,
+        quizPct: quizScore,
         mockPct: mockScore,
         simPct: simScore,
         composite,

@@ -40,14 +40,14 @@ export function MockHistoryTable({ data }: MockHistoryTableProps) {
   const sortedData = [...data].sort((a, b) => {
     let aVal, bVal;
     if (sortField === "date") {
-      aVal = new Date(a.completed_at).getTime();
-      bVal = new Date(b.completed_at).getTime();
+      aVal = a.completed_at ? new Date(a.completed_at).getTime() : Date.now();
+      bVal = b.completed_at ? new Date(b.completed_at).getTime() : Date.now();
     } else if (sortField === "score") {
       aVal = a.percentage;
       bVal = b.percentage;
     } else if (sortField === "duration") {
-      aVal = a.duration_seconds;
-      bVal = b.duration_seconds;
+      aVal = a.duration_seconds || 0;
+      bVal = b.duration_seconds || 0;
     }
     
     if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
@@ -86,7 +86,7 @@ export function MockHistoryTable({ data }: MockHistoryTableProps) {
             {paginatedData.map((row) => (
               <tr key={row.id} className="bg-card hover:bg-muted/50 transition-colors">
                 <td className="px-4 py-3 font-medium">
-                  {format(new Date(row.completed_at), "PPP p", { locale: en ? enUS : ms })}
+                  {row.completed_at ? format(new Date(row.completed_at), "PPP p", { locale: en ? enUS : ms }) : "Pending Sync"}
                 </td>
                 <td className="px-4 py-3 font-mono text-muted-foreground">
                   {row.set_id}
@@ -98,7 +98,7 @@ export function MockHistoryTable({ data }: MockHistoryTableProps) {
                   <div className="text-xs text-muted-foreground">{row.score} / {row.total_questions}</div>
                 </td>
                 <td className="px-4 py-3">
-                  {Math.floor(row.duration_seconds / 60)}m {row.duration_seconds % 60}s
+                  {row.duration_seconds ? `${Math.floor(row.duration_seconds / 60)}m ${row.duration_seconds % 60}s` : "--"}
                 </td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${row.passed ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>

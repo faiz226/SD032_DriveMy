@@ -23,10 +23,9 @@ const LazyQuizPage        = lazy(() => import("@/pages/QuizPage").then(m => ({ d
 const LazyMockTestPage    = lazy(() => import("@/pages/MockTestPage").then(m => ({ default: m.MockTestPage })));
 const LazyColorVisionPage = lazy(() => import("@/pages/ColorVisionPage").then(m => ({ default: m.ColorVisionPage })));
 const LazySimulationsPage = lazy(() => import("@/pages/SimulationsPage").then(m => ({ default: m.SimulationsPage })));
-const LazySimulationView  = lazy(() => import("@/pages/SimulationView").then(m => ({ default: m.SimulationView })));
+const LazySimulation3DView = lazy(() => import("@/pages/Simulation3DView").then(m => ({ default: m.Simulation3DView })));
 const LazyProgressPage    = lazy(() => import("@/pages/ProgressPage").then(m => ({ default: m.ProgressPage })));
 const LazySafetyPage      = lazy(() => import("@/pages/SafetyPage").then(m => ({ default: m.SafetyPage })));
-const LazyProfilePage     = lazy(() => import("@/pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
 const LazySettingsPage    = lazy(() => import("@/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const LazyNotFoundPage    = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
@@ -37,6 +36,7 @@ import { supabase }      from "@/lib/supabase";
 import { ROUTES }        from "@/lib/constants";
 import { useTheme }      from "@/hooks/useTheme";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import { syncOfflineResults } from "@/services/results.service";
 
 // ─── TanStack Query client ────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -64,6 +64,9 @@ function AuthInit({ children }: { children: React.ReactNode }) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
+    }).catch(() => {
+      // Prevent infinite spinner on boot-time network failures
+      setLoading(false);
     });
 
     // Stay in sync with sign-in / sign-out / token refresh events
@@ -77,6 +80,13 @@ function AuthInit({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, [setUser, setSession, setLoading]);
+
+  useEffect(() => {
+    const handleOnline = () => syncOfflineResults();
+    window.addEventListener("online", handleOnline);
+    syncOfflineResults();
+    return () => window.removeEventListener("online", handleOnline);
+  }, []);
 
   return <>{children}</>;
 }
@@ -125,10 +135,9 @@ function App() {
                     <Route path={ROUTES.MOCK_TEST}            element={<LazyMockTestPage />} />
                     <Route path={ROUTES.COLOR_VISION}         element={<LazyColorVisionPage />} />
                     <Route path={ROUTES.SIMULATIONS}          element={<LazySimulationsPage />} />
-                    <Route path={`${ROUTES.SIMULATIONS}/:id`} element={<LazySimulationView />} />
+                    <Route path={`${ROUTES.SIMULATIONS}/:id`} element={<LazySimulation3DView />} />
                     <Route path={ROUTES.PROGRESS}             element={<LazyProgressPage />} />
                     <Route path={ROUTES.SAFETY}               element={<LazySafetyPage />} />
-                    <Route path={ROUTES.PROFILE}              element={<LazyProfilePage />} />
                     <Route path={ROUTES.SETTINGS}             element={<LazySettingsPage />} />
                     <Route path={ROUTES.MFA}                  element={<MfaEnrollmentPage />} />
                   </Route>

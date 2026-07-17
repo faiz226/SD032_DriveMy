@@ -1,35 +1,40 @@
 import {
   Trophy, XCircle, ArrowCounterClockwise, ArrowLeft,
-  Gauge, Warning
+  Warning, Gauge
 } from "phosphor-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
+import { MAX_DEMERIT } from "@/stores/carStore";
 
 interface SimulationResultsProps {
   maneuverName: string;
-  score: number;
+  demeritPoints: number;
   errors: number;
   stallCount: number;
   rollbackCm: number;
   passed: boolean;
+  mode: "practice" | "assessment";
   onRetry: () => void;
   onBack: () => void;
 }
 
 export function SimulationResults({
   maneuverName,
-  score,
+  demeritPoints,
   errors,
   stallCount,
   rollbackCm,
   passed,
+  mode,
   onRetry,
   onBack,
 }: SimulationResultsProps) {
   const { t } = useLanguage();
+  const demeritPct = Math.min(100, (demeritPoints / MAX_DEMERIT) * 100);
 
   return (
     <div className="max-w-md mx-auto card-premium p-6 sm:p-8 space-y-6 page-enter">
+      {/* Header */}
       <div className="text-center space-y-3">
         <div
           className={cn(
@@ -54,27 +59,51 @@ export function SimulationResults({
         >
           {passed ? t("sim.resultPass") : t("sim.resultFail")}
         </div>
+
+        {mode === "practice" && (
+          <p className="text-xs text-muted-foreground">
+            Practice Mode — demerits not counted towards official score.
+            / Mod Latihan — demerit tidak dikira untuk skor rasmi.
+          </p>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="p-4 rounded-md border border-border bg-muted/50 flex flex-col items-center gap-1">
-          <Gauge className="w-5 h-5 text-primary" weight="regular" aria-hidden />
-          <span className="font-mono text-2xl font-bold font-tabular-nums">{score}</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
-            {t("sim.scoreLabel")}
-          </span>
+      {/* Demerit Gauge (only meaningful in assessment mode) */}
+      {mode === "assessment" && (
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>Demerit Points / Mata Demerit</span>
+            <span className={cn("font-bold", demeritPoints >= MAX_DEMERIT ? "text-destructive" : "text-foreground")}>
+              {demeritPoints} / {MAX_DEMERIT}
+            </span>
+          </div>
+          <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all",
+                demeritPct >= 100 ? "bg-destructive" : demeritPct >= 60 ? "bg-warning" : "bg-success"
+              )}
+              style={{ width: `${demeritPct}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-muted-foreground text-center">
+            Pass = &lt;{MAX_DEMERIT} pts · Fail = ≥{MAX_DEMERIT} pts
+          </p>
         </div>
+      )}
 
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 gap-3">
         <div className="p-4 rounded-md border border-border bg-muted/50 flex flex-col items-center gap-1">
           <Warning className="w-5 h-5 text-destructive" weight="regular" aria-hidden />
           <span className="font-mono text-2xl font-bold font-tabular-nums">{errors}</span>
           <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
-            {t("sim.errorsLabel")}
+            Collisions
           </span>
         </div>
 
         <div className="p-4 rounded-md border border-border bg-muted/50 flex flex-col items-center gap-1">
-          <XCircle className="w-5 h-5 text-warning" weight="regular" aria-hidden />
+          <Gauge className="w-5 h-5 text-warning" weight="regular" aria-hidden />
           <span className="font-mono text-2xl font-bold font-tabular-nums">{stallCount}</span>
           <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
             {t("sim.stallsLabel")}
@@ -91,8 +120,19 @@ export function SimulationResults({
             {t("sim.rollbackLabel")}
           </span>
         </div>
+
+        <div className="p-4 rounded-md border border-border bg-muted/50 flex flex-col items-center gap-1">
+          <Warning className={cn("w-5 h-5", demeritPoints > 0 ? "text-destructive" : "text-muted-foreground")} weight="fill" aria-hidden />
+          <span className={cn("font-mono text-2xl font-bold font-tabular-nums", demeritPoints >= MAX_DEMERIT ? "text-destructive" : "")}>
+            {demeritPoints}
+          </span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+            Demerit Pts
+          </span>
+        </div>
       </div>
 
+      {/* Actions */}
       <div className="flex flex-col gap-3">
         <button
           type="button"

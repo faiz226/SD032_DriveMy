@@ -10,7 +10,7 @@ export async function getBestQuizScore(userId: string): Promise<number> {
     .limit(1);
   if (error) throw error;
   const rows = (data ?? []) as { percentage: number }[];
-  return rows.length > 0 ? rows[0].percentage : 0;
+  return rows.length > 0 ? Number(rows[0].percentage) || 0 : 0;
 }
 
 export async function getBestMockTestScore(userId: string): Promise<number> {
@@ -22,7 +22,7 @@ export async function getBestMockTestScore(userId: string): Promise<number> {
     .limit(1);
   if (error) throw error;
   const rows = (data ?? []) as { percentage: number }[];
-  return rows.length > 0 ? rows[0].percentage : 0;
+  return rows.length > 0 ? Number(rows[0].percentage) || 0 : 0;
 }
 
 export async function getSimulationsDone(userId: string): Promise<number> {
@@ -77,7 +77,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "quiz" as const,
         title: q.quiz_title,
         score: q.percentage,
-        date: q.completed_at,
+        date: q.completed_at || new Date(0).toISOString(),
       }))
     );
   }
@@ -89,7 +89,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "mock" as const,
         title: `Mock Test - ${m.set_id}`,
         score: m.percentage,
-        date: m.completed_at,
+        date: m.completed_at || new Date(0).toISOString(),
       }))
     );
   }
@@ -101,7 +101,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "sim" as const,
         title: `Simulation: ${s.maneuver_id}`,
         score: s.score,
-        date: s.completed_at,
+        date: s.completed_at || new Date(0).toISOString(),
       }))
     );
   }
@@ -125,15 +125,37 @@ export async function getQuizStats(userId: string, dateRange?: number) {
   if (!data || data.length === 0) return { best: 0, average: 0, count: 0, trend: [], totalDuration: 0, history: [] };
 
   const rows = data as QuizResult[];
-  const count = rows.length;
-  const best = Math.max(...rows.map((d) => d.percentage));
-  const average = rows.reduce((sum, d) => sum + d.percentage, 0) / count;
-  const totalDuration = rows.reduce((sum, d) => sum + d.duration_seconds, 0);
-  const trend = [...rows]
+  const validRows = rows.filter(d => typeof d.percentage === 'number' && !isNaN(d.percentage));
+  const count = validRows.length;
+  if (count === 0) return { best: 0, average: 0, count: 0, trend: [], totalDuration: 0, history: [] };
+
+  const best = Math.max(...validRows.map((d) => d.percentage));
+  const average = validRows.reduce((sum, d) => sum + d.percentage, 0) / count;
+  const totalDuration = rows.reduce((sum, d) => sum + (Number(d.duration_seconds) || 0), 0);
+  const trend = [...validRows]
+    .filter(d => Boolean(d.completed_at))
     .sort((a, b) => new Date(a.completed_at).getTime() - new Date(b.completed_at).getTime())
     .map((d) => ({ date: d.completed_at, score: d.percentage, title: d.quiz_title }));
 
-  return { best, average, count, trend, totalDuration, history: rows };
+  const categoryPerformance = [
+    { category: "road-signs", averageScore: 0, attempts: 0 },
+    { category: "traffic-rules", averageScore: 0, attempts: 0 },
+    { category: "safety-principles", averageScore: 0, attempts: 0 },
+  ];
+
+  rows.forEach(r => {
+    const cat = categoryPerformance.find(c => c.category === r.quiz_title);
+    if (cat) {
+      cat.averageScore += r.percentage;
+      cat.attempts += 1;
+    }
+  });
+
+  categoryPerformance.forEach(cat => {
+    if (cat.attempts > 0) cat.averageScore = Math.round(cat.averageScore / cat.attempts);
+  });
+
+  return { best, average, count, trend, totalDuration, history: rows, categoryPerformance };
 }
 
 export async function getMockStats(userId: string, dateRange?: number) {
@@ -148,12 +170,16 @@ export async function getMockStats(userId: string, dateRange?: number) {
   if (!data || data.length === 0) return { best: 0, average: 0, count: 0, passRate: 0, trend: [], totalDuration: 0, history: [] };
 
   const rows = data as MockTestResult[];
-  const count = rows.length;
-  const best = Math.max(...rows.map((d) => d.percentage));
-  const average = rows.reduce((sum, d) => sum + d.percentage, 0) / count;
-  const passRate = (rows.filter((d) => d.passed).length / count) * 100;
-  const totalDuration = rows.reduce((sum, d) => sum + d.duration_seconds, 0);
-  const trend = [...rows]
+  const validRows = rows.filter(d => typeof d.percentage === 'number' && !isNaN(d.percentage));
+  const count = validRows.length;
+  if (count === 0) return { best: 0, average: 0, count: 0, passRate: 0, trend: [], totalDuration: 0, history: [] };
+
+  const best = Math.max(...validRows.map((d) => d.percentage));
+  const average = validRows.reduce((sum, d) => sum + d.percentage, 0) / count;
+  const passRate = (validRows.filter((d) => Boolean(d.passed)).length / count) * 100;
+  const totalDuration = rows.reduce((sum, d) => sum + (Number(d.duration_seconds) || 0), 0);
+  const trend = [...validRows]
+    .filter(d => Boolean(d.completed_at))
     .sort((a, b) => new Date(a.completed_at).getTime() - new Date(b.completed_at).getTime())
     .map((d) => ({ date: d.completed_at, score: d.percentage }));
 
@@ -172,10 +198,14 @@ export async function getSimStats(userId: string, dateRange?: number) {
   if (!data || data.length === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
 
   const rows = data as SimulationResult[];
-  const uniqueManeuvers = new Set(rows.map((d) => d.maneuver_id));
+  const validRows = rows.filter(d => typeof d.score === 'number' && !isNaN(d.score));
+  const count = validRows.length;
+  if (count === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
+
+  const uniqueManeuvers = new Set(validRows.map((d) => d.maneuver_id).filter(Boolean));
   const completed = uniqueManeuvers.size;
-  const averageScore = rows.reduce((sum, d) => sum + d.score, 0) / rows.length;
-  const totalDuration = rows.reduce((sum, d) => sum + (d.completion_seconds ?? 0), 0);
+  const averageScore = validRows.reduce((sum, d) => sum + d.score, 0) / count;
+  const totalDuration = rows.reduce((sum, d) => sum + (Number(d.completion_seconds) || 0), 0);
 
   const byManeuver = Array.from(uniqueManeuvers).map((m) => {
     const mData = rows.filter((d) => d.maneuver_id === m);
@@ -196,6 +226,6 @@ export async function getTheoryProgressStats(userId: string) {
   const totalModules = 3;
   const rows = (data ?? []) as { completed: boolean }[];
   const completedModules = rows.filter((d) => d.completed).length;
-  const percentage = (completedModules / totalModules) * 100;
+  const percentage = Math.min((completedModules / totalModules) * 100, 100);
   return { completedModules, totalModules, percentage, byModule: rows };
 }

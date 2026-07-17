@@ -1,4 +1,4 @@
-import { useMemo, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
@@ -16,6 +16,7 @@ import {
   getSimulationsDone,
   getRecentActivity,
 } from "@/services/analytics.service";
+import { useOverallReadiness } from "@/hooks/useProgressStats";
 
 const LazyDonutRing = lazy(() =>
   import("@/components/ui/donut-ring").then((m) => ({ default: m.DonutRing }))
@@ -90,12 +91,8 @@ export function DashboardPage() {
   const TOTAL_SIMS = 8;
   const simsPercent = Math.min((simsDone / TOTAL_SIMS) * 100, 100);
 
-  const examReadiness = useMemo(() => {
-    const s = simsPercent * 0.4;
-    const q = quizBest * 0.3;
-    const m = mockBest * 0.3;
-    return Math.round(s + q + m);
-  }, [simsPercent, quizBest, mockBest]);
+  const { data: readinessData, isPending: readinessPending } = useOverallReadiness();
+  const examReadiness = readinessData ? Math.round(readinessData.composite) : 0;
 
   let ctaRoute: string = ROUTES.THEORY;
 
@@ -232,7 +229,7 @@ export function DashboardPage() {
           <div className="card-premium border border-border rounded-xl p-5">
             <div className="flex items-center gap-5">
               <div className="flex justify-center shrink-0">
-                {theoryPending || quizPending || mockPending || simsPending ? (
+                {theoryPending || quizPending || mockPending || simsPending || readinessPending ? (
                   <Skeleton circle className="h-24 w-24" />
                 ) : (
                   <Suspense fallback={<Skeleton circle className="h-24 w-24" />}>

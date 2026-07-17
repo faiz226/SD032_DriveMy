@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Flag, Clock, CheckCircle, XCircle } from "phosphor-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useExamTimer } from "@/hooks/useExamTimer";
 import type { KppQuestion } from "@/types/database";
@@ -55,6 +56,7 @@ type QuizPhase = "answering" | "revealed";
 
 export function ExamShell({
   questions,
+  language,
   timeLimit,
   mode,
   t,
@@ -67,6 +69,7 @@ export function ExamShell({
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
   const [quizPhase, setQuizPhase] = useState<QuizPhase>("answering");
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   // Shuffle options once per mount (true random per attempt)
   const shuffledQuestions = useMemo(() => shuffleQuestionOptions(questions), [questions]);
@@ -74,7 +77,8 @@ export function ExamShell({
   const startTimeRef = useRef(Date.now());
   const optionsRef = useRef<HTMLDivElement>(null);
 
-  const question = shuffledQuestions[currentIndex];
+  const question = shuffledQuestions[currentIndex] || ({} as typeof shuffledQuestions[0]);
+  const questionId = question.id || "empty";
   // Dual-language arrays
   const optionsEn = question.options_en || [];
   const optionsMs = question.options_ms || [];
@@ -82,8 +86,13 @@ export function ExamShell({
   const answeredCount = Object.keys(answers).length;
   const progressPercentage = (answeredCount / shuffledQuestions.length) * 100;
 
+  const hasSubmitted = useRef(false);
+
   // Timer (only for mock)
   const handleExpire = useCallback(() => {
+    if (hasSubmitted.current) return;
+    hasSubmitted.current = true;
+    
     onTimeUp?.();
     const score = shuffledQuestions.reduce((acc, q) => {
       return acc + (answers[q.id] === q.correct_index ? 1 : 0);
@@ -118,29 +127,29 @@ export function ExamShell({
 
   useEffect(() => {
     if (mode === "mock") {
-      setSelectedOption(answers[question.id] ?? null);
+      setSelectedOption(answers[questionId] ?? null);
     } else {
-      if (answers[question.id] !== undefined) {
-        setSelectedOption(answers[question.id]);
+      if (answers[questionId] !== undefined) {
+        setSelectedOption(answers[questionId]);
         setQuizPhase("revealed");
       } else {
         setSelectedOption(null);
         setQuizPhase("answering");
       }
     }
-  }, [currentIndex, question.id, answers, mode]);
+  }, [currentIndex, questionId, answers, mode]);
 
   const handleSelectOption = (index: number) => {
     if (mode === "quiz" && quizPhase === "revealed") return;
     setSelectedOption(index);
-    if (mode === "mock") {
-      setAnswers((prev) => ({ ...prev, [question.id]: index }));
+    if (mode === "mock" && questionId !== "empty") {
+      setAnswers((prev) => ({ ...prev, [questionId]: index }));
     }
   };
 
   const handleConfirmQuiz = () => {
-    if (selectedOption === null) return;
-    setAnswers((prev) => ({ ...prev, [question.id]: selectedOption }));
+    if (selectedOption === null || questionId === "empty") return;
+    setAnswers((prev) => ({ ...prev, [questionId]: selectedOption }));
     setQuizPhase("revealed");
   };
 
@@ -150,7 +159,7 @@ export function ExamShell({
       setSelectedOption(null);
     }
     if (isLastQuestion) {
-      handleSubmit();
+      handleRequestSubmit();
     } else {
       setCurrentIndex((i) => i + 1);
     }
@@ -169,16 +178,30 @@ export function ExamShell({
   };
 
   const toggleFlag = () => {
+    if (questionId === "empty") return;
     setFlagged((prev) => {
       const next = new Set(prev);
-      if (next.has(question.id)) next.delete(question.id);
-      else next.add(question.id);
+      if (next.has(questionId)) next.delete(questionId);
+      else next.add(questionId);
       return next;
     });
   };
 
-  const handleSubmit = () => {
+  const handleRequestSubmit = () => {
     if (timeLimit) timer.pause();
+    setShowSubmitModal(true);
+  };
+
+  const handleCancelSubmit = () => {
+    setShowSubmitModal(false);
+    if (timeLimit) timer.start();
+  };
+
+  const handleConfirmSubmit = () => {
+    if (hasSubmitted.current) return;
+    hasSubmitted.current = true;
+    
+    setShowSubmitModal(false);
     const score = shuffledQuestions.reduce((acc, q) => {
       return acc + (answers[q.id] === q.correct_index ? 1 : 0);
     }, 0);
@@ -216,7 +239,7 @@ export function ExamShell({
                 {timer.formattedTime}
               </div>
             )}
-            <button onClick={handleSubmit} className="px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:brightness-95 active:scale-95 hover:shadow-md bg-accent text-accent-foreground">FINISH {mode === 'quiz' ? 'QUIZ' : 'TEST'}</button>
+            <button onClick={handleRequestSubmit} className="px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:brightness-95 active:scale-95 hover:shadow-md bg-accent text-accent-foreground">{mode === 'quiz' ? t("quiz.submit") : t("mock.start").replace("Start ", "")}</button>
           </div>
         </div>
       </div>
@@ -225,10 +248,10 @@ export function ExamShell({
         {/* Main Column */}
         <div className="bg-card border rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
           <div className="p-5 md:p-7 flex-1">
-             <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-3">
                <div>
                  <div className="inline-block text-[10px] font-bold tracking-wider uppercase px-2 py-1 rounded bg-primary/10 text-primary">
-                   {mode === 'quiz' ? 'Practice Quiz' : 'Mock Test'}
+                   {mode === 'quiz' ? t("dashboard.practiceQuiz") : t("nav.mockTest")}
                  </div>
                  {mode === "mock" && (
                    <button
@@ -236,7 +259,7 @@ export function ExamShell({
                      onClick={toggleFlag}
                      className={cn("ml-3 inline-flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase px-2 py-1 rounded transition-colors", flagged.has(question.id) ? "bg-warning/20 text-warning" : "bg-muted text-muted-foreground hover:bg-muted/80")}
                    >
-                     <Flag className="w-3 h-3" weight={flagged.has(question.id) ? "fill" : "regular"} /> Flag
+                     <Flag className="w-3 h-3" weight={flagged.has(question.id) ? "fill" : "regular"} /> {t("exam.flagQuestion")}
                    </button>
                  )}
                </div>
@@ -245,8 +268,17 @@ export function ExamShell({
                </div>
              </div>
 
-             <h2 className="font-heading font-bold text-lg md:text-xl leading-snug">{question.question_en}</h2>
-             <p className="text-sm text-muted-foreground italic mt-2">{question.question_ms || "(Translation Unavailable)"}</p>
+             {language === "en" ? (
+               <>
+                 <h2 className="font-heading font-bold text-lg md:text-xl leading-snug">{question.question_en || question.question_ms}</h2>
+                 {!question.question_en && <p className="text-sm text-muted-foreground italic mt-2">(English translation unavailable)</p>}
+               </>
+             ) : (
+               <>
+                 <h2 className="font-heading font-bold text-lg md:text-xl leading-snug">{question.question_ms || question.question_en}</h2>
+                 {!question.question_ms && <p className="text-sm text-muted-foreground italic mt-2">(Terjemahan BM tidak tersedia)</p>}
+               </>
+             )}
 
              {question.image_url && (
                <div className="mt-5 flex justify-center bg-muted/20 p-4 rounded-xl border border-border">
@@ -297,8 +329,9 @@ export function ExamShell({
                        )}
                      </span>
                      <div className="flex-1 pt-1">
-                       <div className={cn("text-sm font-medium", isRevealed && optionIsCorrect ? "text-success" : "text-foreground")}>{optEn}</div>
-                       {optMs && <div className={cn("text-xs italic mt-0.5", isRevealed && optionIsCorrect ? "text-success/80" : "text-muted-foreground")}>{optMs}</div>}
+                       <div className={cn("text-sm font-medium", isRevealed && optionIsCorrect ? "text-success" : "text-foreground")}>
+                         {language === "en" ? (optEn || optMs) : (optMs || optEn)}
+                       </div>
                      </div>
                    </button>
                  );
@@ -308,8 +341,9 @@ export function ExamShell({
              {mode === "quiz" && quizPhase === "revealed" && (question.explanation_en || question.explanation_ms) && (
                <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/20">
                  <p className="text-sm font-bold text-primary mb-1">{t("quiz.explanation")}</p>
-                 <p className="text-sm text-foreground/90">{question.explanation_en}</p>
-                 <p className="text-xs text-muted-foreground italic mt-1">{question.explanation_ms}</p>
+                 <p className="text-sm text-foreground/90">
+                   {language === "en" ? (question.explanation_en || question.explanation_ms) : (question.explanation_ms || question.explanation_en)}
+                 </p>
                </div>
              )}
           </div>
@@ -330,7 +364,7 @@ export function ExamShell({
                    disabled={selectedOption === null}
                    className="flex items-center gap-1 text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-40 transition-all hover:shadow-md hover:brightness-95 active:scale-95 bg-primary text-primary-foreground min-h-[40px]"
                  >
-                   CONFIRM
+                   {t("exam.confirmAnswer").toUpperCase()}
                  </button>
                )}
                {(mode === "mock" || (mode === "quiz" && quizPhase === "revealed")) && (
@@ -349,8 +383,8 @@ export function ExamShell({
         <aside className="space-y-4">
            <div className="bg-card border rounded-2xl p-5 shadow-sm">
              <div className="flex items-center justify-between mb-3">
-               <h3 className="font-heading font-bold text-sm">Quiz Progress</h3>
-               <span className="text-xs font-semibold text-muted-foreground">{answeredCount}/{questions.length} Complete</span>
+               <h3 className="font-heading font-bold text-sm">{t("nav.progress")}</h3>
+               <span className="text-xs font-semibold text-muted-foreground">{answeredCount}/{questions.length} {t("profile.status.complete")}</span>
              </div>
              <div className="flex justify-center my-3">
                <div className="relative w-28 h-28">
@@ -365,11 +399,11 @@ export function ExamShell({
              </div>
              <div className="grid grid-cols-2 gap-2">
                <div className="rounded-lg bg-muted/40 p-3 text-center">
-                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Answered</div>
+                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("quiz.answered", { count: answeredCount, total: questions.length }).split(" ")[0]}</div>
                  <div className="font-heading font-bold text-lg">{answeredCount}</div>
                </div>
                <div className="rounded-lg bg-muted/40 p-3 text-center">
-                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Remaining</div>
+                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("quiz.timeRemaining").split(" ")[0]}</div>
                  <div className="font-heading font-bold text-lg">{questions.length - answeredCount}</div>
                </div>
              </div>
@@ -423,7 +457,31 @@ export function ExamShell({
            )}
         </aside>
       </div>
+
+      <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("quiz.confirmSubmit")}</DialogTitle>
+            <DialogDescription>
+              {t("quiz.confirmSubmitDesc", { unanswered: questions.length - answeredCount })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <button
+              onClick={handleCancelSubmit}
+              className="px-4 py-2 rounded-md text-sm font-medium hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmSubmit}
+              className="px-4 py-2 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              {t("quiz.submit")}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-

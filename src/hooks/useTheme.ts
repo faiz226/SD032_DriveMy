@@ -1,8 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useThemeStore } from "@/stores/themeStore";
 
 export function useTheme() {
   const { theme, setTheme } = useThemeStore();
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return true;
+    if (theme === "system") return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return theme === "dark";
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -11,10 +16,12 @@ export function useTheme() {
       root.classList.remove("light", "dark");
 
       if (theme === "system") {
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        root.classList.add(systemTheme);
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        root.classList.add(systemTheme ? "dark" : "light");
+        setIsDark(systemTheme);
       } else {
         root.classList.add(theme);
+        setIsDark(theme === "dark");
       }
     }
 
@@ -31,5 +38,5 @@ export function useTheme() {
     }
   }, [theme]);
 
-  return { theme, setTheme };
+  return { theme, setTheme, isDark };
 }

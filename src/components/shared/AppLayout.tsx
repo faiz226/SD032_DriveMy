@@ -26,7 +26,8 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useLanguage } from "@/hooks/useLanguage";
-import { VerticalDock, DockItem, DockIcon, DockLabel } from "@/components/ui/vertical-dock";
+import { VerticalDock, DockItem, DockIcon } from "@/components/ui/vertical-dock";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { useUIStore } from "@/stores/uiStore";
@@ -55,7 +56,6 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const UTILITY_ITEMS: NavItem[] = [
-  { labelKey: "nav.profile",    href: ROUTES.PROFILE,      icon: <User weight="fill" className="h-5 w-5" /> },
   { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="fill" className="h-5 w-5" /> },
 ];
 
@@ -209,8 +209,8 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
       </div>
 
       {collapsed && !isMobile ? (
-        <div className="flex-1 flex flex-col items-center justify-between py-6 min-h-fit overflow-visible">
-          <VerticalDock distance={100} magnification={60} baseItemSize={44} panelWidth={72} className="w-full h-auto py-0 gap-2 overflow-visible">
+        <div className="flex-1 flex flex-col items-center justify-between py-6 min-h-fit overflow-x-hidden">
+          <VerticalDock distance={100} magnification={60} baseItemSize={44} panelWidth={72} className="w-full h-auto py-0 gap-2 overflow-x-hidden">
             {NAV_ITEMS.map((item) => {
               const isActive = isRouteActive(item.href, item.end);
               return (
@@ -221,8 +221,18 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
                     isActive && "bg-accent/80 text-foreground ring-1 ring-border shadow-sm"
                   )}
                 >
-                  <DockIcon>{item.icon}</DockIcon>
-                  <DockLabel>{t(item.labelKey)}</DockLabel>
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex h-full w-full items-center justify-center outline-none">
+                          <DockIcon>{item.icon}</DockIcon>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" sideOffset={16}>
+                        {t(item.labelKey)}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </DockItem>
               );
             })}
@@ -241,33 +251,73 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
                     isActive && "bg-accent/80 text-foreground ring-1 ring-border shadow-sm"
                   )}
                 >
-                  <DockIcon>{item.icon}</DockIcon>
-                  <DockLabel>{t(item.labelKey)}</DockLabel>
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex h-full w-full items-center justify-center outline-none">
+                          <DockIcon>{item.icon}</DockIcon>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" sideOffset={16}>
+                        {t(item.labelKey)}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </DockItem>
               );
             })}
             
             <DockItem onClick={handleLangToggle}>
-              <DockIcon>
-                <Translate weight="fill" className="h-5 w-5" />
-              </DockIcon>
-              <DockLabel>{language === 'en' ? 'Bahasa Malaysia' : 'English'}</DockLabel>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex h-full w-full items-center justify-center outline-none">
+                      <DockIcon>
+                        <Translate weight="fill" className="h-5 w-5" />
+                      </DockIcon>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={16}>
+                    {language === 'en' ? 'Bahasa Malaysia' : 'English'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DockItem>
             
             <DockItem>
-              <AnimatedThemeToggler variant="circle" className="w-full h-full flex items-center justify-center bg-transparent border-none p-0 outline-none hover:bg-transparent">
-                <DockIcon>
-                  {isDark ? <Sun weight="fill" className="h-5 w-5 text-yellow-400" /> : <Moon weight="fill" className="h-5 w-5" />}
-                </DockIcon>
-              </AnimatedThemeToggler>
-              <DockLabel>{t("settings.theme")}</DockLabel>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex h-full w-full items-center justify-center outline-none">
+                      <AnimatedThemeToggler variant="circle" className="w-full h-full flex items-center justify-center bg-transparent border-none p-0 outline-none hover:bg-transparent">
+                        <DockIcon>
+                          {isDark ? <Sun weight="fill" className="h-5 w-5 text-yellow-400" /> : <Moon weight="fill" className="h-5 w-5" />}
+                        </DockIcon>
+                      </AnimatedThemeToggler>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={16}>
+                    {t("settings.theme")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DockItem>
             
             <DockItem onClick={handleSignOut} className="hover:bg-destructive/20 hover:text-destructive text-destructive mt-2">
-              <DockIcon>
-                <SignOut weight="fill" className="h-5 w-5" />
-              </DockIcon>
-              <DockLabel>{t("nav.signOut")}</DockLabel>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex h-full w-full items-center justify-center outline-none">
+                      <DockIcon>
+                        <SignOut weight="fill" className="h-5 w-5" />
+                      </DockIcon>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={16}>
+                    {t("nav.signOut")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </DockItem>
           </VerticalDock>
         </div>

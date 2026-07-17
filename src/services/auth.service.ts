@@ -12,10 +12,11 @@ export async function signIn(email: string, password: string) {
   return data;
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(nextUrl?: string) {
+  const redirectParams = nextUrl ? `?next=${encodeURIComponent(nextUrl)}` : '';
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${window.location.origin}/auth/callback` },
+    options: { redirectTo: `${window.location.origin}/auth/callback${redirectParams}` },
   });
   if (error) throw error;
   return data;
@@ -36,6 +37,18 @@ export async function getSession() {
 export async function sendPasswordResetEmail(email: string) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset-password`,
+  });
+  if (error) throw error;
+}
+
+/** Resend the signup confirmation email. */
+export async function resendEmailConfirmation(email: string) {
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: {
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
+    },
   });
   if (error) throw error;
 }
