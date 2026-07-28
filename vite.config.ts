@@ -156,7 +156,7 @@ export default defineConfig({
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/i,
             handler: "CacheFirst",
             options: {
-              cacheName: "images-v2",
+              cacheName: "images-v3",
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
