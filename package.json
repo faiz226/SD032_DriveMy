@@ -12,12 +12,11 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
-    "clean": "rimraf dist .vite",
+    "clean": "node -e \"['dist','.vite','node_modules/.vite'].forEach(d => fs.rmSync(d, {recursive: true, force: true}))\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "db:seed": "node scripts/ingest-questions.js",
-    "db:upload-images": "node scripts/upload-images.js",
-    "fetch-plates": "tsx scripts/fetch-color-plates.ts"
+    "db:upload-images": "node scripts/upload-images.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
