@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Session } from "@supabase/supabase-js";
 import { signOut as signOutService } from "@/services/auth.service";
+import { clearUserScopedCaches } from "@/lib/cache";
 
 interface AuthState {
   user: User | null;
@@ -60,6 +61,10 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           console.warn("Failed to sign out on server, clearing locally", error);
         } finally {
+          // Purge Workbox runtime caches before clearing local state. Without
+          // this, responses fetched under the outgoing account stay on disk
+          // and can be served to whoever signs in next on a shared device.
+          await clearUserScopedCaches();
           set({ user: null, session: null, isAuthenticated: false });
         }
       },

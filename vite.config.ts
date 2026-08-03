@@ -1,10 +1,26 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "path";
+
+// Sourcemap upload runs only when all three are present, so local and
+// fork builds are unaffected. Set these in the Vercel project settings.
+const SENTRY_ORG = process.env["SENTRY_ORG"];
+const SENTRY_PROJECT = process.env["SENTRY_PROJECT"];
+const SENTRY_AUTH_TOKEN = process.env["SENTRY_AUTH_TOKEN"];
+const sentryUploadEnabled = Boolean(SENTRY_ORG && SENTRY_PROJECT && SENTRY_AUTH_TOKEN);
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Expose the build's release id to the client so Sentry.init() can tag
+  // events with the same release the sourcemaps were uploaded under.
+  define: {
+    "import.meta.env.VITE_RELEASE": JSON.stringify(
+      process.env["VERCEL_GIT_COMMIT_SHA"] ?? "dev"
+    ),
+  },
+
   plugins: [
     // ─── React with SWC (fast refresh + transform) ───────────────────────
     react(),
@@ -135,22 +151,57 @@ export default defineConfig({
               },
             },
           },
-          // Supabase API — NetworkFirst with fallback
+          // ─── Supabase ──────────────────────────────────────────────────
+          //
+          // This used to be a single catch-all rule matching every
+          // *.supabase.co request, which put AUTHENTICATED REST responses —
+          // one user's quiz results, mock scores and colour-vision results —
+          // into a shared, unpartitioned cache. signOut() never cleared it, so
+          // on a shared device (a driving school's tutorial PC, a family
+          // tablet) the next person to sign in could be served the previous
+          // user's data for the whole 5-minute TTL.
+          //
+          // Only two classes of Supabase response are cached now, and neither
+          // is user-scoped.
+
+          // 1. The question bank. Identical for every user, so a shared cache
+          //    cannot leak anything between accounts — and caching it is what
+          //    makes offline study actually work.
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/kpp_questions/i,
             handler: "NetworkFirst",
             options: {
-              cacheName: "supabase-api",
+              cacheName: "supabase-questions",
               networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 300, // 5 minutes
+                maxAgeSeconds: 60 * 60 * 24, // 1 day — question bank is static
               },
               cacheableResponse: {
                 statuses: [200],
               },
             },
           },
+
+          // 2. Public storage objects (road-sign and Ishihara plate images).
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\//i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage",
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+
+          // Everything else on supabase.co — user result tables, profiles and
+          // all of /auth/v1/ — is deliberately NOT cached. Do not add a
+          // catch-all rule back.
           // Static assets — CacheFirst
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/i,
@@ -185,6 +236,33 @@ export default defineConfig({
         type: "module",
       },
     }),
+
+    // ─── Sentry sourcemap upload ─────────────────────────────────────────
+    //
+    // Without this, `sourcemap: "hidden"` below produced the worst of both
+    // worlds: .map files were written into dist/ and served publicly by
+    // Vercel (anyone guessing /assets/index-<hash>.js.map recovered the full
+    // commented TypeScript source), while Sentry had no maps at all, so every
+    // stack trace was unreadable minified noise.
+    //
+    // `filesToDeleteAfterUpload` removes the maps from the deployed output
+    // once Sentry has them — traces stay readable, source stops shipping.
+    ...(sentryUploadEnabled
+      ? [
+          sentryVitePlugin({
+            org: SENTRY_ORG,
+            project: SENTRY_PROJECT,
+            authToken: SENTRY_AUTH_TOKEN,
+            sourcemaps: {
+              filesToDeleteAfterUpload: ["dist/**/*.map"],
+            },
+            release: {
+              name: process.env["VERCEL_GIT_COMMIT_SHA"],
+            },
+            telemetry: false,
+          }),
+        ]
+      : []),
   ],
 
   // ─── Path aliases ─────────────────────────────────────────────────────
@@ -204,7 +282,16 @@ export default defineConfig({
   // ─── Build optimisation — manual chunk splitting ───────────────────────
   build: {
     target: "esnext",
-    sourcemap: "hidden",
+
+    // Only generate sourcemaps when Sentry is configured to consume them.
+    //
+    // "hidden" omits the //# sourceMappingURL comment but STILL writes .map
+    // files into dist/, which Vercel serves — anyone guessing
+    // /assets/index-<hash>.js.map recovered the full commented TypeScript
+    // source. When Sentry is configured the plugin uploads then deletes them
+    // (filesToDeleteAfterUpload above); when it is not, emitting them at all
+    // is pure downside, so don't.
+    sourcemap: sentryUploadEnabled ? "hidden" : false,
     rollupOptions: {
       output: {
         manualChunks: (id) => {

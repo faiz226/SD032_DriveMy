@@ -17,8 +17,13 @@ const ACTIVITY_EVENTS = [
 /**
  * Attaches passive event listeners to detect user activity.
  * Resets a 30-minute timer on every interaction.
- * When the timer fires, calls authStore.signOut() so the SW cache
- * is flushed and the auth store is fully reset.
+ * When the timer fires, calls authStore.signOut(), which clears the auth store
+ * and purges the Workbox runtime caches (see lib/cache.ts).
+ *
+ * NOTE: this is a client-side convenience only. It does not invalidate the
+ * token server-side, so it is no defence against a stolen session — set
+ * [auth.sessions] inactivity_timeout / timebox on the hosted Supabase project
+ * for that.
  */
 export function useSessionTimeout() {
   const { user, signOut } = useAuthStore();
