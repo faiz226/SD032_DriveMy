@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { ROUTES } from "@/lib/constants";
@@ -18,11 +18,9 @@ export function MfaEnrollmentPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    checkMfaStatus();
-  }, []);
-
-  const checkMfaStatus = async () => {
+  // Declared before the effect that calls it — referencing it earlier is a
+  // use-before-declare that the React Hooks lint rules reject.
+  const checkMfaStatus = useCallback(async () => {
     const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (error) {
       setError(error.message);
@@ -31,7 +29,11 @@ export function MfaEnrollmentPage() {
     if (data.currentLevel === "aal2") {
       setIsEnrolled(true);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void checkMfaStatus();
+  }, [checkMfaStatus]);
 
   const startEnrollment = async () => {
     setIsPending(true);

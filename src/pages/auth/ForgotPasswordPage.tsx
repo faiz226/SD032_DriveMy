@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCaptcha } from "@/hooks/useCaptcha";
 import { sendPasswordResetEmail } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ export function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [sentEmail, setSentEmail] = useState("");
+  const { captcha, captchaToken, isCaptchaPending, resetCaptcha } = useCaptcha();
 
   const {
     register,
@@ -35,10 +37,12 @@ export function ForgotPasswordPage() {
     setServerError(null);
     setLoading(true);
     try {
-      await sendPasswordResetEmail(values.email);
+      await sendPasswordResetEmail(values.email, captchaToken);
       setSentEmail(values.email);
       setSent(true);
     } catch (err: unknown) {
+      // Turnstile tokens are single-use — without this the retry fails too.
+      resetCaptcha();
       const msg = err instanceof Error ? err.message : "";
       if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
         setServerError(t("auth.error.rateLimit"));
@@ -100,10 +104,15 @@ export function ForgotPasswordPage() {
 
         {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
+        {/* Supabase applies captcha protection to the password-reset endpoint
+            too — without this the form fails once captcha is enabled. */}
+        {captcha}
+
         <Button
           type="submit"
           className="w-full h-11"
           loading={loading}
+          disabled={isCaptchaPending}
           loadingLabel={t("common.loading")}
         >
           {t("auth.sendResetLink")}

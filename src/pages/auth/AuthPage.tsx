@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Envelope, Lock, Eye, EyeSlash } from "phosphor-react";
-import { Turnstile } from '@marsidev/react-turnstile';
+import { useCaptcha } from "@/hooks/useCaptcha";
 import { GoogleLogo } from "@/components/shared/GoogleLogo";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const { captcha, captchaToken, isCaptchaPending, resetCaptcha } = useCaptcha();
 
   const from =
     (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ??
@@ -69,11 +69,13 @@ function LoginForm() {
     }
     try {
       setIsPending(true);
-      const data = await signIn(values.email, values.password);
+      const data = await signIn(values.email, values.password, captchaToken);
       if (data.session) {
         navigate(from, { replace: true });
       }
     } catch (err: unknown) {
+      // Turnstile tokens are single-use — without this the retry fails too.
+      resetCaptcha();
       const msg = err instanceof Error ? err.message : "";
       if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
         setServerError(t("auth.error.rateLimit"));
@@ -182,22 +184,13 @@ function LoginForm() {
       {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
       {/* Captcha — only when site key is configured */}
-      {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-        <div className="flex justify-center my-2">
-          <Turnstile
-            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-            onSuccess={(token) => setCaptchaToken(token)}
-            onError={() => setCaptchaToken(null)}
-            onExpire={() => setCaptchaToken(null)}
-          />
-        </div>
-      )}
+      {captcha}
 
       <Button
         type="submit"
         className="w-full h-11"
         loading={isPending}
-        disabled={!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !captchaToken}
+        disabled={isCaptchaPending}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signIn")}
@@ -215,7 +208,7 @@ function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const { captcha, captchaToken, isCaptchaPending, resetCaptcha } = useCaptcha();
 
   const location = useLocation();
   const from =
@@ -249,7 +242,7 @@ function RegisterForm() {
     setServerError(null);
     setIsPending(true);
     try {
-      const data = await signUp(values.email, values.password);
+      const data = await signUp(values.email, values.password, captchaToken);
       if (data.session) {
         // Email confirmation disabled — user is immediately signed in
         navigate(ROUTES.DASHBOARD, { replace: true });
@@ -261,6 +254,8 @@ function RegisterForm() {
         });
       }
     } catch (err: unknown) {
+      // Turnstile tokens are single-use — without this the retry fails too.
+      resetCaptcha();
       const msg = err instanceof Error ? err.message : "";
       if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
         setServerError(t("auth.error.rateLimit"));
@@ -366,22 +361,13 @@ function RegisterForm() {
       {serverError && <AuthFormAlert>{serverError}</AuthFormAlert>}
 
       {/* Captcha — only when site key is configured */}
-      {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-        <div className="flex justify-center my-2">
-          <Turnstile
-            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-            onSuccess={(token) => setCaptchaToken(token)}
-            onError={() => setCaptchaToken(null)}
-            onExpire={() => setCaptchaToken(null)}
-          />
-        </div>
-      )}
+      {captcha}
 
       <Button
         type="submit"
         className="w-full h-11"
         loading={isPending}
-        disabled={!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !captchaToken}
+        disabled={isCaptchaPending}
         loadingLabel={t("common.loading")}
       >
         {t("auth.signUp")}

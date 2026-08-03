@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,13 +32,18 @@ export function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
-  const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Redirect to the dashboard shortly after a successful reset.
+  //
+  // This was previously a setTimeout stored in a ref and started inside the
+  // submit handler, with a separate mount effect for cleanup. Owning the timer
+  // in an effect keyed on `success` keeps start and cleanup in one place, and
+  // avoids closing over a ref in a function that React calls during render.
   useEffect(() => {
-    return () => {
-      if (navTimerRef.current) clearTimeout(navTimerRef.current);
-    };
-  }, []);
+    if (!success) return;
+    const timer = setTimeout(() => navigate(ROUTES.DASHBOARD, { replace: true }), 2000);
+    return () => clearTimeout(timer);
+  }, [success, navigate]);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -77,7 +82,6 @@ export function ResetPasswordPage() {
     try {
       await updatePassword(values.password);
       setSuccess(true);
-      navTimerRef.current = setTimeout(() => navigate(ROUTES.DASHBOARD, { replace: true }), 2000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
       if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {
