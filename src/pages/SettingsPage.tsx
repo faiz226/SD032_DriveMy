@@ -16,6 +16,9 @@ import { del } from "idb-keyval";
 import { format } from "date-fns";
 import { useTheoryProgress, useOverallReadiness } from "@/hooks/useProgressStats";
 import { getBestQuizScore, getBestMockTestScore, getSimulationsDone } from "@/services/analytics.service";
+import { exportUserData, deleteAccount } from "@/services/account.service";
+import { hasTelemetryConsent, writeConsent } from "@/lib/consent";
+import { initTelemetry, shutdownTelemetry } from "@/lib/telemetry";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -117,6 +120,19 @@ export function SettingsPage() {
   const userId = user?.id;
   const [notifications, setNotifications] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [telemetryOn, setTelemetryOn] = useState(() => hasTelemetryConsent());
+
+  const handleTelemetryChange = (next: boolean) => {
+    writeConsent(next ? "granted" : "denied");
+    setTelemetryOn(next);
+    if (next) {
+      initTelemetry();
+    } else {
+      // Stop transmitting immediately rather than at the next reload.
+      shutdownTelemetry();
+    }
+  };
   const [isResetting, setIsResetting] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
@@ -173,6 +189,28 @@ export function SettingsPage() {
     }
   };
 
+  const handleExportData = async () => {
+    if (!user?.id) {
+      toast.error(t("common.error"));
+      return;
+    }
+    setIsExporting(true);
+    try {
+      const blob = await exportUserData(user.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `drivemy-data-${user.id}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(t("settings.dataExported"));
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     if (!user?.id) {
       toast.error(t("common.error"));
@@ -180,13 +218,11 @@ export function SettingsPage() {
     }
     setIsDeleting(true);
     try {
-      const tables = ['quiz_results', 'mock_test_results', 'simulation_results', 'colorblind_results', 'theory_progress'];
-      await Promise.all(
-        tables.map(tb => supabase.from(tb).delete().eq('user_id', user.id))
-      );
-      await supabase.from('profiles').delete().eq('id', user.id);
-      const { error } = await supabase.rpc('delete_user');
-      if (error) throw error;
+      // deleteAccount() removes the auth.users row first; the six dependent
+      // tables go with it via ON DELETE CASCADE. Deleting them by hand first
+      // (as this did previously) destroyed the user's data before the account
+      // removal could fail, leaving them with an empty but live account.
+      await deleteAccount();
       await signOut();
       navigate(ROUTES.AUTH);
       toast.success(t("settings.accountDeleted"));
@@ -453,6 +489,64 @@ export function SettingsPage() {
                       )}
                     </DrawerPopup>
                   </Drawer>
+                </div>
+              </div>
+
+              {/* Error reporting consent — withdrawable, per PDPA. Only shown
+                  when a telemetry provider is actually configured. */}
+              {import.meta.env.VITE_SENTRY_DSN && (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-foreground">{t("settings.telemetry")}</p>
+                    <p className="text-sm text-muted-foreground">{t("settings.telemetryDesc")}</p>
+                  </div>
+                  <div className="shrink-0">
+                    <Switch
+                      checked={telemetryOn}
+                      onCheckedChange={handleTelemetryChange}
+                      aria-label={t("settings.telemetry")}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Privacy Policy */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">{t("settings.privacyPolicy")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    How we collect, use and retain your personal data.
+                  </p>
+                </div>
+                <div className="shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto min-h-[44px] rounded-md"
+                    onClick={() => navigate(ROUTES.PRIVACY)}
+                  >
+                    {t("settings.privacyPolicy")}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Export My Data — PDPA 2010 §§30-34 / GDPR Art. 15 & 20 */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">{t("settings.exportData")}</p>
+                  <p className="text-sm text-muted-foreground">{t("settings.exportDataDesc")}</p>
+                </div>
+                <div className="shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto min-h-[44px] rounded-md"
+                    onClick={handleExportData}
+                    loading={isExporting}
+                    loadingLabel={t("common.loading")}
+                  >
+                    {t("settings.exportData")}
+                  </Button>
                 </div>
               </div>
 
