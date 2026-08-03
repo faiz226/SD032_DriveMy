@@ -8,22 +8,25 @@ It features an interactive KPP1 mock exam simulator, visual road signs directory
 
 ## 🚀 Tech Stack
 
-* **Frontend Framework**: React 18 with TypeScript & Vite 6 (Rolldown bundler)
-* **Styling**: Tailwind CSS & Shadcn UI components
-* **Routing**: React Router DOM (Lazy-Loaded Pages)
+* **Frontend Framework**: React 19 with TypeScript 6 & Vite 8
+* **Styling**: Tailwind CSS & Shadcn UI (Radix primitives)
+* **Routing**: React Router DOM 7 (Lazy-Loaded Pages)
 * **State Management**: Zustand (Persisted client state)
 * **Data Fetching & Cache**: TanStack Query (React Query)
 * **Database & Auth**: Supabase (PostgreSQL, REST, Row Level Security)
-* **Game Engine**: Phaser 3 (Driving simulator game)
+* **3D Simulator**: three.js via `@react-three/fiber`, with `@react-three/rapier` physics
 * **Offline & PWA Capability**: Vite PWA Plugin, Workbox Service Worker, and IndexedDB (`idb-keyval` for offline synchronization)
 * **PDF Utility**: jsPDF + jspdf-autotable
+* **Error Tracking**: Sentry (`@sentry/react`)
+* **Bot Protection**: Cloudflare Turnstile
 
 ---
 
 ## 🛠️ Project Setup & Installation
 
 ### 1. Prerequisites
-Ensure you have **Node.js** (v18+) and **npm** installed on your system.
+Ensure you have **Node.js v22 or newer** and **npm** installed. (Vite 8 requires
+Node 20.19+/22.12+; Node 18 reached end-of-life in April 2025.)
 
 ### 2. Clone & Install Dependencies
 ```bash
