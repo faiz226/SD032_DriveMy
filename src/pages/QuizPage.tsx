@@ -97,7 +97,9 @@ export function QuizPage() {
         duration_seconds: examResult.durationSeconds,
         language: examLang,
         question_ids: examResult.questions.map((q) => q.id),
-        answers: examResult.answers,
+        // Original-order indices — the server trigger regrades against the
+        // unshuffled kpp_questions.correct_index.
+        answers: examResult.answersForStorage,
       });
     }
   };

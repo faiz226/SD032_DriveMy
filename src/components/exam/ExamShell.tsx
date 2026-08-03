@@ -7,30 +7,23 @@ import type { KppQuestion } from "@/types/database";
 import type { TranslationKey } from "@/lib/translations";
 
 // ── Runtime shuffle (true random — runs once per mount) ────────────────────────
-function shuffleQuestionOptions(questions: KppQuestion[]): KppQuestion[] {
-  return questions.map((q) => {
-    const opts_en = [...q.options_en];
-    const opts_ms = [...q.options_ms];
-    // Build permutation via Fisher-Yates
-    const perm = opts_en.map((_, i) => i);
-    for (let i = perm.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [perm[i], perm[j]] = [perm[j], perm[i]];
-    }
-    const new_correct = perm.indexOf(q.correct_index);
-    return {
-      ...q,
-      options_en: perm.map((i) => opts_en[i]),
-      options_ms: perm.map((i) => opts_ms[i]),
-      correct_index: new_correct,
-    };
-  });
-}
+import { shuffleQuestionOptions, toStorageAnswers } from "./examScoring";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface ExamResult {
+  /**
+   * Answers in DISPLAY order — indices into the shuffled option arrays on
+   * `questions`. Use for the local results view, which renders those same
+   * shuffled questions. Do NOT persist these.
+   */
   answers: Record<string, number>;
+  /**
+   * Answers remapped to the ORIGINAL database option order. This is what must
+   * be written to quiz_results / mock_test_results: the recompute_exam_score
+   * trigger grades against kpp_questions.correct_index, which is unshuffled.
+   */
+  answersForStorage: Record<string, number>;
   score: number;
   total: number;
   percentage: number;
@@ -72,7 +65,10 @@ export function ExamShell({
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   // Shuffle options once per mount (true random per attempt)
-  const shuffledQuestions = useMemo(() => shuffleQuestionOptions(questions), [questions]);
+  const { questions: shuffledQuestions, permutations } = useMemo(
+    () => shuffleQuestionOptions(questions),
+    [questions]
+  );
 
   const startTimeRef = useRef(Date.now());
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -99,6 +95,7 @@ export function ExamShell({
     }, 0);
     onComplete({
       answers,
+      answersForStorage: toStorageAnswers(answers, permutations),
       score,
       total: shuffledQuestions.length,
       percentage: Math.round((score / shuffledQuestions.length) * 100),
@@ -106,7 +103,7 @@ export function ExamShell({
       questions: shuffledQuestions,
       autoSubmitted: true,
     });
-  }, [answers, shuffledQuestions, onComplete, onTimeUp]);
+  }, [answers, shuffledQuestions, permutations, onComplete, onTimeUp]);
 
   const timer = useExamTimer({
     totalSeconds: timeLimit ?? 99999,
@@ -207,6 +204,7 @@ export function ExamShell({
     }, 0);
     onComplete({
       answers,
+      answersForStorage: toStorageAnswers(answers, permutations),
       score,
       total: shuffledQuestions.length,
       percentage: Math.round((score / shuffledQuestions.length) * 100),

@@ -64,7 +64,7 @@ export function MockTestPage() {
       } else {
         toast.error("No questions found for this set.");
       }
-    } catch (error) {
+    } catch {
       toast.error(t("common.error"));
     }
   };
@@ -91,7 +91,9 @@ export function MockTestPage() {
         percentage: examResult.percentage,
         passed: examResult.score >= MOCK_PASS_MARK,
         duration_seconds: examResult.durationSeconds,
-        answers: examResult.answers,
+        // Original-order indices — the server trigger regrades against the
+        // unshuffled kpp_questions.correct_index.
+        answers: examResult.answersForStorage,
         language: examLang,
       });
     }
