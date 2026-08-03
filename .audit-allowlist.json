@@ -1,0 +1,37 @@
+{
+  "$comment": [
+    "Advisories consciously accepted, with an expiry date that forces re-review.",
+    "This is NOT a way to silence the audit gate: scripts/audit-gate.mjs fails the",
+    "build for any advisory that is not listed here, and ALSO fails for any entry",
+    "whose reviewBy date has passed. Adding an entry requires a real applicability",
+    "argument, not just 'it is noisy'."
+  ],
+  "allow": [
+    {
+      "ghsa": "GHSA-qwww-vcr4-c8h2",
+      "package": "react-router / react-router-dom",
+      "title": "React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response",
+      "severity": "high",
+      "reviewBy": "2026-11-01",
+      "justification": [
+        "NOT REACHABLE IN THIS APPLICATION. The advisory affects React Router's RSC",
+        "mode, where a server executes a route `action` before returning 400. DriveMy",
+        "is a purely client-side SPA: src/App.tsx uses the declarative <BrowserRouter>",
+        "with plain <Route element={...}>. It does not use createBrowserRouter,",
+        "RouterProvider, route `loader`/`action` data APIs, or any server runtime —",
+        "there is no server to execute an action on.",
+        "",
+        "NO FORWARD FIX EXISTS. The advisory declares the vulnerable range as",
+        ">=7.12.0 <8.3.0, but react-router-dom 8.x has never been published (latest",
+        "on npm is 7.18.2 as of 2026-08-03). npm's suggested remediation is a",
+        "DOWNGRADE to 7.11.0, which it flags as semver-major and which would forfeit",
+        "seven minor releases of unrelated fixes.",
+        "",
+        "ACTION ON EXPIRY: re-check whether react-router 8.3.0+ has shipped. If it",
+        "has, plan the major upgrade and delete this entry. If the app ever adopts",
+        "createBrowserRouter or any data-router API, delete this entry immediately —",
+        "the applicability argument above no longer holds."
+      ]
+    }
+  ]
+}

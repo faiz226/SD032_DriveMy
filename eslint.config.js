@@ -12,6 +12,12 @@ export default defineConfig([
     'lighthouse-report.html',
     '**/*.report.html',
     '.agents/**',
+    // Stray editor backups left at the repo root. Not imported by anything and
+    // not valid UTF-8, so ESLint reports a parse error and fails the build.
+    // These should be deleted outright — see the repo-hygiene item in TechStack.md.
+    'backup_layout.tsx',
+    'backup_layout*.txt',
+    'graphify-out/**',
   ]),
   {
     files: ['**/*.{ts,tsx}'],
@@ -49,6 +55,18 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+
+      // A debug `fetch('http://localhost:9999', ...)` once shipped to production
+      // inside the error boundary, POSTing stack traces to every user's own
+      // machine. Fail the build rather than rely on catching it in review.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "Literal[value=/^https?:\\u002F\\u002F(localhost|127\\.0\\.0\\.1)/]",
+          message:
+            'Hardcoded localhost URL. Debug endpoints must never ship to production — read it from import.meta.env or remove the call.',
+        },
       ],
     },
   },
