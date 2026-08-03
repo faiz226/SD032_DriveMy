@@ -124,33 +124,8 @@ export default defineConfig({
 
         // Runtime caching strategies
         runtimeCaching: [
-          // Google Fonts stylesheets — StaleWhileRevalidate
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "google-fonts-stylesheets",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-            },
-          },
-          // Google Fonts files — CacheFirst (immutable)
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "google-fonts-webfonts",
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
+          // No Google Fonts rules: the fonts are self-hosted now, so they are
+          // covered by the precache above like any other same-origin asset.
           // ─── Supabase ──────────────────────────────────────────────────
           //
           // This used to be a single catch-all rule matching every

@@ -30,14 +30,11 @@
     <!-- Preload critical PWA icon -->
     <link rel="preload" href="/pwa-192x192.png" as="image">
 
-    <!-- Preconnect to font domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
+    <!-- Fonts are self-hosted (see src/index.css). They used to load from
+         fonts.googleapis.com / fonts.gstatic.com, which disclosed every
+         visitor's IP address to Google on each page load. Material Symbols was
+         dropped entirely — the five icons that used it now come from
+         phosphor-react, which the rest of the app already uses. -->
 
     <title>DriveMy – JPJ KPP Theory & Driving Test</title>
 

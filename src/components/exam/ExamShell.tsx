@@ -1,5 +1,14 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Flag, Clock, CheckCircle, XCircle } from "phosphor-react";
+import {
+  Flag,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Car,
+  ArrowLeft,
+  ArrowRight,
+  Lightbulb,
+} from "phosphor-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useExamTimer } from "@/hooks/useExamTimer";
@@ -221,7 +230,7 @@ export function ExamShell({
       <div className="sticky top-0 z-50 border-b bg-card shadow-sm px-4 sm:px-8 py-3 mb-6 flex items-center justify-between gap-4 w-full">
         <div className="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined select-none text-xl text-primary" aria-hidden="true">directions_car</span>
+            <Car className="h-5 w-5 text-primary" aria-hidden />
             <span className="font-heading font-bold tracking-tight">DriveMy</span>
           </div>
           <div className="flex-1 max-w-sm hidden md:block px-4">
@@ -352,7 +361,7 @@ export function ExamShell({
                disabled={currentIndex === 0}
                className="flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed px-3 py-2 transition-all"
              >
-               <span className="material-symbols-outlined select-none text-lg" aria-hidden="true">arrow_back</span> {t("quiz.previous").toUpperCase()}
+               <ArrowLeft className="h-4 w-4" aria-hidden /> {t("quiz.previous").toUpperCase()}
              </button>
              
              <div className="flex items-center gap-2">
@@ -370,7 +379,7 @@ export function ExamShell({
                    onClick={handleNext}
                    className="flex items-center gap-1 text-sm font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-95 active:scale-95 hover:shadow-md bg-primary text-primary-foreground min-h-[40px]"
                  >
-                   {isLastQuestion ? t("quiz.submit").toUpperCase() : t("quiz.next").toUpperCase()} {!isLastQuestion && <span className="material-symbols-outlined select-none text-lg" aria-hidden="true">arrow_forward</span>}
+                   {isLastQuestion ? t("quiz.submit").toUpperCase() : t("quiz.next").toUpperCase()} {!isLastQuestion && <ArrowRight className="h-4 w-4" aria-hidden />}
                  </button>
                )}
              </div>
@@ -445,7 +454,7 @@ export function ExamShell({
            {mode === "quiz" && (
              <div className="rounded-2xl p-5 bg-accent/10 border border-accent/30">
                <div className="flex items-center gap-2 mb-1">
-                 <span className="material-symbols-outlined select-none text-base text-primary" aria-hidden="true">lightbulb</span>
+                 <Lightbulb className="h-4 w-4 text-primary" aria-hidden />
                  <h4 className="font-heading font-bold text-sm">Practice Tip</h4>
                </div>
                <p className="text-xs text-muted-foreground leading-relaxed">

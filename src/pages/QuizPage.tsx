@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Warning } from "phosphor-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
@@ -161,7 +162,7 @@ export function QuizPage() {
       {phase === "testing" && activeQuestions.length === 0 && (
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4 bg-card rounded-2xl border shadow-sm p-8 mt-8">
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-3xl text-muted-foreground">warning</span>
+            <Warning className="h-8 w-8 text-muted-foreground" aria-hidden />
           </div>
           <h2 className="text-xl font-bold font-heading">No Questions Available</h2>
           <p className="text-muted-foreground max-w-md">

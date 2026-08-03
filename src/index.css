@@ -4,6 +4,15 @@
    Tokens: shadcn/ui RGB triple convention
    ----------------------------------------------------------------------------- */
 
+/* Self-hosted fonts.
+   Previously loaded from fonts.googleapis.com / fonts.gstatic.com, which sent
+   every visitor's IP address to Google on every page load — a third-party data
+   transfer we neither disclosed nor had a basis for. Serving them from our own
+   origin also removes two DNS lookups and two TLS handshakes from the critical
+   path, so first paint gets faster. Same fonts, same files. */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,3 +1,5 @@
+import { PRIVACY_CONTACT_EMAIL } from "@/lib/constants";
+
 export function PrivacyPolicyPage() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-6">
@@ -70,7 +72,17 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2 className="text-xl font-semibold mb-2 text-foreground">7. Contact Us</h2>
-          <p>If you have any questions about this Privacy Policy, please contact us at privacy@drivemy.local.</p>
+          <p>
+            If you have any questions about this Privacy Policy, or want to
+            access or delete your data, please contact us at{" "}
+            <a
+              href={`mailto:${PRIVACY_CONTACT_EMAIL}`}
+              className="text-primary underline underline-offset-4 hover:no-underline"
+            >
+              {PRIVACY_CONTACT_EMAIL}
+            </a>
+            .
+          </p>
         </section>
       </div>
     </div>
