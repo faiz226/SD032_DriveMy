@@ -68,6 +68,19 @@ const COLOR_SETS = [
   { id: "screening", title: "Basic Check", titleMs: "Semakan Asas", desc: "First 9 screening plates", descMs: "9 plat saringan pertama", limit: 9 }
 ];
 
+/**
+ * Compare a typed answer against a plate's expected normal-vision answer.
+ *
+ * Module scope rather than component scope: it depends only on its arguments,
+ * and defining it inside the component put it textually after the effect at
+ * line ~94 that calls it (a use-before-declare that the React Hooks lint rules
+ * flag), besides reallocating it on every render.
+ */
+function checkAnswer(answer: string | undefined, p: (typeof PLATES)[0]): boolean {
+  if (!answer) return false;
+  return answer.toLowerCase().trim() === p.normalAnswer.toLowerCase().trim();
+}
+
 export function ColorVisionPage() {
   const { t, language } = useLanguage();
   const { user } = useAuthStore();
@@ -127,13 +140,6 @@ export function ColorVisionPage() {
   }, [testLimit, shuffleKey]);
 
   const currentPlate = activePlates[currentPlateIndex];
-
-  const checkAnswer = (answer: string | undefined, p: typeof PLATES[0]) => {
-    if (!answer) return false;
-    const normalizedAnswer = answer.toLowerCase().trim();
-    const normalizedCorrect = p.normalAnswer.toLowerCase().trim();
-    return normalizedAnswer === normalizedCorrect;
-  };
 
   const handleSubmit = () => {
     if (!userAnswer) {

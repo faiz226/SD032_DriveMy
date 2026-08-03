@@ -57,7 +57,7 @@ export function ProgressPage() {
           mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
           sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
         });
-      } catch (fallbackErr) {
+      } catch {
         toast.error(t("common.error"));
       }
     }

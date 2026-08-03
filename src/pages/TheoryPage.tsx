@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -170,7 +170,7 @@ export function TheoryPage() {
   const [activeTab, setActiveTab] = useState('signs');
 
   // Mark the visited tab as a completed theory module in Supabase
-  const handleTabChange = useCallback((tab: string) => {
+  const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     if (!user?.id) return;
     markCompleted({
@@ -179,12 +179,25 @@ export function TheoryPage() {
       completed: true,
       completed_at: new Date().toISOString(),
     });
-  }, [user?.id, markCompleted]);
+  };
 
-  // Mark the default tab ("signs") as completed when the page first mounts
-  // onValueChange only fires when switching tabs, so the initial tab needs this.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { handleTabChange('signs'); }, []);
+  // Mark the default tab ("signs") as completed — onValueChange only fires when
+  // the user switches tabs, so the initial tab needs its own write.
+  //
+  // Keyed on user?.id rather than running once on mount: at mount the Supabase
+  // session is often still resolving, so the previous mount-only version hit
+  // the `!user?.id` guard and silently dropped the write, leaving the module
+  // permanently unmarked. updateTheoryProgress() is an upsert with
+  // onConflict "user_id,module_id", so re-running it is idempotent.
+  useEffect(() => {
+    if (!user?.id) return;
+    markCompleted({
+      user_id: user.id,
+      module_id: 'theory-signs',
+      completed: true,
+      completed_at: new Date().toISOString(),
+    });
+  }, [user?.id, markCompleted]);
 
   // Toggle learned state for a sign (star button)
   const toggleLearned = (e: React.MouseEvent, id: string) => {
