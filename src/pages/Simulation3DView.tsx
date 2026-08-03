@@ -21,7 +21,27 @@ import { useCarStore } from "@/stores/carStore";
 import { syncSimulationResults } from "@/services/results.service";
 
 // ── GLTF Model Preloading ───────────────────────────────────────────────────
-useGLTF.preload("/toyota-corolla-e170-2017.glb");
+/**
+ * Where the driving-simulator car model is loaded from.
+ *
+ * DEPLOYMENT TRAP: `.gitignore` excludes `*.glb`, so this asset is NOT in the
+ * repository. It exists only on machines where it was placed by hand — a fresh
+ * clone, a CI run or a Vercel build has no model file, and the simulator fails
+ * to load with a 404.
+ *
+ * The file is also ~35 MB uncompressed, which is a serious problem on its own:
+ * at Supabase/Vercel free-tier egress that is roughly 57 simulation sessions
+ * per month before quota is exhausted, and on a Malaysian mobile connection it
+ * is a multi-minute download.
+ *
+ * Set VITE_CAR_MODEL_URL to serve it from object storage or a CDN instead of
+ * bundling it. See docs/3D_ASSETS.md for the full picture and the options.
+ */
+export const CAR_MODEL_URL =
+  (import.meta.env.VITE_CAR_MODEL_URL as string | undefined) ??
+  "/toyota-corolla-e170-2017.glb";
+
+useGLTF.preload(CAR_MODEL_URL);
 
 function useKeys() {
   const { setAccelerating, setReversing, setSteering, setBraking, setGear, gear } = useCarStore();
@@ -216,7 +236,7 @@ function Car({
   spawnPosition?: [number, number, number];
   spawnRotation?: [number, number, number];
 }) {
-  const { scene } = useGLTF("/toyota-corolla-e170-2017.glb");
+  const { scene } = useGLTF(CAR_MODEL_URL);
   const internalRef = useRef<RapierRigidBody>(null);
   const bodyRef = (bodyRefProp as React.RefObject<RapierRigidBody>) ?? internalRef;
   const hasSpawned = useRef(false);
