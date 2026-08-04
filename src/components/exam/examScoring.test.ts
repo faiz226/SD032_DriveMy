@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { shuffleQuestionOptions, toStorageAnswers } from "./examScoring";
+import {
+  shuffleQuestionOptions,
+  toStorageAnswers,
+  applyAnswerKey,
+  countCorrect,
+  hasCompleteAnswerKey,
+} from "./examScoring";
+import type { ExamQuestion } from "@/services/questions.service";
 import type { KppQuestion } from "@/types/database";
 
 /**
@@ -37,7 +44,7 @@ describe("shuffleQuestionOptions", () => {
     const { questions } = shuffleQuestionOptions([original]);
     const shuffled = questions[0];
 
-    expect(shuffled.options_en[shuffled.correct_index]).toBe("C");
+    expect(shuffled.options_en[shuffled.correct_index!]).toBe("C");
   });
 
   it("records a permutation mapping display index back to original index", () => {
@@ -62,7 +69,7 @@ describe("toStorageAnswers", () => {
     const shuffled = questions[0];
 
     // Learner picks the correct option as displayed.
-    const displayAnswers = { q1: shuffled.correct_index };
+    const displayAnswers = { q1: shuffled.correct_index! };
     const stored = toStorageAnswers(displayAnswers, permutations);
 
     // What we persist must equal the ORIGINAL correct_index, which is what the
@@ -75,7 +82,7 @@ describe("toStorageAnswers", () => {
     const { questions, permutations } = shuffleQuestionOptions([original]);
     const shuffled = questions[0];
 
-    const wrongDisplayIndex = (shuffled.correct_index + 1) % 4;
+    const wrongDisplayIndex = (shuffled.correct_index! + 1) % 4;
     const stored = toStorageAnswers({ q1: wrongDisplayIndex }, permutations);
 
     expect(stored["q1"]).not.toBe(original.correct_index);
@@ -93,7 +100,7 @@ describe("toStorageAnswers", () => {
       const displayAnswers: Record<string, number> = {};
       questions.forEach((q, i) => {
         displayAnswers[q.id] =
-          i < 30 ? q.correct_index : (q.correct_index + 1) % 4;
+          i < 30 ? q.correct_index! : (q.correct_index! + 1) % 4;
       });
 
       // Score as the client computes it (display order).
@@ -116,5 +123,103 @@ describe("toStorageAnswers", () => {
 
   it("passes an answer through unchanged when no permutation is known", () => {
     expect(toStorageAnswers({ q1: 3 }, {})).toEqual({ q1: 3 });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Deferred answer key (mock exams)
+//
+// Mock questions are fetched WITHOUT correct_index so the answer key is not
+// sitting in the browser during a graded exam. The key arrives after
+// submission and must be mapped from database order onto the shuffled position
+// the learner actually saw — get that mapping wrong and the review screen
+// highlights the wrong option, which is worse than showing nothing.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** A question as delivered during a mock exam: no key attached. */
+function makeExamQuestion(id: string): ExamQuestion {
+  const q = makeQuestion(id, 0) as ExamQuestion;
+  delete q.correct_index;
+  delete q.explanation_en;
+  delete q.explanation_ms;
+  return q;
+}
+
+describe("applyAnswerKey", () => {
+  it("maps the key onto the shuffled position the learner saw", () => {
+    for (let round = 0; round < 50; round++) {
+      const examQ = makeExamQuestion("q1");
+      const { questions, permutations } = shuffleQuestionOptions([examQ]);
+
+      // In the database the correct answer is index 2 — the text "C".
+      const keyed = applyAnswerKey(questions, permutations, [
+        { id: "q1", correct_index: 2, explanation_en: "because", explanation_ms: "kerana" },
+      ]);
+
+      const q = keyed[0];
+      // Whatever the shuffle did, the flagged option must still be "C".
+      expect(q.options_en[q.correct_index!]).toBe("C");
+      expect(q.explanation_en).toBe("because");
+    }
+  });
+
+  it("leaves questions untouched when the key has no entry for them", () => {
+    const { questions, permutations } = shuffleQuestionOptions([makeExamQuestion("q1")]);
+    const keyed = applyAnswerKey(questions, permutations, []);
+
+    expect(keyed[0].correct_index).toBeUndefined();
+  });
+
+  it("agrees with what the server will compute", () => {
+    // End-to-end: learner picks the option showing "C" in the shuffled order.
+    // The client scores it via the applied key; the server scores
+    // answersForStorage against the original index. They must agree.
+    for (let round = 0; round < 50; round++) {
+      const { questions, permutations } = shuffleQuestionOptions([makeExamQuestion("q1")]);
+      const shown = questions[0];
+
+      const displayIndex = shown.options_en.indexOf("C");
+      const answers = { q1: displayIndex };
+
+      const keyed = applyAnswerKey(questions, permutations, [
+        { id: "q1", correct_index: 2, explanation_en: null, explanation_ms: null },
+      ]);
+      const clientScore = countCorrect(keyed, answers);
+
+      const stored = toStorageAnswers(answers, permutations);
+      const serverScore = stored["q1"] === 2 ? 1 : 0;
+
+      expect(clientScore).toBe(1);
+      expect(serverScore).toBe(1);
+    }
+  });
+});
+
+describe("countCorrect", () => {
+  it("skips questions with no key rather than counting them wrong", () => {
+    // A partial key must not silently deflate a learner's score.
+    const withKey = makeQuestion("a", 1) as ExamQuestion;
+    const withoutKey = makeExamQuestion("b");
+
+    expect(countCorrect([withKey, withoutKey], { a: 1, b: 0 })).toBe(1);
+  });
+
+  it("returns zero when no key is present at all (mock exam pre-grading)", () => {
+    const qs = [makeExamQuestion("a"), makeExamQuestion("b")];
+    expect(countCorrect(qs, { a: 0, b: 1 })).toBe(0);
+  });
+});
+
+describe("hasCompleteAnswerKey", () => {
+  it("is false while a mock exam is in progress", () => {
+    expect(hasCompleteAnswerKey([makeExamQuestion("a")])).toBe(false);
+  });
+
+  it("is true once the key has been applied", () => {
+    const { questions, permutations } = shuffleQuestionOptions([makeExamQuestion("a")]);
+    const keyed = applyAnswerKey(questions, permutations, [
+      { id: "a", correct_index: 0, explanation_en: null, explanation_ms: null },
+    ]);
+    expect(hasCompleteAnswerKey(keyed)).toBe(true);
   });
 });

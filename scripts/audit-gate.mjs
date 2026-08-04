@@ -72,14 +72,22 @@ const allowlist = existsSync(allowlistPath)
   : [];
 
 // Collect every GHSA id at or above the threshold, with its package.
+//
+// The threshold is applied per ADVISORY, not per package. npm reports a
+// package's severity as the max across its advisories, so filtering only on
+// that leaked every moderate/low advisory belonging to a package that happened
+// to have one high — the report claimed "severity >= high" while listing
+// moderates.
 const found = new Map(); // ghsa -> { pkg, severity, title }
 for (const [pkg, v] of Object.entries(report.vulnerabilities ?? {})) {
   if ((RANK[v.severity] ?? 0) < minRank) continue;
   for (const via of v.via ?? []) {
     if (typeof via === "string" || !via.url) continue;
+    const severity = via.severity ?? v.severity;
+    if ((RANK[severity] ?? 0) < minRank) continue;
     const ghsa = via.url.split("/").pop();
     if (!found.has(ghsa)) {
-      found.set(ghsa, { pkg, severity: via.severity ?? v.severity, title: via.title });
+      found.set(ghsa, { pkg, severity, title: via.title });
     }
   }
 }

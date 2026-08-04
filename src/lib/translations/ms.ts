@@ -204,6 +204,8 @@ export const ms: Record<TranslationKey, string> = {
   "exam.timeUp":                   "Masa tamat!",
   "exam.autoSubmitted":            "Ujian anda telah dihantar secara automatik.",
   "exam.saved":                    "Keputusan disimpan!",
+  "exam.grading":                  "Menyemak jawapan anda…",
+  "exam.reviewUnavailable":        "Percubaan anda telah disimpan, tetapi semakan jawapan tidak dapat dimuatkan. Sila semak sambungan anda dan cuba lagi.",
   "exam.confidence.low":           "Rendah",
   "exam.confidence.medium":        "Sederhana",
   "exam.confidence.high":          "Tinggi",

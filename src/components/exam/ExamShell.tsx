@@ -12,11 +12,16 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useExamTimer } from "@/hooks/useExamTimer";
-import type { KppQuestion } from "@/types/database";
+import type { ExamQuestion } from "@/services/questions.service";
 import type { TranslationKey } from "@/lib/translations";
 
 // ── Runtime shuffle (true random — runs once per mount) ────────────────────────
-import { shuffleQuestionOptions, toStorageAnswers } from "./examScoring";
+import {
+  shuffleQuestionOptions,
+  toStorageAnswers,
+  countCorrect,
+  type OptionPermutations,
+} from "./examScoring";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,16 +38,27 @@ export interface ExamResult {
    * trigger grades against kpp_questions.correct_index, which is unshuffled.
    */
   answersForStorage: Record<string, number>;
+  /**
+   * Option permutations for this attempt, so a caller that fetches the answer
+   * key AFTER submission (mock exams) can map each correct_index from database
+   * order onto the position the learner actually saw. See applyAnswerKey().
+   */
+  permutations: OptionPermutations;
+  /**
+   * Provisional. Zero for a mock exam until the key is fetched, because the
+   * key is deliberately not sent to the browser during the exam. The server
+   * regrades on insert regardless — that is the authoritative score.
+   */
   score: number;
   total: number;
   percentage: number;
   durationSeconds: number;
-  questions: KppQuestion[];
+  questions: ExamQuestion[];
   autoSubmitted?: boolean;
 }
 
 interface ExamShellProps {
-  questions: KppQuestion[];
+  questions: ExamQuestion[];
   language: "en" | "ms";
   timeLimit?: number;
   mode: "quiz" | "mock";
@@ -99,11 +115,12 @@ export function ExamShell({
     hasSubmitted.current = true;
     
     onTimeUp?.();
-    const score = shuffledQuestions.reduce((acc, q) => {
-      return acc + (answers[q.id] === q.correct_index ? 1 : 0);
-    }, 0);
+    // Zero for a mock exam: the answer key is not in the browser yet. The
+    // caller fetches it after submission and regrades (see applyAnswerKey).
+    const score = countCorrect(shuffledQuestions, answers);
     onComplete({
       answers,
+      permutations,
       answersForStorage: toStorageAnswers(answers, permutations),
       score,
       total: shuffledQuestions.length,
@@ -208,11 +225,12 @@ export function ExamShell({
     hasSubmitted.current = true;
     
     setShowSubmitModal(false);
-    const score = shuffledQuestions.reduce((acc, q) => {
-      return acc + (answers[q.id] === q.correct_index ? 1 : 0);
-    }, 0);
+    // Zero for a mock exam: the answer key is not in the browser yet. The
+    // caller fetches it after submission and regrades (see applyAnswerKey).
+    const score = countCorrect(shuffledQuestions, answers);
     onComplete({
       answers,
+      permutations,
       answersForStorage: toStorageAnswers(answers, permutations),
       score,
       total: shuffledQuestions.length,

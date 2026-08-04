@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc -b --force",
     "clean": "node -e \"['dist','.vite','node_modules/.vite'].forEach(d => fs.rmSync(d, {recursive: true, force: true}))\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

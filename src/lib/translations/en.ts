@@ -203,6 +203,8 @@ export const en = {
   "exam.timeUp":                   "Time's up!",
   "exam.autoSubmitted":            "Your test was auto-submitted.",
   "exam.saved":                    "Result saved!",
+  "exam.grading":                  "Marking your answers…",
+  "exam.reviewUnavailable":        "Your attempt was saved, but the answer review could not be loaded. Check your connection and try again.",
   "exam.confidence.low":           "Low",
   "exam.confidence.medium":        "Medium",
   "exam.confidence.high":          "High",

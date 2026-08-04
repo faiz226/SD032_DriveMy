@@ -68,7 +68,9 @@ export function generatePDF({ result, language, mode, setId }: GeneratePDFOption
   result.questions.forEach((q) => {
     if (!categoryMap[q.category]) categoryMap[q.category] = { correct: 0, total: 0 };
     categoryMap[q.category].total++;
-    if (result.answers[q.id] === q.correct_index) categoryMap[q.category].correct++;
+    if (q.correct_index !== undefined && result.answers[q.id] === q.correct_index) {
+      categoryMap[q.category].correct++;
+    }
   });
 
   doc.setFontSize(13);
@@ -112,8 +114,15 @@ export function generatePDF({ result, language, mode, setId }: GeneratePDFOption
       const qText = lang === "en" ? q.question_en : q.question_ms;
       const userIdx = result.answers[q.id];
       const userAns = userIdx !== undefined ? `${String.fromCharCode(65 + userIdx)}) ${opts[userIdx]}` : "-";
-      const correctAns = `${String.fromCharCode(65 + q.correct_index)}) ${opts[q.correct_index]}`;
-      const isCorrect = userIdx === q.correct_index;
+      // correct_index is absent when the answer key could not be fetched after
+      // a mock exam. Without this guard the cell renders as garbage from
+      // String.fromCharCode(NaN) rather than an honest "unknown".
+      const correctIdx = q.correct_index;
+      const correctAns =
+        correctIdx === undefined
+          ? "-"
+          : `${String.fromCharCode(65 + correctIdx)}) ${opts[correctIdx]}`;
+      const isCorrect = correctIdx !== undefined && userIdx === correctIdx;
       return [
         String(i + 1),
         qText.length > 80 ? qText.slice(0, 77) + "..." : qText,

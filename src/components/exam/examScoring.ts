@@ -1,4 +1,4 @@
-import type { KppQuestion } from "@/types/database";
+import type { ExamQuestion, AnswerKeyEntry } from "@/services/questions.service";
 
 /**
  * Per-question option permutation: `perm[displayIndex] = originalIndex`.
@@ -7,7 +7,7 @@ import type { KppQuestion } from "@/types/database";
 export type OptionPermutations = Record<string, number[]>;
 
 export interface ShuffleResult {
-  questions: KppQuestion[];
+  questions: ExamQuestion[];
   permutations: OptionPermutations;
 }
 
@@ -20,8 +20,11 @@ export interface ShuffleResult {
  * Submitting display-order indices therefore scores every attempt against a
  * permutation the server never saw. Callers must map answers back through
  * `permutations` before persisting (see toStorageAnswers).
+ *
+ * Works whether or not the question carries an answer key: mock exams are
+ * fetched without one, practice quizzes with.
  */
-export function shuffleQuestionOptions(questions: KppQuestion[]): ShuffleResult {
+export function shuffleQuestionOptions(questions: ExamQuestion[]): ShuffleResult {
   const permutations: OptionPermutations = {};
 
   const shuffled = questions.map((q) => {
@@ -34,12 +37,15 @@ export function shuffleQuestionOptions(questions: KppQuestion[]): ShuffleResult 
       [perm[i], perm[j]] = [perm[j], perm[i]];
     }
     permutations[q.id] = perm;
-    const new_correct = perm.indexOf(q.correct_index);
+
     return {
       ...q,
       options_en: perm.map((i) => opts_en[i]),
       options_ms: perm.map((i) => opts_ms[i]),
-      correct_index: new_correct,
+      // Only meaningful when the key is present (practice mode). For a mock
+      // exam it stays undefined until applyAnswerKey() runs after submission.
+      correct_index:
+        q.correct_index === undefined ? undefined : perm.indexOf(q.correct_index),
     };
   });
 
@@ -61,4 +67,56 @@ export function toStorageAnswers(
     out[questionId] = perm?.[displayIndex] ?? displayIndex;
   }
   return out;
+}
+
+/**
+ * Merge a post-submission answer key into the shuffled questions the learner
+ * actually saw, translating each correct_index from database order into the
+ * display position on screen.
+ *
+ * Without this the review screen would highlight the wrong option: the key is
+ * in original order, but the options were rendered shuffled.
+ */
+export function applyAnswerKey(
+  questions: ExamQuestion[],
+  permutations: OptionPermutations,
+  key: AnswerKeyEntry[]
+): ExamQuestion[] {
+  const byId = new Map(key.map((entry) => [entry.id, entry]));
+
+  return questions.map((q) => {
+    const entry = byId.get(q.id);
+    if (!entry) return q;
+
+    const perm = permutations[q.id];
+    // indexOf maps original position -> display position. Fall back to the
+    // original index when no permutation was recorded.
+    const displayCorrect = perm ? perm.indexOf(entry.correct_index) : entry.correct_index;
+
+    return {
+      ...q,
+      correct_index: displayCorrect,
+      explanation_en: entry.explanation_en,
+      explanation_ms: entry.explanation_ms,
+    };
+  });
+}
+
+/**
+ * Count correct answers. Questions with no known key are skipped rather than
+ * counted wrong, so a partial key cannot silently deflate a learner's score.
+ */
+export function countCorrect(
+  questions: ExamQuestion[],
+  answers: Record<string, number>
+): number {
+  return questions.reduce((total, q) => {
+    if (q.correct_index === undefined) return total;
+    return total + (answers[q.id] === q.correct_index ? 1 : 0);
+  }, 0);
+}
+
+/** Whether every question carries a key — i.e. the review screen can be shown. */
+export function hasCompleteAnswerKey(questions: ExamQuestion[]): boolean {
+  return questions.length > 0 && questions.every((q) => q.correct_index !== undefined);
 }
