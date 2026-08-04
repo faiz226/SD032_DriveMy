@@ -92,6 +92,23 @@ Corrected assessment — the key was **never exposed**, verified rather than ass
 **A5 🟠 HIGH — Auth redirect URLs pointed at a third party. Fixed.**
 `site_url` and `additional_redirect_urls` in [config.toml](supabase/config.toml:154) named `drivemy.vercel.app`. Now localhost-only, with a warning comment. **The hosted project must be checked and corrected by hand** — `supabase db push` does not push `[auth]` config.
 
+**A9 🔴 CRITICAL — Every prior finding in this document was verified against the wrong project, and the real one was unpatched. Fixed and independently re-verified (2026-08-04).**
+
+The Supabase account holds **two live projects**: "DriveMy" (`dwtrtdwlsexcrjzroumo`) and "DriveMy2" (`yvkzixbyxonvlicyrhpy`). Every config file and every finding in this audit had been written against "DriveMy2." Checked directly rather than assumed, via `supabase migration list` against each project:
+
+- **"DriveMy2"** (the one this whole document references): **zero migrations ever applied.** An empty shell. Nothing in this audit's §3.3, §3.4, or §3.8 findings was ever describing a real, running database.
+- **"DriveMy"** (`dwtrtdwlsexcrjzroumo`): the original 5 migrations applied, **none of the 6 security migrations from this remediation.** Confirmed live and exploitable: an unauthenticated request against `/rest/v1/profiles` returned `200 OK` before the fix. Confirmed zero rows via the same request — no real user has ever signed up on either project, so this closed a gap rather than remediated a breach.
+
+Root cause not established. Worth the owner checking whether "DriveMy2" was created by mistake (e.g., a mistyped or duplicated project name) and, if so, deleting it — an empty duplicate quietly consumes one of the two projects allowed on Supabase's free tier.
+
+**Remediation, executed directly against the real project via the Supabase CLI, not left as unexecuted SQL files this time:**
+- Linked to `dwtrtdwlsexcrjzroumo`, pushed all 6 pending security migrations (`supabase db push`).
+- Ran a 12-check verification suite covering every migration (RLS scoping, `delete_user()` existence and grants, `search_path` pinning, `is_admin` write protection, RLS enablement across all 7 tables, retention purge scoping, audit-log append-only enforcement, JSONB payload triggers) — **all 12 passed**, confirmed via direct SQL against `pg_policies`/`pg_proc`/`pg_trigger`, not by trusting a clean `db push` exit code.
+- Cross-checked with Supabase's own official linter (`supabase db advisors --type security`), independent of anything authored in this audit. It caught something the hand-written checks missed: three trigger-only functions (`handle_new_user`, `recompute_exam_score`, `audit_profiles_change`) were callable directly via `/rest/v1/rpc/<name>` by both `anon` and `authenticated`, because Postgres grants `EXECUTE` to `PUBLIC` by default and none of the migrations that created them revoked it. Real-world exploitability was low — each is declared `RETURNS trigger`, which Postgres itself refuses to invoke outside an actual trigger firing — but an always-erroring RPC endpoint sitting exposed is still worth closing, and it is exactly the kind of gap `db advisors` exists to catch.
+- Fixing it took **two** migrations, not one: the first (`20260804000500`) revoked `EXECUTE` from `PUBLIC` only, and the advisor still flagged all three functions afterward. Ground-truth `has_function_privilege()` checks showed why — Supabase's project template grants `EXECUTE` to `anon` and `authenticated` **explicitly**, independent of `PUBLIC` membership, so revoking from `PUBLIC` alone did nothing to those two roles. A second migration (`20260804000600`) revoked from the named roles directly. Re-ran the advisor after: clean except one item, `delete_user` being callable by `authenticated` — which is correct and intentional, exactly what that RPC is for.
+
+Net effect: everything in §3.3.1 (public profiles), §3.3.2 (unpinned `search_path`), §3.3.3 (storage write policy), §3.14.1 (missing `delete_user`), §3.3.6/§3.14.3 (retention, audit log), and §3.3 (jsonb constraints) is now **confirmed fixed on the project that actually matters**, verified by two independent methods, not merely "the SQL file exists in the repo."
+
 ---
 
 ## 1. Executive Summary

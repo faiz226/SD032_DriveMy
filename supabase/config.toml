@@ -155,7 +155,15 @@ enabled = true
 #
 # This was previously "https://drivemy.vercel.app". That domain is NOT this
 # application: it serves an unrelated Lovable-generated project wired to a
-# different Supabase project (rbamlanjamaeemltytgd, not yvkzixbyxonvlicyrhpy).
+# different Supabase project entirely.
+#
+# Separately: this project's account has TWO Supabase projects — "DriveMy"
+# (ref dwtrtdwlsexcrjzroumo) and "DriveMy2" (ref yvkzixbyxonvlicyrhpy).
+# "DriveMy" is the real one (it has the actual schema and, per `supabase
+# link`, is the one this repo is linked to). "DriveMy2" is an empty shell —
+# confirmed via `supabase migration list`, zero migrations applied — that
+# earlier config and docs were mistakenly pointing at. If you ever see
+# yvkzixbyxonvlicyrhpy referenced as "the project" anywhere, that is stale.
 #
 # site_url and additional_redirect_urls decide where Supabase sends password
 # recovery and email confirmation links — and those links carry single-use
