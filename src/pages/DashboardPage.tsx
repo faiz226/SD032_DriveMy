@@ -15,7 +15,9 @@ import {
   getBestMockTestScore,
   getSimulationsDone,
   getRecentActivity,
+  THEORY_MODULE_IDS,
 } from "@/services/analytics.service";
+import { LoadError } from "@/components/shared/LoadError";
 import { useOverallReadiness } from "@/hooks/useProgressStats";
 
 const LazyDonutRing = lazy(() =>
@@ -40,7 +42,7 @@ export function DashboardPage() {
     greetingKey = "dashboard.greeting.evening";
   }
 
-  const { data: theoryProgress = [], isPending: theoryPending } = useQuery({
+  const theoryQ = useQuery({
     queryKey: ["theoryProgress", userId],
     queryFn: () => getTheoryProgress(userId!),
     enabled: !!userId,
@@ -49,7 +51,7 @@ export function DashboardPage() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: quizBest = 0, isPending: quizPending } = useQuery({
+  const quizQ = useQuery({
     queryKey: ["quizBest", userId],
     queryFn: () => getBestQuizScore(userId!),
     enabled: !!userId,
@@ -58,7 +60,7 @@ export function DashboardPage() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: mockBest = 0, isPending: mockPending } = useQuery({
+  const mockQ = useQuery({
     queryKey: ["mockBest", userId],
     queryFn: () => getBestMockTestScore(userId!),
     enabled: !!userId,
@@ -67,7 +69,7 @@ export function DashboardPage() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: simsDone = 0, isPending: simsPending } = useQuery({
+  const simsQ = useQuery({
     queryKey: ["simsDone", userId],
     queryFn: () => getSimulationsDone(userId!),
     enabled: !!userId,
@@ -76,7 +78,7 @@ export function DashboardPage() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: recentActivity = [], isPending: activityPending } = useQuery({
+  const activityQ = useQuery({
     queryKey: ["recentActivity", userId],
     queryFn: () => getRecentActivity(userId!),
     enabled: !!userId,
@@ -85,8 +87,34 @@ export function DashboardPage() {
     refetchOnWindowFocus: false,
   });
 
-  const theoryCompleted = theoryProgress.filter((p) => p.completed).length;
-  const theoryPercent = Math.round((theoryCompleted / 3) * 100) || 0;
+  const { data: theoryProgress = [], isPending: theoryPending } = theoryQ;
+  const { data: quizBest = 0, isPending: quizPending } = quizQ;
+  const { data: mockBest = 0, isPending: mockPending } = mockQ;
+  const { data: simsDone = 0, isPending: simsPending } = simsQ;
+  const { data: recentActivity = [], isPending: activityPending } = activityQ;
+
+  // No error branch existed here: a failed fetch left every tile shimmering
+  // forever with no message and no way to retry.
+  const loadFailed =
+    theoryQ.isError || quizQ.isError || mockQ.isError || simsQ.isError || activityQ.isError;
+
+  const retryAll = () => {
+    void theoryQ.refetch();
+    void quizQ.refetch();
+    void mockQ.refetch();
+    void simsQ.refetch();
+    void activityQ.refetch();
+  };
+
+  // Count only the three real theory modules, by id. Counting every completed
+  // row and dividing by 3 (as this did) let the Safety page's separate
+  // "safety_ethics" row stand in for an unvisited theory tab — so a learner
+  // could see 100% theory without having opened all three.
+  const completedTheoryIds = new Set(
+    theoryProgress.filter((p) => p.completed).map((p) => p.module_id)
+  );
+  const theoryCompleted = THEORY_MODULE_IDS.filter((id) => completedTheoryIds.has(id)).length;
+  const theoryPercent = Math.round((theoryCompleted / THEORY_MODULE_IDS.length) * 100) || 0;
 
   const TOTAL_SIMS = 8;
   const simsPercent = Math.min((simsDone / TOTAL_SIMS) * 100, 100);
@@ -102,6 +130,19 @@ export function DashboardPage() {
     ctaRoute = ROUTES.MOCK_TEST;
   } else {
     ctaRoute = ROUTES.SIMULATIONS;
+  }
+
+  if (loadFailed) {
+    return (
+      <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6 pb-24 md:pb-8">
+        <header className="py-4 md:py-6 border-b border-border">
+          <h1 className="font-heading text-4xl md:text-5xl font-bold tracking-tighter text-foreground">
+            {name || t("nav.dashboard")}
+          </h1>
+        </header>
+        <LoadError onRetry={retryAll} />
+      </div>
+    );
   }
 
   return (

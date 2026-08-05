@@ -219,13 +219,33 @@ export async function getSimStats(userId: string, dateRange?: number) {
   return { completed, averageScore, byManeuver, totalDuration, history: rows };
 }
 
+/**
+ * The theory modules that count towards theory progress.
+ *
+ * This must be an explicit list. The previous version counted EVERY completed
+ * row in theory_progress and divided by 3 — but SafetyPage also writes a row
+ * ("safety_ethics"), so visiting the Safety page plus any two theory tabs
+ * reported "100% theory complete" without the third tab ever being opened.
+ */
+export const THEORY_MODULE_IDS = ["theory-signs", "theory-rules", "theory-safety"] as const;
+
 export async function getTheoryProgressStats(userId: string) {
-  const { data, error } = await supabase.from("theory_progress").select("*").eq("user_id", userId);
+  const { data, error } = await supabase
+    .from("theory_progress")
+    .select("*")
+    .eq("user_id", userId);
   if (error) throw error;
-  // One row per theory tab: theory-signs, theory-rules, theory-safety
-  const totalModules = 3;
-  const rows = (data ?? []) as { completed: boolean }[];
-  const completedModules = rows.filter((d) => d.completed).length;
-  const percentage = Math.min((completedModules / totalModules) * 100, 100);
+
+  const rows = (data ?? []) as { module_id: string; completed: boolean }[];
+
+  // Count distinct theory modules only — ignore unrelated rows, and do not let
+  // a duplicate row for the same module count twice.
+  const completedIds = new Set(
+    rows.filter((d) => d.completed).map((d) => d.module_id)
+  );
+  const completedModules = THEORY_MODULE_IDS.filter((id) => completedIds.has(id)).length;
+  const totalModules = THEORY_MODULE_IDS.length;
+  const percentage = (completedModules / totalModules) * 100;
+
   return { completedModules, totalModules, percentage, byModule: rows };
 }

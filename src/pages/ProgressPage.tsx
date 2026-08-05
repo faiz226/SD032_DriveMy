@@ -22,6 +22,7 @@ import { CategoryBreakdownBar } from "@/components/progress/CategoryBreakdownBar
 import { QuizHistoryTable } from "@/components/progress/QuizHistoryTable";
 import { MockHistoryTable } from "@/components/progress/MockHistoryTable";
 import { SimHistoryTable } from "@/components/progress/SimHistoryTable";
+import { LoadError } from "@/components/shared/LoadError";
 
 export function ProgressPage() {
   const { t, language } = useLanguage();
@@ -30,11 +31,30 @@ export function ProgressPage() {
   const [dateRange, setDateRange] = useState<number>(0);
   const [activeTab, setActiveTab] = useState("quizzes");
 
-  const { data: quiz, isPending: quizPending } = useQuizStats(dateRange || undefined);
-  const { data: mock, isPending: mockPending } = useMockStats(dateRange || undefined);
-  const { data: sim, isPending: simPending } = useSimStats(dateRange || undefined);
-  const { data: theory, isPending: theoryPending } = useTheoryProgress();
-  const { data: readiness, isPending: readinessPending } = useOverallReadiness();
+  const quizQ = useQuizStats(dateRange || undefined);
+  const mockQ = useMockStats(dateRange || undefined);
+  const simQ = useSimStats(dateRange || undefined);
+  const theoryQ = useTheoryProgress();
+  const readinessQ = useOverallReadiness();
+
+  const { data: quiz, isPending: quizPending } = quizQ;
+  const { data: mock, isPending: mockPending } = mockQ;
+  const { data: sim, isPending: simPending } = simQ;
+  const { data: theory, isPending: theoryPending } = theoryQ;
+  const { data: readiness, isPending: readinessPending } = readinessQ;
+
+  // Previously there was no error branch at all: a failed fetch left every
+  // skeleton shimmering indefinitely with no message and no way to retry.
+  const loadFailed =
+    quizQ.isError || mockQ.isError || simQ.isError || theoryQ.isError || readinessQ.isError;
+
+  const retryAll = () => {
+    void quizQ.refetch();
+    void mockQ.refetch();
+    void simQ.refetch();
+    void theoryQ.refetch();
+    void readinessQ.refetch();
+  };
 
   const handleExport = async () => {
     if (!hasData) return;
@@ -70,6 +90,17 @@ export function ProgressPage() {
     { category: "traffic-rules", averageScore: 0, attempts: 0 },
     { category: "safety-principles", averageScore: 0, attempts: 0 },
   ];
+
+  if (loadFailed) {
+    return (
+      <div className="page-shell max-w-7xl space-y-6">
+        <header className="page-header">
+          <h1 className="page-title">{t("progress.title")}</h1>
+        </header>
+        <LoadError onRetry={retryAll} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell max-w-7xl space-y-6">

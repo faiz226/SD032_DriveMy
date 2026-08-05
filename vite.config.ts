@@ -99,19 +99,30 @@ export default defineConfig({
           },
         ],
         categories: ["education", "utilities"],
+        // These URLs MUST match real routes in src/App.tsx. Both previously
+        // 404'd from the installed app's home-screen menu: "/quiz" (the route
+        // is "/quizzes") and "/signs" (no such route — the road sign browser
+        // lives in the Theory page).
         shortcuts: [
           {
             name: "Theory Quiz",
             short_name: "Quiz",
             description: "Start a KPP1 theory practice quiz",
-            url: "/quiz",
+            url: "/quizzes",
+            icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
+          },
+          {
+            name: "Mock Test",
+            short_name: "Mock",
+            description: "Sit a full 50-question JPJ mock exam",
+            url: "/mock-test",
             icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
           },
           {
             name: "Road Signs",
             short_name: "Signs",
             description: "Browse Malaysian road signs",
-            url: "/signs",
+            url: "/theory",
             icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
           },
         ],
