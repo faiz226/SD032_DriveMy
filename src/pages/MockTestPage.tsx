@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Warning } from "phosphor-react";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { MOCK_TIME_LIMIT, MOCK_PASS_MARK, QUESTIONS_BY_SET } from "@/lib/constants";
 import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/questions.service";
 import { applyAnswerKey, countCorrect } from "@/components/exam/examScoring";
+import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { saveMockResult } from "@/services/results.service";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
@@ -194,7 +197,21 @@ export function MockTestPage() {
           onComplete={handleComplete}
           onWarning={handleWarning}
           onTimeUp={handleTimeUp}
+          persistScope={PROGRESS_SCOPES.mock(selectedSet)}
+          userId={user?.id}
         />
+      )}
+
+      {/* Without this, a failed or emptied question fetch left the user staring
+          at a blank page with no explanation and no way forward. */}
+      {phase === "testing" && questions.length === 0 && (
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4 bg-card rounded-2xl border shadow-sm p-8 mt-8">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+            <Warning className="h-8 w-8 text-muted-foreground" aria-hidden />
+          </div>
+          <p className="text-muted-foreground max-w-sm">{t("quiz.noQuestions")}</p>
+          <Button onClick={handleRetry}>{t("common.back")}</Button>
+        </div>
       )}
 
       {phase === "results" && result && (

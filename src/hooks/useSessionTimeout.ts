@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import { useActivityStore } from '@/stores/activityStore';
 import { toast } from 'sonner';
 
 /** 30-minute inactivity window — sign the user out automatically. */
@@ -36,6 +37,14 @@ export function useSessionTimeout() {
     const resetTimeout = () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(async () => {
+        // Never sign someone out mid-test. The mock exam runs 45 minutes
+        // against a 30-minute idle timeout, so a careful candidate — or one who
+        // pauses and steps away — was being logged out and losing the attempt.
+        // Re-arm instead of firing; the check repeats until the test is done.
+        if (useActivityStore.getState().isTestInProgress()) {
+          resetTimeout();
+          return;
+        }
         await signOut();
         toast.error('Session expired due to inactivity. Please sign in again.', {
           duration: 6000,

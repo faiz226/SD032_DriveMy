@@ -23,18 +23,43 @@ export interface ShuffleResult {
  *
  * Works whether or not the question carries an answer key: mock exams are
  * fetched without one, practice quizzes with.
+ *
+ * `existing` REUSES a previous attempt's permutations instead of generating
+ * new ones. This is what makes resuming an interrupted test safe. Saved answers
+ * are display-order indices, so if a resumed attempt re-shuffled from scratch,
+ * every restored answer would silently point at a different option than the one
+ * the learner actually picked. Any question without an entry in `existing`
+ * (a new or changed question) still gets a fresh shuffle.
  */
-export function shuffleQuestionOptions(questions: ExamQuestion[]): ShuffleResult {
+export function shuffleQuestionOptions(
+  questions: ExamQuestion[],
+  existing?: OptionPermutations
+): ShuffleResult {
   const permutations: OptionPermutations = {};
 
   const shuffled = questions.map((q) => {
     const opts_en = [...q.options_en];
     const opts_ms = [...q.options_ms];
-    // Build permutation via Fisher-Yates
-    const perm = opts_en.map((_, i) => i);
-    for (let i = perm.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [perm[i], perm[j]] = [perm[j], perm[i]];
+
+    // Reuse a saved permutation when it is present and still structurally
+    // valid for this question; otherwise shuffle fresh.
+    const saved = existing?.[q.id];
+    const isUsable =
+      Array.isArray(saved) &&
+      saved.length === opts_en.length &&
+      saved.every((v) => Number.isInteger(v) && v >= 0 && v < opts_en.length) &&
+      new Set(saved).size === saved.length;
+
+    let perm: number[];
+    if (isUsable) {
+      perm = [...saved];
+    } else {
+      // Build permutation via Fisher-Yates
+      perm = opts_en.map((_, i) => i);
+      for (let i = perm.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [perm[i], perm[j]] = [perm[j], perm[i]];
+      }
     }
     permutations[q.id] = perm;
 

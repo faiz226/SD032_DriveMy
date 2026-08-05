@@ -223,3 +223,59 @@ describe("hasCompleteAnswerKey", () => {
     expect(hasCompleteAnswerKey(keyed)).toBe(true);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Resume safety
+//
+// Saved answers are DISPLAY-order indices. If a resumed attempt reshuffled from
+// scratch, every restored answer would silently point at a different option
+// than the learner picked — turning a helpful resume into corrupted results.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("shuffleQuestionOptions — resuming an interrupted attempt", () => {
+  it("reuses saved permutations so restored answers still point at the same option", () => {
+    for (let round = 0; round < 50; round++) {
+      const q = makeQuestion("q1", 2); // correct answer is the text "C"
+      const first = shuffleQuestionOptions([q]);
+
+      // The learner picked whatever was shown at this display position.
+      const pickedDisplayIndex = first.questions[0].options_en.indexOf("C");
+      const pickedText = first.questions[0].options_en[pickedDisplayIndex];
+
+      // Resume: same questions, saved permutations handed back in.
+      const resumed = shuffleQuestionOptions([q], first.permutations);
+
+      expect(resumed.questions[0].options_en).toEqual(first.questions[0].options_en);
+      expect(resumed.questions[0].options_en[pickedDisplayIndex]).toBe(pickedText);
+      expect(resumed.permutations["q1"]).toEqual(first.permutations["q1"]);
+    }
+  });
+
+  it("falls back to a fresh shuffle for questions with no saved permutation", () => {
+    const a = makeQuestion("a", 0);
+    const b = makeQuestion("b", 1);
+    const first = shuffleQuestionOptions([a]);
+
+    // Only "a" has a saved order; "b" is new to this attempt.
+    const resumed = shuffleQuestionOptions([a, b], first.permutations);
+
+    expect(resumed.permutations["a"]).toEqual(first.permutations["a"]);
+    expect(resumed.permutations["b"]).toHaveLength(4);
+    expect([...resumed.permutations["b"]].sort()).toEqual([0, 1, 2, 3]);
+  });
+
+  it("ignores a corrupt saved permutation instead of producing garbage options", () => {
+    const q = makeQuestion("q1", 0);
+
+    for (const bad of [[0, 0, 1, 2], [0, 1, 2], [0, 1, 2, 9], "nonsense"]) {
+      const res = shuffleQuestionOptions([q], { q1: bad as number[] });
+      const perm = res.permutations["q1"];
+
+      // Must be a genuine permutation of 0..3, not the corrupt input.
+      expect([...perm].sort()).toEqual([0, 1, 2, 3]);
+      // And the flagged answer must still be the originally-correct text.
+      expect(res.questions[0].options_en[res.questions[0].correct_index!])
+        .toBe(q.options_en[q.correct_index]);
+    }
+  });
+});

@@ -11,7 +11,10 @@ import {
 } from "phosphor-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { useExamTimer } from "@/hooks/useExamTimer";
+import { saveProgress, loadProgress, clearProgress } from "@/lib/testProgress";
+import { useActivityStore } from "@/stores/activityStore";
 import type { ExamQuestion } from "@/services/questions.service";
 import type { TranslationKey } from "@/lib/translations";
 
@@ -66,6 +69,28 @@ interface ExamShellProps {
   onComplete: (result: ExamResult) => void;
   onWarning?: () => void;
   onTimeUp?: () => void;
+  /**
+   * Storage scope for crash-safe resume (see lib/testProgress). Omit to opt out
+   * of persistence entirely. Requires `userId` — progress is stored per user so
+   * a shared device never restores one learner's attempt for another.
+   */
+  persistScope?: string;
+  userId?: string;
+}
+
+/** What gets written to storage so an interrupted attempt can be resumed. */
+interface PersistedExamState {
+  answers: Record<string, number>;
+  /**
+   * The option order this attempt was shown. MUST be restored rather than
+   * re-shuffled: `answers` holds display-order indices, so a fresh shuffle
+   * would silently repoint every saved answer at a different option.
+   */
+  permutations: OptionPermutations;
+  currentIndex: number;
+  flagged: string[];
+  /** Guards against restoring into a different question set. */
+  questionIds: string[];
 }
 
 type QuizPhase = "answering" | "revealed";
@@ -81,21 +106,44 @@ export function ExamShell({
   onComplete,
   onWarning,
   onTimeUp,
+  persistScope,
+  userId,
 }: ExamShellProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  // Read any interrupted attempt ONCE, synchronously, before first paint — the
+  // shuffle below needs the saved permutations to be available immediately.
+  const [restored] = useState(() => {
+    if (!persistScope || !userId) return null;
+    const snap = loadProgress<PersistedExamState>(persistScope, userId);
+    if (!snap) return null;
+
+    // Only resume into the same question set. If the bank was reseeded or a
+    // different set was picked, the saved indices are meaningless.
+    const currentIds = questions.map((q) => q.id).join(",");
+    const savedIds = (snap.data.questionIds ?? []).join(",");
+    if (!savedIds || savedIds !== currentIds) {
+      clearProgress(persistScope, userId);
+      return null;
+    }
+    return snap;
+  });
+
+  const [currentIndex, setCurrentIndex] = useState(restored?.data.currentIndex ?? 0);
+  const [answers, setAnswers] = useState<Record<string, number>>(restored?.data.answers ?? {});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [flagged, setFlagged] = useState<Set<string>>(new Set());
+  const [flagged, setFlagged] = useState<Set<string>>(new Set(restored?.data.flagged ?? []));
   const [quizPhase, setQuizPhase] = useState<QuizPhase>("answering");
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
-  // Shuffle options once per mount (true random per attempt)
+  // Shuffle options once per mount — reusing the resumed attempt's option order
+  // when there is one, so restored answers still point at the same options.
   const { questions: shuffledQuestions, permutations } = useMemo(
-    () => shuffleQuestionOptions(questions),
-    [questions]
+    () => shuffleQuestionOptions(questions, restored?.data.permutations),
+    [questions, restored]
   );
 
-  const startTimeRef = useRef(Date.now());
+  // A resumed attempt keeps its ORIGINAL start time, so elapsed duration and
+  // remaining exam time stay honest across the interruption.
+  const startTimeRef = useRef(restored?.startedAt ?? Date.now());
   const optionsRef = useRef<HTMLDivElement>(null);
 
   const question = shuffledQuestions[currentIndex] || ({} as typeof shuffledQuestions[0]);
@@ -109,6 +157,62 @@ export function ExamShell({
 
   const hasSubmitted = useRef(false);
 
+  // ── Crash-safe persistence ────────────────────────────────────────────────
+  // Write a snapshot whenever the learner's work changes. Cheap (a few hundred
+  // bytes, synchronous) and it means an accidental tap on the bottom nav, a
+  // refresh, or a closed tab no longer throws the attempt away.
+  useEffect(() => {
+    if (!persistScope || !userId || hasSubmitted.current) return;
+    // Nothing worth restoring yet — don't leave an empty entry lying around.
+    if (Object.keys(answers).length === 0 && currentIndex === 0 && flagged.size === 0) return;
+
+    saveProgress<PersistedExamState>(persistScope, userId, startTimeRef.current, {
+      answers,
+      permutations,
+      currentIndex,
+      flagged: [...flagged],
+      questionIds: questions.map((q) => q.id),
+    });
+  }, [answers, currentIndex, flagged, permutations, questions, persistScope, userId]);
+
+  // Suspend the inactivity sign-out for as long as this exam is mounted, so a
+  // 45-minute mock test cannot be cut short by a 30-minute idle timeout.
+  useEffect(() => {
+    const { beginTest, endTest } = useActivityStore.getState();
+    beginTest();
+    return endTest;
+  }, []);
+
+  /** Drop the saved attempt — called once the result has been handed upstream. */
+  const clearSavedProgress = useCallback(() => {
+    if (persistScope && userId) clearProgress(persistScope, userId);
+  }, [persistScope, userId]);
+
+  // Tell the learner their work came back, rather than leaving them to wonder
+  // why they are mid-way through a test they thought they had lost.
+  useEffect(() => {
+    if (restored) toast.success(t("exam.resumed"));
+    // Fires once on mount for a resumed attempt.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Second line of defence behind persistence: make closing the tab or hitting
+  // back an explicit choice rather than an accident. Browsers show their own
+  // generic wording here; returnValue just opts in to the prompt.
+  useEffect(() => {
+    const answered = Object.keys(answers).length;
+    if (answered === 0) return;
+
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasSubmitted.current) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [answers]);
+
   // Timer (only for mock)
   const handleExpire = useCallback(() => {
     if (hasSubmitted.current) return;
@@ -118,6 +222,8 @@ export function ExamShell({
     // Zero for a mock exam: the answer key is not in the browser yet. The
     // caller fetches it after submission and regrades (see applyAnswerKey).
     const score = countCorrect(shuffledQuestions, answers);
+    // The attempt is being handed upstream — the saved copy has done its job.
+    clearSavedProgress();
     onComplete({
       answers,
       permutations,
@@ -131,8 +237,18 @@ export function ExamShell({
     });
   }, [answers, shuffledQuestions, permutations, onComplete, onTimeUp]);
 
+  // On a resumed timed exam, hand the timer the time that ACTUALLY remains.
+  // Without this, walking away and coming back would silently grant a fresh
+  // 45 minutes — turning the interruption into a way to game the clock.
+  const initialSeconds = useMemo(() => {
+    if (!timeLimit) return 99999;
+    if (!restored) return timeLimit;
+    const elapsedSec = Math.floor((Date.now() - restored.startedAt) / 1000);
+    return Math.max(0, timeLimit - elapsedSec);
+  }, [timeLimit, restored]);
+
   const timer = useExamTimer({
-    totalSeconds: timeLimit ?? 99999,
+    totalSeconds: initialSeconds,
     onWarning,
     onExpire: handleExpire,
     warningAt: 300,
@@ -228,6 +344,8 @@ export function ExamShell({
     // Zero for a mock exam: the answer key is not in the browser yet. The
     // caller fetches it after submission and regrades (see applyAnswerKey).
     const score = countCorrect(shuffledQuestions, answers);
+    // The attempt is being handed upstream — the saved copy has done its job.
+    clearSavedProgress();
     onComplete({
       answers,
       permutations,

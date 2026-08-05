@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type { User, Session } from "@supabase/supabase-js";
 import { signOut as signOutService } from "@/services/auth.service";
 import { clearUserScopedCaches } from "@/lib/cache";
+import { clearAllProgress } from "@/lib/testProgress";
 
 interface AuthState {
   user: User | null;
@@ -56,11 +57,17 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       signOut: async () => {
+        // Captured before state is cleared — progress is keyed by user id.
+        const outgoingUserId = useAuthStore.getState().user?.id;
         try {
           await signOutService();
         } catch (error) {
           console.warn("Failed to sign out on server, clearing locally", error);
         } finally {
+          // Drop any half-finished test. Without this, the next person to sign
+          // in on a shared device could be dropped into the previous learner's
+          // attempt — and their answers would be saved under the wrong account.
+          if (outgoingUserId) clearAllProgress(outgoingUserId);
           // Purge Workbox runtime caches before clearing local state. Without
           // this, responses fetched under the outgoing account stay on disk
           // and can be served to whoever signs in next on a shared device.

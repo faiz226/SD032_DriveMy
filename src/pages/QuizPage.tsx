@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
 import { fetchQuizQuestions } from "@/services/questions.service";
 import { saveQuizResult } from "@/services/results.service";
+import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
 import { TestResultsView } from "@/components/exam/TestResultsView";
@@ -156,6 +157,8 @@ export function QuizPage() {
           language={examLang}
           t={t}
           onComplete={handleComplete}
+          persistScope={PROGRESS_SCOPES.quiz}
+          userId={user?.id}
         />
       )}
 
