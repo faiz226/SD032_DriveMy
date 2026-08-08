@@ -30,7 +30,7 @@ const AccordionTrigger = React.forwardRef<
         "flex flex-1 items-center justify-between py-4",
         "text-sm font-medium text-foreground",
         "transition-colors hover:text-foreground/90",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md px-1 -mx-1",
+        "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))] focus-visible:ring-offset-background rounded-md px-1 -mx-1",
         "[&[data-state=open]>svg]:rotate-180",
         className
       )}
