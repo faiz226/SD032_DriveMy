@@ -153,9 +153,9 @@ function LoginForm() {
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? t("a11y.hidePassword") : t("a11y.showPassword")}
             className={cn(
-              "pointer-events-auto touch-target rounded-md",
+              "pointer-events-auto tap flex items-center justify-center rounded-md",
               "text-muted-foreground hover:text-foreground transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))] focus-visible:ring-offset-background"
             )}
           >
             {showPassword ? <EyeSlash className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -171,7 +171,7 @@ function LoginForm() {
           to={ROUTES.FORGOT_PASSWORD}
           className={cn(
             "text-sm text-primary hover:underline underline-offset-4",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))] rounded-sm"
           )}
         >
           {t("auth.forgotPassword")}
@@ -324,9 +324,9 @@ function RegisterForm() {
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? t("a11y.hidePassword") : t("a11y.showPassword")}
             className={cn(
-              "pointer-events-auto touch-target rounded-md",
+              "pointer-events-auto tap flex items-center justify-center rounded-md",
               "text-muted-foreground hover:text-foreground transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))] focus-visible:ring-offset-background"
             )}
           >
             {showPassword ? <EyeSlash className="h-4 w-4" weight="regular" /> : <Eye className="h-4 w-4" weight="regular" />}
@@ -350,9 +350,9 @@ function RegisterForm() {
             onClick={() => setShowConfirm((v) => !v)}
             aria-label={showConfirm ? t("a11y.hidePassword") : t("a11y.showPassword")}
             className={cn(
-              "pointer-events-auto touch-target rounded-md",
+              "pointer-events-auto tap flex items-center justify-center rounded-md",
               "text-muted-foreground hover:text-foreground transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))] focus-visible:ring-offset-background"
             )}
           >
             {showConfirm ? <EyeSlash className="h-4 w-4" weight="regular" /> : <Eye className="h-4 w-4" weight="regular" />}

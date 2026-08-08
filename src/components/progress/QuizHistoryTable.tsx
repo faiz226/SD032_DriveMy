@@ -98,7 +98,7 @@ export function QuizHistoryTable({ data }: QuizHistoryTableProps) {
                 <td className="px-4 py-3">
                   {row.duration_seconds ? `${Math.floor(row.duration_seconds / 60)}m ${row.duration_seconds % 60}s` : "--"}
                 </td>
-                <td className="px-4 py-3 uppercase text-xs font-semibold">
+                <td className="px-4 py-3 text-xs font-semibold">
                   {row.language}
                 </td>
               </tr>

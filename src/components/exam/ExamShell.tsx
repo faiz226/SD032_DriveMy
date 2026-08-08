@@ -250,14 +250,14 @@ export function ExamShell({
           <div className="p-5 md:p-7 flex-1">
               <div className="flex items-start justify-between mb-3">
                <div>
-                 <div className="inline-block text-[10px] font-bold tracking-wider uppercase px-2 py-1 rounded bg-primary/10 text-primary">
+                 <div className="inline-block text-[10px] font-bold px-2 py-1 rounded bg-primary/10 text-primary">
                    {mode === 'quiz' ? t("dashboard.practiceQuiz") : t("nav.mockTest")}
                  </div>
                  {mode === "mock" && (
                    <button
                      type="button"
                      onClick={toggleFlag}
-                     className={cn("ml-3 inline-flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase px-2 py-1 rounded transition-colors", flagged.has(question.id) ? "bg-warning/20 text-warning" : "bg-muted text-muted-foreground hover:bg-muted/80")}
+                     className={cn("ml-3 inline-flex items-center gap-1 text-[10px] font-bold  px-2 py-1 rounded transition-colors", flagged.has(question.id) ? "bg-warning/20 text-warning" : "bg-muted text-muted-foreground hover:bg-muted/80")}
                    >
                      <Flag className="w-3 h-3" weight={flagged.has(question.id) ? "fill" : "regular"} /> {t("exam.flagQuestion")}
                    </button>
@@ -399,11 +399,11 @@ export function ExamShell({
              </div>
              <div className="grid grid-cols-2 gap-2">
                <div className="rounded-lg bg-muted/40 p-3 text-center">
-                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("quiz.answered", { count: answeredCount, total: questions.length }).split(" ")[0]}</div>
+                 <div className="text-[10px] text-muted-foreground font-semibold">{t("quiz.answered", { count: answeredCount, total: questions.length }).split(" ")[0]}</div>
                  <div className="font-heading font-bold text-lg">{answeredCount}</div>
                </div>
                <div className="rounded-lg bg-muted/40 p-3 text-center">
-                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("quiz.timeRemaining").split(" ")[0]}</div>
+                 <div className="text-[10px] text-muted-foreground font-semibold">{t("quiz.timeRemaining").split(" ")[0]}</div>
                  <div className="font-heading font-bold text-lg">{questions.length - answeredCount}</div>
                </div>
              </div>

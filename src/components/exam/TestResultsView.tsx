@@ -123,7 +123,7 @@ export function TestResultsView({
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 page-enter">
-      <div className="card-premium p-6 sm:p-8 flex flex-col items-center text-center space-y-6">
+      <div className="plate p-6 sm:p-8 flex flex-col items-center text-center space-y-6">
         <DonutRing percentage={result.percentage} size={160} strokeWidth={16} />
 
         <div>
@@ -189,7 +189,7 @@ export function TestResultsView({
       </div>
 
       {/* ── Category breakdown ───────────────────────────────────────── */}
-      <div className="card-premium p-6 space-y-4">
+      <div className="plate p-6 space-y-4">
         <h3 className="font-heading font-semibold text-lg">{t("results.categoryBreakdown")}</h3>
         <div className="space-y-3">
           {categories.map((cat) => {
@@ -217,7 +217,7 @@ export function TestResultsView({
       </div>
 
       {/* ── Question review ──────────────────────────────────────────── */}
-      <div className="card-premium p-6 space-y-4">
+      <div className="plate p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h3 className="font-heading font-semibold text-lg">{t("results.reviewAnswers")}</h3>
           <div className="flex items-center gap-4">

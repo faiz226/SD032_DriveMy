@@ -73,7 +73,7 @@ export function FlipCard({
             )}
           </div>
           
-          <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60 group-hover:text-primary transition-colors font-medium mt-4 select-none">
+          <span className="text-[9px] text-muted-foreground/60 group-hover:text-primary transition-colors font-medium mt-4 select-none">
             Tap to Reveal / Ketik untuk Lihat
           </span>
 
@@ -85,7 +85,7 @@ export function FlipCard({
             className={cn(
               "absolute top-3 right-3 h-8 w-8 flex items-center justify-center rounded-full",
               "bg-background/80 backdrop-blur-sm border border-border shadow-sm hover:bg-accent transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]"
             )}
             aria-label="Bookmark sign"
           >
@@ -110,7 +110,7 @@ export function FlipCard({
             className={cn(
               "absolute top-3 right-3 h-8 w-8 flex items-center justify-center rounded-full",
               "bg-background/80 backdrop-blur-sm border border-border shadow-sm hover:bg-accent transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]"
             )}
             aria-label="Bookmark sign"
           >

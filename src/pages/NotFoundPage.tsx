@@ -7,7 +7,7 @@ export function NotFoundPage() {
   const { t } = useLanguage();
   return (
     <div className="page-shell max-w-2xl">
-      <section className="min-h-[60vh] card-premium p-8 md:p-10 flex flex-col items-center justify-center gap-4 text-center">
+      <section className="min-h-[60vh] plate p-8 md:p-10 flex flex-col items-center justify-center gap-4 text-center">
         <p className="font-heading text-6xl font-semibold text-muted-foreground/40 font-tabular-nums" aria-hidden>
           404
         </p>

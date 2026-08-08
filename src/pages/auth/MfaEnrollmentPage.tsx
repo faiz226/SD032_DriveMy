@@ -118,7 +118,7 @@ export function MfaEnrollmentPage() {
 
       {isEnrolled ? (
         <div className="space-y-4">
-          <div className="p-4 bg-green-500/10 text-green-600 dark:text-green-400 rounded-md border border-green-500/20 text-center">
+          <div className="p-4 bg-success/10 text-success dark:text-success rounded-md border border-success/20 text-center">
             {t("settings.mfaEnabled")}
           </div>
           <Button 

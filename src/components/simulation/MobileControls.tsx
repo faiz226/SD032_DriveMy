@@ -76,7 +76,7 @@ export function MobileControls() {
         <div className="flex gap-4 pointer-events-auto items-end">
           {/* Brake Pedal */}
           <button
-            className="w-24 h-20 rounded-lg border-2 border-red-400/60 bg-red-500/40 text-white font-bold text-sm active:bg-red-500/60 active:translate-y-2 transition-all touch-none select-none"
+            className="w-24 h-20 rounded-lg border-2 border-berhenti/60 bg-berhenti/40 text-white font-bold text-sm active:bg-berhenti/60 active:translate-y-2 transition-all touch-none select-none"
             onTouchStart={(e) => { e.preventDefault(); setBraking(true); }}
             onTouchEnd={(e) => { e.preventDefault(); setBraking(false); }}
             onTouchCancel={(e) => { e.preventDefault(); setBraking(false); }}
@@ -86,7 +86,7 @@ export function MobileControls() {
           
           {/* Gas Pedal */}
           <button
-            className="w-20 h-32 rounded-lg border-2 border-green-400/60 bg-green-500/40 text-white font-bold text-sm active:bg-green-500/60 active:translate-y-2 transition-all touch-none select-none"
+            className="w-20 h-32 rounded-lg border-2 border-lulus/60 bg-lulus/40 text-white font-bold text-sm active:bg-lulus/60 active:translate-y-2 transition-all touch-none select-none"
             onTouchStart={(e) => { e.preventDefault(); setAccelerating(true); }}
             onTouchEnd={(e) => { e.preventDefault(); setAccelerating(false); }}
             onTouchCancel={(e) => { e.preventDefault(); setAccelerating(false); }}

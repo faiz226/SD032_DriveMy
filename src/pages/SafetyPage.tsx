@@ -188,7 +188,7 @@ export function SafetyPage() {
             {blendedScore}/100
           </div>
           <div className="mt-8 p-4 rounded-xl border border-border bg-muted/30">
-            <div className="text-sm text-muted-foreground uppercase tracking-wide font-bold mb-1">{t("safety.ethics.title")}</div>
+            <div className="text-sm text-muted-foreground font-bold mb-1">{t("safety.ethics.title")}</div>
             <div className="text-3xl font-bold font-mono text-secondary-foreground font-tabular-nums">
               {(ethicsTotal / ETHICS_CASE_KEYS.length).toFixed(1)}/10.0
             </div>

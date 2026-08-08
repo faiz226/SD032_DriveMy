@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "phosphor-react";
+import { Download, Calendar } from "phosphor-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
@@ -7,14 +7,16 @@ import {
   useQuizStats, 
   useMockStats, 
   useSimStats, 
-  useTheoryProgress, 
-  useOverallReadiness 
+  useTheoryProgress,
 } from "@/hooks/useProgressStats";
+import { useLicence } from "@/hooks/useLicence";
+import { PAPER_PASS_PERCENT } from "@/lib/licence";
+import { Bay, Figure } from "@/components/ui/road";
+import { LicenceSummary } from "@/components/progress/LicenceSummary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ReadinessDonut } from "@/components/progress/ReadinessDonut";
 import { ManeuverScoresBar } from "@/components/progress/ManeuverScoresBar";
 import { QuizTrendLine } from "@/components/progress/QuizTrendLine";
 import { MockTrendLine } from "@/components/progress/MockTrendLine";
@@ -34,7 +36,7 @@ export function ProgressPage() {
   const { data: mock, isPending: mockPending } = useMockStats(dateRange || undefined);
   const { data: sim, isPending: simPending } = useSimStats(dateRange || undefined);
   const { data: theory, isPending: theoryPending } = useTheoryProgress();
-  const { data: readiness, isPending: readinessPending } = useOverallReadiness();
+  const { data: standing, isPending: standingPending } = useLicence();
 
   const handleExport = async () => {
     if (!hasData) return;
@@ -104,98 +106,91 @@ export function ProgressPage() {
       </div>
 
       <div id="progress-report-print-frame" className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card-premium p-6 flex flex-col md:col-span-1">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
-            {t("progress.examReadiness")}
-          </h2>
-          {readinessPending ? (
-            <div className="h-[250px] flex items-center justify-center">
-              <Skeleton circle className="h-40 w-40" />
-            </div>
-          ) : readiness ? (
-            <ReadinessDonut {...readiness} />
+      {/* ── Where you stand ──────────────────────────────────────────────
+          Reads from the same licence model the dashboard road uses. The old
+          readiness donut computed its own composite here, which meant this
+          page and the dashboard could quote two different numbers for the
+          same learner. */}
+      <LicenceSummary standing={standing} pending={standingPending} />
+
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4 sm:gap-4">
+        <Bay className="flex flex-col justify-between px-4 py-4">
+          <p className="type-label text-sm text-muted-foreground">
+            {t("progress.theoryCompleted")}
+          </p>
+          {theoryPending ? (
+            <Skeleton className="mt-3 h-8 w-20" />
           ) : (
-            <div className="h-[250px] flex items-center justify-center text-muted-foreground">{t("common.loading")}</div>
+            <Figure
+              className="mt-3"
+              size="text-[2rem] sm:text-4xl"
+              value={theory ? `${theory.completedModules}/${theory.totalModules}` : "0/3"}
+              label={t("dashboard.modulesCompleted")}
+            />
           )}
-        </div>
+        </Bay>
 
-        <div className="md:col-span-2 grid grid-cols-2 gap-4">
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Book className="w-4 h-4" weight="regular" />
-              <span>{t("progress.theoryCompleted")}</span>
-            </div>
-            {theoryPending ? (
-              <div className="space-y-2 mt-1">
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-4 w-32" />
-              </div>
-            ) : (
-              <>
-                <div className="text-3xl font-bold font-mono font-tabular-nums text-primary">
-                  {theory ? `${Math.round(theory.percentage)}%` : "0%"}
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  {theory ? t("progress.modulesCount", { completed: theory.completedModules, total: theory.totalModules }) : ""}
-                </div>
-              </>
-            )}
-          </div>
-          
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Activity className="w-4 h-4" />
-              <span>{t("progress.totalAttempts")}</span>
-            </div>
-            {quizPending || mockPending || simPending ? (
-              <div className="mt-1">
-                <Skeleton className="h-9 w-16" />
-              </div>
-            ) : (
-              <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
-                {(quiz?.count || 0) + (mock?.count || 0) + (sim?.completed || 0)}
-              </div>
-            )}
-          </div>
+        <Bay className="flex flex-col justify-between px-4 py-4">
+          <p className="type-label text-sm text-muted-foreground">
+            {t("progress.totalAttempts")}
+          </p>
+          {quizPending || mockPending || simPending ? (
+            <Skeleton className="mt-3 h-8 w-16" />
+          ) : (
+            <Figure
+              className="mt-3"
+              size="text-[2rem] sm:text-4xl"
+              value={(quiz?.count || 0) + (mock?.count || 0) + (sim?.completed || 0)}
+            />
+          )}
+        </Bay>
 
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Warning className="w-4 h-4" weight="regular" />
-              <span>{t("progress.mockPassRate")}</span>
-            </div>
-            {mockPending ? (
-              <div className="mt-1">
-                <Skeleton className="h-9 w-16" />
-              </div>
-            ) : (
-              <div className={`text-3xl font-bold font-mono font-tabular-nums ${mock && mock.passRate >= 84 ? "text-success" : "text-warning"}`}>
-                {mock ? `${Math.round(mock.passRate)}%` : "0%"}
-              </div>
-            )}
-          </div>
+        <Bay
+          state={
+            !mock || mock.passRate === 0
+              ? "open"
+              : mock.passRate >= PAPER_PASS_PERCENT
+                ? "done"
+                : "fail"
+          }
+          className="flex flex-col justify-between px-4 py-4"
+        >
+          <p className="type-label text-sm text-muted-foreground">
+            {t("progress.mockPassRate")}
+          </p>
+          {mockPending ? (
+            <Skeleton className="mt-3 h-8 w-16" />
+          ) : (
+            <Figure
+              className="mt-3"
+              size="text-[2rem] sm:text-4xl"
+              value={mock ? Math.round(mock.passRate) : 0}
+              unit="%"
+            />
+          )}
+        </Bay>
 
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Clock className="w-4 h-4" />
-              <span>{t("progress.studyTime")}</span>
-            </div>
-            {quizPending || mockPending || simPending ? (
-              <div className="mt-1">
-                <Skeleton className="h-9 w-24" />
-              </div>
-            ) : (
-              <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
-                {(() => {
-                  const total = (quiz?.totalDuration || 0) + (mock?.totalDuration || 0) + (sim?.totalDuration || 0);
-                  return `${Math.floor(total / 3600)}h ${Math.floor((total / 60) % 60)}m`;
-                })()}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        <Bay className="flex flex-col justify-between px-4 py-4">
+          <p className="type-label text-sm text-muted-foreground">
+            {t("progress.studyTime")}
+          </p>
+          {quizPending || mockPending || simPending ? (
+            <Skeleton className="mt-3 h-8 w-24" />
+          ) : (
+            <Figure
+              className="mt-3"
+              size="text-[2rem] sm:text-4xl"
+              value={(() => {
+                const total =
+                  (quiz?.totalDuration || 0) +
+                  (mock?.totalDuration || 0) +
+                  (sim?.totalDuration || 0);
+                return `${Math.floor(total / 3600)}h ${Math.floor((total / 60) % 60)}m`;
+              })()}
+            />
+          )}
+        </Bay>
+      </section>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-3xl grid-cols-4 mb-6">
@@ -206,7 +201,7 @@ export function ProgressPage() {
         </TabsList>
 
         <TabsContent value="theory" className="space-y-6">
-          <div className="card-premium p-6">
+          <div className="plate p-6">
             <h3 className="text-lg font-semibold mb-4">{t("progress.categoryPerformance")}</h3>
             <CategoryBreakdownBar key={activeTab} data={categoryData} />
           </div>
@@ -214,7 +209,7 @@ export function ProgressPage() {
 
         <TabsContent value="quizzes" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 card-premium p-6 flex flex-col items-center justify-center text-center">
+            <div className="lg:col-span-4 plate p-6 flex flex-col items-center justify-center text-center">
               <h3 className="text-sm font-medium text-muted-foreground mb-2">{t("progress.averageScore")}</h3>
               {quizPending ? (
                 <>
@@ -232,7 +227,7 @@ export function ProgressPage() {
                 </>
               )}
             </div>
-            <div className="lg:col-span-8 card-premium p-6">
+            <div className="lg:col-span-8 plate p-6">
               <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
               {quizPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
@@ -243,7 +238,7 @@ export function ProgressPage() {
               )}
             </div>
           </div>
-          <div className="card-premium p-6">
+          <div className="plate p-6">
             <h3 className="text-lg font-semibold mb-4">{t("progress.attemptHistory")}</h3>
             {quizPending ? (
               <div className="space-y-4">
@@ -259,7 +254,7 @@ export function ProgressPage() {
 
         <TabsContent value="mocks" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 card-premium p-6 flex flex-col items-center justify-center text-center">
+            <div className="lg:col-span-4 plate p-6 flex flex-col items-center justify-center text-center">
               <h3 className="text-sm font-medium text-muted-foreground mb-2">{t("progress.averageScore")}</h3>
               {mockPending ? (
                 <>
@@ -277,7 +272,7 @@ export function ProgressPage() {
                 </>
               )}
             </div>
-            <div className="lg:col-span-8 card-premium p-6">
+            <div className="lg:col-span-8 plate p-6">
               <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
               {mockPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
@@ -288,7 +283,7 @@ export function ProgressPage() {
               )}
             </div>
           </div>
-          <div className="card-premium p-6">
+          <div className="plate p-6">
             <h3 className="text-lg font-semibold mb-4">{t("progress.attemptHistory")}</h3>
             {mockPending ? (
               <div className="space-y-4">
@@ -304,7 +299,7 @@ export function ProgressPage() {
 
         <TabsContent value="simulations" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 card-premium p-6 flex flex-col items-center justify-center text-center">
+            <div className="lg:col-span-4 plate p-6 flex flex-col items-center justify-center text-center">
               <h3 className="text-sm font-medium text-muted-foreground mb-2">{t("progress.averageScore")}</h3>
               {simPending ? (
                 <>
@@ -322,7 +317,7 @@ export function ProgressPage() {
                 </>
               )}
             </div>
-            <div className="lg:col-span-8 card-premium p-6">
+            <div className="lg:col-span-8 plate p-6">
               <h3 className="text-lg font-semibold mb-4">{t("progress.bestScoresByManeuver")}</h3>
               {simPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
@@ -333,7 +328,7 @@ export function ProgressPage() {
               )}
             </div>
           </div>
-          <div className="card-premium p-6">
+          <div className="plate p-6">
             <h3 className="text-lg font-semibold mb-4">{t("progress.attemptHistory")}</h3>
             {simPending ? (
               <div className="space-y-4">

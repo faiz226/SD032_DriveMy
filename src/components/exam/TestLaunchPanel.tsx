@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightning, Play, ClipboardText } from "phosphor-react";
+import {Lightning, Play} from "phosphor-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { TranslationKey } from "@/lib/translations";
@@ -63,23 +63,17 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
     <div className="max-w-xl mx-auto page-enter mt-10">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-card border rounded-3xl shadow-lg overflow-hidden flex flex-col"
+        className="plate overflow-hidden flex flex-col"
       >
         {/* Header */}
-        <div className="bg-[#1e293b] text-white p-8 relative overflow-hidden">
-          {mode === "mock" ? (
-            <div className="absolute -right-4 top-1/2 -translate-y-1/2 text-white/5 select-none pointer-events-none">
-              <ClipboardText className="w-[160px] h-[160px]" weight="fill" />
-            </div>
-          ) : (
-            <div className="absolute -right-6 top-1/2 -translate-y-1/2 text-[150px] font-black text-white/5 select-none font-heading leading-none pointer-events-none">?</div>
-          )}
-          
-          <div className="relative z-10">
-            <div className="text-[10px] font-bold tracking-wider uppercase text-white/70 mb-2">
+        {/* The header is the carriageway, not an off-palette navy. The giant
+            watermark glyph behind it was decoration standing in for content. */}
+        <div className="carriageway on-road p-8">
+          <div>
+            <div className="type-label mb-2 text-sm text-road-muted">
               {mode === "quiz" ? t("launch.quizMaster") : t("launch.mockExam")}
             </div>
-            <h2 className="font-heading font-bold text-3xl mb-1 leading-tight text-white">
+            <h2 className="font-heading font-bold text-3xl mb-1 leading-tight text-road-foreground">
               {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockExamDesc")}
             </h2>
           </div>
@@ -92,7 +86,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
           </p>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+            <label className="text-[10px] font-bold text-muted-foreground">
               {mode === "quiz" ? t("launch.selectSection") : t("launch.chooseMock")}
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -108,7 +102,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                       : "border-border bg-card text-foreground hover:border-foreground/30 hover:bg-muted/30"
                   )}
                 >
-                  <div className="text-[10px] font-bold tracking-wider uppercase opacity-60 mb-1">
+                  <div className="text-[10px] font-bold opacity-60 mb-1">
                     {mode === "quiz" ? t("launch.section") : t("launch.mock")}
                   </div>
                   <div className="font-heading font-black text-3xl leading-none mb-2">
@@ -130,7 +124,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
             type="submit"
             disabled={isSubmitDisabled}
             className={cn(
-              "w-full flex items-center justify-center gap-2 min-h-[56px] py-4 rounded-xl font-black text-lg uppercase tracking-wider transition-all",
+              "w-full flex items-center justify-center gap-2 min-h-[56px] py-4 rounded-xl font-black text-lg  transition-all",
               !isSubmitDisabled
                 ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md active:scale-[0.99]"
                 : "bg-muted/40 text-muted-foreground/60 cursor-not-allowed"
