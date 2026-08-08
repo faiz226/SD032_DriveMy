@@ -17,6 +17,7 @@ export const ROUTES = {
   RESET_PASSWORD: "/reset-password",
   VERIFY_EMAIL: "/verify-email",
   MFA: "/mfa",
+  PRIVACY: "/privacy",
 } as const;
 
 export const STORAGE_KEYS = {

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, Suspense, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { Canvas, useFrame, createPortal, useThree } from "@react-three/fiber";
 import { useGLTF, PerspectiveCamera, useFBO, Environment, Sky } from "@react-three/drei";
 import { EffectComposer, Bloom, SMAA } from "@react-three/postprocessing";
@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { useSaveSimulationResult } from "@/hooks/useResults";
+import { useLicence } from "@/hooks/useLicence";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { SimulationHUD } from "@/components/simulation/SimulationHUD";
@@ -766,6 +768,9 @@ type Mode = "practice" | "assessment";
 export function Simulation3DView() {
   const { id } = useParams<{ id: string }>();
   const { t, language } = useLanguage();
+  // The circuit is gated behind the L licence. The grid hides locked
+  // maneuvers, but the URL is not a permission system — check here too.
+  const { data: standing, isPending: standingPending } = useLicence();
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
@@ -794,6 +799,8 @@ export function Simulation3DView() {
   });
 
   const maneuverId = id && VALID_MANEUVERS.has(id) ? id : "hill-start";
+  const locked =
+    !!standing && !standing.maneuvers.find((m) => m.maneuver.id === maneuverId)?.unlocked;
   const config = maneuverConfigs[maneuverId];
   const maneuverName = language === "ms" ? config.nameMs : config.name;
 
@@ -919,6 +926,19 @@ export function Simulation3DView() {
     useCarStore.getState().addDemerit(5, 'manual-test');
   };
 
+  // Wait for the gate to resolve rather than flashing the simulator first.
+  if (standingPending) {
+    return (
+      <div className="page-shell max-w-5xl" aria-busy="true">
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (locked) {
+    return <Navigate to={ROUTES.SIMULATIONS} replace />;
+  }
+
   return (
     <div className="page-shell max-w-5xl space-y-4">
       <button
@@ -930,7 +950,7 @@ export function Simulation3DView() {
       </button>
 
       {phase === "pre-launch" && (
-        <div className="max-w-xl mx-auto card-premium p-6 sm:p-8 space-y-6">
+        <div className="max-w-xl mx-auto plate p-6 sm:p-8 space-y-6">
           <div className="text-center space-y-2 border-b border-border pb-4">
             <h1 className="font-heading text-2xl font-bold text-foreground">{maneuverName}</h1>
             <p className="text-muted-foreground text-sm max-w-readable mx-auto">
@@ -996,7 +1016,7 @@ export function Simulation3DView() {
 
           <button
             onClick={handleStart}
-            className="w-full min-h-[48px] py-3 rounded-md bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="w-full min-h-[48px] py-3 rounded-md bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]"
           >
             <Play className="w-5 h-5" />
             {t("sim.start")}

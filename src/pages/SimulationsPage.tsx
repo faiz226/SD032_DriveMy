@@ -1,113 +1,177 @@
+/**
+ * Litar JPJ — the circuit.
+ *
+ * The eight maneuvers are gated behind the L licence, because that is the real
+ * order: you sit the KPP paper, you get your L, and only then do you go near
+ * the circuit. One maneuver stays open as a preview so the simulator is never
+ * a locked black box to someone deciding whether the app is worth their time.
+ *
+ * The maneuver list itself lives in `lib/licence.ts` — this page renders it,
+ * it does not own it, so marks and gating cannot drift from the dashboard.
+ */
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Car, Mountains, Square, ArrowsLeftRight,
-  Waves, Lightning, Warning, GitMerge, Trophy, ArrowRight
-} from "phosphor-react";
+import { Lock, ArrowRight, Car } from "phosphor-react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/constants";
-import { getSimulationsDone } from "@/services/analytics.service";
+import { CIRCUIT_MARKS, MANEUVERS, type Difficulty } from "@/lib/licence";
+import { useLicence } from "@/hooks/useLicence";
+import { Bay, LPlate, RoadRule, SectionHead } from "@/components/ui/road";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { TranslationKey } from "@/lib/translations";
 
-// ── Maneuver definitions ──────────────────────────────────────────────────────
-
-type Difficulty = "Easy" | "Medium" | "Hard";
-
-interface Maneuver {
-  id: string;
-  nameKey: TranslationKey;
-  difficulty: Difficulty;
-  icon: React.ReactNode;
-}
-
-const MANEUVERS: Maneuver[] = [
-  { id: "hill-start",        nameKey: "progress.maneuver.hill-start",        difficulty: "Hard",   icon: <Mountains        className="w-7 h-7" weight="regular" /> },
-  { id: "side-parking",      nameKey: "progress.maneuver.side-parking",      difficulty: "Medium", icon: <Square   className="w-7 h-7" weight="regular" /> },
-  { id: "parallel-parking",  nameKey: "progress.maneuver.parallel-parking",  difficulty: "Hard",   icon: <Square   className="w-7 h-7" weight="regular" /> },
-  { id: "three-point-turn",  nameKey: "progress.maneuver.three-point-turn",  difficulty: "Medium", icon: <ArrowsLeftRight  className="w-7 h-7" weight="regular" /> },
-  { id: "s-curve",           nameKey: "progress.maneuver.s-curve",           difficulty: "Medium", icon: <Waves           className="w-7 h-7" weight="regular" /> },
-  { id: "z-curve",           nameKey: "progress.maneuver.z-curve",           difficulty: "Medium", icon: <Lightning             className="w-7 h-7" weight="regular" /> },
-  { id: "ramp-test",         nameKey: "progress.maneuver.ramp-test",         difficulty: "Easy",   icon: <Warning   className="w-7 h-7" weight="regular" /> },
-  { id: "road-merging",      nameKey: "progress.maneuver.road-merging",      difficulty: "Hard",   icon: <GitMerge           className="w-7 h-7" weight="regular" /> },
-];
-
-const DIFFICULTY_COLORS: Record<Difficulty, string> = {
-  Easy:   "bg-success/15 text-success",
-  Medium: "bg-warning/15 text-warning",
-  Hard:   "bg-destructive/15 text-destructive",
+/** Difficulty is stated in words; the marks carry the weight. */
+const DIFFICULTY_LABEL: Record<Difficulty, string> = {
+  Easy: "Easy",
+  Medium: "Medium",
+  Hard: "Hard",
 };
-
-// ── Component ─────────────────────────────────────────────────────────────────
 
 export function SimulationsPage() {
   const { t } = useLanguage();
-  const { user } = useAuthStore();
+  const { data: standing, isPending } = useLicence();
 
-  // Fetch how many unique maneuvers this user has completed
-  const { data: completedCount = 0, isPending: countPending } = useQuery({
-    queryKey: ["simsDone", user?.id],
-    queryFn: () => getSimulationsDone(user!.id),
-    enabled: !!user,
-  });
+  const byId = new Map(
+    (standing?.maneuvers ?? []).map((m) => [m.maneuver.id, m])
+  );
 
   return (
-    <div className="page-shell max-w-5xl space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <header className="page-header">
-          <h1 className="page-title">{t("sim.title")}</h1>
-          <p className="page-lead">{t("sim.selectManeuver")}</p>
-        </header>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border surface-card text-foreground text-sm font-semibold font-mono font-tabular-nums shrink-0 min-h-[38px]">
-          <Trophy className="w-4 h-4 text-muted-foreground" />
-          {countPending ? (
-            <Skeleton className="h-4 w-20" />
-          ) : (
-            <span>{t("sim.completedCount", { completed: completedCount })}</span>
-          )}
+    <div className="page-shell max-w-5xl space-y-8">
+      <header className="max-w-readable space-y-2">
+        <h1 className="page-title">{t("sim.title")}</h1>
+        <p className="page-lead">
+          {t("dashboard.road.split", {
+            paper: String(100 - CIRCUIT_MARKS),
+            circuit: String(CIRCUIT_MARKS),
+          })}
+        </p>
+      </header>
+
+      {/* ── Locked notice ─────────────────────────────────────────────────── */}
+      {standing?.circuitLocked ? (
+        <Bay state="progress" className="flex items-start gap-4 px-5 py-5">
+          <LPlate letter="L" size={34} earned={false} className="mt-0.5 shrink-0" />
+          <div className="min-w-0">
+            <p className="type-display text-base text-foreground sm:text-lg">
+              {t("sim.locked.title")}
+            </p>
+            <p className="mt-1.5 max-w-readable text-sm text-muted-foreground">
+              {t("sim.locked.desc")}
+            </p>
+            <Link
+              to={ROUTES.MOCK_TEST}
+              className="inline-link mt-3 inline-flex items-center gap-2 text-sm font-medium text-foreground"
+            >
+              {t("dashboard.takeMockTest")}
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
+          </div>
+        </Bay>
+      ) : null}
+
+      {/* ── The eight ─────────────────────────────────────────────────────── */}
+      <section className="space-y-4">
+        {/* The section itself is reachable — seven of its eight rows are what is
+            locked, and each row says so with its own marking. */}
+        <SectionHead
+          state="open"
+          action={
+            isPending || !standing ? (
+              <Skeleton className="h-5 w-16" />
+            ) : (
+              <p className="type-figure text-sm text-foreground">
+                {t("dashboard.marksShort", {
+                  earned: String(standing.circuitEarned),
+                  total: String(CIRCUIT_MARKS),
+                })}
+              </p>
+            )
+          }
+        >
+          {t("dashboard.section.circuit")}
+        </SectionHead>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+          {MANEUVERS.map((m) => {
+            const row = byId.get(m.id);
+            const unlocked = row?.unlocked ?? false;
+            const passed = row?.passed ?? false;
+            const best = row?.best ?? null;
+            const earned = row?.earned ?? 0;
+
+            const body = (
+              <Bay
+                state={passed ? "done" : unlocked ? "open" : "default"}
+                className={cn(
+                  "flex h-full flex-col gap-3 px-4 py-4",
+                  unlocked
+                    ? "transition-colors duration-200 ease-out-quart hover:bg-muted"
+                    : "opacity-60"
+                )}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="type-label text-xs text-muted-foreground">
+                    {DIFFICULTY_LABEL[m.difficulty]}
+                  </p>
+                  {!unlocked ? (
+                    <Lock
+                      className="h-4 w-4 shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                  ) : m.preview && standing?.circuitLocked ? (
+                    <span className="rounded-sm bg-awas px-1.5 py-0.5 text-[11px] font-semibold text-asphalt">
+                      {t("sim.preview.badge")}
+                    </span>
+                  ) : null}
+                </div>
+
+                <h3 className="type-display text-base text-foreground">
+                  {t(m.nameKey)}
+                </h3>
+
+                <RoadRule
+                  state={!unlocked ? "locked" : passed ? "closed" : "open"}
+                  className="opacity-50"
+                />
+
+                <div className="mt-auto flex items-baseline justify-between gap-2 pt-1">
+                  <p className="type-figure text-lg text-foreground">
+                    {best === null
+                      ? t("sim.marks", { marks: String(m.marks) })
+                      : t("sim.marksEarned", {
+                          earned: String(Math.round(earned * 10) / 10),
+                          marks: String(m.marks),
+                        })}
+                  </p>
+                  {unlocked ? (
+                    <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                      <Car className="h-3.5 w-3.5" aria-hidden />
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                    </span>
+                  ) : null}
+                </div>
+              </Bay>
+            );
+
+            return unlocked ? (
+              <Link
+                key={m.id}
+                to={`${ROUTES.SIMULATIONS}/${m.id}`}
+                className={cn(
+                  "block no-underline",
+                  "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]"
+                )}
+              >
+                {body}
+              </Link>
+            ) : (
+              <div key={m.id} aria-disabled className="block">
+                {body}
+                <span className="sr-only">{t("sim.locked.badge")}</span>
+              </div>
+            );
+          })}
         </div>
-      </div>
-
-      {/* Maneuver grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {MANEUVERS.map((m) => (
-          <Link
-            key={m.id}
-            to={`${ROUTES.SIMULATIONS}/${m.id}`}
-            className="feature-link flex flex-col gap-4 relative group overflow-hidden transition-all duration-200"
-          >
-            <div className="flex items-start justify-between">
-              <div className="p-2.5 bg-muted rounded-full text-foreground transition-all duration-200 ease-out-quart group-hover:bg-primary/10 group-hover:text-primary">
-                {m.icon}
-              </div>
-              <span className={cn(
-                "px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider",
-                DIFFICULTY_COLORS[m.difficulty]
-              )}>
-                {m.difficulty}
-              </span>
-            </div>
-
-            {/* Name */}
-            <div>
-              <h3 className="font-heading font-semibold text-base text-foreground group-hover:text-primary transition-colors">
-                {t(m.nameKey)}
-              </h3>
-            </div>
-
-            {/* Status */}
-            <div className="mt-auto flex items-center justify-between gap-1.5 text-xs text-muted-foreground pt-2">
-              <div className="flex items-center gap-1.5">
-                <Car className="w-3.5 h-3.5" />
-                <span className="font-medium">{t("sim.tapToStart")}</span>
-              </div>
-              <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5 group-hover:text-primary" />
-            </div>
-          </Link>
-        ))}
-      </div>
+      </section>
     </div>
   );
 }
