@@ -221,8 +221,8 @@ export function TheoryPage() {
   const getCategoryColor = (type: string) => {
     switch (type) {
       case 'Regulatory': return 'bg-destructive/10 text-destructive border-destructive/20';
-      case 'Warning': return 'bg-warning/10 border-warning/20 text-yellow-700';
-      case 'Informational': return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
+      case 'Warning': return 'bg-warning/15 border-warning/40 text-warning-foreground';
+      case 'Informational': return 'bg-sign-info/10 text-sign-info border-sign-info/25';
       default: return 'bg-muted text-foreground border-border';
     }
   };
@@ -311,7 +311,7 @@ export function TheoryPage() {
                               className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center hover:bg-muted transition-colors hover:scale-110 active:scale-95 duration-200"
                               aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
                             >
-                              <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-muted-foreground hover:text-yellow-400'}`} aria-hidden="true" />
+                              <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-400 text-awas scale-110' : 'text-muted-foreground hover:text-awas'}`} aria-hidden="true" />
                             </button>
                             <div className="w-full flex-1 flex items-center justify-center p-6 bg-muted/10 transition-colors duration-300 group-hover:bg-muted/30">
                               <img src={sign.img} alt={sign.name} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-500 ease-out-back" loading="lazy" />
@@ -335,7 +335,7 @@ export function TheoryPage() {
                                 aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
                               >
                                 <Star
-                                  className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-300 text-yellow-300 scale-110' : 'text-primary-foreground/60 hover:text-yellow-300'}`}
+                                  className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-300 text-awas scale-110' : 'text-primary-foreground/60 hover:text-awas'}`}
                                   aria-hidden="true"
                                 />
                               </button>

@@ -105,7 +105,7 @@ export function MockTestPage() {
   if (isLoading) {
     return (
       <div className="max-w-lg mx-auto py-12" aria-busy="true" aria-label={t("common.loading")}>
-        <div className="card-premium p-6 sm:p-8 space-y-8 animate-pulse">
+        <div className="plate p-6 sm:p-8 space-y-8 animate-pulse">
           <div className="flex flex-col items-center space-y-4">
             <Skeleton className="h-12 w-12 rounded-lg" />
             <Skeleton className="h-6 w-48" />

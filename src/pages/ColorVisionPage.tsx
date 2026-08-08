@@ -210,7 +210,7 @@ export function ColorVisionPage() {
             </div>
 
             <div className="relative z-10">
-              <div className="text-[10px] font-bold tracking-wider uppercase text-white/70 mb-2">
+              <div className="text-[10px] font-bold text-white/70 mb-2">
                 ISHIHARA COLOR TEST
               </div>
               <h2 className="font-heading font-bold text-3xl mb-1 leading-tight text-white">
@@ -231,7 +231,7 @@ export function ColorVisionPage() {
             </p>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+              <label className="text-[10px] font-bold text-muted-foreground">
                 {language === 'en' ? "CHOOSE TEST LENGTH" : "PILIH PANJANG UJIAN"}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -247,7 +247,7 @@ export function ColorVisionPage() {
                         : "border-border bg-card text-foreground hover:border-foreground/30 hover:bg-muted/30"
                     )}
                   >
-                    <div className="text-[10px] font-bold tracking-wider uppercase opacity-60 mb-1">
+                    <div className="text-[10px] font-bold opacity-60 mb-1">
                       PLATES
                     </div>
                     <div className="font-heading font-black text-3xl leading-none mb-2">
@@ -273,7 +273,7 @@ export function ColorVisionPage() {
               }}
               disabled={isSubmitDisabled}
               className={cn(
-                "w-full flex items-center justify-center gap-2 min-h-[56px] py-4 rounded-xl font-black text-lg uppercase tracking-wider transition-all",
+                "w-full flex items-center justify-center gap-2 min-h-[56px] py-4 rounded-xl font-black text-lg  transition-all",
                 !isSubmitDisabled
                   ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md active:scale-[0.99]"
                   : "bg-muted/40 text-muted-foreground/60 cursor-not-allowed"
@@ -459,7 +459,7 @@ export function ColorVisionPage() {
           )}
 
           <div className="mt-6 pt-6 border-t border-border space-y-3 text-left">
-            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t("color.results.breakdown")}</div>
+            <div className="text-sm font-semibold text-muted-foreground ">{t("color.results.breakdown")}</div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div className="p-3 rounded-md border border-border bg-muted/50">
                 <div className="text-muted-foreground">{t("color.results.breakdown.control")}</div>
@@ -568,7 +568,7 @@ export function ColorVisionPage() {
       </header>
 
       <Card className="p-6 border border-border bg-card">
-        <div className="text-sm font-semibold text-muted-foreground mb-6 uppercase tracking-wider text-center">
+        <div className="text-sm font-semibold text-muted-foreground mb-6 text-center">
           {t("color.plate", { current: currentPlateIndex + 1, total: activePlates.length })}
         </div>
 
@@ -645,7 +645,7 @@ export function ColorVisionPage() {
                 setUserAnswer(answers[p.id] || "");
               }}
               className={`
-                h-10 rounded-md flex items-center justify-center text-sm font-medium font-tabular-nums transition-colors
+ h-10 rounded-md flex items-center justify-center text-sm font-medium font-tabular-nums transition-colors
                 ${isActive ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}
                 ${isAnswered && !isActive ? 'bg-primary/20 text-foreground' : ''}
                 ${!isAnswered && !isActive ? 'bg-muted text-muted-foreground' : ''}

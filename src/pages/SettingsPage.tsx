@@ -72,14 +72,14 @@ function SettingsPanel({
   return (
     <section
       className={cn(
-        "card-premium p-5 md:p-6 space-y-5",
+        "plate p-5 md:p-6 space-y-5",
         className
       )}
       aria-labelledby={`settings-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
     >
       <h2
         id={`settings-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
-        className="font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+        className="font-heading text-sm font-semibold text-muted-foreground"
       >
         {title}
       </h2>
@@ -304,7 +304,7 @@ export function SettingsPage() {
                       type="button"
                       onClick={() => setTheme(tKey)}
                       className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-all duration-200",
                         isActive
                           ? "bg-card text-foreground shadow-sm border border-border/10"
                           : "text-muted-foreground hover:text-foreground border border-transparent"
@@ -585,7 +585,7 @@ export function SettingsPage() {
                   aria-hidden
                 />
                 <div>
-                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-xs font-medium text-muted-foreground">
                     {t("profile.email")}
                   </dt>
                   <dd className="text-sm text-foreground mt-1 break-all">
@@ -600,7 +600,7 @@ export function SettingsPage() {
                   aria-hidden
                 />
                 <div>
-                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-xs font-medium text-muted-foreground">
                     {t("profile.memberSince")}
                   </dt>
                   <dd className="text-sm font-tabular-nums text-foreground mt-1">

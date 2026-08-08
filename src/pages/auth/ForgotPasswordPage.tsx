@@ -116,7 +116,7 @@ export function ForgotPasswordPage() {
           className={cn(
             "inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground",
             "transition-colors rounded-sm min-h-[48px]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]"
           )}
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />

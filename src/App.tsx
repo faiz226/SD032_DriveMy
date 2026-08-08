@@ -28,6 +28,8 @@ const LazyProgressPage    = lazy(() => import("@/pages/ProgressPage").then(m => 
 const LazySafetyPage      = lazy(() => import("@/pages/SafetyPage").then(m => ({ default: m.SafetyPage })));
 const LazySettingsPage    = lazy(() => import("@/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const LazyNotFoundPage    = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const LazyLandingPage     = lazy(() => import("@/pages/LandingPage").then(m => ({ default: m.LandingPage })));
+const LazyPrivacyPage     = lazy(() => import("@/pages/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
 
 
 // Stores & services
@@ -103,6 +105,33 @@ const PageSpinner = (
 );
 
 // ─── App ──────────────────────────────────────────────────────────────────────
+/**
+ * `/` serves two different surfaces. A visitor who is not signed in gets the
+ * landing page — a Persuade surface whose job is to explain the thing. A
+ * signed-in learner gets the dashboard, wrapped in the app shell.
+ *
+ * Splitting here rather than redirecting keeps one canonical home URL, and
+ * means a returning learner never sees a marketing page flash before their
+ * dashboard.
+ */
+function Home() {
+  const { isAuthenticated, isLoading, isDevBypass } = useAuthStore();
+
+  // Wait for auth to resolve rather than flashing the wrong surface.
+  if (isLoading) return PageSpinner;
+
+  const signedIn =
+    isAuthenticated || (import.meta.env.DEV && isDevBypass);
+
+  if (!signedIn) return <LazyLandingPage />;
+
+  return (
+    <ProtectedRoute>
+      <AppLayout />
+    </ProtectedRoute>
+  );
+}
+
 function App() {
   useTheme();
   return (
@@ -121,6 +150,16 @@ function App() {
                     <Route path={ROUTES.VERIFY_EMAIL}     element={<VerifyEmailPage />} />
                   </Route>
 
+                  {/* ── Public ────────────────────────────────────────────── */}
+                  <Route path={ROUTES.PRIVACY} element={<LazyPrivacyPage />} />
+
+                  {/* ── Home splits on auth ─────────────────────────────────
+                      Signed out: the landing page. Signed in: the app shell,
+                      which renders the dashboard through its Outlet. */}
+                  <Route path="/" element={<Home />}>
+                    <Route index element={<LazyDashboardPage />} />
+                  </Route>
+
                   {/* ── Protected app routes — AppLayout (sidebar + bottom nav) */}
                   <Route
                     element={
@@ -129,7 +168,6 @@ function App() {
                       </ProtectedRoute>
                     }
                   >
-                    <Route index                               element={<LazyDashboardPage />} />
                     <Route path={ROUTES.THEORY}               element={<LazyTheoryPage />} />
                     <Route path={ROUTES.QUIZ}                 element={<LazyQuizPage />} />
                     <Route path={ROUTES.MOCK_TEST}            element={<LazyMockTestPage />} />

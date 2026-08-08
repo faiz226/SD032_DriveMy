@@ -33,7 +33,7 @@ export function SimulationResults({
   const demeritPct = Math.min(100, (demeritPoints / MAX_DEMERIT) * 100);
 
   return (
-    <div className="max-w-md mx-auto card-premium p-6 sm:p-8 space-y-6 page-enter">
+    <div className="max-w-md mx-auto plate p-6 sm:p-8 space-y-6 page-enter">
       {/* Header */}
       <div className="text-center space-y-3">
         <div
@@ -97,7 +97,7 @@ export function SimulationResults({
         <div className="p-4 rounded-md border border-border bg-muted/50 flex flex-col items-center gap-1">
           <Warning className="w-5 h-5 text-destructive" weight="regular" aria-hidden />
           <span className="font-mono text-2xl font-bold font-tabular-nums">{errors}</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+          <span className="text-[10px] text-muted-foreground ">
             Collisions
           </span>
         </div>
@@ -105,7 +105,7 @@ export function SimulationResults({
         <div className="p-4 rounded-md border border-border bg-muted/50 flex flex-col items-center gap-1">
           <Gauge className="w-5 h-5 text-warning" weight="regular" aria-hidden />
           <span className="font-mono text-2xl font-bold font-tabular-nums">{stallCount}</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+          <span className="text-[10px] text-muted-foreground ">
             {t("sim.stallsLabel")}
           </span>
         </div>
@@ -116,7 +116,7 @@ export function SimulationResults({
             {rollbackCm}
             <span className="text-sm">cm</span>
           </span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+          <span className="text-[10px] text-muted-foreground ">
             {t("sim.rollbackLabel")}
           </span>
         </div>
@@ -126,7 +126,7 @@ export function SimulationResults({
           <span className={cn("font-mono text-2xl font-bold font-tabular-nums", demeritPoints >= MAX_DEMERIT ? "text-destructive" : "")}>
             {demeritPoints}
           </span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+          <span className="text-[10px] text-muted-foreground ">
             Demerit Pts
           </span>
         </div>
