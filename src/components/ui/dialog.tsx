@@ -47,9 +47,9 @@ const DialogContent = React.forwardRef<
       <DialogPrimitive.Close
         className={cn(
           "absolute right-4 top-4 rounded-md",
-          "touch-target flex items-center justify-center",
+          "tap flex items-center justify-center flex items-center justify-center",
           "text-muted-foreground hover:text-foreground",
-          "transition-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "transition-base focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]",
           "disabled:pointer-events-none"
         )}
         aria-label="Close dialog"

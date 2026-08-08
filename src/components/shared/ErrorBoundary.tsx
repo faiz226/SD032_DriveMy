@@ -18,7 +18,7 @@ function DefaultErrorFallback({ onReset, error }: { onReset: () => void, error: 
         <h2 className="font-heading text-xl font-semibold text-foreground">
           {t("common.error")}
         </h2>
-        {error && <p className="mt-2 text-sm text-red-500 font-mono">{error.message}</p>}
+        {error && <p className="mt-2 text-sm text-destructive font-mono">{error.message}</p>}
       </div>
       <Button
         variant="outline"

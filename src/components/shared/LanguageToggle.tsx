@@ -26,9 +26,9 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
         title={other?.nativeLabel}
         lang={other?.code === "ms" ? "ms-MY" : "en-MY"}
         className={cn(
-          "touch-target rounded-md px-2 text-sm font-medium",
+          "tap flex items-center justify-center rounded-md px-2 text-sm font-medium",
           "text-muted-foreground hover:text-foreground transition-base",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]",
           className
         )}
       >
@@ -47,9 +47,9 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
         title={other?.nativeLabel}
         lang={other?.code === "ms" ? "ms-MY" : "en-MY"}
         className={cn(
-          "touch-target rounded-lg p-1.5",
+          "tap flex items-center justify-center rounded-lg p-1.5",
           "text-muted-foreground hover:text-foreground transition-base",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+          "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--background)),0_0_0_5px_rgb(var(--awas))]",
           className
         )}
       >
@@ -58,35 +58,46 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
     );
   }
 
+  // Pill: two plate-lettered options, the selected one underlined in paint.
+  // BM is not a secondary option here — both sit at the same weight, and only
+  // the marker distinguishes them.
   return (
     <div
       role="group"
       aria-label={t("a11y.toggleLanguage")}
-      className={cn(
-        "inline-flex rounded-full border border-border bg-muted p-0.5 gap-0.5",
-        className
-      )}
+      className={cn("inline-flex items-stretch gap-1", className)}
     >
-      {LANGUAGES.map((lang) => (
-        <button
-          key={lang.code}
-          type="button"
-          onClick={() => setLanguage(lang.code)}
-          aria-label={lang.shortLabel}
-          title={lang.nativeLabel}
-          aria-pressed={language === lang.code}
-          lang={lang.code === "ms" ? "ms-MY" : "en-MY"}
-          className={cn(
-            "touch-target rounded-full px-3 text-xs font-semibold tracking-wide uppercase",
-            "transition-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-            language === lang.code
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {lang.shortLabel}
-        </button>
-      ))}
+      {LANGUAGES.map((lang) => {
+        const selected = language === lang.code;
+        return (
+          <button
+            key={lang.code}
+            type="button"
+            onClick={() => setLanguage(lang.code)}
+            aria-label={lang.nativeLabel}
+            title={lang.nativeLabel}
+            aria-pressed={selected}
+            lang={lang.code === "ms" ? "ms-MY" : "en-MY"}
+            className={cn(
+              "relative min-h-[36px] px-2 pb-1.5 pt-1",
+              "type-label-strong text-xs transition-colors duration-150",
+              "focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_rgb(var(--awas))]",
+              selected
+                ? "text-foreground font-bold"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {lang.shortLabel}
+            <span
+              aria-hidden
+              className={cn(
+                "absolute inset-x-1 bottom-0 h-[2px] transition-opacity duration-150",
+                selected ? "bg-awas opacity-100" : "opacity-0"
+              )}
+            />
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -1,143 +1,202 @@
 /* -----------------------------------------------------------------------------
-   DriveMy - Global Design System (white canvas)
-   Fonts: Cal Sans (display) · Inter Variable (prose) · JetBrains Mono (tabular)
-   Tokens: shadcn/ui RGB triple convention
+   DriveMy — "Jalan" design system
+   See DESIGN_SYSTEM.md for the full rationale.
+
+   Thesis: the interface is the road surface, the content is the signage.
+   JPJ signs are the loudest thing in this app already; the chrome's job is to be
+   asphalt and paint underneath them, never to compete.
+
+   Light mode  = the JPJ test circuit in daylight (concrete).
+   Dark mode   = the same road at night (asphalt).
    ----------------------------------------------------------------------------- */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* --- Design Tokens ---------------------------------------------------------- */
+/* --- Design tokens ---------------------------------------------------------- */
 @layer base {
   html, body {
     @apply overflow-x-hidden;
   }
 
   :root {
-    /* Canvas & surfaces */
-    --background: 249 249 249; /* #f9f9f9 Soft Alabaster */
-    --foreground: 32 32 32; /* #202020 */
+    /* ── The six ──────────────────────────────────────────────────────────────
+       asphalt   #23211E  warm bituminous black — canvas (dark) / ink (light)
+       concrete  #E4E3DE  poured circuit surface — canvas (light)
+       paint     #F7F5F0  road-marking white — lines and raised surfaces
+       awas      #F2B705  warning-diamond yellow — the one accent, used as paint
+       berhenti  #C8102E  stop / fail / below the pass mark — reserved
+       lulus     #00703C  pass / complete — reserved
+       These three saturated values are never rendered adjacent as a status
+       triad; that reads as a traffic light, and this app is the road. */
+    --asphalt: 35 33 30;
+    --concrete: 228 227 222;
+    --paint: 247 245 240;
+    --awas: 242 183 5;
+    --berhenti: 200 16 46;
+    --lulus: 0 112 60;
+    /* JPJ sign categories. These are the real plate colours and they belong to
+       the content, which is why they are allowed to be saturated where the
+       chrome is not. */
+    --sign-info: 0 87 168;    /* informational plates */
 
-    --card: 252 252 252; /* #fcfcfc */
-    --card-foreground: 32 32 32;
+    /* Neutral ramp derived from asphalt, not a generic grey scale */
+    --grade-1: 247 245 240; /* paint             */
+    --grade-2: 236 235 230;
+    --grade-3: 228 227 222; /* concrete          */
+    --grade-4: 208 206 199;
+    --grade-5: 168 164 155;
+    /* grade-6 is light-mode `muted-foreground`. Measured at 4.43:1 on concrete
+       at the previous value (107 102 94) — under AA. Now 4.9:1. */
+    --grade-6: 100  95  88;
+    --grade-7:  59  56  51;
+    --grade-8:  46  43  39;
+    --grade-9:  35  33  30; /* asphalt           */
 
-    --popover: 252 252 252;
-    --popover-foreground: 32 32 32;
+    /* ── Semantic aliases (shadcn/ui contract) ───────────────────────────────
+       Every name the rest of the app already consumes stays alive, so pages
+       that have not been rebuilt yet re-skin rather than break. */
+    --background: var(--concrete);
+    --foreground: var(--asphalt);
 
-    /* Brand actions */
-    --primary: 17 17 17; /* #111111 Deep Ink */
-    --primary-foreground: 255 255 255;
+    --card: var(--paint);
+    --card-foreground: var(--asphalt);
 
-    --secondary: 255 223 181; /* #ffdfb5 Cream Biscuit */
-    --secondary-foreground: 88 45 29; /* #582d1d Burnt Umber */
+    --popover: var(--paint);
+    --popover-foreground: var(--asphalt);
 
-    --muted: 239 239 239; /* #efefef */
-    --muted-foreground: 75 75 75; /* #4b4b4b */
+    --primary: var(--asphalt);
+    --primary-foreground: var(--paint);
 
-    --accent: 232 232 232; /* #e8e8e8 Soft Biscuit */
-    --accent-foreground: 32 32 32;
+    --secondary: var(--grade-4);
+    --secondary-foreground: var(--asphalt);
 
-    --destructive: 239 68 68; /* #ef4444 */
-    --destructive-foreground: 255 255 255;
+    --muted: var(--grade-2);
+    --muted-foreground: var(--grade-6);
 
-    --border: 216 216 216; /* #d8d8d8 */
-    --input: 216 216 216;
-    --ring: 17 17 17;
+    --accent: var(--awas);
+    --accent-foreground: var(--asphalt);
 
-    --radius: 0.5rem; /* 8px global */
+    --destructive: var(--berhenti);
+    --destructive-foreground: var(--paint);
 
-    /* Semantic */
-    --success: 5 150 105;
-    --success-foreground: 255 255 255;
-    --warning: 180 83 9;
-    --warning-foreground: 255 255 255;
-    --info: 100 74 64;
-    --info-foreground: 255 255 255;
+    --border: var(--grade-4);
+    --input: var(--grade-4);
+    --ring: var(--asphalt);
 
-    --surface: 252 252 252;
-    --surface-card: 245 245 245;
-    --surface-elevated: 239 239 239;
-    --overlay: 32 32 32;
+    /* Semantic status — reserved, see the rule above */
+    --success: var(--lulus);
+    --success-foreground: var(--paint);
+    --warning: var(--awas);
+    --warning-foreground: var(--asphalt);
+    --info: var(--grade-7);
+    --info-foreground: var(--paint);
 
-    /* Sidebar (light editorial shell — surface-card) */
-    --sidebar-background: 245 245 245; /* #f5f5f5 */
-    --sidebar-foreground: 32 32 32;
-    --sidebar-border: 235 235 235; /* #ebebeb */
-    --sidebar-accent: 232 232 232;
-    --sidebar-accent-foreground: 32 32 32;
-    --sidebar-primary: 52 52 52; /* #343434 active line */
-    --sidebar-ring: 17 17 17;
+    /* Road surfaces */
+    --surface: var(--paint);
+    --surface-card: var(--grade-2);
+    --surface-elevated: var(--grade-1);
+    --surface-road: var(--asphalt);      /* the carriageway itself           */
+    --surface-road-2: 46 43 39;          /* lane fill on the carriageway     */
+    --on-road: var(--paint);             /* text/marks painted onto the road */
+    --on-road-muted: var(--grade-5);
+    --overlay: var(--asphalt);
 
-    /* Chart sequence */
-    --chart-1: 17 17 17;
-    --chart-2: 136 96 72;
-    --chart-3: 180 120 72;
-    --chart-4: 210 150 90;
-    --chart-5: 239 68 68;
-    --hud-highlight: 255 255 255 / 0.65;
+    /* Shoulder (nav rail) — sits beside the carriageway, not on it */
+    --sidebar-background: var(--grade-2);
+    --sidebar-foreground: var(--asphalt);
+    --sidebar-border: var(--grade-4);
+    --sidebar-accent: var(--grade-3);
+    --sidebar-accent-foreground: var(--asphalt);
+    --sidebar-primary: var(--awas);      /* the painted lane marker          */
+    --sidebar-ring: var(--asphalt);
+
+    /* Charts — neutral bulk, accent for the series in focus, reserved
+       colours only where pass/fail is genuinely the variable */
+    --chart-1: var(--asphalt);
+    --chart-2: var(--awas);
+    --chart-3: var(--grade-6);
+    --chart-4: var(--grade-4);
+    --chart-5: var(--berhenti);
+
+    /* ── Radius: road geometry has almost no curves ──────────────────────────
+       0px  painted bays, rules, kerbs
+       4px  informational plates (blue JPJ plates have a small corner)
+       full genuinely circular things only (discs, avatars, sign roundels) */
+    --r-bay: 0px;
+    --r-plate: 4px;
+    --radius: 4px;   /* shadcn's knob — pinned to the plate radius */
+
+    /* Painted stroke weights, in the proportions real markings use */
+    --stroke-line: 2px;   /* a single painted line   */
+    --stroke-kerb: 4px;   /* a bay's kerbed edge     */
+    --stroke-stop: 7px;   /* a transverse stop line  */
   }
 
   .dark {
-    /* Canvas & surfaces */
-    --background: 17 17 17; /* #111111 Deep Ink */
-    --foreground: 245 245 245; /* #f5f5f5 Alabaster */
+    /* Night. The page is the darkest thing; the carriageway is *lighter* than
+       it, the way a road ahead is lighter than the verge under headlights.
+       Making the road darker than the page — the obvious first instinct — made
+       the hero vanish into the background. */
+    --background: 26 24 22;
+    --foreground: var(--paint);
 
-    --card: 26 26 26; /* #1a1a1a */
-    --card-foreground: 245 245 245;
+    --card: 38 36 31;
+    --card-foreground: var(--paint);
 
-    --popover: 26 26 26;
-    --popover-foreground: 245 245 245;
+    --popover: 38 36 31;
+    --popover-foreground: var(--paint);
 
-    /* Brand actions (inverted: white action button in dark mode) */
-    --primary: 255 255 255;
-    --primary-foreground: 17 17 17;
+    --primary: var(--paint);
+    --primary-foreground: var(--asphalt);
 
-    --secondary: 40 35 30; /* Dark warm biscuit */
-    --secondary-foreground: 255 223 181;
+    --secondary: 52 49 44;
+    --secondary-foreground: var(--paint);
 
-    --muted: 34 34 34; /* #222222 */
-    --muted-foreground: 156 163 175; /* Gray 400 */
+    --muted: 38 36 31;
+    --muted-foreground: var(--grade-5);
 
-    --accent: 40 40 40; /* #282828 */
-    --accent-foreground: 245 245 245;
+    --accent: var(--awas);
+    --accent-foreground: var(--asphalt);
 
-    --destructive: 239 68 68; /* #ef4444 */
-    --destructive-foreground: 255 255 255;
+    --destructive: 226 62 87;            /* lifted for contrast on asphalt */
+    --destructive-foreground: 26 24 22;
 
-    --border: 45 45 45; /* #2d2d2d */
-    --input: 45 45 45;
-    --ring: 245 245 245;
+    --border: 52 49 44;
+    --input: 52 49 44;
+    --ring: var(--awas);
 
-    /* Semantic */
-    --success: 16 185 129;
-    --success-foreground: 255 255 255;
-    --warning: 245 158 11;
-    --warning-foreground: 17 17 17;
-    --info: 139 92 246;
-    --info-foreground: 255 255 255;
+    --success: 46 160 100;               /* lifted for contrast on asphalt */
+    --success-foreground: 20 32 26;
+    --warning: var(--awas);
+    --warning-foreground: var(--asphalt);
+    --info: var(--grade-5);
+    --info-foreground: var(--asphalt);
 
-    --surface: 26 26 26;
-    --surface-card: 34 34 34;
-    --surface-elevated: 40 40 40;
-    --overlay: 0 0 0;
+    --surface: 38 36 31;
+    --surface-card: 38 36 31;
+    --surface-elevated: 52 49 44;
+    --surface-road: 46 43 39;   /* lit surface, one step above the page */
+    --surface-road-2: 58 54 48; /* the lane within it */
+    --on-road: var(--paint);
+    --on-road-muted: var(--grade-5);
+    --overlay: 12 11 10;
 
-    /* Sidebar (dark editorial shell) */
-    --sidebar-background: 14 14 14; /* #0e0e0e */
-    --sidebar-foreground: 245 245 245;
-    --sidebar-border: 26 26 26; /* #1a1a1a */
-    --sidebar-accent: 30 30 30;
-    --sidebar-accent-foreground: 245 245 245;
-    --sidebar-primary: 200 200 200;
-    --sidebar-ring: 245 245 245;
+    --sidebar-background: 20 19 17;
+    --sidebar-foreground: var(--paint);
+    --sidebar-border: 42 39 35;
+    --sidebar-accent: 38 36 31;
+    --sidebar-accent-foreground: var(--paint);
+    --sidebar-primary: var(--awas);
+    --sidebar-ring: var(--awas);
 
-    /* Chart sequence */
-    --chart-1: 255 255 255;
-    --chart-2: 180 120 72;
-    --chart-3: 136 96 72;
-    --chart-4: 90 60 45;
-    --chart-5: 239 68 68;
-    --hud-highlight: 0 0 0 / 0.3;
+    --chart-1: var(--paint);
+    --chart-2: var(--awas);
+    --chart-3: var(--grade-5);
+    --chart-4: var(--grade-7);
+    --chart-5: 226 62 87;
+    --sign-info: 96 165 250;  /* lifted for contrast on asphalt */
   }
 }
 
@@ -154,80 +213,71 @@
     text-size-adjust: 100%;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
   body {
     @apply bg-background text-foreground;
     font-family: theme("fontFamily.body");
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Display face: Archivo held at an expanded width so headings read as a
+     stamped plate rather than as generic bold sans. */
   h1, h2, h3, h4, h5, h6 {
     font-family: theme("fontFamily.heading");
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    font-stretch: 116%;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
     @apply text-foreground;
   }
 
   h1 { @apply text-4xl md:text-5xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-2xl md:text-3xl; }
-  h4 { @apply text-xl md:text-2xl; }
-  h5 { @apply text-lg md:text-xl; }
-  h6 { @apply text-base md:text-lg; }
+  h2 { @apply text-2xl md:text-3xl; }
+  h3 { @apply text-xl md:text-2xl; }
+  h4 { @apply text-lg md:text-xl; }
+  h5 { @apply text-base md:text-lg; }
+  h6 { @apply text-sm md:text-base; }
 
   p {
-    @apply text-base leading-relaxed;
+    @apply text-base;
+    line-height: 1.55;
   }
 
   code, kbd, samp, pre {
     font-family: theme("fontFamily.mono");
+    font-variant-numeric: tabular-nums;
   }
 
+  /* Only inline links underline on hover. Structural links — a whole bay, a
+     nav row, a card — are surfaces, and underlining them on hover drags a line
+     under every label inside. */
   a {
-    @apply text-primary underline-offset-4 hover:underline;
+    @apply text-foreground;
     transition: color 150ms ease;
   }
-
-  :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
-  }
-
-  button,
-  [role="button"],
-  a,
-  input,
-  select,
-  textarea,
-  [role="checkbox"],
-  [role="radio"],
-  [role="switch"],
-  [role="tab"],
-  [role="menuitem"],
-  [role="option"] {
-    min-height: 48px;
-    min-width: 48px;
-  }
-
   p a,
   li a,
+  .prose a,
   .inline-link {
-    min-height: unset;
-    min-width: unset;
+    @apply underline-offset-4 hover:underline;
   }
+
+  /* Focus is a painted marker, not a soft glow — visible on concrete and on
+     asphalt alike. */
+  :focus-visible {
+    @apply outline-none;
+    box-shadow:
+      0 0 0 2px rgb(var(--background)),
+      0 0 0 5px rgb(var(--awas));
+    border-radius: var(--r-plate);
+  }
+
+  /* Touch targets are sized on the components that need them (see .tap and the
+     button/input primitives), not forced onto every element in the document.
+     A blanket min-width on `a` inflates inline links; a blanket min-height on
+     `[role=tab]` fights any layout that wants a compact tab row. */
 
   ::-webkit-scrollbar {
     width: 6px;
@@ -237,35 +287,265 @@
     @apply bg-muted;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full;
+    @apply bg-muted-foreground/30;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
   }
 
   ::selection {
-    @apply bg-primary/20 text-foreground;
+    background-color: rgb(var(--awas));
+    color: rgb(var(--asphalt));
   }
 }
 
-/* --- Utility classes -------------------------------------------------------- */
+/* --- Type roles ------------------------------------------------------------- */
 @layer utilities {
   .font-heading { font-family: theme("fontFamily.heading"); }
   .font-body    { font-family: theme("fontFamily.body"); }
   .font-mono    { font-family: theme("fontFamily.mono"); }
 
-  .font-tabular-nums {
+  /* Display: the stamped-plate treatment. Restraint is the point — page titles
+     and load-bearing figures only. */
+  .type-display {
+    font-family: theme("fontFamily.heading");
+    font-stretch: 118%;
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+  }
+
+  /* Figures: scores, timers, distances. Always tabular so they don't jitter. */
+  .type-figure {
+    font-family: theme("fontFamily.heading");
+    font-stretch: 112%;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.01em;
   }
 
-  .max-w-readable {
-    max-width: 64ch;
+  /* Plate lettering — RESERVED FOR ACTUAL SIGNAGE.
+     Condensed, tracked, uppercase: the way a regulatory plate is set. This is
+     the loudest voice in the system and it is only allowed where the product
+     really is showing a sign — the L/P plates and the pass-line marker painted
+     on the road.
+
+     It was previously carrying every label on the dashboard: section heads,
+     bay labels, buttons, metadata, nav groups. A type audit of the live render
+     put 41% of all text in this treatment across three families, at which point
+     the caps stopped reading as "label" and became the page's ambient texture —
+     the whole surface spoke in one raised voice and nothing could be
+     emphasised. This is an Operate surface; it needs a working register far
+     more than it needs a display one. Use .type-label instead. */
+  .type-plate {
+    font-family: theme("fontFamily.plate");
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
   }
 
-  .touch-target {
-    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
+  /* Label: the working voice. Section heads, field labels, metadata, buttons,
+     table heads — everything that names something. Sentence case, normal
+     tracking, the body family. Quiet on purpose. */
+  .type-label {
+    font-family: theme("fontFamily.body");
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  .type-label-strong {
+    font-family: theme("fontFamily.body");
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.3;
   }
 
+  .font-tabular-nums { font-variant-numeric: tabular-nums; }
+  .max-w-readable { max-width: 64ch; }
+}
+
+/* --- Road markings ---------------------------------------------------------
+   One set of painted lines, used as the app's structural language. A line is
+   never just a line: its pattern says what you may do.
+
+     double solid   locked   — prerequisite unmet, you may not cross yet
+     single solid   closed   — finished, nothing left to do here
+     broken         open     — available to start or continue
+     broken painted progress — this is where you left off
+
+   Implemented as backgrounds on a fixed-height element so they compose with
+   flex/grid without the border-collapse surprises a border-based version has.
+   -------------------------------------------------------------------------- */
+@layer utilities {
+  .mark {
+    --mark-color: rgb(var(--foreground) / 0.55);
+    display: block;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .mark-locked {
+    height: 7px;
+    background:
+      linear-gradient(var(--mark-color), var(--mark-color)) top/100% 2px no-repeat,
+      linear-gradient(var(--mark-color), var(--mark-color)) bottom/100% 2px no-repeat;
+  }
+
+  .mark-closed {
+    height: 2px;
+    background: var(--mark-color);
+  }
+
+  .mark-open {
+    height: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--mark-color) 0 20px,
+      transparent 20px 38px
+    );
+  }
+
+  .mark-progress {
+    --mark-color: rgb(var(--awas));
+    height: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--mark-color) 0 20px,
+      transparent 20px 38px
+    );
+  }
+
+  /* Vertical variants — the rail, and the mobile readiness route */
+  .mark-v { width: 2px; height: 100%; }
+  .mark-v.mark-open,
+  .mark-v.mark-progress {
+    background: repeating-linear-gradient(
+      180deg,
+      var(--mark-color) 0 20px,
+      transparent 20px 38px
+    );
+  }
+  .mark-v.mark-closed { background: var(--mark-color); }
+  .mark-v.mark-locked {
+    width: 7px;
+    background:
+      linear-gradient(var(--mark-color), var(--mark-color)) left/2px 100% no-repeat,
+      linear-gradient(var(--mark-color), var(--mark-color)) right/2px 100% no-repeat;
+  }
+
+  /* On the carriageway, markings are paint-white rather than ink */
+  .on-road .mark { --mark-color: rgb(var(--on-road-muted)); }
+  .on-road .mark-progress { --mark-color: rgb(var(--awas)); }
+}
+
+/* --- Surfaces --------------------------------------------------------------
+   Two surfaces, each with a job:
+     .bay    a painted parking bay — a rectangle with paint on one edge, no radius
+     .plate  an informational plate — small corner radius, hairline edge
+   -------------------------------------------------------------------------- */
+@layer utilities {
+  .bay {
+    background-color: rgb(var(--card));
+    color: rgb(var(--card-foreground));
+    border-radius: var(--r-bay);
+    border-bottom: var(--stroke-kerb) solid rgb(var(--foreground) / 0.85);
+    transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .bay-open      { border-bottom-color: rgb(var(--foreground) / 0.4); }
+  .bay-progress  { border-bottom-color: rgb(var(--awas)); }
+  .bay-done      { border-bottom-color: rgb(var(--success)); }
+  .bay-fail      { border-bottom-color: rgb(var(--destructive)); }
+
+  .plate {
+    background-color: rgb(var(--card));
+    color: rgb(var(--card-foreground));
+    border-radius: var(--r-plate);
+    border: 1px solid rgb(var(--border));
+  }
+
+  /* The carriageway: the dark surface signs and marks sit on, in both themes */
+  .carriageway {
+    background-color: rgb(var(--surface-road));
+    color: rgb(var(--on-road));
+    border-radius: var(--r-bay);
+  }
+
+  /* Touch target, applied where it belongs rather than to every element */
+  .tap { min-height: 48px; min-width: 48px; }
+  .tap-sm { min-height: 44px; min-width: 44px; }
+}
+
+/* --- Page scaffolding ------------------------------------------------------- */
+@layer utilities {
+  .page-shell {
+    @apply px-4 py-6 sm:px-8 sm:py-10 max-w-6xl mx-auto;
+  }
+  .page-title {
+    @apply type-display text-3xl md:text-4xl text-foreground;
+  }
+  .page-lead {
+    @apply text-muted-foreground text-sm sm:text-base max-w-readable;
+  }
+  .section-eyebrow {
+    @apply type-label text-xs text-muted-foreground;
+  }
+}
+
+/* --- Motion ----------------------------------------------------------------
+   Motion earns its place or it does not ship. What survived: the page-enter
+   settle, and painted lines drawing themselves in on the readiness road.
+   What was cut: the 10-step stagger ladder, spin-slow, and pulse-success.
+   -------------------------------------------------------------------------- */
+@layer utilities {
+  .page-enter {
+    animation: page-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes page-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-muted;
+    border-radius: var(--r-bay);
+  }
+
+  .transition-base { @apply transition-colors duration-150 ease-out; }
+  .ease-out-quart  { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+  .perspective-1000 { perspective: 1000px; }
+  .transform-style-3d { transform-style: preserve-3d; }
+  .backface-hidden { backface-visibility: hidden; }
+  .rotate-y-180 { transform: rotateY(180deg); }
+}
+
+/* --- Legacy aliases --------------------------------------------------------
+   Pages not yet rebuilt still reference these. They now resolve to the new
+   surfaces so those pages re-skin coherently instead of breaking; each one is
+   removed as its page is migrated.
+   -------------------------------------------------------------------------- */
+@layer utilities {
+  .card-premium { @apply plate; }
+  .surface-card { background-color: rgb(var(--surface-card)); }
+  .metric-tile  { @apply bay p-4 flex flex-col justify-between min-h-[96px]; }
+  .feature-link { @apply plate p-5 transition-base; }
+  .feature-link-emphasis { @apply plate p-5 transition-base; }
+  .hud-panel    { @apply plate type-label text-xs font-tabular-nums; }
+  .canvas-subtle { background-color: rgb(var(--background)); }
+  .page-header  { @apply max-w-readable space-y-2; }
+  .touch-target { @apply tap flex items-center justify-center; }
+  .badge-success     { @apply bg-success/10 text-success border-success/25; }
+  .badge-warning     { @apply bg-warning/15 text-warning-foreground border-warning/40; }
+  .badge-info        { @apply bg-muted text-muted-foreground border-border; }
+  .badge-destructive { @apply bg-destructive/10 text-destructive border-destructive/25; }
+  .transition-slow   { @apply transition-colors duration-300 ease-out; }
+  .disabled { @apply opacity-50 cursor-not-allowed pointer-events-none; }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -277,162 +557,13 @@
     white-space: nowrap;
     border-width: 0;
   }
-
-  .badge-success { @apply bg-success/10 text-success border-success/20; }
-  .badge-warning { @apply bg-warning/10 text-warning border-warning/20; }
-  .badge-info    { @apply bg-info/10 text-info border-info/20; }
-  .badge-destructive { @apply bg-destructive/10 text-destructive border-destructive/20; }
-
-  .transition-base {
-    @apply transition-all duration-150 ease-in-out;
-  }
-  .transition-slow {
-    @apply transition-all duration-300 ease-in-out;
-  }
-
-  .ease-out-quart {
-    transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .page-enter {
-    animation: page-enter 300ms cubic-bezier(0.25, 1, 0.5, 1) both;
-  }
-
-  @keyframes page-enter {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .skeleton {
-    @apply animate-pulse bg-muted rounded-md;
-  }
-
-  .disabled {
-    @apply opacity-50 cursor-not-allowed pointer-events-none;
-  }
-
-  .perspective-1000 { perspective: 1000px; }
-  .transform-style-3d { transform-style: preserve-3d; }
-  .backface-hidden { backface-visibility: hidden; }
-  .rotate-y-180 { transform: rotateY(180deg); }
-
-  .anim-stagger-0 { animation-delay: 0ms; animation-fill-mode: both; }
-  .anim-stagger-1 { animation-delay: 50ms; animation-fill-mode: both; }
-  .anim-stagger-2 { animation-delay: 100ms; animation-fill-mode: both; }
-  .anim-stagger-3 { animation-delay: 150ms; animation-fill-mode: both; }
-  .anim-stagger-4 { animation-delay: 200ms; animation-fill-mode: both; }
-  .anim-stagger-5 { animation-delay: 250ms; animation-fill-mode: both; }
-  .anim-stagger-6 { animation-delay: 300ms; animation-fill-mode: both; }
-  .anim-stagger-7 { animation-delay: 350ms; animation-fill-mode: both; }
-  .anim-stagger-8 { animation-delay: 400ms; animation-fill-mode: both; }
-  .anim-stagger-9 { animation-delay: 450ms; animation-fill-mode: both; }
-
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Premium product surfaces (DriveMy design system) */
-  .canvas-subtle {
-    background-color: rgb(var(--background));
-    background-image:
-      radial-gradient(ellipse 90% 60% at 50% -30%, rgb(var(--primary) / 0.045), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 100% 0%, rgb(var(--chart-2) / 0.05), transparent 50%);
-  }
-
-  .surface-card {
-    background-color: rgb(var(--surface-card));
-  }
-
-  .card-premium {
-    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
-  }
-
-  .section-eyebrow {
-    @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
-  }
-
-  .metric-tile {
-    @apply rounded-lg border border-border bg-card p-4 flex flex-col justify-between min-h-[96px] shadow-sm;
-  }
-
-  .feature-link {
-    @apply rounded-lg border border-border bg-card p-5 transition-[border-color,box-shadow] duration-200 ease-out-quart;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  }
-  .feature-link:hover {
-    @apply shadow-sm border-border;
-  }
-
-  .feature-link-emphasis {
-    @apply rounded-lg border border-border/80 p-5 transition-[border-color,box-shadow] duration-200 ease-out-quart;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-    background-color: rgb(var(--surface-card));
-  }
-  .feature-link-emphasis:hover {
-    @apply shadow-sm;
-  }
-
-  .hud-panel {
-    @apply rounded-lg border border-border bg-card font-mono text-xs shadow-sm;
-    box-shadow:
-      0 1px 2px rgb(var(--foreground) / 0.04),
-      inset 0 1px 0 rgb(var(--hud-highlight));
-  }
-
-  .page-shell {
-    @apply p-4 sm:p-6 max-w-6xl mx-auto space-y-8 page-enter;
-  }
-
-  .page-header {
-    @apply max-w-readable space-y-2;
-  }
-  .page-title {
-    @apply font-heading text-3xl font-semibold tracking-tight text-foreground;
-  }
-  .page-lead {
-    @apply text-muted-foreground text-sm sm:text-base leading-relaxed;
-  }
 }
 
-/* Progress PDF capture — resolved light-theme colors for html2canvas */
-[data-print-mode="true"] {
-  --background: 249 249 249;
-  --foreground: 32 32 32;
-  --card: 252 252 252;
-  --card-foreground: 32 32 32;
-  --popover: 252 252 252;
-  --popover-foreground: 32 32 32;
-  --primary: 17 17 17;
-  --primary-foreground: 255 255 255;
-  --secondary: 255 223 181;
-  --secondary-foreground: 88 45 29;
-  --muted: 239 239 239;
-  --muted-foreground: 75 75 75;
-  --accent: 232 232 232;
-  --accent-foreground: 32 32 32;
-  --destructive: 239 68 68;
-  --destructive-foreground: 255 255 255;
-  --border: 216 216 216;
-  --input: 216 216 216;
-  --ring: 17 17 17;
-  --surface: 252 252 252;
-  --surface-card: 245 245 245;
-  --surface-elevated: 239 239 239;
-  background-color: rgb(var(--background)) !important;
-  color: rgb(var(--foreground)) !important;
-}
-
+/* --- Reduced motion ---------------------------------------------------------
+   Declared once, outside @layer, so it wins over anything above it.
+   -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -441,7 +572,46 @@
   }
 }
 
+/* Progress PDF capture — html2canvas cannot resolve var() indirection, so the
+   print surface pins resolved light-theme values. */
+[data-print-mode="true"] {
+  --background: 228 227 222;
+  --foreground: 35 33 30;
+  --card: 247 245 240;
+  --card-foreground: 35 33 30;
+  --popover: 247 245 240;
+  --popover-foreground: 35 33 30;
+  --primary: 35 33 30;
+  --primary-foreground: 247 245 240;
+  --secondary: 208 206 199;
+  --secondary-foreground: 35 33 30;
+  --muted: 236 235 230;
+  --muted-foreground: 107 102 94;
+  --accent: 242 183 5;
+  --accent-foreground: 35 33 30;
+  --destructive: 200 16 46;
+  --destructive-foreground: 247 245 240;
+  --success: 0 112 60;
+  --border: 208 206 199;
+  --input: 208 206 199;
+  --ring: 35 33 30;
+  --surface: 247 245 240;
+  --surface-card: 236 235 230;
+  --surface-elevated: 247 245 240;
+  --surface-road: 35 33 30;
+  --surface-road-2: 46 43 39;
+  --on-road: 247 245 240;
+  --on-road-muted: 168 164 155;
+  --chart-1: 35 33 30;
+  --chart-2: 242 183 5;
+  --chart-3: 107 102 94;
+  --chart-4: 208 206 199;
+  --chart-5: 200 16 46;
+  background-color: rgb(var(--background)) !important;
+  color: rgb(var(--foreground)) !important;
+}
+
 ::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+  animation: none;
+  mix-blend-mode: normal;
 }

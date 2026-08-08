@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+// DriveMy — "Jalan" design system. See DESIGN_SYSTEM.md.
 export default {
   darkMode: "class",
   content: [
@@ -14,9 +15,26 @@ export default {
       },
     },
     extend: {
-      // ─── DriveMy Design Tokens ───────────────────────────────────────────
       colors: {
-        // Semantic aliases mapped to CSS variables (shadcn/ui convention)
+        // ── Road palette, addressable directly where the semantic alias would
+        //    obscure intent (a painted line is `awas`, not `accent`).
+        asphalt: "rgb(var(--asphalt) / <alpha-value>)",
+        concrete: "rgb(var(--concrete) / <alpha-value>)",
+        paint: "rgb(var(--paint) / <alpha-value>)",
+        awas: "rgb(var(--awas) / <alpha-value>)",
+        berhenti: "rgb(var(--berhenti) / <alpha-value>)",
+        lulus: "rgb(var(--lulus) / <alpha-value>)",
+        "sign-info": "rgb(var(--sign-info) / <alpha-value>)",
+
+        // Road surfaces
+        road: {
+          DEFAULT: "rgb(var(--surface-road) / <alpha-value>)",
+          lane: "rgb(var(--surface-road-2) / <alpha-value>)",
+          foreground: "rgb(var(--on-road) / <alpha-value>)",
+          muted: "rgb(var(--on-road-muted) / <alpha-value>)",
+        },
+
+        // ── Semantic aliases (shadcn/ui contract) ─────────────────────────
         border: "rgb(var(--border) / <alpha-value>)",
         input: "rgb(var(--input) / <alpha-value>)",
         ring: "rgb(var(--ring) / <alpha-value>)",
@@ -80,38 +98,55 @@ export default {
           foreground: "rgb(var(--info-foreground) / <alpha-value>)",
         },
       },
+
+      // ── Type ────────────────────────────────────────────────────────────
+      // Barlow is the working family and does most of the talking: body,
+      // labels, buttons, metadata. Archivo carries headings and figures only.
+      // Barlow Condensed is the plate voice and is RESERVED FOR SIGNAGE — the
+      // L/P plates and markings painted on the road. It is not a label face.
+      //
+      // This is an Operate surface. It had three families sharing the work
+      // roughly evenly and 41% of its text set in condensed caps, at which
+      // point the caps read as texture rather than as labels and the page lost
+      // its quiet register entirely. See DESIGN_SYSTEM.md.
       fontFamily: {
-        // Cal Sans for display headings when licensed; Inter 600 is the documented fallback
-        heading: ['"Cal Sans"', '"Inter Variable"', "Inter", "system-ui", "sans-serif"],
-        body: ['"Inter Variable"', "Inter", "system-ui", "sans-serif"],
-        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
-        sans: ['"Inter Variable"', "Inter", "system-ui", "sans-serif"],
+        heading: ["Archivo", "system-ui", "sans-serif"],
+        body:    ["Barlow", "system-ui", "sans-serif"],
+        plate:   ['"Barlow Condensed"', '"Barlow"', "system-ui", "sans-serif"],
+        mono:    ['"Barlow Condensed"', "ui-monospace", "monospace"],
+        sans:    ["Barlow", "system-ui", "sans-serif"],
       },
+
       fontSize: {
-        // Fluid type scale
-        "display-2xl": ["4.5rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
-        "display-xl":  ["3.75rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
-        "display-lg":  ["3rem",    { lineHeight: "1.15", letterSpacing: "-0.02em" }],
-        "display-md":  ["2.25rem", { lineHeight: "1.2",  letterSpacing: "-0.02em" }],
-        "display-sm":  ["1.875rem",{ lineHeight: "1.25", letterSpacing: "-0.01em" }],
-        "display-xs":  ["1.5rem",  { lineHeight: "1.3",  letterSpacing: "-0.01em" }],
+        "display-2xl": ["4.5rem",  { lineHeight: "1.0",  letterSpacing: "-0.02em" }],
+        "display-xl":  ["3.75rem", { lineHeight: "1.02", letterSpacing: "-0.02em" }],
+        "display-lg":  ["3rem",    { lineHeight: "1.05", letterSpacing: "-0.015em" }],
+        "display-md":  ["2.25rem", { lineHeight: "1.08", letterSpacing: "-0.015em" }],
+        "display-sm":  ["1.875rem",{ lineHeight: "1.12", letterSpacing: "-0.01em" }],
+        "display-xs":  ["1.5rem",  { lineHeight: "1.16", letterSpacing: "-0.01em" }],
       },
-      // ─── Spacing / Touch targets ─────────────────────────────────────────
-      minHeight: {
-        touch: "48px",   // WCAG 2.5.5 minimum touch target
-      },
-      minWidth: {
-        touch: "48px",
-      },
-      // ─── Border radius (DESIGN.md) ───────────────────────────────────────
-      // Small elements: 6px (rounded-md), cards/panels: 12px (rounded-xl), modals: 16px (rounded-2xl)
-      // We keep Tailwind defaults for rounded-xl/2xl and pin shadcn defaults to 6px.
+
+      // ── Radius: three values, each with a reason ────────────────────────
+      // Road geometry has almost no curves. Painted bays and rules are square;
+      // informational plates take the small corner a JPJ plate has; `full` is
+      // reserved for genuinely circular things.
       borderRadius: {
-        lg: "0.75rem",
-        md: "var(--radius)",
-        sm: "calc(var(--radius) - 2px)",
+        none: "0px",
+        bay:  "var(--r-bay)",
+        sm:   "var(--r-plate)",
+        DEFAULT: "var(--r-plate)",
+        md:   "var(--r-plate)",
+        lg:   "var(--r-plate)",
+        xl:   "var(--r-plate)",
+        "2xl": "var(--r-plate)",
+        "3xl": "var(--r-plate)",
+        full: "9999px",
       },
-      // ─── Animations ──────────────────────────────────────────────────────
+
+      minHeight: { touch: "48px" },
+      minWidth:  { touch: "48px" },
+
+      // ── Motion: only what earns its place ───────────────────────────────
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -138,34 +173,26 @@ export default {
           to:   { transform: "translateX(100%)" },
         },
         "scale-in": {
-          from: { opacity: "0", transform: "scale(0.95)" },
+          from: { opacity: "0", transform: "scale(0.97)" },
           to:   { opacity: "1", transform: "scale(1)" },
-        },
-        "spin-slow": {
-          from: { transform: "rotate(0deg)" },
-          to:   { transform: "rotate(360deg)" },
-        },
-        "pulse-success": {
-          "0%, 100%": { boxShadow: "0 0 0 0 rgba(16, 185, 129, 0.4)" },
-          "50%":       { boxShadow: "0 0 0 8px rgba(16, 185, 129, 0)" },
         },
       },
       animation: {
-        "accordion-down":  "accordion-down 0.2s ease-out",
-        "accordion-up":    "accordion-up 0.2s ease-out",
-        "fade-in":         "fade-in 0.2s ease-out",
-        "fade-out":        "fade-out 0.2s ease-out",
-        "slide-in-right":  "slide-in-right 0.3s ease-out",
-        "slide-out-right": "slide-out-right 0.3s ease-out",
-        "scale-in":        "scale-in 0.15s ease-out",
-        "spin-slow":       "spin-slow 2s linear infinite",
-        "pulse-success":   "pulse-success 1.5s ease-in-out infinite",
+        "accordion-down":  "accordion-down 0.2s cubic-bezier(0.22,1,0.36,1)",
+        "accordion-up":    "accordion-up 0.2s cubic-bezier(0.22,1,0.36,1)",
+        "fade-in":         "fade-in 0.2s cubic-bezier(0.22,1,0.36,1)",
+        "fade-out":        "fade-out 0.15s ease-out",
+        "slide-in-right":  "slide-in-right 0.3s cubic-bezier(0.32,0.72,0,1)",
+        "slide-out-right": "slide-out-right 0.25s cubic-bezier(0.32,0.72,0,1)",
+        "scale-in":        "scale-in 0.15s cubic-bezier(0.22,1,0.36,1)",
       },
-      // ─── Box shadows ─────────────────────────────────────────────────────
+
+      // Elevation is carried by kerbs and paint, not by drop shadows. Only the
+      // genuinely floating surfaces (menus, drawers, dialogs) get a shadow.
       boxShadow: {
-        "focus-ring": "0 0 0 3px hsl(var(--ring) / 0.5)",
-        "card-hover": "0 4px 24px -4px rgba(0,0,0,0.12)",
-        "sidebar":    "-4px 0 24px rgba(0,0,0,0.15)",
+        plate:  "0 1px 0 0 rgb(var(--foreground) / 0.06)",
+        float:  "0 8px 32px -8px rgb(var(--asphalt) / 0.28)",
+        drawer: "-4px 0 32px -8px rgb(var(--asphalt) / 0.35)",
       },
     },
   },
