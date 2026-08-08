@@ -1,3 +1,20 @@
+> ## SUPERSEDED — do not act on this document
+>
+> This audit describes the design system as it stood **before** the "Jalan"
+> overhaul. Its prescriptions — delete dark mode, `#111111` primary, Cal Sans
+> as the display face, white-canvas-only — were all reversed by that work, and
+> following them now would undo it.
+>
+> The current system is documented in [`DESIGN_SYSTEM.md`](../DESIGN_SYSTEM.md)
+> at the repo root, with the enforcement rules in `.claude/skills/jalan/`.
+>
+> Kept for history: it is an accurate record of what the token layer looked
+> like before, and several of the structural problems it identifies (the
+> blanket 48px touch-target rule, copy-pasted card classes) were genuinely
+> fixed as part of the overhaul.
+
+---
+
 # Design System Inconsistencies Report
 
 ## Summary
