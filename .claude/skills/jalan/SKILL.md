@@ -63,6 +63,26 @@ for genuinely circular things. Every Tailwind radius is pinned to `4px`, so
 reaching for `rounded-2xl` to get something softer will not work and should not
 be attempted.
 
+## Assets
+
+Two rules, both learned the hard way. Full brief in
+[docs/asset-generation.md](../../../docs/asset-generation.md).
+
+**Road signs are sourced, never generated.** They are standardised under
+Arahan Teknik Jalan, and a plausible-but-wrong sign teaches a learner the wrong
+answer on a licence exam. A previous scrape saved 74 Wikimedia error pages as
+`.svg`/`.jpg`/`.png` because it sent no User-Agent, and six sign files ended up
+holding a different sign than their name claimed.
+
+**Open an image before you wire it to a caption.** The photographs in
+`src/assets/signs/photos/` are not all verified; one named `stop.jpg` held a
+No U-Turn sign.
+
+**Icons are generated as SVG code, never as raster images**, against the
+construction spec — 24px grid, 2px stroke, `butt` caps, `miter` joins,
+`currentColor`. Rounded terminals are what generic looks like and they
+contradict `--r-bay: 0px`.
+
 ## Operate vs Persuade
 
 Which rules apply depends on the surface, not the product.

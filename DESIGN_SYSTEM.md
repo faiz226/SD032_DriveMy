@@ -167,6 +167,23 @@ The licence model is in `src/lib/licence.ts` and is the single source of truth
 for marks and gates. Never recompute readiness locally — that is how the
 progress page ended up quoting a different number than the dashboard.
 
+## Icons
+
+`phosphor-react`, at three weights with a rule for each. The mix is deliberate;
+a fourth weight, or `fill` used decoratively, is drift.
+
+| Weight | Used for |
+|---|---|
+| `regular` | The default. Everything not named below. |
+| `fill` | A resolved state or a primary trigger — `CheckCircle`/`XCircle` on a graded answer, `Warning`, `Play`, `Lightning`. Filled means "this happened" or "this starts it". |
+| `bold` | Optical compensation for small or thin glyphs only — the 12px `Check` in a checkbox, `Minus`/`Plus` on a slider, the 16px `ArrowRight` beside a strong label. Never at large sizes. |
+
+Icons are road, not signage: they sit quieter than a real sign and never
+compete with one. Custom icons — where no library has the concept, such as the
+eight circuit maneuvers — are drawn as overhead paths in the road-marking
+idiom. The spec and the generation prompt are in
+[docs/asset-generation.md](docs/asset-generation.md).
+
 ## Motion
 
 Motion earns its place or it does not ship. See the `web-animation` skill for
