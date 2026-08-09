@@ -268,7 +268,11 @@ export default defineConfig({
 
   // ─── Dev server ───────────────────────────────────────────────────────────
   server: {
-    port: 5173,
+    // 5173 by default, because that is the only localhost origin in Supabase's
+    // redirect allowlist and Google OAuth will not complete anywhere else.
+    // PORT overrides it so a second checkout (a worktree, a review branch) can
+    // run alongside the primary one instead of silently drifting to 5174.
+    port: Number(process.env.PORT) || 5173,
     strictPort: false,
     open: false,
     // Allow tunnel domains for mobile testing (localtunnel / ngrok / Cloudflare)
