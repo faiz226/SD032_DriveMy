@@ -10,37 +10,37 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUpdateTheoryProgress } from '@/hooks/useProgress';
 import { toast } from 'sonner';
 
-// ── Regulatory / Prohibitory – vector renders, confirmed correct by browser audit
-import imgStop        from '@/assets/signs/svg/stop.png';          
-import imgNoUTurnAsset from '@/assets/signs/svg/no-entry.png';       // Actually No U-Turn
-import imgHeightLimit  from '@/assets/signs/svg/no-uturn.png';       // Actually 5.0m Height Limit
-import imgNoEntryAsset from '@/assets/signs/svg/no-right-turn.png';  // Actually No Entry
-import imgWeightLimit  from '@/assets/signs/svg/no-left-turn.png';   // Actually 8T Weight Limit
-import imgEndRestrict  from '@/assets/signs/svg/no-parking.png';     // Actually End of Restriction
-import imgNoParkingAsset from '@/assets/signs/svg/no-stopping.png';  // Actually No Parking
-import imgNoHorn      from '@/assets/signs/svg/no-horn.png';        
-import imgSpeed60     from '@/assets/signs/svg/speed-60.png';
+// ── Regulatory / Prohibitory – vector renders, filename matches content
+import imgStop         from '@/assets/signs/stop.png';
+import imgNoUTurn      from '@/assets/signs/no-uturn.png';
+import imgHeightLimit  from '@/assets/signs/height-limit-5m.png';
+import imgNoEntry      from '@/assets/signs/no-entry.png';
+import imgWeightLimit  from '@/assets/signs/weight-limit-8t.png';
+import imgEndRestrict  from '@/assets/signs/end-of-restriction.png';
+import imgNoParking    from '@/assets/signs/no-parking.png';
+import imgNoHorn       from '@/assets/signs/no-horn.png';
+import imgSpeed60      from '@/assets/signs/speed-60.png';
 
-// ── Warning Signs – confirmed correct by browser audit
-import imgSlippery   from '@/assets/signs/real/slippery.jpg';            // W512 – yellow diamond, skidding car
-import imgJunction   from '@/assets/signs/real/junction.jpg';            // W502 – yellow diamond, T-junction
-import imgSchool     from '@/assets/signs/real/school-zone.jpg';         // W523 – yellow diamond, schoolchildren
+// ── Warning Signs – photographs of installed signs
+import imgSlippery   from '@/assets/signs/photos/slippery.jpg';       // W512 – yellow diamond, skidding car
+import imgJunction   from '@/assets/signs/photos/junction.jpg';       // W502 – yellow diamond, T-junction
+import imgSchool     from '@/assets/signs/photos/school-zone.jpg';    // W523 – yellow diamond, schoolchildren
 
-// ── Informational (confirmed correct by browser)
-import imgInfo from '@/assets/signs/real/info.jpg';  // blue rectangular sign with 'H' (Hospital)
+// ── Informational
+import imgInfo from '@/assets/signs/photos/info.jpg';  // blue rectangular sign with 'H' (Hospital)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ROAD SIGNS DATA  (every image verified against caption by browser audit)
 // ─────────────────────────────────────────────────────────────────────────────
 const roadSigns = [
-  // ── Regulatory (Prohibitory) – all use svg/ vector PNGs confirmed correct
+  // ── Regulatory (Prohibitory)
   { id: 'stop',        name: 'Stop',               nameMs: 'Berhenti',                desc: 'Come to a complete stop before the stop line. Do not proceed until safe.',           descMs: 'Berhenti sepenuhnya sebelum garisan henti. Jangan maju sehingga selamat.',    type: 'Regulatory', img: imgStop },
-  { id: 'no-uturn',    name: 'No U-Turn',           nameMs: 'Dilarang Pusingan U',     desc: 'Making a U-turn is strictly prohibited at this location.',                          descMs: 'Pusingan U dilarang di lokasi ini.',                                           type: 'Regulatory', img: imgNoUTurnAsset },
+  { id: 'no-uturn',    name: 'No U-Turn',           nameMs: 'Dilarang Pusingan U',     desc: 'Making a U-turn is strictly prohibited at this location.',                          descMs: 'Pusingan U dilarang di lokasi ini.',                                           type: 'Regulatory', img: imgNoUTurn },
   { id: 'height-limit',name: 'Height Limit 5.0m',   nameMs: 'Had Ketinggian 5.0m',     desc: 'Vehicles exceeding 5.0 metres in height are prohibited from passing.',              descMs: 'Kenderaan yang melebihi ketinggian 5.0 meter dilarang lalu.',                  type: 'Regulatory', img: imgHeightLimit },
-  { id: 'no-entry',    name: 'No Entry',            nameMs: 'Dilarang Masuk',          desc: 'Entry is prohibited for all vehicles. Usually placed on one-way or exit roads.',    descMs: 'Semua kenderaan dilarang masuk. Biasanya di jalan sehala atau jalan keluar.',  type: 'Regulatory', img: imgNoEntryAsset },
+  { id: 'no-entry',    name: 'No Entry',            nameMs: 'Dilarang Masuk',          desc: 'Entry is prohibited for all vehicles. Usually placed on one-way or exit roads.',    descMs: 'Semua kenderaan dilarang masuk. Biasanya di jalan sehala atau jalan keluar.',  type: 'Regulatory', img: imgNoEntry },
   { id: 'weight-limit',name: 'Weight Limit 8T',     nameMs: 'Had Berat 8T',            desc: 'Vehicles exceeding 8 tonnes laden weight are prohibited from passing.',             descMs: 'Kenderaan bermuatan melebihi 8 tan dilarang masuk.',                           type: 'Regulatory', img: imgWeightLimit },
   { id: 'end-restrict',name: 'End of Restriction',  nameMs: 'Tamat Had Laju',          desc: 'National speed limit applies. Previous restrictions end.',                          descMs: 'Had laju kebangsaan digunakan. Sekatan sebelum ini ditamatkan.',               type: 'Regulatory', img: imgEndRestrict },
-  { id: 'no-parking',  name: 'No Parking',          nameMs: 'Dilarang Letak Kereta',   desc: 'Parking is prohibited. Brief stops for pick-up/drop-off may be permitted.',         descMs: 'Letak kereta dilarang. Berhenti sebentar untuk naik/turun mungkin dibenarkan.', type: 'Regulatory', img: imgNoParkingAsset },
+  { id: 'no-parking',  name: 'No Parking',          nameMs: 'Dilarang Letak Kereta',   desc: 'Parking is prohibited. Brief stops for pick-up/drop-off may be permitted.',         descMs: 'Letak kereta dilarang. Berhenti sebentar untuk naik/turun mungkin dibenarkan.', type: 'Regulatory', img: imgNoParking },
   { id: 'no-horn',     name: 'No Sounding of Horn', nameMs: 'Dilarang Membunyikan Hon', desc: 'Sounding vehicle horn is prohibited. Common near hospitals and schools.',         descMs: 'Membunyikan hon kenderaan dilarang. Biasa di kawasan hospital dan sekolah.',   type: 'Regulatory', img: imgNoHorn },
   { id: 'speed-60',    name: 'Speed Limit 60',      nameMs: 'Had Laju 60',             desc: 'Maximum speed is 60 km/h. An offence under Section 59 of Road Transport Act 1987.', descMs: 'Laju maksimum ialah 60 km/j. Kesalahan di bawah Seksyen 59 Akta Pengangkutan Jalan 1987.', type: 'Regulatory', img: imgSpeed60 },
 
