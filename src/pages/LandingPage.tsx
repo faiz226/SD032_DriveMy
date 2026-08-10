@@ -10,7 +10,17 @@
  * read from `lib/licence.ts`, so the page cannot advertise a number the app
  * does not actually use.
  */
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion as useMotionReducedMotion,
+  useTransform,
+} from "motion/react";
 import {
   ArrowRight,
   BookOpen,
@@ -323,24 +333,92 @@ export function LandingPage() {
    The same road the dashboard uses, at full width and with both checkpoints
    lit, showing a visitor the shape of the thing before they sign up.        */
 
+/**
+ * The hero road, driven once as a journey: nothing, to the L, to the P.
+ *
+ * One MotionValue carries progress 0 → 1 and everything else derives from it —
+ * the line draws, the marker travels at its leading edge, and each plate lights
+ * as the marker reaches it. Deriving rather than choreographing separately is
+ * what keeps the parts from drifting out of sync on a slow device.
+ *
+ * ~1.9s, ease-in-out: a journey starts at rest and arrives at rest. That is
+ * longer than any Operate animation is allowed to be, which is the point — this
+ * is the one Persuade surface, and the road is the argument the page is making.
+ *
+ * The plates reuse LPlate's `earned` state, so an unreached checkpoint is the
+ * same dashed outline the dashboard uses for a gate that is not yet met.
+ */
 function HeroRoad() {
   const { t } = useLanguage();
   const lAt = (PAPER_MARKS / TOTAL_MARKS) * 100;
 
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
+  const reduce = useMotionReducedMotion();
+
+  // useReducedMotion returns boolean | null (null before it resolves), and
+  // LPlate wants a plain boolean — coerce once here rather than at each use.
+  const progress = useMotionValue(reduce ? 1 : 0);
+  const [lEarned, setLEarned] = useState<boolean>(!!reduce);
+  const [pEarned, setPEarned] = useState<boolean>(!!reduce);
+
+  const markerX = useTransform(progress, [0, 1], ["-100%", "0%"]);
+
+  useMotionValueEvent(progress, "change", (v) => {
+    setLEarned(v >= lAt / 100);
+    setPEarned(v >= 0.995);
+  });
+
+  useEffect(() => {
+    if (reduce || !inView) return;
+    const controls = animate(progress, 1, {
+      duration: 1.9,
+      // The Reveal wrapper already holds this back 0.36s; another half-second
+      // on top left the road sitting visibly empty before anything moved.
+      delay: 0.15,
+      ease: [0.65, 0, 0.35, 1], // accelerate away, decelerate into the P
+    });
+    return () => controls.stop();
+  }, [inView, reduce, progress]);
+
   return (
-    <div className="carriageway on-road mt-12 px-5 py-7 sm:mt-16 sm:px-8 sm:py-9">
+    <div ref={ref} className="carriageway on-road mt-12 px-5 py-7 sm:mt-16 sm:px-8 sm:py-9">
       <div className="flex items-stretch gap-4">
         <div className="relative h-[110px] flex-1 bg-road-lane sm:h-[128px]">
           <div className="absolute inset-y-0" style={{ left: 17, right: 17 }}>
-            {/* The whole route, drawn as covered ground */}
+            {/* The route ahead — unpainted ground, so there is something to cover */}
             <div
-              className="absolute left-0 top-1/2 h-[7px] w-full -translate-y-1/2"
+              className="absolute left-0 top-1/2 h-[7px] w-full -translate-y-1/2 opacity-25"
               style={{
                 background:
                   "linear-gradient(rgb(var(--paint)),rgb(var(--paint))) top/100% 2px no-repeat, linear-gradient(rgb(var(--paint)),rgb(var(--paint))) bottom/100% 2px no-repeat",
               }}
               aria-hidden
             />
+
+            {/* Ground covered. scaleX from the left edge — transform only, so
+                the whole draw stays on the compositor. */}
+            <motion.div
+              className="absolute left-0 top-1/2 h-[7px] w-full -translate-y-1/2"
+              style={{
+                scaleX: progress,
+                transformOrigin: "left center",
+                background:
+                  "linear-gradient(rgb(var(--paint)),rgb(var(--paint))) top/100% 2px no-repeat, linear-gradient(rgb(var(--paint)),rgb(var(--paint))) bottom/100% 2px no-repeat",
+              }}
+              aria-hidden
+            />
+
+            {/* The traveller. Its wrapper spans the track and slides from
+                -100% to 0%, so the marker rides the leading edge without
+                anyone having to measure a pixel width. */}
+            <motion.div
+              className="pointer-events-none absolute inset-y-0 left-0 w-full"
+              style={{ x: markerX }}
+              aria-hidden
+            >
+              <span className="absolute right-0 top-1/2 h-[11px] w-[11px] -translate-y-1/2 translate-x-1/2 rounded-full bg-paint" />
+            </motion.div>
 
             <p
               className="type-plate absolute top-1 -translate-x-1/2 whitespace-nowrap text-[10px] text-road-muted"
@@ -358,7 +436,12 @@ function HeroRoad() {
               className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
               style={{ left: `${lAt}%` }}
             >
-              <LPlate letter="L" size={30} title={t("licence.l.name")} />
+              <LPlate
+                letter="L"
+                size={30}
+                earned={lEarned}
+                title={t("licence.l.name")}
+              />
             </div>
 
             <p
@@ -376,7 +459,12 @@ function HeroRoad() {
           </div>
         </div>
         <div className="flex items-center">
-          <LPlate letter="P" size={34} title={t("licence.p.name")} />
+          <LPlate
+            letter="P"
+            size={34}
+            earned={pEarned}
+            title={t("licence.p.name")}
+          />
         </div>
       </div>
     </div>
