@@ -36,6 +36,7 @@ import {
 } from "@/lib/licence";
 import { Button } from "@/components/ui/button";
 import { Bay, LPlate, RoadRule } from "@/components/ui/road";
+import { Reveal } from "@/components/ui/motion";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import type { TranslationKey } from "@/lib/translations";
 
@@ -111,48 +112,60 @@ export function LandingPage() {
             Left-aligned, not centred, and the artefact carrying it is the road
             itself rather than a stock photograph or a gradient. */}
         <section className="mx-auto max-w-6xl px-4 pb-10 pt-8 sm:px-8 sm:pb-16 sm:pt-14">
-          <p className="type-plate text-xs text-muted-foreground">
-            {t("landing.hero.eyebrow")}
-          </p>
+          {/* Hero stagger: 90ms apart, four steps, so the whole arrival lands
+              inside 350ms and reads as one gesture. Persuade surface only. */}
+          <Reveal y={12}>
+            <p className="type-plate text-xs text-muted-foreground">
+              {t("landing.hero.eyebrow")}
+            </p>
+          </Reveal>
 
-          <h1 className="type-display mt-4 max-w-[16ch] text-[2.75rem] leading-[0.98] text-foreground sm:text-6xl lg:text-7xl">
-            {t("landing.hero.title")}
-          </h1>
+          <Reveal delay={0.09}>
+            <h1 className="type-display mt-4 max-w-[16ch] text-[2.75rem] leading-[0.98] text-foreground sm:text-6xl lg:text-7xl">
+              {t("landing.hero.title")}
+            </h1>
+          </Reveal>
 
-          <p className="mt-6 max-w-[52ch] text-base text-muted-foreground sm:text-lg">
-            {t("landing.hero.lead")}
-          </p>
+          <Reveal delay={0.18}>
+            <p className="mt-6 max-w-[52ch] text-base text-muted-foreground sm:text-lg">
+              {t("landing.hero.lead")}
+            </p>
+          </Reveal>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button asChild variant="awas" size="lg">
-              <Link to={ROUTES.AUTH}>
-                {t("landing.hero.cta")}
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
-            </Button>
-            <Button asChild variant="link" size="lg" className="sm:ml-3">
-              <Link to={ROUTES.AUTH}>{t("landing.hero.ctaSecondary")}</Link>
-            </Button>
-          </div>
+          <Reveal delay={0.27}>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Button asChild variant="awas" size="lg">
+                <Link to={ROUTES.AUTH}>
+                  {t("landing.hero.cta")}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+              </Button>
+              <Button asChild variant="link" size="lg" className="sm:ml-3">
+                <Link to={ROUTES.AUTH}>{t("landing.hero.ctaSecondary")}</Link>
+              </Button>
+            </div>
 
-          <p className="mt-4 text-sm text-muted-foreground">
-            {t("landing.hero.note")}
-          </p>
+            <p className="mt-4 text-sm text-muted-foreground">
+              {t("landing.hero.note")}
+            </p>
+          </Reveal>
 
           {/* The signature, doing the hero's visual work */}
-          <HeroRoad />
+          <Reveal delay={0.36} y={24}>
+            <HeroRoad />
+          </Reveal>
         </section>
 
         {/* ── The two halves ────────────────────────────────────────────── */}
         <section className="mx-auto max-w-6xl space-y-6 px-4 py-12 sm:px-8 sm:py-16">
-          <div className="max-w-readable">
+          <Reveal className="max-w-readable">
             <h2 className="type-display text-2xl text-foreground sm:text-4xl">
               {t("landing.journey.title")}
             </h2>
             <p className="mt-3 text-base text-muted-foreground">
               {t("landing.journey.lead")}
             </p>
-          </div>
+          </Reveal>
 
           <div className="grid gap-4 md:grid-cols-2">
             <Bay className="flex flex-col gap-4 p-6 sm:p-8">
@@ -210,14 +223,14 @@ export function LandingPage() {
         {/* ── The mark sheet, published ─────────────────────────────────── */}
         <section className="border-y border-border bg-muted/40">
           <div className="mx-auto max-w-6xl space-y-6 px-4 py-12 sm:px-8 sm:py-16">
-            <div className="max-w-readable">
+            <Reveal className="max-w-readable">
               <h2 className="type-display text-2xl text-foreground sm:text-4xl">
                 {t("landing.marks.title")}
               </h2>
               <p className="mt-3 text-base text-muted-foreground">
                 {t("landing.marks.lead")}
               </p>
-            </div>
+            </Reveal>
 
             <ul className="grid gap-x-8 sm:grid-cols-2">
               {MANEUVERS.map((m) => (
