@@ -12,6 +12,7 @@ import {
 import { cn, formatDuration, downloadBlob } from "@/lib/utils";
 import { ROUTES, MOCK_PASS_MARK } from "@/lib/constants";
 import { DonutRing } from "@/components/ui/donut-ring";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import type { ExamResult } from "./ExamShell";
 import type { TranslationKey } from "@/lib/translations";
@@ -38,6 +39,7 @@ export function TestResultsView({
   setId,
 }: TestResultsViewProps) {
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
   const [showWrongOnly, setShowWrongOnly] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
@@ -46,16 +48,19 @@ export function TestResultsView({
     ? result.score >= MOCK_PASS_MARK
     : result.percentage >= 70;
 
-  // Confetti on pass
+  // Confetti on pass. A single burst on a once-in-a-flow moment is the one
+  // place delight is affordable — but it still asks first, because canvas
+  // motion sits outside the CSS reduced-motion floor.
   useEffect(() => {
-    if (passed) {
+    if (passed && !reduceMotion) {
       confetti({
         particleCount: 120,
         spread: 80,
         origin: { y: 0.6 },
+        colors: ["#00703C", "#F2B705", "#F7F5F0"],
       });
     }
-  }, [passed]);
+  }, [passed, reduceMotion]);
 
   // Category breakdown
   const categoryBreakdown = useMemo(() => {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useAuthStore } from "@/stores/authStore";
 import { useUpdateTheoryProgress } from "@/hooks/useProgress";
 import { ScenarioCard, type Scenario } from "@/components/safety/ScenarioCard";
@@ -92,6 +93,8 @@ export function SafetyPage() {
   const { user } = useAuthStore();
   const { mutateAsync: updateProgress } = useUpdateTheoryProgress();
 
+  const reduceMotion = useReducedMotion();
+
   const [phase, setPhase] = useState<"defensive" | "ethics" | "results">("defensive");
 
   const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
@@ -107,12 +110,17 @@ export function SafetyPage() {
   // Blended final score: defensive (max 80) + ethics avg mapped to 0-20
   const blendedScore = Math.min(score + Math.round((ethicsTotal / ETHICS_CASE_KEYS.length) * 2), 100);
 
-  // Fire confetti when results phase is reached and blendedScore >= 60
+  // Fire confetti when results phase is reached and blendedScore >= 60.
+  // Gated on reduced-motion: this is a 2.5s rAF particle loop, which is exactly
+  // the kind of motion the preference exists to stop.
   useEffect(() => {
     let animationFrameId: number;
-    if (phase === "results" && blendedScore >= 60) {
+    if (!reduceMotion && phase === "results" && blendedScore >= 60) {
       const end = Date.now() + 2.5 * 1000;
-      const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+      // Palette tokens, not the library's defaults. lulus (pass) leads, awas
+      // and paint support it — the previous purple/pink/peach belonged to no
+      // part of this system.
+      const colors = ["#00703C", "#F2B705", "#F7F5F0"];
       const frame = () => {
         if (Date.now() > end) return;
         confetti({ particleCount: 2, angle: 60, spread: 55, startVelocity: 60, origin: { x: 0, y: 0.5 }, colors });
@@ -124,7 +132,7 @@ export function SafetyPage() {
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-  }, [phase, blendedScore]);
+  }, [phase, blendedScore, reduceMotion]);
 
   const handleScenarioNext = (isCorrect: boolean) => {
     if (isCorrect) setScore((prev) => prev + 16); // 5 scenarios × 16 pts = 80 pts max
