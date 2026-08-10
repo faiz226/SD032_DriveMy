@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useAuthStore } from "@/stores/authStore";
 import { useSaveColorblindResult } from "@/hooks/useResults";
 import { Card } from "@/components/ui/card";
@@ -77,6 +78,8 @@ export function ColorVisionPage() {
   const plateAlt = (plateNum: number, type: PlateType) =>
     t("color.plateAlt", { num: plateNum, description: plateDescription(type) });
 
+  const reduceMotion = useReducedMotion();
+
   const [isStarted, setIsStarted] = useState(false);
   const [selectedSet, setSelectedSet] = useState<string | undefined>(undefined);
   const [rulesAccepted, setRulesAccepted] = useState(false);
@@ -90,9 +93,10 @@ export function ColorVisionPage() {
   // Random key that changes each time the test starts, triggering re-shuffle
   const [shuffleKey, setShuffleKey] = useState(() => Math.random());
 
-  // Fire firework confetti when test finishes with a "Normal" classification
+  // Fire firework confetti when test finishes with a "Normal" classification.
+  // Gated on reduced-motion: this loops fireworks for 3s on a timer.
   useEffect(() => {
-    if (!isFinished) return;
+    if (!isFinished || reduceMotion) return;
     // Calculate pass: control plate correct and enough screening plates correct
     const plate1 = PLATES.find(p => p.plateNum === 1);
     const plate1Pass = plate1 ? checkAnswer(answers[plate1.id], plate1) : false;
@@ -111,7 +115,7 @@ export function ColorVisionPage() {
       return () => clearInterval(interval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFinished]);
+  }, [isFinished, reduceMotion]);
 
   // Shuffle plates on each test start: keep plate 1 (control) first, shuffle the rest
   const activePlates = useMemo(() => {
