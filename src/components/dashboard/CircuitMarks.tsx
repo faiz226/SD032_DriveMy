@@ -16,6 +16,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { ROUTES } from "@/lib/constants";
 import { CIRCUIT_MARKS, type LicenceStanding } from "@/lib/licence";
 import { RoadRule, SectionHead } from "@/components/ui/road";
+import { ManeuverIcon } from "@/components/icons/ManeuverIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,15 @@ export function CircuitMarks({ standing, pending = false }: CircuitMarksProps) {
                       ? undefined
                       : t("sim.locked.badge")
                   }
+                />
+                {/* The marking states permission; the diagram states which
+                    maneuver. Different jobs, so both earn their place. */}
+                <ManeuverIcon
+                  maneuver={maneuver.id}
+                  className={cn(
+                    "h-9 w-9 shrink-0",
+                    unlocked ? "text-foreground" : "text-muted-foreground"
+                  )}
                 />
                 <p
                   className={cn(

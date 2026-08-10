@@ -107,6 +107,78 @@ both more specific to this product and less like everything else.
 The same block works for any other custom icon: swap the eight-item list and
 the "THE IDEA" paragraph, keep the spec, the ban list, and the method.
 
+### Revision prompt
+
+The first pass came back with the right compositions in the wrong medium:
+raster PNG, baked-in navy, a rounded frame around every icon, and two icons
+that looked the same. Use this to correct a set rather than restart it.
+
+```text
+You drew eight maneuver icons for DriveMy. The compositions are right — keep
+them. The technical execution needs to change. Redraw all eight.
+
+OUTPUT FORMAT — this is the main failure, fix it first
+Output SVG markup as TEXT, in a code block per icon. Do not render, generate,
+or return an image of any kind. I need editable vector source I can paste into
+a React component, not a picture of icons. If you produced a PNG or JPEG last
+time, that is the thing to stop doing.
+
+FIX THESE, IN ORDER OF IMPORTANCE
+
+1. No colour. Every stroke is stroke="currentColor" and fill="none". Delete the
+   navy. The app has a dark theme where a dark navy line disappears into the
+   background, and the icon must take its colour from the CSS around it.
+
+2. Delete the frame. There is no rounded box, no border, no enclosing square
+   around the icon. The path IS the icon. The frame was consuming most of the
+   drawing area — at a 24px render it left about 14px of usable space.
+
+3. No rounded anything. stroke-linecap="butt", stroke-linejoin="miter",
+   corner radius 0 on every shape. Road paint has hard ends. This product pins
+   every radius in its design system to 0 or 4px, so soft corners read as
+   foreign.
+
+4. One stroke weight: 2, everywhere. Last time the hatching and the frames were
+   thinner than the main paths. Hatching at a lighter weight is not allowed —
+   if a slope needs texture, use fewer, heavier ticks.
+
+5. hill-start and ramp-test are currently the same drawing — a hatched incline
+   with an arrow going up and right. They must be distinguishable with the
+   labels covered. Suggestion: hill-start shows the car's hold point on the
+   slope before pulling away (a short bar across the path partway up);
+   ramp-test shows the crest and the level platform on top. Any solution is
+   fine as long as the silhouettes differ.
+
+6. side-parking and parallel-parking carry too much. Each currently has two
+   road edges, a dashed centre line, a bay outline, a path and an arrowhead —
+   six or seven elements inside 24px, which turns to mush. Drop the road edges
+   and the centre line. Keep: the bay (or the two parked vehicles), the path,
+   the arrowhead. Nothing else.
+
+SPEC — unchanged from before
+- 24x24 viewBox, 20x20 live area centred, 2px optical padding.
+- Stroke 2, butt caps, miter joins, radius 0, fill="none",
+  stroke="currentColor", opacity 1 throughout.
+- Coordinates snapped to a 0.5 grid.
+- Straight lines, circles, and grid-centred arcs. Simplify rather than reach
+  for a bezier.
+- One arrowhead design, two straight strokes, identical size in every icon.
+- Draw all eight in one pass so nothing drifts.
+
+KEEP — these already work
+s-curve and z-curve are correct and clearly different from each other; change
+only their colour, caps and frame. road-merging reads well. The overhead-path
+idea is right: no cars, no cones, no people, no perspective. Do not reintroduce
+any of those.
+
+SELF-CHECK before output
+- Mentally render at 16px. Anything that turns to mush gets simplified again.
+- Cover the labels. Are all eight distinguishable by silhouette? Check
+  hill-start against ramp-test, and s-curve against z-curve.
+- Does any icon still contain a hex colour, a frame, or a rounded cap? Remove.
+- Is the output text I can copy, rather than an image? It must be.
+```
+
 ---
 
 ## Prompt — motion
