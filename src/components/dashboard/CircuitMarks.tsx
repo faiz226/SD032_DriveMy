@@ -17,6 +17,7 @@ import { ROUTES } from "@/lib/constants";
 import { CIRCUIT_MARKS, type LicenceStanding } from "@/lib/licence";
 import { RoadRule, SectionHead } from "@/components/ui/road";
 import { ManeuverIcon } from "@/components/icons/ManeuverIcon";
+import { CountUp } from "@/components/ui/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -39,10 +40,12 @@ export function CircuitMarks({ standing, pending = false }: CircuitMarksProps) {
             <Skeleton className="h-5 w-16" />
           ) : (
             <p className="type-figure text-sm text-foreground">
-              {t("dashboard.marksShort", {
-                earned: String(standing.circuitEarned),
-                total: String(CIRCUIT_MARKS),
-              })}
+              {/* Counts only when the total actually moves — a figure that
+                  animates on every visit is an intro, not feedback.
+                  dashboard.marksShort is "{{earned}}/{{total}}" in both en and
+                  ms — numerals and a slash, no words — so rendering the parts
+                  structurally carries no translation risk. */}
+              <CountUp value={standing.circuitEarned} />/{CIRCUIT_MARKS}
             </p>
           )
         }
