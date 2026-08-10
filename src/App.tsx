@@ -1,6 +1,7 @@
 import { useEffect, Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "motion/react";
 
 // Layouts
 import { AppLayout }      from "@/components/shared/AppLayout";
@@ -136,6 +137,11 @@ function App() {
   useTheme();
   return (
     <ErrorBoundary>
+      {/* reducedMotion="user" makes every `motion` animation in the app follow
+          the OS setting without each author having to remember. The CSS floor
+          in index.css covers declarative animation and useReducedMotion covers
+          imperative canvas work; this closes the third gap. */}
+      <MotionConfig reducedMotion="user">
       <QueryClientProvider client={queryClient}>
         <AuthInit>
             <BrowserRouter>
@@ -189,6 +195,7 @@ function App() {
             </BrowserRouter>
           </AuthInit>
       </QueryClientProvider>
+      </MotionConfig>
     </ErrorBoundary>
   );
 }
