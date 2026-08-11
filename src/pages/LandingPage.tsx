@@ -353,7 +353,11 @@ function HeroRoad() {
   const lAt = (PAPER_MARKS / TOTAL_MARKS) * 100;
 
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
+  // `amount: 0.5` — half the road must actually be on screen, not merely its
+  // top edge. A margin-only trigger fired while the road was a sliver at the
+  // bottom of the viewport, so the journey played out before the visitor had
+  // scrolled far enough to watch any of it.
+  const inView = useInView(ref, { once: true, amount: 0.5 });
   const reduce = useMotionReducedMotion();
 
   // useReducedMotion returns boolean | null (null before it resolves), and
@@ -372,7 +376,11 @@ function HeroRoad() {
   useEffect(() => {
     if (reduce || !inView) return;
     const controls = animate(progress, 1, {
-      duration: 1.9,
+      // 3.2s. Slower than any interface animation has a right to be, which is
+      // correct here: this is not feedback on an action, it is the page's
+      // argument, and the visitor is meant to watch a car cover ground rather
+      // than see a bar fill. Faster read as a loading indicator.
+      duration: 3.2,
       // The Reveal wrapper already holds this back 0.36s; another half-second
       // on top left the road sitting visibly empty before anything moved.
       delay: 0.15,
