@@ -113,6 +113,37 @@ Road geometry has almost no curves. Three values, each with a reason:
 Every Tailwind radius (`sm` through `3xl`) is pinned to `--r-plate` so a stray
 `rounded-2xl` cannot reintroduce a fourth value.
 
+## Curves
+
+Curves are rare here by design, but where a road bends the geometry follows the
+road, not the drawing tool.
+
+**A curve joins its neighbour smoothly or it is a corner on purpose.** There is
+no third state. A join that is *nearly* tangent reads as a mistake at large
+sizes and as a smudge at small ones. `z-curve`'s angular turns are corners and
+should stay corners; `parallel-parking`'s entry curve is smooth and had a 90°
+break in it for a while, which the eye missed and the harness did not.
+
+**Curvature continuity (G2) is the ideal, not the floor.** Real road alignment
+puts a transition spiral between a straight and an arc because a driver cannot
+change steering angle instantly — Arahan Teknik Jalan specifies them, and it is
+the same reason this system's curves should ramp rather than snap. In practice a
+cubic cannot be curvature-continuous against straights at *both* ends without
+degenerating, so the current icons are tangent-continuous (G1) with known
+curvature breaks. That is an accepted trade at 40px, recorded rather than
+hidden.
+
+```bash
+node .screenshots/curvature.mjs
+```
+
+Reports every join, separates intentional corners from unintended breaks, and
+exits non-zero on a G2 break. Run it after touching any path data.
+
+**Squircles are not part of this system.** Corner smoothing is invisible below
+about 12px and every radius here is 0 or 4px; `corner-shape` is also
+Chromium-only. The hard corner is the identity, not a limitation.
+
 ## The road-marking grammar
 
 The system's structural language. **A line's pattern states permission**, the

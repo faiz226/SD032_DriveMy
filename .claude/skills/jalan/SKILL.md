@@ -61,7 +61,14 @@ road paints itself when marks actually move, not on every visit.
 **Only three radii exist**: `0` for bays and rules, `4px` for plates, full round
 for genuinely circular things. Every Tailwind radius is pinned to `4px`, so
 reaching for `rounded-2xl` to get something softer will not work and should not
-be attempted.
+be attempted. Squircles are not part of this system either — corner smoothing is
+invisible below ~12px, and the hard corner is the identity.
+
+**A curve joins smoothly or it is a corner on purpose** — never almost-tangent.
+After touching any path data run `node .screenshots/curvature.mjs`, which
+separates intentional corners from unintended breaks. It caught a 90° break
+sitting in the middle of `parallel-parking`'s entry curve that had passed
+visual review.
 
 ## Assets
 

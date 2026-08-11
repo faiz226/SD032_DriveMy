@@ -28,7 +28,7 @@ const PATHS: Record<string, string> = {
   'parallel-parking': `
     <path d="M28,6 L36,6 L36,13 L28,13 Z"/>
     <path d="M28,20 L36,20 L36,27 L28,27 Z"/>
-    <path d="M6,10 L14,10 Q20,10 20,16.5 L27,16.5"/>
+    <path d="M6,10 L14,10 C18,10 19,16.5 23,16.5 L27,16.5"/>
     <path d="M27,16.5 L22,14 M27,16.5 L22,19"/>`,
 
   'three-point-turn': `
