@@ -13,6 +13,24 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
 
+/* Jalan: Archivo carries headings and figures, Barlow does the working text
+   (its design brief is highway signage and it handles long Bahasa Melayu
+   strings without collapsing), Barlow Condensed is the plate voice. Self-hosted
+   via fontsource for the same reason as above — no third-party requests. */
+/* wdth.css, not index.css: Archivo's width axis is what lets a heading sit
+   expanded like a stamped regulatory plate, and the default entrypoint does not
+   ship it. Its subsets are unicode-range gated, so a browser fetches only the
+   one it needs.
+   Barlow is pinned to the latin subset explicitly — the default entrypoint
+   ships cyrillic, greek and vietnamese too, and this app is English and Bahasa
+   Melayu, both pure latin. That is dead weight in a precached PWA. */
+@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource/barlow/latin-400.css";
+@import "@fontsource/barlow/latin-500.css";
+@import "@fontsource/barlow/latin-600.css";
+@import "@fontsource/barlow-condensed/latin-600.css";
+@import "@fontsource/barlow-condensed/latin-700.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -147,6 +165,161 @@
     --chart-4: 90 60 45;
     --chart-5: 239 68 68;
     --hud-highlight: 0 0 0 / 0.3;
+  }
+}
+
+/* --- Jalan ------------------------------------------------------------------
+   The interface is the road surface; the content is the signage. See
+   DESIGN_SYSTEM.md. Introduced ADDITIVELY: the shadcn tokens above are left
+   alone so every existing page renders exactly as before, and only surfaces
+   explicitly re-cut onto Jalan (currently the exam room) pick these up.
+   Remapping --background/--card/--border onto these values flips the whole app
+   in one step, and is deliberately not done yet.
+   ---------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Six values, each from a real road. RGB triples, as above. */
+    --asphalt:   35 33 30;    /* #23211E warm bituminous black, not #111 */
+    --concrete:  228 227 222; /* #E4E3DE poured circuit surface, not cream */
+    --paint:     247 245 240; /* #F7F5F0 road-marking white */
+    --awas:      242 183 5;   /* #F2B705 warning diamond */
+    --berhenti:  200 16 46;   /* #C8102E stop / fail / below the pass mark */
+    --lulus:     0 112 60;    /* #00703C pass / complete */
+    --sign-info: 0 87 168;    /* #0057A8 JPJ informational plate */
+
+    /* Neutral ramp derived from asphalt, not a generic grey. Measured against
+       the light canvas: grade-3 is the lowest that clears AA for body text
+       (5.19:1) and grade-4 the lowest that clears the 3:1 non-text floor for
+       an edge (3.33:1). Those two facts are what the ramp exists to encode. */
+    --grade-1: 35 33 30;
+    --grade-2: 65 63 59;
+    --grade-3: 94 92 89;
+    --grade-4: 124 122 118;
+    --grade-5: 152 150 146;
+    --grade-6: 175 173 169;
+    --grade-7: 200 198 194;
+    --grade-8: 222 220 215;
+    --grade-9: 236 234 230;
+
+    /* Road geometry has almost no curves. */
+    --r-bay: 0px;
+    --r-plate: 4px;
+
+    /* Semantic road surfaces — light mode is the circuit in daylight. */
+    --road-page:   var(--concrete);
+    --road-raised: var(--paint);
+    --road-ink:    var(--asphalt);
+    --road-muted:  var(--grade-3);
+    --road-edge:   var(--grade-4);
+  }
+
+  .dark {
+    /* The same road at night. The carriageway is LIGHTER than the page — a road
+       ahead is lighter than the verge under headlights; building it darker made
+       raised surfaces vanish into the background. */
+    --road-page:   26 25 23;   /* #1A1917 */
+    --road-raised: 44 42 38;   /* #2C2A26 */
+    --road-ink:    var(--paint);
+    --road-muted:  var(--grade-6);
+    --road-edge:   var(--grade-4);
+  }
+}
+
+@layer components {
+  /* Surfaces. A raised surface measures 1.18:1 against the page in light mode,
+     so the fill alone cannot carry it — the edge does the work, and the edge
+     token is chosen to clear WCAG 1.4.11's 3:1. */
+  .plate {
+    background-color: rgb(var(--road-raised));
+    border: 1px solid rgb(var(--road-edge));
+    border-radius: var(--r-plate);
+  }
+
+  .bay {
+    background-color: rgb(var(--road-raised));
+    border: 1px solid rgb(var(--road-edge));
+    border-left: 4px solid rgb(var(--road-edge));
+    border-radius: var(--r-bay);
+  }
+  .bay-open     { border-left-color: rgb(var(--grade-5)); }
+  /* "You chose this" is not one of open/progress/done/fail, and it must not
+     borrow awas — that colour is already spent on the painted focus marker,
+     and a reserved colour meaning two things means neither. The kerb goes to
+     ink, which is also the strongest edge available in both themes. */
+  .bay-selected { border-left-color: rgb(var(--road-ink)); }
+  .bay-progress { border-left-color: rgb(var(--awas)); }
+  .bay-done     { border-left-color: rgb(var(--lulus)); }
+  .bay-fail     { border-left-color: rgb(var(--berhenti)); }
+
+  /* awas is a light hue and cannot carry text on a pale surface (1.67:1
+     measured). Where yellow must label something it becomes a plate: dark text
+     ON yellow, 8.83:1, which is what a warning sign does anyway. */
+  .plate-awas {
+    background-color: rgb(var(--awas));
+    color: rgb(var(--asphalt));
+    border: 1px solid rgb(var(--awas));
+    border-radius: var(--r-plate);
+  }
+
+  /* A line's pattern states permission, the same way it does on a real road. */
+  .mark-locked { border-top: 3px double rgb(var(--road-edge)); }
+  .mark-closed { border-top: 1px solid rgb(var(--road-edge)); }
+  .mark-open   { border-top: 1px dashed rgb(var(--road-edge)); }
+  .mark-progress { border-top: 2px dashed rgb(var(--awas)); }
+}
+
+@layer utilities {
+  /* Two families, three roles. */
+  .type-display {
+    font-family: "Archivo Variable", "Archivo", system-ui, sans-serif;
+    font-variation-settings: "wdth" 115;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .type-figure {
+    font-family: "Archivo Variable", "Archivo", system-ui, sans-serif;
+    font-variation-settings: "wdth" 112;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  .type-body {
+    font-family: "Barlow", system-ui, sans-serif;
+    font-weight: 400;
+  }
+  /* The loudest voice in the system, and the one that gets misused. Allowed
+     only where the product is genuinely showing a sign. An audit of the
+     pre-Jalan render found 41% of all text in condensed caps, at which point
+     the caps stopped meaning "label" and became texture. */
+  .type-plate {
+    font-family: "Barlow Condensed", "Barlow", system-ui, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  /* Everything else: section heads, field labels, metadata, buttons. */
+  .type-label {
+    font-family: "Barlow", system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .type-label-strong {
+    font-family: "Barlow", system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  /* Touch targets are declared on the components that need them, never as a
+     blanket rule on every element — the previous global min-height inflated
+     inline links and fought every layout. */
+  .tap    { min-height: 48px; min-width: 48px; }
+  .tap-sm { min-height: 40px; min-width: 40px; }
+
+  /* Focus is a painted awas marker, not a soft ring. */
+  .focus-paint:focus-visible {
+    outline: 3px solid rgb(var(--awas));
+    outline-offset: 2px;
   }
 }
 

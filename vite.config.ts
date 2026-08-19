@@ -133,6 +133,13 @@ export default defineConfig({
         // Precache all JS, CSS, HTML, images, and fonts
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,eot}"],
 
+        // …except font subsets this app can never render. The UI is English
+        // and Bahasa Melayu, both pure latin, but fontsource ships cyrillic,
+        // greek and vietnamese cuts alongside. The browser already skips them
+        // at runtime via unicode-range; without this the service worker still
+        // downloads every one of them up front, on a learner's mobile data.
+        globIgnores: ["**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2"],
+
         // Runtime caching strategies
         runtimeCaching: [
           // No Google Fonts rules: the fonts are self-hosted now, so they are
