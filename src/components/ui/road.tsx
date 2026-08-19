@@ -5,9 +5,17 @@
  * surfaces content sits on, so they stay achromatic: the only saturated colour
  * on screen should belong to an actual JPJ sign or an actual pass/fail state.
  *
- * Only the primitives with a caller are here. `Carriageway`, `LPlate` and the
- * readiness road land with the dashboard, not before — an unused abstraction is
- * a liability, and this file is imported by the exam room today.
+ * Status: `SectionHead` has a caller (the exam room). `Bay`, `Plate`,
+ * `AwasPlate`, `RoadRule` and `Figure` are declared but not yet called — the
+ * exam room uses their `.bay` / `.plate` / `.plate-awas` classes directly,
+ * because an option button has to BE the bay rather than sit inside one.
+ * They are kept because DESIGN_SYSTEM.md names them as the system's API and
+ * the next surfaces are expected to use them; if the theory and dashboard
+ * rebuilds end up reaching for the classes too, delete them rather than
+ * keeping an API nothing calls.
+ *
+ * `Carriageway` and `LPlate` are deliberately absent until something needs
+ * them.
  */
 import * as React from "react";
 import { cn } from "@/lib/utils";
