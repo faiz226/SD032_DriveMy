@@ -458,11 +458,16 @@ interface AppLayoutProps {
   showSidebar?: boolean;
 }
 
-export function AppLayout({ showSidebar = true }: AppLayoutProps) {
+export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps) {
   const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileMenuId = useId();
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar, examMode } = useUIStore();
+
+  // An exam in progress gets the screen to itself. The nav is removed rather
+  // than hidden, so it is also out of the tab order and the accessibility tree
+  // — a learner tabbing through a timed test cannot land on "Simulator".
+  const showSidebar = showSidebarProp && !examMode;
 
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-background">
