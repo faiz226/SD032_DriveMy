@@ -17,19 +17,9 @@
    (its design brief is highway signage and it handles long Bahasa Melayu
    strings without collapsing), Barlow Condensed is the plate voice. Self-hosted
    via fontsource for the same reason as above — no third-party requests. */
-/* wdth.css, not index.css: Archivo's width axis is what lets a heading sit
-   expanded like a stamped regulatory plate, and the default entrypoint does not
-   ship it. Its subsets are unicode-range gated, so a browser fetches only the
-   one it needs.
-   Barlow is pinned to the latin subset explicitly — the default entrypoint
-   ships cyrillic, greek and vietnamese too, and this app is English and Bahasa
-   Melayu, both pure latin. That is dead weight in a precached PWA. */
-@import "@fontsource-variable/archivo/wdth.css";
-@import "@fontsource/barlow/latin-400.css";
-@import "@fontsource/barlow/latin-500.css";
-@import "@fontsource/barlow/latin-600.css";
-@import "@fontsource/barlow-condensed/latin-600.css";
-@import "@fontsource/barlow-condensed/latin-700.css";
+/* Jalan's faces are NOT imported here. They load per route from
+   src/styles/jalan-type.css, so a route that has not moved onto Jalan yet
+   downloads none of them. See that file for why. */
 
 @tailwind base;
 @tailwind components;

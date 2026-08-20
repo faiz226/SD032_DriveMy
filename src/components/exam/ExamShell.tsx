@@ -1,3 +1,7 @@
+// The exam room is a Jalan surface, so it brings Jalan's type with it. Routes
+// that have not converted do not import this and pay nothing for it.
+import "@/styles/jalan-type.css";
+
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";

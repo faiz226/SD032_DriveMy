@@ -138,12 +138,44 @@ export default defineConfig({
         // greek and vietnamese cuts alongside. The browser already skips them
         // at runtime via unicode-range; without this the service worker still
         // downloads every one of them up front, on a learner's mobile data.
-        globIgnores: ["**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2"],
+        //
+        // Jalan's faces (Archivo, Barlow, Barlow Condensed) are excluded too,
+        // for a different reason: Jalan currently owns one surface, so
+        // precaching them would charge every learner ~332KB for type only the
+        // exam room uses. They are runtime-cached below instead — fetched when
+        // a Jalan route is first opened, then kept offline like any precached
+        // asset. The trade is that a learner who goes offline having never
+        // opened an exam sees the fallback stack until their first online
+        // visit; the text is fully legible, just not in Barlow.
+        //
+        // When the last route converts, delete this line and precache them:
+        // at that point they replace Inter/JetBrains rather than adding to it.
+        globIgnores: [
+          "**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2",
+          "**/{archivo,barlow}-*.woff2",
+        ],
 
         // Runtime caching strategies
         runtimeCaching: [
           // No Google Fonts rules: the fonts are self-hosted now, so they are
           // covered by the precache above like any other same-origin asset.
+
+          // ─── Jalan type ────────────────────────────────────────────────
+          //
+          // Deliberately not precached (see globIgnores). A font file is
+          // immutable and content-hashed, so CacheFirst is correct: fetch once
+          // on the first Jalan route a learner opens, then serve from cache
+          // forever, including offline.
+          {
+            urlPattern: /\/assets\/(archivo|barlow)[^/]*\.woff2$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "jalan-type",
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+
           // ─── Supabase ──────────────────────────────────────────────────
           //
           // This used to be a single catch-all rule matching every
