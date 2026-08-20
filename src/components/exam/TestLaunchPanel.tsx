@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Lightning, Play, ClipboardText } from "phosphor-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
 
 interface TestLaunchPanelProps {
@@ -31,6 +32,13 @@ const MOCK_SETS = [
 ];
 
 export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
+  // The exam is sat in the learner's language. This used to be hardcoded to
+  // "en" for everyone, on the stated grounds that both languages were shown —
+  // but ExamShell renders exactly one language from this prop, so the dual
+  // display never existed and the hardcode outlived the intent. The effect was
+  // that every Malay learner practised in English for an exam JPJ sets in
+  // Malay, while the screen above promised them both.
+  const { language } = useLanguage();
   const { register, handleSubmit, watch, setValue } = useForm<LaunchForm>({
     resolver: zodResolver(launchSchema),
     defaultValues: { setId: undefined, rulesAccepted: false },
@@ -40,8 +48,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
   const rulesAccepted = watch("rulesAccepted") || false;
 
   const onSubmit = (data: LaunchForm) => {
-    // Pass 'en' as default since we show dual languages now
-    onStart({ language: "en", setId: data.setId || (mode === "quiz" ? "A" : "mock-1") });
+    onStart({ language, setId: data.setId || (mode === "quiz" ? "A" : "mock-1") });
   };
 
   const sections = mode === "quiz" ? KPP_SECTIONS : MOCK_SETS;
