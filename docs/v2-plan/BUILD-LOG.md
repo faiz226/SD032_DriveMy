@@ -78,3 +78,55 @@ into RULES.md and `rules.json`.
 
 **Checks:** the build passes; all 211 tests pass (140 existing and 71 new); lint is clean on
 `src/sim`.
+
+## WP2 (15 Oct): the yard as a 3D world
+
+**What was built:**
+
+- `src/sim/world/build.ts`: the world, built from `circuit.json` alone and cached, so a level change never
+  rebuilds it. It holds:
+  - the pavement, with every island and wall as a hole;
+  - kerbs on the grass side of every ring, 0.13 × 0.20 m, painted in 1 m yellow and black dashes;
+  - both slope decks following their profiles, with their walls subdivided every 0.5 m so their tops
+    follow the slope, and a raised end wall on the ramp;
+  - the paint: the hill's stop band, the side bay (open at its mouth), the parallel box and the
+    finish line;
+  - the five striped poles, the booths and the office (blue roofs, as in the plan), and the
+    perimeter fence;
+  - named markers for every gate, bay, pole, slope, booth, start point and the spawn.
+- **Colliders:** one ground box, trimeshes for the kerbs, the slopes and invisible guard rails
+  1.2 m above every slope wall (the car cannot fall off), boxes for the buildings and the fence,
+  and a body per pole carrying `userData.pole`, so the car can report which pole it touched.
+- `src/sim/world/World.tsx`: the world in the scene, with its textures. `Daylight` is the sky, a
+  hemisphere fill and the sun, with no environment map, so nothing loads from the network.
+  `TopDownCamera` is orthographic and framed to `site.bounds`, north up.
+- **Textures** (`public/sim/textures`):
+  - concrete from ambientCG Concrete030 (CC0, already in the owner's `3D Assets`), lightened to the
+    yard's pale concrete: 6 KB at 512 px and 28 KB at 1024 px;
+  - grass generated as seamless noise: 37 KB and 144 KB.
+  - Both are recorded in `THIRD_PARTY_LICENSES.md`.
+- `src/sim/dev/SimPreview.tsx` at `/dev/sim`: development only, and absent from the production build.
+
+**Draw calls:** 5 (grass, concrete, kerbs, paint, poles and props), against a budget of about 10.
+
+**Tests** (`src/sim/world/world.test.ts`, 8, all passing):
+
+- every gate, bay, pole, slope, booth, start and the spawn is within 1 cm of its JSON position;
+- the pole colliders carry their indices;
+- the slopes follow their profiles;
+- `kerbContact` hits 0.05 m outside, and misses 0.05 m inside, all 195 ring segments long enough to
+  test;
+- a tyre patch overlapping a kerb counts, and one clear of it does not;
+- the world adds 10 draw calls at most, and ten level changes build no new meshes.
+
+**Screenshot:** `docs/circuit-v2/frames/world-vs-plan.png` shows the straight-down render beside
+`circuit-plan.png`. The layouts match.
+
+**Checks:**
+
+- `check:circuit` passes 44 of 44, after this package's changes to `rules.json`;
+- the build passes;
+- all 219 tests pass;
+- lint is clean.
+
+**Skipped (cut line, item 3):** the station number boards.

@@ -55,6 +55,18 @@ Road sign images are reproduced from the **Malaysian Highway Code (Kod Jalan Ray
 
 ---
 
+## Simulator Textures
+
+**Location:** `public/sim/textures/`
+**Used in:** the v2 driving simulator's yard
+
+| File | Source | License |
+|------|--------|---------|
+| `concrete-512.webp`, `concrete-1024.webp` | [ambientCG Concrete030](https://ambientcg.com/view?id=Concrete030), downscaled and lightened to match the yard's pale concrete | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `grass-512.webp`, `grass-1024.webp` | Generated for this project (a periodic noise field in grass colours) | MIT (this project) |
+
+---
+
 ## Software Dependencies
 
 All npm dependencies are listed in `package.json`. Individual package licenses can be audited with:
