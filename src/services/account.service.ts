@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
-import { del } from "idb-keyval";
+import { clearUserResultsQueue, markUserDeleted } from "./results.service";
+import { useAuthStore } from "@/stores/authStore";
 
 /**
  * PDPA 2010 / GDPR data-subject rights: export (access & portability) and
@@ -19,13 +20,6 @@ const USER_DATA_TABLES = [
   "simulation_results",
   "colorblind_results",
   "theory_progress",
-] as const;
-
-const OFFLINE_QUEUES = [
-  "quizQueue",
-  "mockQueue",
-  "simulationQueue",
-  "colorblindQueue",
 ] as const;
 
 /**
@@ -55,22 +49,60 @@ export async function exportUserData(userId: string): Promise<Blob> {
   return new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
 }
 
+export class AccountCleanupError extends Error {
+  constructor(message: string, public readonly cause?: unknown) {
+    super(message);
+    this.name = "AccountCleanupError";
+  }
+}
+
 /**
  * Irreversibly delete the signed-in user's account.
  *
  * Order matters. `delete_user()` removes the auth.users row, and every table
  * above references auth.users(id) ON DELETE CASCADE — so the database removes
- * the dependent rows atomically. Deleting them manually first would mean a
- * failure part-way through leaves the user with their data gone and their
- * account intact, which is exactly the bug this replaces.
+ * the dependent rows atomically.
+ *
+ * Cleans ONLY the deleted user's live and dead-letter queued data locally,
+ * preserving pending work for other accounts on shared devices.
  *
  * Throws if the RPC fails, leaving all data in place for a retry.
  */
 export async function deleteAccount(): Promise<void> {
+  // Establish a reliable outgoing identity before deleting the remote auth row
+  let userId: string | undefined;
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    userId = sessionData?.session?.user?.id;
+  } catch {
+    // Check fallback
+  }
+  if (!userId) {
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      userId = authData?.user?.id;
+    } catch {
+      // Check store
+    }
+  }
+  if (!userId) {
+    userId = useAuthStore.getState().user?.id;
+  }
+
+  if (!userId) {
+    throw new Error("Cannot delete account: unable to establish authenticated user identity for local cleanup.");
+  }
+
   const { error } = await supabase.rpc("delete_user");
   if (error) throw error;
 
-  // Server state is gone; now clear anything cached on this device so a queued
-  // offline write cannot resurrect a row after deletion.
-  await Promise.all(OFFLINE_QUEUES.map((queue) => del(queue).catch(() => undefined)));
+  // Remote deletion succeeded: durably mark user as deleted in storage and clean queues locally
+  try {
+    await markUserDeleted(userId);
+    await clearUserResultsQueue(userId);
+  } catch (cleanupErr) {
+    // Distinguish remote deletion success from local cleanup failure
+    const msg = cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr);
+    throw new AccountCleanupError(`Account deleted remotely, but failed to complete local queue cleanup: ${msg}`, cleanupErr);
+  }
 }

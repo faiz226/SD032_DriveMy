@@ -77,6 +77,9 @@ function AuthInit({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (session?.user?.id) {
+          syncOfflineResults(session.user.id);
+        }
       }
     );
 
@@ -84,9 +87,13 @@ function AuthInit({ children }: { children: React.ReactNode }) {
   }, [setUser, setSession, setLoading]);
 
   useEffect(() => {
-    const handleOnline = () => syncOfflineResults();
+    const handleOnline = () => {
+      const activeUserId = useAuthStore.getState().user?.id;
+      if (activeUserId) syncOfflineResults(activeUserId);
+    };
     window.addEventListener("online", handleOnline);
-    syncOfflineResults();
+    const activeUserId = useAuthStore.getState().user?.id;
+    if (activeUserId) syncOfflineResults(activeUserId);
     return () => window.removeEventListener("online", handleOnline);
   }, []);
 

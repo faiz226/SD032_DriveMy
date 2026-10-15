@@ -181,6 +181,24 @@
       "skillPath": "skills/emil-design-eng/SKILL.md",
       "computedHash": "ac3fc5b4e206488ffc408a2806f829bb2e5eaf518fded09be34790685c2b3a0d"
     },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "frontend-ui-engineering": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-ui-engineering/SKILL.md",
+      "computedHash": "cb4e981ecb5f701b451fc4e937a38049b49fd4523f213e06cffbd00b007060dc"
+    },
     "gemini": {
       "source": "giuseppe-trisciuoglio/developer-kit",
       "sourceType": "github",
@@ -379,6 +397,12 @@
       "skillPath": "plugins/developer-kit-typescript/skills/react-patterns/SKILL.md",
       "computedHash": "0743729e75a4abd77de85669810ae8815df8963b985c1ae7bc8e72dbc678ad6b"
     },
+    "security-and-hardening": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-and-hardening/SKILL.md",
+      "computedHash": "47d027526d7e0be784a19a034f18cba328009b3c8fe483f16e4b12530cf82183"
+    },
     "shadcn-ui": {
       "source": "giuseppe-trisciuoglio/developer-kit",
       "sourceType": "github",
@@ -486,6 +510,24 @@
       "sourceType": "github",
       "skillPath": "plugins/developer-kit-java/skills/spring-data-neo4j/SKILL.md",
       "computedHash": "05a5ca65151bc814475523a40a35ff1ec0f1cada529657a5d36bc93393bed842"
+    },
+    "supabase": {
+      "source": "supabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/supabase/SKILL.md",
+      "computedHash": "a6260582f48df8ba53380bb9b9e870ed2ae5fe147799e90ed783b8aa25167d50"
+    },
+    "supabase-audit-rls": {
+      "source": "yoanbernabeu/supabase-pentest-skills",
+      "sourceType": "github",
+      "skillPath": "skills/audit-api/supabase-audit-rls/SKILL.md",
+      "computedHash": "2ac58ce5b714dc094940640e43fc3c42eec22a7234d2b46dd75885462a8c803c"
+    },
+    "supabase-postgres-best-practices": {
+      "source": "supabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
+      "computedHash": "128fac78002d916c8ca908245d398e634f540d8bcf20915b2b2359aeb18eba59"
     },
     "tailwind-css-patterns": {
       "source": "giuseppe-trisciuoglio/developer-kit",

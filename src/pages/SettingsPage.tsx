@@ -16,7 +16,9 @@ import { del } from "idb-keyval";
 import { format } from "date-fns";
 import { useTheoryProgress, useOverallReadiness } from "@/hooks/useProgressStats";
 import { getBestQuizScore, getBestMockTestScore, getSimulationsDone } from "@/services/analytics.service";
-import { exportUserData, deleteAccount } from "@/services/account.service";
+import { exportUserData, deleteAccount, AccountCleanupError } from "@/services/account.service";
+import { getUserPendingStatus, getUserDeadLetterItems, retryUserDeadLetterItem, syncOfflineResults } from "@/services/results.service";
+import { LocalSessionTerminationError } from "@/services/auth.service";
 import { hasTelemetryConsent, writeConsent } from "@/lib/consent";
 import { initTelemetry, shutdownTelemetry } from "@/lib/telemetry";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -141,12 +143,62 @@ export function SettingsPage() {
   const { theme, setTheme } = useThemeStore();
   const queryClient = useQueryClient();
 
+  const [queueStatus, setQueueStatus] = useState<{ pendingCount: number; deadLetterCount: number }>({
+    pendingCount: 0,
+    deadLetterCount: 0,
+  });
+  const [isRetryingQueue, setIsRetryingQueue] = useState(false);
+
   useEffect(() => {
     const stored = localStorage.getItem(NOTIFICATIONS_KEY);
     if (stored !== null) {
       setNotifications(stored === "true");
     }
   }, []);
+
+  useEffect(() => {
+    const currentUserId = user?.id;
+    if (currentUserId) {
+      getUserPendingStatus(currentUserId)
+        .then((status) => {
+          if (useAuthStore.getState().user?.id === currentUserId) {
+            setQueueStatus(status);
+          }
+        })
+        .catch(() => undefined);
+    } else {
+      setQueueStatus({ pendingCount: 0, deadLetterCount: 0 });
+    }
+  }, [user?.id]);
+
+  const handleRetryFailedQueue = async () => {
+    const actionUserId = user?.id;
+    if (!actionUserId) return;
+    setIsRetryingQueue(true);
+    try {
+      const deadItems = await getUserDeadLetterItems(actionUserId);
+      for (const item of deadItems) {
+        if (useAuthStore.getState().user?.id !== actionUserId) return;
+        await retryUserDeadLetterItem(item.table, item.id, actionUserId);
+      }
+      if (useAuthStore.getState().user?.id !== actionUserId) return;
+      await syncOfflineResults(actionUserId);
+      if (useAuthStore.getState().user?.id !== actionUserId) return;
+      const updated = await getUserPendingStatus(actionUserId);
+      if (useAuthStore.getState().user?.id === actionUserId) {
+        setQueueStatus(updated);
+        toast.success(
+          deadItems.length > 0
+            ? t("settings.retrySuccess")
+            : t("settings.syncSuccess")
+        );
+      }
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setIsRetryingQueue(false);
+    }
+  };
 
   const handleNotificationsChange = (checked: boolean) => {
     setNotifications(checked);
@@ -216,27 +268,87 @@ export function SettingsPage() {
       toast.error(t("common.error"));
       return;
     }
+    const initiatingToken = useAuthStore.getState().session?.access_token;
+    const initiatingUserId = user.id;
     setIsDeleting(true);
     try {
-      // deleteAccount() removes the auth.users row first; the six dependent
-      // tables go with it via ON DELETE CASCADE. Deleting them by hand first
-      // (as this did previously) destroyed the user's data before the account
-      // removal could fail, leaving them with an empty but live account.
       await deleteAccount();
-      await signOut();
-      navigate(ROUTES.AUTH);
-      toast.success(t("settings.accountDeleted"));
-    } catch {
-      toast.error(t("common.error"));
+      try {
+        await signOut();
+      } catch (signOutErr) {
+        console.warn("[settings] Local cleanup during signout after deletion had error:", signOutErr);
+      }
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (isStillOutgoingOrCleared) {
+        navigate(ROUTES.AUTH);
+        toast.success(t("settings.accountDeleted"));
+      }
+    } catch (err) {
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (
+        err instanceof AccountCleanupError ||
+        (err as { name?: string })?.name === "AccountCleanupError"
+      ) {
+        try {
+          await signOut();
+        } catch {
+          // ignore
+        }
+        if (isStillOutgoingOrCleared) {
+          navigate(ROUTES.AUTH);
+          toast.warning(t("settings.accountDeletedPartialCleanup"));
+        }
+      } else {
+        toast.error(t("common.error"));
+      }
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate(ROUTES.AUTH);
-    toast.success(t("settings.signOut"));
+    const initiatingToken = useAuthStore.getState().session?.access_token;
+    const initiatingUserId = user?.id;
+    try {
+      await signOut();
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (isStillOutgoingOrCleared) {
+        navigate(ROUTES.AUTH);
+        toast.success(t("settings.signOut"));
+      }
+    } catch (err) {
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (
+        err instanceof LocalSessionTerminationError ||
+        (err as { name?: string })?.name === "LocalSessionTerminationError"
+      ) {
+        if (isStillOutgoingOrCleared) {
+          navigate(ROUTES.AUTH);
+          toast.warning(t("settings.signOutPartialCleanup"));
+        }
+      } else {
+        if (isStillOutgoingOrCleared) {
+          navigate(ROUTES.AUTH);
+          toast.error(t("common.error"));
+        }
+      }
+    }
   };
 
   // --- Profile Data Fetching ---
@@ -546,6 +658,29 @@ export function SettingsPage() {
                     loadingLabel={t("common.loading")}
                   >
                     {t("settings.exportData")}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Offline Results Sync & Recovery */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">{t("settings.offlineRecoveryTitle")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.offlineRecoveryDesc", { pending: queueStatus.pendingCount, dead: queueStatus.deadLetterCount })}
+                  </p>
+                </div>
+                <div className="shrink-0 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto min-h-[44px] rounded-md"
+                    onClick={handleRetryFailedQueue}
+                    disabled={isRetryingQueue || (queueStatus.pendingCount === 0 && queueStatus.deadLetterCount === 0)}
+                    loading={isRetryingQueue}
+                    loadingLabel={t("common.loading")}
+                  >
+                    {queueStatus.deadLetterCount > 0 ? t("settings.retryFailedSubmissions") : t("settings.syncPendingResults")}
                   </Button>
                 </div>
               </div>

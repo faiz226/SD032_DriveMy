@@ -1,6 +1,8 @@
+import "@/styles/jalan-type.css";
+
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trophy, XCircle, CheckCircle, CaretDown, CaretUp, ArrowCounterClockwise, Download, House, FunnelSimple } from "phosphor-react";
+import { XCircle, CheckCircle, CaretDown, CaretUp, ArrowCounterClockwise, Download, House, FunnelSimple } from "phosphor-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -10,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn, formatDuration, downloadBlob } from "@/lib/utils";
-import { ROUTES, MOCK_PASS_MARK } from "@/lib/constants";
-import { DonutRing } from "@/components/ui/donut-ring";
+import { ROUTES } from "@/lib/constants";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 import type { ExamResult } from "./ExamShell";
 import type { TranslationKey } from "@/lib/translations";
@@ -42,19 +44,21 @@ export function TestResultsView({
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
 
+  const passMark = Math.ceil(result.total * 0.84);
+  const reviewAvailable = result.questions.length > 0;
   const passed = mode === "mock"
-    ? result.score >= MOCK_PASS_MARK
+    ? (result.passed ?? result.percentage >= 84)
     : result.percentage >= 70;
 
-  // Confetti on pass
+  // Confetti on pass — but never for a learner who asked for no animation.
+  // Jalan's floor is zero elements animating under prefers-reduced-motion, and
+  // this fired unconditionally. matchMedia rather than a hook so it is read at
+  // the moment of the effect, and the whole thing is skipped rather than sped
+  // up: a burst of particles has no reduced-motion equivalent.
   useEffect(() => {
-    if (passed) {
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 },
-      });
-    }
+    if (!passed) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
   }, [passed]);
 
   // Category breakdown
@@ -122,37 +126,61 @@ export function TestResultsView({
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 page-enter">
-      <div className="card-premium p-6 sm:p-8 flex flex-col items-center text-center space-y-6">
-        <DonutRing percentage={result.percentage} size={160} strokeWidth={16} />
+    <div className="type-body max-w-3xl mx-auto space-y-6">
+      <div className="plate p-6 sm:p-8">
+        {/* The mark is the headline, and it is stated in marks against the
+            line rather than as a percentage in a gauge. A gauge cannot show a
+            threshold, and the threshold is the entire shape of this
+            qualification: 42 of 50 either happened or it did not. */}
+        <p className="type-label text-sm" style={{ color: "rgb(var(--road-muted))" }}>
+          {t("results.score")}
+        </p>
+        <p className="type-figure mt-1 text-5xl" style={{ color: "rgb(var(--road-ink))" }}>
+          <NumberTicker value={result.score} locale={language === "ms" ? "ms-MY" : "en-MY"} />
+          <span style={{ color: "rgb(var(--road-muted))" }}>/{result.total}</span>
+        </p>
 
-        <div>
-          <h2 className="font-mono text-3xl font-bold font-tabular-nums">
-            {result.score}/{result.total}
-          </h2>
-          <div className={cn(
-            "inline-flex items-center gap-2 mt-2 px-4 py-1.5 rounded-md text-sm font-semibold",
-            passed
-              ? "bg-success/15 text-success"
-              : "bg-destructive/15 text-destructive"
-          )}>
-            {passed ? <Trophy className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-            {passed ? t("results.passed") : t("results.failed")}
-          </div>
-          {result.autoSubmitted && (
-            <p className="text-xs text-warning mt-2">{t("exam.autoSubmitted")}</p>
-          )}
-        </div>
+        {/* Pass and fail are plates, not tinted pills: a 15% wash measures
+            close to the surface it sits on and does not survive daylight. */}
+        <p
+          className="type-label-strong mt-4 inline-flex items-center gap-2 px-3 py-1.5 text-sm"
+          style={{
+            borderRadius: "var(--r-plate)",
+            backgroundColor: passed ? "rgb(var(--lulus))" : "rgb(var(--berhenti))",
+            color: "rgb(var(--paint))",
+          }}
+        >
+          {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
+          {passed ? t("results.passed") : t("results.failed")}
+        </p>
 
-        <p className="text-sm text-muted-foreground font-tabular-nums">
+        {/* Signage register: factual, in marks, never consoling. The old copy
+            here was "Keep practising. You can do it!". */}
+        {mode === "mock" && (
+          <p className="type-label mt-3 text-[0.9375rem]" style={{ color: "rgb(var(--road-ink))" }}>
+            {t("results.passMark", { mark: passMark, total: result.total })}{" "}
+            {passed
+              ? t("results.headroom", { count: result.score - passMark })
+              : t("results.short", { count: passMark - result.score })}
+          </p>
+        )}
+
+        {result.autoSubmitted && (
+          <p className="type-label mt-2 text-sm" style={{ color: "rgb(var(--berhenti))" }}>
+            {t("exam.autoSubmitted")}
+          </p>
+        )}
+
+        <p className="type-label mt-4 text-sm tabular-nums" style={{ color: "rgb(var(--road-muted))" }}>
           {t("results.timeTaken")}: {formatDuration(result.durationSeconds)}
         </p>
 
         {/* Action buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-6 flex flex-wrap items-center gap-2">
           <button
             onClick={onRetry}
-            className="flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+            className="type-label-strong focus-paint tap flex items-center gap-2 px-4 text-sm"
+            style={{ borderRadius: "var(--r-plate)", backgroundColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))" }}
           >
             <ArrowCounterClockwise className="w-4 h-4" />
             {t("results.tryAgain")}
@@ -161,17 +189,19 @@ export function TestResultsView({
           {mode === "quiz" && wrongIds.length > 0 && onRetryWrong && (
             <button
               onClick={() => onRetryWrong(wrongIds)}
-              className="flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-md border border-border text-sm font-semibold hover:bg-accent transition-colors"
+              className="type-label focus-paint tap flex items-center gap-2 border px-4 text-sm"
+              style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
             >
               <ArrowCounterClockwise className="w-4 h-4" />
               {t("exam.retryWrong")}
             </button>
           )}
 
-          {mode === "mock" && (
+          {mode === "mock" && reviewAvailable && (
             <button
               onClick={handlePDF}
-              className="flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-md border border-border text-sm font-semibold hover:bg-accent transition-colors"
+              className="type-label focus-paint tap flex items-center gap-2 border px-4 text-sm"
+              style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
             >
               <Download className="w-4 h-4" />
               {t("exam.pdfExport")}
@@ -180,7 +210,8 @@ export function TestResultsView({
 
           <button
             onClick={() => navigate(ROUTES.DASHBOARD)}
-            className="flex items-center gap-2 min-h-[44px] px-5 py-2.5 rounded-md border border-border text-sm font-medium hover:bg-accent transition-colors"
+            className="type-label focus-paint tap flex items-center gap-2 border px-4 text-sm"
+            style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
           >
             <House className="w-4 h-4" />
             {t("results.backToDashboard")}
@@ -188,9 +219,11 @@ export function TestResultsView({
         </div>
       </div>
 
+      {!reviewAvailable && <p role="status">{t("exam.reviewUnavailable")}</p>}
+      {reviewAvailable && <>
       {/* ── Category breakdown ───────────────────────────────────────── */}
-      <div className="card-premium p-6 space-y-4">
-        <h3 className="font-heading font-semibold text-lg">{t("results.categoryBreakdown")}</h3>
+      <div className="plate p-6 space-y-4">
+        <h3 className="type-label-strong text-base" style={{ color: "rgb(var(--road-ink))" }}>{t("results.categoryBreakdown")}</h3>
         <div className="space-y-3">
           {categories.map((cat) => {
             const { correct, total } = categoryBreakdown[cat];
@@ -217,9 +250,9 @@ export function TestResultsView({
       </div>
 
       {/* ── Question review ──────────────────────────────────────────── */}
-      <div className="card-premium p-6 space-y-4">
+      <div className="plate p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h3 className="font-heading font-semibold text-lg">{t("results.reviewAnswers")}</h3>
+          <h3 className="type-label-strong text-base" style={{ color: "rgb(var(--road-ink))" }}>{t("results.reviewAnswers")}</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Checkbox
@@ -237,7 +270,14 @@ export function TestResultsView({
             <div className="flex items-center gap-1 text-xs">
               <FunnelSimple className="w-3.5 h-3.5 text-muted-foreground mr-1" />
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[140px] h-8 text-xs bg-muted/50 border-0 focus:ring-1 focus:ring-ring">
+                {/* Radix renders the trigger as a combobox button whose visible value is
+                    not exposed as its accessible name, so axe reported it as a
+                    button with no discernible text. The key already existed. */}
+                <SelectTrigger
+                  aria-label={t("exam.filterByCategory")}
+                  className="type-label focus-paint tap-sm w-[150px] border px-3 text-sm"
+                  style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
+                >
                   <SelectValue placeholder={t("exam.allCategories")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -270,7 +310,7 @@ export function TestResultsView({
               const originalIndex = result.questions.findIndex(orig => orig.id === q.id);
 
               return (
-                <div key={q.id} className="rounded-md border border-border overflow-hidden">
+                <div key={q.id} className="border overflow-hidden" style={{ borderColor: "rgb(var(--road-edge))", borderRadius: "var(--r-plate)" }}>
                   <button
                     type="button"
                     onClick={() => toggleExpanded(q.id)}
@@ -323,6 +363,7 @@ export function TestResultsView({
           </div>
         )}
       </div>
+      </>}
     </div>
   );
 }
