@@ -1,0 +1,277 @@
+{
+ "car": "2022 Suzuki Swift 1.2 GLX",
+ "passed": true,
+ "failures": [],
+ "results": [
+  {
+   "section": "organised",
+   "check": "eight stations, in order along one route",
+   "ok": true,
+   "detail": "order along s: [1, 2, 3, 4, 5, 6, 7, 8]"
+  },
+  {
+   "section": "organised",
+   "check": "the route never crosses itself",
+   "ok": true,
+   "detail": "0 crossings"
+  },
+  {
+   "section": "organised",
+   "check": "no two stations overlap",
+   "ok": true,
+   "detail": "none overlap"
+  },
+  {
+   "section": "organised",
+   "check": "the route enters each station only on its turn",
+   "ok": true,
+   "detail": "never"
+  },
+  {
+   "section": "organised",
+   "check": "stations stay apart on the 400 x 200 px map",
+   "ok": true,
+   "detail": "closest pair hill-start / side-parking: 1.5 m = 3.2 px at 2.15 px/m"
+  },
+  {
+   "section": "organised",
+   "check": "the narrowest lane is visible on the map",
+   "ok": true,
+   "detail": "3.60 m = 7.7 px"
+  },
+  {
+   "section": "real",
+   "check": "S lane",
+   "ok": true,
+   "detail": "kerb to kerb (real p10): ours 3.60 m, real 3.35 m"
+  },
+  {
+   "section": "real",
+   "check": "S shape matches the real bends",
+   "ok": true,
+   "detail": "ours 141 deg at 7.5 m; real 141 deg at 7.5 m"
+  },
+  {
+   "section": "real",
+   "check": "Z lane",
+   "ok": true,
+   "detail": "kerb to kerb: ours 4.00 m, real 3.90 m"
+  },
+  {
+   "section": "real",
+   "check": "Z jog matches the real one",
+   "ok": true,
+   "detail": "ours 7.7 m, real 7.7 m"
+  },
+  {
+   "section": "real",
+   "check": "three-point-turn road",
+   "ok": true,
+   "detail": "width: ours 7.45 m, real 7.45 m"
+  },
+  {
+   "section": "real",
+   "check": "hill strip matches the real one",
+   "ok": true,
+   "detail": "ours 25.75 x 4.5 m, real 26 x 4.5 m"
+  },
+  {
+   "section": "real",
+   "check": "parallel recess not smaller than the real one",
+   "ok": true,
+   "detail": "ours 6.6 x 2.5 m, real 6.6 x 2.5 m"
+  },
+  {
+   "section": "real",
+   "check": "reverse-bay pocket not smaller than the real one",
+   "ok": true,
+   "detail": "ours 4.9 x 5.8 m, real 4.9 x 5.8 m"
+  },
+  {
+   "section": "real",
+   "check": "circulation roads",
+   "ok": true,
+   "detail": "kerb to kerb: ours 6.00 m, real 5.85 m"
+  },
+  {
+   "section": "roomy",
+   "check": "the driver reaches the end of the route",
+   "ok": true,
+   "detail": "reached s = 299.4 of 299.7 m"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: apron-exit",
+   "ok": true,
+   "detail": "tyres 2.20 m (need >= 1.00), body 2.20 m, worst at s = 0.0"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: link",
+   "ok": true,
+   "detail": "tyres 1.02 m (need >= 1.00), body 1.00 m, worst at s = 142.0"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: hill-start",
+   "ok": true,
+   "detail": "tyres 1.45 m (need >= 0.10), body 1.45 m, worst at s = 4.0"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: side-parking",
+   "ok": true,
+   "detail": "tyres 1.98 m (need >= 0.10), body 1.82 m, worst at s = 63.7"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: parallel-parking",
+   "ok": true,
+   "detail": "tyres 2.00 m (need >= 0.10), body 2.00 m, worst at s = 77.9"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: three-point-turn",
+   "ok": true,
+   "detail": "tyres 1.93 m (need >= 0.10), body 1.77 m, worst at s = 119.9"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: s-curve",
+   "ok": true,
+   "detail": "tyres 0.55 m (need >= 0.10), body 0.30 m, worst at s = 169.1"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: z-curve",
+   "ok": true,
+   "detail": "tyres 0.45 m (need >= 0.10), body 0.05 m, worst at s = 210.2"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: ramp-test",
+   "ok": true,
+   "detail": "tyres 2.20 m (need >= 0.10), body 2.20 m, worst at s = 221.5"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: road-merging",
+   "ok": true,
+   "detail": "tyres 0.90 m (need >= 0.10), body 0.74 m, worst at s = 277.1"
+  },
+  {
+   "section": "roomy",
+   "check": "clearance: exit-road",
+   "ok": true,
+   "detail": "tyres 1.55 m (need >= 1.00), body 1.10 m, worst at s = 299.4"
+  },
+  {
+   "section": "possible",
+   "check": "3-point turn in three movements (tyre)",
+   "ok": true,
+   "detail": "heading change after each: [(92.2, 5.52), (192.3, 6.0)]"
+  },
+  {
+   "section": "possible",
+   "check": "3-point turn NOT possible in one arc (tyre)",
+   "ok": true,
+   "detail": "one arc reaches 92 deg (needs 148)"
+  },
+  {
+   "section": "possible",
+   "check": "3-point turn in three movements (body)",
+   "ok": true,
+   "detail": "heading change after each: [(84.5, 5.06), (145.6, 3.66), (194.0, 2.9)]"
+  },
+  {
+   "section": "possible",
+   "check": "3-point turn NOT possible in one arc (body)",
+   "ok": true,
+   "detail": "one arc reaches 84 deg (needs 148)"
+  },
+  {
+   "section": "possible",
+   "check": "3-point road width inside the 3-move window",
+   "ok": true,
+   "detail": "7.45 m (window for this car: 6.0-9.5 m, see AUDIT.md)"
+  },
+  {
+   "section": "possible",
+   "check": "side parking: reverse into the bay (tyre)",
+   "ok": true,
+   "detail": "one full-lock arc then straight back; ends 0.0 deg off (limit 11.9 deg); poles untouched"
+  },
+  {
+   "section": "possible",
+   "check": "side parking: reverse into the bay (body)",
+   "ok": true,
+   "detail": "one full-lock arc then straight back; ends 0.0 deg off (limit 11.9 deg); poles untouched"
+  },
+  {
+   "section": "possible",
+   "check": "parallel park: two-arc reverse into the recess (tyre)",
+   "ok": true,
+   "detail": "plan {'out': 0.4, 'ahead': 2.5, 'phi_deg': 47.5, 'straight': 0.0}; ends 0.0 deg off (limit 10.2 deg)"
+  },
+  {
+   "section": "possible",
+   "check": "parallel park: two-arc reverse into the recess (body)",
+   "ok": true,
+   "detail": "plan {'out': 0.4, 'ahead': 2.5, 'phi_deg': 47.5, 'straight': 0.0}; ends 0.0 deg off (limit 10.2 deg)"
+  },
+  {
+   "section": "possible",
+   "check": "hill: the whole stop band sits on the up-slope",
+   "ok": true,
+   "detail": "band s 13.3-13.9 m on an up-slope from s 10.2 to 21.0 m; 12.0% (6.9 deg)"
+  },
+  {
+   "section": "possible",
+   "check": "ramp: drive in and up without touching a kerb or the pole",
+   "ok": true,
+   "detail": "tyres 0.70 m from the kerbs, body 0.82 m from the pole"
+  },
+  {
+   "section": "possible",
+   "check": "ramp: the stop window can be reached",
+   "ok": true,
+   "detail": "front bumper 0.82 m short of the pole (window 0.2-1.0 m)"
+  },
+  {
+   "section": "possible",
+   "check": "ramp: reverse down and out, ending in the lane facing on",
+   "ok": true,
+   "detail": "straight back 10.0 m, then full left lock"
+  },
+  {
+   "section": "possible",
+   "check": "merge: room to reach 15 km/h before the finish",
+   "ok": true,
+   "detail": "34.0 m of lane; 5.8 m needed at 1.5 m/s^2 (assumed, conservative)"
+  },
+  {
+   "section": "cheap",
+   "check": "flat ground plus two slopes",
+   "ok": true,
+   "detail": "2 slopes"
+  },
+  {
+   "section": "cheap",
+   "check": "kerbs fit in one instanced mesh",
+   "ok": true,
+   "detail": "719 vertices, 821 m of kerb (about 820 instances at 1 m)"
+  },
+  {
+   "section": "cheap",
+   "check": "circuit data is small",
+   "ok": true,
+   "detail": "140 KB uncompressed"
+  },
+  {
+   "section": "cheap",
+   "check": "few props",
+   "ok": true,
+   "detail": "4 booths, 1 office, 5 poles"
+  }
+ ]
+}

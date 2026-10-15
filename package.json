@@ -18,6 +18,8 @@
     "clean": "node -e \"['dist','.vite','node_modules/.vite'].forEach(d => fs.rmSync(d, {recursive: true, force: true}))\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "check:circuit": "python docs/circuit-v2/check.py",
+    "check:car": "node docs/v2-plan/physics/car-check.cjs node_modules/@dimforge/rapier3d-compat",
     "csp:hash": "node scripts/csp-hash.mjs",
     "audit:gate": "node scripts/audit-gate.mjs",
     "db:seed": "node scripts/ingest-questions.js",
