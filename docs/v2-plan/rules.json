@@ -11,22 +11,26 @@
   "verdict": {
     "pass": "All eight stations cleared, in order, with fewer than 20 demerits",
     "fail_at_demerits": 20,
-    "end_run_at_fail": true,
-    "basis": "rubric (MAX_DEMERIT 20) + decided (every station must be cleared)"
+    "end_run_at_fail": false,
+    "basis": "rubric (MAX_DEMERIT 20) + decided (every station must be cleared) + decided 15 Oct (reaching 20 makes the verdict a fail, but the run carries on so the learner rehearses every station, as a failed station does)"
   },
   "demerits": {
-    "cone":       { "points": 5,  "basis": "rubric" },
-    "pole":       { "points": 20, "basis": "rubric; guides: touching a pole fails the element" },
+    "cone":       { "points": 5,  "clear_s": 0.5, "basis": "rubric" },
+    "pole":       { "points": 20, "clear_s": 0.5, "basis": "rubric; guides: touching a pole fails the element" },
     "rollback":   { "points": 20, "limit_m": 0.30, "basis": "rubric (more than 30 cm)",
                     "rule": "Backward travel along a slope of more than 0.30 m while not in reverse, measured from the furthest-forward point since the car last stopped" },
     "not_in_bay": { "points": 10, "basis": "rubric" },
-    "kerb":       { "points": 5,  "basis": "decided: guides list touching a kerb or line as a minor fault worth 2-5 points; 5 matches the rubric's minor weight",
+    "kerb":       { "points": 5,  "clear_s": 0.5, "basis": "decided: guides list touching a kerb or line as a minor fault worth 2-5 points; 5 matches the rubric's minor weight",
                     "rule": "A tyre's contact patch over a kerb. One contact counts once; it ends when no tyre has touched that kerb for 0.5 s. Body overhang over a kerb is not a fault" },
     "stall":      { "points": 5,  "basis": "rubric; unreachable with the automatic gearbox" }
   },
   "station_outcomes": {
     "cleared": "Did the thing the station is named after, within its rules",
     "failed": "Any of: time limit passed; the car passed the station's end on the route without clearing it; a station-specific failure below. A failed station fails the run, and the run carries on to the next station so the learner rehearses the rest"
+  },
+  "motion": {
+    "stopped_kmh": 0.5,
+    "basis": "decided 15 Oct: the car counts as stopped below 0.5 km/h (0.14 m/s), well under the 5 km/h creep and above sensor noise"
   },
   "timing": {
     "starts": "When the car reaches the station's s_from on the route",
@@ -42,7 +46,8 @@
     },
     "side-parking": {
       "time_limit_s": 300,
-      "commit": "The car is stopped with the handbrake on for 1.0 s anywhere in the station: that is the learner saying done",
+      "commit": "The car is stopped with the handbrake on for commit_s anywhere in the station: that is the learner saying done",
+      "commit_s": 1.0,
       "clear": "At commitment, the footprint including the mirrors (1.847 m wide for the Swift) is inside the painted bay and the heading error is within the bay's limit (L sin t + W cos t <= bay width). Then drive out past the station's end",
       "outside_at_commit": "not_in_bay (10); the station still counts as done",
       "fail": ["touched a pole (also 20 demerits)"],
@@ -51,16 +56,18 @@
     "parallel-parking": {
       "time_limit_s": 300,
       "commit": "As side parking",
+      "commit_s": 1.0,
       "clear": "As side parking, in the painted 6.6 x 2.5 m box inside the kerbed recess",
       "outside_at_commit": "not_in_bay (10); the station still counts as done",
       "basis": "rubric + guides + decided (time limit as side parking)"
     },
     "three-point-turn": {
       "time_limit_s": 180,
-      "movement": "A run in one direction (forward or reverse) of at least 0.3 m. Stopping without changing direction does not start a new movement. Counting starts when the rear axle enters the turning box",
-      "clear": "Heading reversed by at least 148 degrees from the heading on entering the turning box, below 3 km/h, by the end of the third movement",
-      "fail": ["a fourth movement starts before the turn is complete"],
-      "basis": "prd (148 degrees, 3 km/h) + guides (three movements at most; touching lines is a fault; 3 minutes)"
+      "movement": "A run in one direction (forward or reverse) of at least movement_min_m. Stopping without changing direction does not start a new movement. Counting starts when the rear axle enters the turning box",
+      "movement_min_m": 0.3, "movements": 3, "turn_deg": 148, "settle_kmh": 6,
+      "clear": "During the third movement, the heading is reversed by at least turn_deg from the heading on entering the turning box, at settle_kmh or slower",
+      "fail": ["a fourth movement starts before the turn is complete", "the car leaves the station without turning round (one continuous arc never clears)"],
+      "basis": "prd (148 degrees; three movements: forward, reverse, forward) + guides (three movements at most; touching lines is a fault; 3 minutes) + decided 15 Oct (6 km/h, not 3: the automatic Swift creeps at 5 km/h with no pedal, so 3 km/h would force an unnatural stop; the ceiling still rules out turning under throttle)"
     },
     "s-curve": {
       "time_limit_s": 180,

@@ -35,14 +35,15 @@ Every station has a **time limit**, timed from when the car reaches the station 
 - it fails one of its own rules below.
 
 **A failed station fails the run.** The run then carries on, so the learner still rehearses the
-remaining stations, and the verdict lists everything.
+remaining stations, and the verdict lists everything. Reaching 20 demerits works the same way: the
+verdict is a fail from then on, and the run carries on (`end_run_at_fail` is false).
 
 | # | Station | Time | Cleared when | Fails when | Basis |
 |---|---|---|---|---|---|
 | 1 | Hill Start | 3 min | Both front tyres stop on the yellow stop band. The car holds still (5 cm at most) for 2 s with the handbrake on. It then moves off over the crest with no rollback. | Crosses the crest without that stop; rollback (also 20 demerits) | guides: front tyre on the yellow line, handbrake on, 3 min. decided: 2 s hold, 5 cm |
 | 2 | Side Parking | 5 min | The learner signals "done" by stopping with the handbrake on for 1 s. At that moment the whole car, **mirrors included** (1.847 m wide), is inside the painted bay, within the heading limit. | Touches a pole (also 20). Outside at "done" costs 10 (not in bay) but still counts as done. | rubric; guides: the right mirror must be inside the box, a pole touch fails. decided: handbrake as the "done" signal |
 | 3 | Parallel Park | 5 min | Same as Side Parking, in the painted 6.6 × 2.5 m box inside the real recess (6.6 × 3.77 m). The heading limit is 10.2° with mirrors. | Same as Side Parking | rubric + guides + decided |
-| 4 | 3-Point Turn | 3 min | Heading reversed by at least 148° at under 3 km/h, by the end of the **third** movement. A movement is a run of at least 0.3 m in one direction. | A fourth movement starts first | PRD (148°, 3 km/h) + guides (three movements at most, 3 min) |
+| 4 | 3-Point Turn | 3 min | During the **third** movement, the heading is reversed by at least 148° at 6 km/h or slower. A movement is a run of at least 0.3 m in one direction. | A fourth movement starts first; or the car leaves without turning round (one arc never clears) | PRD (148°; forward, reverse, forward) + guides (three movements at most, 3 min). decided 15 Oct: 6 km/h, not the PRD's 3, because the automatic Swift creeps at 5 km/h with no pedal |
 | 5 | S-Curve | 3 min | Gates passed in order, with the speed held at 1–18 km/h | More than 1.2 s outside the band (assessment). Practice mode restarts the drill instead. | PRD |
 | 6 | Z-Curve | 3 min | Gates passed in order. A corner gate counts only at 12 km/h or slower; too fast does not fail, the gate just waits. | Time limit, or passing it by | PRD |
 | 7 | Ramp Test | 5 min | Drive up the ramp. Stop with the front bumper **0.2–1.0 m short of the pole**. Hold still for 2 s. Then reverse back down and out past the mouth. | Touching the pole (also 20) | guides: a DA learner, "climb onto the cement block, don't hit the pole in the middle"; 5 min. decided: the stop window, the hold, the reverse out |

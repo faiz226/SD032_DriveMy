@@ -1,16 +1,19 @@
 import { create } from 'zustand';
+import rulesJson from '../../docs/v2-plan/rules.json';
 
 // ── JPJ Demerit Weights ───────────────────────────────────────────────────────
-// Based on the official JPJ KPP2 assessment rubric.
+// Read from docs/v2-plan/rules.json, the simulator's single source (each weight's basis is there).
+const weights = rulesJson.demerits;
 export const DEMERIT = {
-  CONE_HIT: 5,      // Touching a traffic cone
-  POLE_HIT: 20,     // Hitting a boundary pole → Instant Fail
-  ROLLBACK: 20,     // Rolling back > 30 cm on hill → Instant Fail
-  STALL: 5,         // Stalling on hill
-  NOT_IN_BAY: 10,   // Parking outside the designated bay
+  CONE_HIT: weights.cone.points,          // Touching a traffic cone
+  POLE_HIT: weights.pole.points,          // Hitting a boundary pole → Instant Fail
+  ROLLBACK: weights.rollback.points,      // Rolling back > 30 cm on hill → Instant Fail
+  STALL: weights.stall.points,            // Stalling on hill
+  NOT_IN_BAY: weights.not_in_bay.points,  // Parking outside the designated bay
+  KERB: weights.kerb.points,              // A tyre over a kerb
 } as const;
 
-export const MAX_DEMERIT = 20; // ≥ 20 = automatic FAIL
+export const MAX_DEMERIT = rulesJson.verdict.fail_at_demerits; // ≥ this = automatic FAIL
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type SimMode = 'practice' | 'assessment';
