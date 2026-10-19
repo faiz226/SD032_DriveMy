@@ -411,7 +411,7 @@ export const ms: Record<TranslationKey, string> = {
   "sim.mode.practiceDesc":         "Satu stesen. Ulang seberapa kerap yang anda mahu. Tidak disimpan.",
   "sim.mode.startAssessment":      "Mula penilaian",
   "sim.mode.startPractice":        "Latih {{station}}",
-  "sim.mode.keys":                 "Kekunci: W memecut, S brek, A dan D stereng, R gear D/R, Space brek tangan, T pandangan atas, P jeda.",
+  "sim.mode.keys":                 "Kekunci: W memecut, S brek, A dan D stereng, R gear D/R, Space brek tangan, Q toleh ke belakang kiri, E lihat ke bawah melalui tingkap anda, T pandangan atas, P jeda. Seret pandangan untuk melihat sekeliling.",
   "sim.hud.next":                  "Seterusnya",
   "sim.hud.timeLeft":              "Baki masa",
   "sim.hud.demerits":              "Demerit",

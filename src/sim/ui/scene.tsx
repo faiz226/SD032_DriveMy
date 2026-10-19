@@ -7,6 +7,7 @@ import type * as THREE from 'three';
 import type { StationId, Vec2 } from '../contracts';
 import { circuit } from '../data';
 import type { TierSpec } from '../quality';
+import { useHead } from '../input';
 import { getWorld } from '../world/build';
 import { useRun } from './run';
 
@@ -43,6 +44,51 @@ export function WhereNext() {
       </mesh>
     </group>
   );
+}
+
+const LOOK_PER_PX = 0.006;   // radians of head turn per pixel dragged
+
+/**
+ * Drag the view to look round the cabin: blind spots, the mirrors' edges, the yellow line the bonnet hides on
+ * the hill. Mouse or finger, on the open view (the touch controls keep their own touches). Let go and the head
+ * comes back to the road. Only while driving, in the first-person view.
+ */
+export function HeadDrag({ enabled }: { enabled: boolean }) {
+  const gl = useThree((s) => s.gl);
+  useEffect(() => {
+    if (!enabled) return;
+    const el = gl.domElement;
+    const drag = { id: -1, x: 0, y: 0 };
+    const down = (e: PointerEvent) => {
+      if (e.button !== 0 || drag.id !== -1) return;
+      Object.assign(drag, { id: e.pointerId, x: e.clientX, y: e.clientY });
+      el.setPointerCapture(e.pointerId);
+    };
+    const move = (e: PointerEvent) => {
+      if (e.pointerId !== drag.id) return;
+      const head = useHead.getState();
+      head.set({ yaw: head.yaw - (e.clientX - drag.x) * LOOK_PER_PX, pitch: head.pitch - (e.clientY - drag.y) * LOOK_PER_PX });
+      drag.x = e.clientX;
+      drag.y = e.clientY;
+    };
+    const up = (e: PointerEvent) => {
+      if (e.pointerId !== drag.id) return;
+      drag.id = -1;
+      useHead.getState().set({ yaw: 0, pitch: 0 });
+    };
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+    return () => {
+      el.removeEventListener('pointerdown', down);
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      el.removeEventListener('pointercancel', up);
+      useHead.getState().set({ yaw: 0, pitch: 0 });
+    };
+  }, [enabled, gl]);
+  return null;
 }
 
 /** A short roll of the driver's view on a fault; the top-down camera never moves. */

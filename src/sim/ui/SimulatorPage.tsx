@@ -15,7 +15,7 @@ import { useAuthStore } from '@/stores/authStore';
 import type { Mode, SimEvent, StationId, VehicleSample } from '../contracts';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
-import { useDriver, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
+import { useDriver, useHead, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
 import { OtherCars } from '../physics/OtherCars';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import type { MirrorId } from '../physics/mirrors';
@@ -27,7 +27,7 @@ import { Hud, HUD_PLATE } from './Hud';
 import { ModePanel } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
-import { CameraKick, dprFor, FrameProbe, RenderScale, WhereNext } from './scene';
+import { CameraKick, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
 import { engineSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
 import { LoadingMap } from './LoadingMap';
 import { EXPLORE_CANVAS, ExploreHud, SpectatorCamera } from './Spectator';
@@ -94,7 +94,7 @@ export function SimulatorPage() {
   // the autopilot never loses focus to a person, so it never pauses for it
   useKeyboardControls(phase === 'drive' && !autopilotOn);
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
-  useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver }); }, []);
+  useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead }); }, []);
   useEffect(() => () => {
     useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false });
     stopEngine();
@@ -187,7 +187,7 @@ export function SimulatorPage() {
   };
 
   return (
-    <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--asphalt))]', phase === 'explore' && EXPLORE_CANVAS)}>
+    <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--asphalt))]', phase === 'explore' && EXPLORE_CANVAS, phase === 'drive' && '[&_canvas]:touch-none')}>
       <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows} gl={{ powerPreference: 'high-performance' }}>
         <RenderScale spec={spec} />
         {probe && <FrameProbe />}
@@ -202,6 +202,7 @@ export function SimulatorPage() {
         </Suspense>
         <TopDownCamera active={topDown} zoom={zoomNow} onZoom={zoomBy} follow={carGroup} />
         {phase === 'explore' && <SpectatorCamera from={carGroup} />}
+        <HeadDrag enabled={phase === 'drive' && !topDown} />
         <CameraKick />
       </Canvas>
 

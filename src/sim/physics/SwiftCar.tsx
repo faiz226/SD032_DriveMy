@@ -8,7 +8,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRe
 import * as THREE from 'three';
 import type { SimEvent, Vec2, VehicleSample } from '../contracts';
 import { circuit } from '../data';
-import { useDriver } from '../input';
+import { useDriver, useHead } from '../input';
 import { TIERS, type TierSpec } from '../quality';
 import { getWorld } from '../world/build';
 import { collidersOf } from '../world/colliders';
@@ -41,6 +41,13 @@ interface Props {
 
 const DT = CAR.drive.dt;
 const EYE_PITCH = -0.07;   // a little nose-down, so the bonnet line shows
+const EYE_ROTATION: [number, number, number, 'YXZ'] = [EYE_PITCH, -Math.PI / 2, 0, 'YXZ'];
+const HEAD_EASE_S = 0.12;  // how quickly the head turns to where it is asked to look
+// The head leans as it turns, as a driver's does (metres). Measured off the model: the door is so high
+// that from the seat no road shows within 0.9 m of the car's side. Leaning 0.24 m toward the driver's
+// glass (0.34 m away), forward past the B-pillar and up over the door's edge, it shows from 0.6 m out,
+// where the hill's yellow band meets the kerb. Every pose keeps the eye 5 cm clear of the cabin.
+const LEAN = { side: 0.34, right: 0.24, left: 0.12, forward: 0.45, up: 0.09 };
 
 function poseAt(at: Vec2, heading: number) {
   const ground = getWorld(circuit).surfaceHeight(at[0], at[1]);
@@ -94,6 +101,8 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
   const vehicle = useRef<Vehicle | null>(null);
   const clock = useRef(0);
   const kmh = useRef(0);   // every step's road speed, for the dials
+  const eye = useRef<THREE.PerspectiveCamera>(null);
+  const head = useRef({ yaw: 0, pitch: 0 });
   const speed = useCallback(() => kmh.current, []);
   const startRef = useRef(start);
   const onStepRef = useRef(onStep);
@@ -147,7 +156,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     onStepRef.current?.(sample, poles ? v.poleHits(poles, clock.current) : [], DT);
   });
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     const v = vehicle.current;
     const g = car.current;
     if (!v || !g) return;
@@ -165,6 +174,21 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     }
     // the rim turns at 9x the road wheels; a left input turns it anticlockwise as the driver sees it
     if (rim.current) rim.current.rotation.x = -v.steer * CAR.steering.rackRatio;
+    // the driver's head, eased toward where it is asked to look (input.ts, useHead)
+    const cam = eye.current;
+    if (cam) {
+      const want = useHead.getState();
+      const k = 1 - Math.exp(-dt / HEAD_EASE_S);
+      head.current.yaw += (want.yaw - head.current.yaw) * k;
+      head.current.pitch += (want.pitch - head.current.pitch) * k;
+      const { yaw, pitch } = head.current;
+      cam.rotation.set(EYE_PITCH + pitch, -Math.PI / 2 + yaw, cam.rotation.z, 'YXZ');   // z is the fault kick's (scene.tsx)
+      // turning alone moves the head a little; looking down out of the driver's window takes it to the glass
+      const turn = Math.sin(yaw);
+      const down = Math.min(1, Math.max(0, -pitch) / 0.45);
+      const side = turn > 0 ? Math.min(LEAN.left, LEAN.side * turn) : -Math.min(LEAN.right, -LEAN.side * turn) * (0.3 + 0.7 * down);   // + is left
+      cam.position.set(CAR.eye[0] + LEAN.forward * Math.abs(side), CAR.eye[1] + LEAN.up * down * Math.abs(turn), CAR.eye[2] - side);
+    }
   });
 
   const tilt = THREE.MathUtils.degToRad(CAR.steering.columnTiltDeg);
@@ -192,7 +216,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
         </group>
       </group>
       {firstPerson && (
-        <PerspectiveCamera makeDefault position={CAR.eye} rotation={[EYE_PITCH, -Math.PI / 2, 0, 'YXZ']} fov={fov} near={0.05} far={600} />
+        <PerspectiveCamera ref={eye} makeDefault position={CAR.eye} rotation={EYE_ROTATION} fov={fov} near={0.05} far={600} />
       )}
       {firstPerson && mirrors && <MirrorView car={car} body={bodyScene} {...quality.mirrors} />}
     </group>

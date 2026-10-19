@@ -13,6 +13,8 @@ either fixed before submission or listed under Limitations in the report.
    station. "Restart station" puts the car back at the station's start.
 
 **Keys:** W accelerate, S brake, A and D steer, R to change between D and R (only when stopped),
+Q to look over your left shoulder (the blind spot), E to look down out of your window (on the hill, the yellow band shows beside the door mirror),
+drag the view to look anywhere, including over your right shoulder,
 Space for the handbrake, T for the top-down view, P or Esc to pause.
 
 **On a phone:** hold it sideways. The left pad steers and keeps its angle; double-tap it to centre.

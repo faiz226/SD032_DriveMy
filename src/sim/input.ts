@@ -37,6 +37,25 @@ export const useDriver = create<DriverState>((set, get) => ({
   release: () => set({ throttle: 0, brake: 0, wheel: 0, paused: true }),
 }));
 
+/** How far a head turns, radians: left is positive yaw, up is positive pitch. */
+export const HEAD = { yaw: 1.92, pitchUp: 0.35, pitchDown: -0.8 };
+// Q: over the left shoulder, into the blind spot. E: down out of the driver's window (the only side where
+// any road near the car can be seen), to where the hill's yellow band meets the kerb, beside the door mirror.
+const GLANCE = { left: { yaw: 1.75, pitch: -0.1 }, right: { yaw: -0.9, pitch: -0.45 } };
+
+/**
+ * Where the driver's head points, for blind spots and lines the bonnet hides. A glance key or a drag sets it;
+ * the camera eases toward it and back to the road when let go. Looking is free: nothing marks it.
+ */
+export const useHead = create<{ yaw: number; pitch: number; set(p: Partial<{ yaw: number; pitch: number }>): void }>((set) => ({
+  yaw: 0,
+  pitch: 0,
+  set: (p) => set({
+    ...(p.yaw !== undefined && { yaw: Math.max(-HEAD.yaw, Math.min(HEAD.yaw, p.yaw)) }),
+    ...(p.pitch !== undefined && { pitch: Math.max(HEAD.pitchDown, Math.min(HEAD.pitchUp, p.pitch)) }),
+  }),
+}));
+
 export type TouchPref = 'auto' | 'on' | 'off';
 const TOUCH_KEY = 'drivemy.sim.touch';
 
@@ -73,11 +92,12 @@ export function useTouchUi(): boolean {
   return pref === 'on' || (pref === 'auto' && device);
 }
 
-/** Keyboard: W/Up throttle, S/Down brake (never reverse), A/D or Left/Right steer, R gear, Space handbrake, P or Esc pause, T top-down, +/- its zoom. */
+/** Keyboard: W/Up throttle, S/Down brake (never reverse), A/D or Left/Right steer, R gear, Space handbrake, P or Esc pause, T top-down, +/- its zoom, Q over the left shoulder, E down out of the driver's window. */
 export function useKeyboardControls(enabled = true) {
   useEffect(() => {
     if (!enabled) return;
     const held = new Set<string>();
+    let glancing = false;
     const apply = () => {
       const left = held.has('KeyA') || held.has('ArrowLeft');
       const right = held.has('KeyD') || held.has('ArrowRight');
@@ -86,9 +106,13 @@ export function useKeyboardControls(enabled = true) {
         brake: held.has('KeyS') || held.has('ArrowDown') ? 1 : 0,
         wheel: (left ? 1 : 0) - (right ? 1 : 0),
       });
+      const glance = (held.has('KeyQ') ? 1 : 0) - (held.has('KeyE') ? 1 : 0);
+      if (glance !== 0) useHead.getState().set(glance > 0 ? GLANCE.left : GLANCE.right);
+      else if (glancing) useHead.getState().set({ yaw: 0, pitch: 0 });
+      glancing = glance !== 0;
     };
     const down = (e: KeyboardEvent) => {
-      if (e.repeat && !['KeyW', 'KeyS', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) return;
+      if (e.repeat && !['KeyW', 'KeyS', 'KeyA', 'KeyD', 'KeyQ', 'KeyE', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) return;
       const d = useDriver.getState();
       switch (e.code) {
         case 'KeyR': d.toggleGear(); break;
@@ -104,7 +128,7 @@ export function useKeyboardControls(enabled = true) {
       }
     };
     const up = (e: KeyboardEvent) => { held.delete(e.code); apply(); };
-    const lost = () => { held.clear(); useDriver.getState().release(); };
+    const lost = () => { held.clear(); useDriver.getState().release(); useHead.getState().set({ yaw: 0, pitch: 0 }); };
     const hidden = () => { if (document.visibilityState === 'hidden') lost(); };
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);

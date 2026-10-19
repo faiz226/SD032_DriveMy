@@ -410,7 +410,7 @@ export const en = {
   "sim.mode.practiceDesc":         "One station. Restart it as often as you like. Not saved.",
   "sim.mode.startAssessment":      "Start assessment",
   "sim.mode.startPractice":        "Practise {{station}}",
-  "sim.mode.keys":                 "Keys: W accelerate, S brake, A and D steer, R gear D/R, Space handbrake, T top-down view, P pause.",
+  "sim.mode.keys":                 "Keys: W accelerate, S brake, A and D steer, R gear D/R, Space handbrake, Q look over your left shoulder, E look down out of your window, T top-down view, P pause. Drag the view to look around.",
   "sim.hud.next":                  "Next",
   "sim.hud.timeLeft":              "Time left",
   "sim.hud.demerits":              "Demerits",
