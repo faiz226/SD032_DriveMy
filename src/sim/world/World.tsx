@@ -1,11 +1,12 @@
 // The practice yard in the scene: the cached meshes, their textures, and the fixed colliders.
 import { OrthographicCamera, Sky, useTexture } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
-import { CuboidCollider, CylinderCollider, RigidBody, TrimeshCollider } from '@react-three/rapier';
-import { useLayoutEffect } from 'react';
+import { useRapier } from '@react-three/rapier';
+import { useEffect, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 import { circuit } from '../data';
 import { getWorld } from './build';
+import { addWorldColliders } from './colliders';
 
 export type Tier = 'low' | 'medium';
 
@@ -13,6 +14,11 @@ const TILE_M = { concrete: 4, grass: 6 };   // one texture tile covers this many
 
 export function World({ tier = 'low' }: { tier?: Tier }) {
   const world = getWorld(circuit);
+  const physics = useRapier();
+  useEffect(() => {
+    const added = addWorldColliders(physics.rapier, physics.world, world);
+    return () => added.remove();
+  }, [physics.rapier, physics.world, world]);
   const px = tier === 'low' ? 512 : 1024;
   const [concrete, grass] = useTexture([`/sim/textures/concrete-${px}.webp`, `/sim/textures/grass-${px}.webp`]);
 
@@ -32,31 +38,16 @@ export function World({ tier = 'low' }: { tier?: Tier }) {
     }
   }, [world, concrete, grass]);
 
-  const { ground, trimeshes, boxes, poles } = world.colliders;
-  return (
-    <>
-      <primitive object={world.group} dispose={null} />
-      <RigidBody type="fixed" colliders={false} name="world">
-        <CuboidCollider args={ground.halfExtents} position={ground.position} />
-        {trimeshes.map((t) => <TrimeshCollider key={t.name} args={[t.vertices, t.indices]} />)}
-        {boxes.map((b) => <CuboidCollider key={b.name} args={b.halfExtents} position={b.position} rotation={[0, b.rotationY, 0]} />)}
-      </RigidBody>
-      {poles.map((p) => (
-        <RigidBody key={p.index} type="fixed" colliders={false} position={p.position} userData={{ pole: p.index }}>
-          <CylinderCollider args={[p.halfHeight, p.radius]} />
-        </RigidBody>
-      ))}
-    </>
-  );
+  return <primitive object={world.group} dispose={null} />;
 }
 
 /** Daylight: a sky, a hemisphere fill and the sun. No environment map, so nothing loads from the network. */
 export function Daylight() {
   return (
     <>
-      <Sky distance={4500} sunPosition={[60, 80, 30]} turbidity={6} rayleigh={1.2} />
-      <hemisphereLight args={['#dfeeff', '#6f8f4f', 0.9]} />
-      <directionalLight position={[60, 80, 30]} intensity={1.6} />
+      <Sky distance={4500} sunPosition={[60, 80, 30]} turbidity={3} rayleigh={0.8} mieCoefficient={0.004} />
+      <hemisphereLight args={['#e8f2ff', '#7a8f5a', 1.3]} />
+      <directionalLight position={[60, 80, 30]} intensity={2.2} />
     </>
   );
 }

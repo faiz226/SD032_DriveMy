@@ -390,6 +390,15 @@ export const ms: Record<TranslationKey, string> = {
   "sim.fix.s.speed":               "Kekalkan kelajuan perlahan yang tetap di selekoh S: jangan berhenti dan jangan memecut.",
   "sim.fault.merge.slow":          "Anda tiba di garisan penamat di bawah kelajuan bergabung.",
   "sim.fix.merge.slow":            "Bina kelajuan semasa menghampiri. Masuk pada kelajuan jalan.",
+  "sim.touch.steer":               "Stereng: seret untuk membelok, ketik dua kali untuk ke tengah",
+  "sim.touch.brake":               "Brek",
+  "sim.touch.throttle":            "Pedal minyak",
+  "sim.touch.throttleShort":       "Minyak",
+  "sim.touch.gear":                "Gear: D atau R (hanya semasa berhenti)",
+  "sim.touch.handbrake":           "Brek tangan",
+  "sim.touch.pause":               "Jeda",
+  "sim.touch.topDown":             "Pandangan atas",
+  "sim.notice.stopFirst":          "Berhenti dahulu: gear hanya boleh ditukar semasa kereta berhenti.",
 
   // ── Colour blindness test ──────────────────────────────────────────────
   "colorblind.title":              "Ujian Penglihatan Warna",

@@ -389,6 +389,15 @@ export const en = {
   "sim.fix.s.speed":               "Keep a steady creep through the S: don't stop and don't speed up.",
   "sim.fault.merge.slow":          "You reached the finish below merging speed.",
   "sim.fix.merge.slow":            "Build speed on the approach. Join at road speed.",
+  "sim.touch.steer":               "Steering: drag to turn, double-tap to centre",
+  "sim.touch.brake":               "Brake",
+  "sim.touch.throttle":            "Accelerator",
+  "sim.touch.throttleShort":       "Gas",
+  "sim.touch.gear":                "Gear: D or R (only when stopped)",
+  "sim.touch.handbrake":           "Handbrake",
+  "sim.touch.pause":               "Pause",
+  "sim.touch.topDown":             "Top-down view",
+  "sim.notice.stopFirst":          "Stop first: the gear changes only when the car is stopped.",
 
   // ── Colour blindness test ──────────────────────────────────────────────
   "colorblind.title":              "Colour Vision Test",
