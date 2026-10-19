@@ -200,7 +200,7 @@ export function sideDrive(d: Driver) {
 export const PAR = (() => {
   const box = station('parallel-parking').bay!;
   const parked: Vec2 = [box.centre[0], 34.0];                 // rear axle, deep in the box
-  const laneX = station('parallel-parking').start.at[0];
+  const laneX = S.find((q) => q[5] === 'parallel-parking')![1];   // the lane past the recess (the start is across the spine road)
   const phi = Math.acos(1 - (laneX - parked[0]) / (2 * R_LOCK));
   const startY = parked[1] + 2 * R_LOCK * Math.sin(phi);
   return { parked, laneX, phi, startY };
@@ -223,7 +223,7 @@ export function parallelDrive(d: Driver) {
 }
 
 /** Three-point turn: forward right lock 70°, reverse left lock 70°, forward right lock to face back north. */
-export const TPT = { preJump: breakAt('three-point-turn').pre, rejoin: 280 };
+export const TPT = { preJump: breakAt('three-point-turn').pre, rejoin: breakAt('three-point-turn').post + 3.2 };
 export function threePointDrive(d: Driver) {
   d.follow(TPT.preJump, 6);
   d.arc(R_LOCK * rad(70), 5, -LOCK);

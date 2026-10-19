@@ -190,6 +190,13 @@ class Turtle:
             self.s += length / n
             self._emit(w, tag)
 
+    def shift(self, d, length, w, tag='link'):
+        """Move sideways by d metres (+ = left) over `length`, as two opposite arcs; the heading ends as it began."""
+        r = (length ** 2 + d ** 2) / (4 * abs(d))
+        deg = math.degrees(math.asin(length / 2 / r)) * (1 if d > 0 else -1)
+        self.arc(r, deg, w, tag)
+        self.arc(r, -deg, w, tag)
+
     def jump(self, x, y, h_deg, w, tag, station, note):
         """A manoeuvre the route line cannot draw (reversing, turning on the spot): the next sample
         starts where the manoeuvre ends. s advances by the straight distance between the two."""
@@ -228,10 +235,13 @@ ROADS = [
 
 def lane_centres(world, keep_out, min_w=6.0, max_w=10.5, step=0.25):
     """Broken centre lines on the two-way roads (the owner, 20 Oct): a lane each way, keeping left of the
-    line. Each road in ROADS gets its middle refined from the kerbs (the median of the midpoints, ignoring
-    side-road openings and island notches) and its width; a road narrower than min_w stays one-way and
-    unmarked. Each line breaks where it crosses another road (a junction), off the pavement, and inside
-    `keep_out` (the stations, one car at a time). Returns ([polyline, ...], [road, ...])."""
+    line. Each road in ROADS gets its middle and width refined from the kerbs, section by section between the
+    roads that cross it: the islands either side of a junction need not line up (the west road's middle moves
+    1.2 m across the spine road). A section's middle is the median of its midpoints, ignoring side-road
+    openings and island notches (a width far from the section's own). A road narrower than min_w stays one-way
+    and unmarked. Each line breaks where it crosses another road (a junction), off the pavement, and inside
+    `keep_out` (the stations, one car at a time). Returns ([polyline, ...], [road, ...]); each road carries its
+    `sections` as (from, to, middle, width)."""
     res = world.res
     paved = lambda x, y: (0 <= int((y - world.y0) / res) < world.mask.shape[0] and 0 <= int((x - world.x0) / res) < world.mask.shape[1]
                           and world.mask[int((y - world.y0) / res), int((x - world.x0) / res)])
@@ -242,22 +252,26 @@ def lane_centres(world, keep_out, min_w=6.0, max_w=10.5, step=0.25):
             k += 1
         return k * res
 
-    roads = []
-    for axis, mid, a0, a1 in ROADS:
-        mids, widths = [], []
+    def profile(axis, mid, a0, a1):
+        """(along, middle, width) every 0.5 m where the road is a road: not an opening or the open apron."""
+        out = []
         for t in np.arange(a0, a1, 0.5):
             x, y = (t, mid) if axis == 'ew' else (mid, t)
             if not paved(x, y):
                 continue
             dx, dy = (0.0, 1.0) if axis == 'ew' else (1.0, 0.0)
             hi, lo = reach(x, y, dx, dy), reach(x, y, -dx, -dy)
-            if hi + lo < max_w:                       # not an opening or the open apron
-                mids.append(mid + (hi - lo) / 2)
-                widths.append(hi + lo)
-        if len(mids) < 8:
-            continue
-        roads.append(dict(axis=axis, mid=float(np.median(mids)), width=float(np.median(widths)), a0=a0, a1=a1))
+            if hi + lo < max_w:
+                out.append((float(t), mid + (hi - lo) / 2, hi + lo))
+        return out
 
+    roads = []
+    for axis, mid, a0, a1 in ROADS:
+        prof = profile(axis, mid, a0, a1)
+        if len(prof) < 8:
+            continue
+        roads.append(dict(axis=axis, mid=float(np.median([m for _, m, _ in prof])), width=float(np.median([w for _, _, w in prof])),
+                          a0=a0, a1=a1, prof=prof))
     two_way = [r for r in roads if r['width'] >= min_w]
 
     def inside_other(x, y, me):
@@ -269,19 +283,79 @@ def lane_centres(world, keep_out, min_w=6.0, max_w=10.5, step=0.25):
                 return True
         return False
 
+    for r in roads:                                   # sections: the runs between the roads that cross this one
+        r['sections'] = []
+        run = []
+        for t in list(np.arange(r['a0'], r['a1'], 0.5)) + [None]:
+            if t is not None:
+                x, y = (t, r['mid']) if r['axis'] == 'ew' else (r['mid'], t)
+            if t is None or inside_other(x, y, r):
+                rows = [p for p in r['prof'] if run and run[0] <= p[0] <= run[-1]]
+                if len(rows) >= 4:
+                    w = float(np.median([q[2] for q in rows]))
+                    good = [q for q in rows if abs(q[2] - w) <= 0.6]
+                    r['sections'].append((run[0], run[-1], float(np.median([q[1] for q in good])), w))
+                run = []
+            else:
+                run.append(float(t))
+        del r['prof']
+
+    def middle(r, t):
+        for a, b, m, _ in r['sections']:
+            if a - 0.25 <= t <= b + 0.25:
+                return m
+        return None
+
     lines = []
     for r in two_way:
         cur = []
         for t in np.arange(r['a0'], r['a1'] + step / 2, step):
-            x, y = (t, r['mid']) if r['axis'] == 'ew' else (r['mid'], t)
-            ok = paved(x, y) and not keep_out[int((y - world.y0) / res), int((x - world.x0) / res)] and not inside_other(x, y, r)
+            m = middle(r, t)
+            x, y = ((t, m) if r['axis'] == 'ew' else (m, t)) if m is not None else (0.0, 0.0)
+            ok = (m is not None and paved(x, y) and not keep_out[int((y - world.y0) / res), int((x - world.x0) / res)]
+                  and not inside_other(x, y, r))
+            if ok and cur and abs((cur[-1][1] if r['axis'] == 'ew' else cur[-1][0]) - m) > 1e-6:
+                ok = False                            # a new section: a new line
             if ok:
                 cur.append([float(x), float(y)])
             if (not ok or t >= r['a1']) and cur:
                 if math.hypot(cur[-1][0] - cur[0][0], cur[-1][1] - cur[0][1]) >= 4.0:
                     lines.append([cur[0], cur[-1]])
-                cur = []
+                cur = [[float(x), float(y)]] if ok else []
     return lines, roads
+
+
+def break_lines(lines, paths, half=5.0, min_len=4.0):
+    """A gap `half` metres either side of wherever a driven path crosses a centre line: the turn across the other
+    lane at a junction's mouth, or a straight crossing of the road. The main road's line otherwise runs on past a
+    side road, as it does on a real road."""
+    out = []
+    for a, b in lines:
+        ln = math.hypot(b[0] - a[0], b[1] - a[1])
+        ux, uy = (b[0] - a[0]) / ln, (b[1] - a[1]) / ln
+        cuts = []
+        for path in paths:
+            for p, q in zip(path, path[1:]):
+                dx, dy = q[0] - p[0], q[1] - p[1]
+                if math.hypot(dx, dy) > 1.0:                  # a manoeuvre's break in the line
+                    continue
+                det = dx * uy - ux * dy                      # solve a + u t = p + d k for t (metres) and k (0..1)
+                if abs(det) < 1e-9:
+                    continue
+                rx, ry = p[0] - a[0], p[1] - a[1]
+                t_line = (dx * ry - dy * rx) / det
+                t_path = (ux * ry - uy * rx) / det
+                if -half <= t_line <= ln + half and 0.0 <= t_path <= 1.0:
+                    cuts.append((t_line - half, t_line + half))
+        keep, t0 = [], 0.0
+        for c0, c1 in sorted(cuts):
+            if c0 > t0:
+                keep.append((t0, min(c0, ln)))
+            t0 = max(t0, c1)
+        if t0 < ln:
+            keep.append((t0, ln))
+        out += [[[a[0] + ux * k0, a[1] + uy * k0], [a[0] + ux * k1, a[1] + uy * k1]] for k0, k1 in keep if k1 - k0 >= min_len]
+    return out
 
 
 def rect(x0, y0, x1, y1):
@@ -349,6 +423,8 @@ def build_route(L):
     t.mark('side_out')
     t.arc(R, 90, 7.2)
     # 3 Parallel park: north up lane A-B past the recess on the left
+    t.line_to(L['spine_s'] + 0.3, 7.2)
+    t.shift(L['g8_nb'] - L['par_lane'], 6.6, 7.2)              # the north section's lane is further east
     t.line_to(L['spine_top'], 7.2)
     t.mark('par_in')
     t.line_to(L['par_out_y'], 7.07, 'parallel-parking')
@@ -358,6 +434,8 @@ def build_route(L):
     t.arc(R, -90, 7.8)
     t.line_to(L['cd_sb'] - R, 7.8)
     t.arc(R, -90, 7.8)
+    t.line_to(L['spine_n'] - 0.2, 7.17)
+    t.shift(L['tpt_x'] - L['cd_sb'], 7.4, 7.17)               # across the spine road, to the turning lane's line
     t.line_to(L['tpt_y0'], 7.17)
     t.mark('tpt_in')
     t.line_to(L['tpt_turn_y'], 4.0, 'three-point-turn')
@@ -382,7 +460,8 @@ def build_route(L):
     t.line_to(L['s_bottom'], v('s_w'), 's-curve')
     t.mark('s_out')
     # to 6: right along the bottom lane, right into the Z's south end
-    t.arc(3.5, -90, 6.0)
+    t.arc(L['s_bottom'] - L['bottom_turn'], -90, 6.0)          # one arc from the S's mouth, its outer tyres 0.5 m off the edge,
+    t.shift(L['bottom_turn'] - L['bottom_wb'], 5.0, 6.0)       # then into the westbound lane's middle
     t.line_to(L['z_x0'] + 4.5, 6.0)
     # 6 Z-curve, driven north: in from the bottom lane, right, then left
     t.mark('z_in')
@@ -399,7 +478,7 @@ def build_route(L):
     # to 7: right along the spine road, left up lane E-F
     t.line_to(L['spine_eb'] - R, 7.7)
     t.arc(R, -90, 7.7)
-    t.line_to(L['ef_x'] - R, 7.7)
+    t.line_to(L['ef_nb'] - R, 7.7)
     t.arc(R, 90, 7.7)
     t.line_to(L['islands_top'], 7.3)
     # 7 Ramp test: past the ramp's mouth on the right; drive in, stop, reverse out, carry on north
@@ -425,19 +504,24 @@ def main():
     L = dict(
         spawn_x=M(330, 0)[0],
         hill_y=M(0, 94.75)[1], hill_x0=M(482.5, 0)[0],
-        spine_top=M(0, 438)[1], spine_wb=24.0, spine_eb=27.2,
-        g8_sb=M(418.75, 0)[0] + 1.0, g8_nb=M(418.75, 0)[0] - 1.0,
+        # Keeping left (the owner, 20 Oct: touching a centre line fails the test). Each lane line sits near its
+        # lane's middle, from the road sections lane_centres measures: the tyres keep 0.4 m or more off every
+        # centre line (check.py proves it). Middles: the spine road 25.6, the west road 39.4 south of the spine
+        # road and 40.6 north of it, the top road 55.4, lane C-D 62.8, lane E-F 86.4, the bottom road 3.2.
+        spine_top=M(0, 438)[1], spine_wb=24.0, spine_eb=27.2, spine_s=21.3, spine_n=29.8,
+        g8_sb=41.2, g8_nb=37.7, par_lane=38.49,
         band_y=(M(0, 626.5)[1] + M(0, 675)[1]) / 2, band_mouth_x=35.5,
         pocket_x=(M(267.75, 0)[0] + M(317.75, 0)[0]) / 2, pocket_mouth=M(0, 626.5)[1], pocket_back=M(0, 565.25)[1],
         par_out_y=46.0,
-        top_eb=55.6,
-        cd_sb=M(666, 0)[0] + 0.5,
+        top_eb=57.2,
+        cd_sb=64.4, tpt_x=M(666, 0)[0] + 0.5,
         tpt_y0=21.4, tpt_turn_y=14.0, tpt_nb=60.9,
+        bottom_turn=2.05, bottom_wb=1.8, ef_nb=84.7,
         s_x=M(774.25, 0)[0], s_top=M(0, 519)[1], s_bottom=None,
         z_x0=M(499, 0)[0], z_x1=M(581, 0)[0], z_jog_y=M(0, 602)[1], z_top=M(0, 518)[1], z_bottom=M(0, 688)[1],
         ef_x=(M(878, 0)[0] + M(955.5, 0)[0]) / 2, islands_top=M(0, 202)[1],
         ramp_out_y=66.0 - R,
-        east_sb=(M(1155.5, 0)[0] + M(1224, 0)[0]) / 2 + 0.7,
+        east_sb=113.4,
         merge_finish_y=12.0, end_y=4.5,
     )
     # the S as built: 3 m straight, two opposite arcs of s_turn at s_r, 3 m straight. Each arc drops
@@ -551,7 +635,9 @@ def main():
     par_recess = to_m([(353, 399), (393, 399), (393, 329), (353, 329)])
     tpt_x0, tpt_x1 = M(618, 0)[0], M(699, 0)[0]
     tpt_box = [(tpt_x1, 19.0), (tpt_x0, 19.0), (tpt_x0, 9.0), (tpt_x1, 9.0)]    # [0]->[1] across, [0]->[3] the way in
-    ramp_box = rect(mouth_x, ramp_y - hw - ww, end_x + ww, ramp_y + hw + ww)
+    # the ramp's footprint, from where a car turning in from lane E-F's northbound lane leaves it (the rules hold the
+    # car's progress along the route while it is inside)
+    ramp_box = rect(L['ef_nb'] + 1.0, ramp_y - hw - ww, end_x + ww, ramp_y + hw + ww)
 
     def across(x, gid):
         return dict(id=gid, a=[round(x, 3), round(ramp_y + hw + 0.2, 3)], b=[round(x, 3), round(ramp_y - hw - 0.2, 3)],
@@ -603,20 +689,31 @@ def main():
     # Two-way roads, keeping left, with a broken centre line; the stations stay one car wide and unmarked.
     keep = World(*site, res=world.res)
     for st in stations:
-        for poly in corridor_polys(pts, st['s_from'] - 2.0, st['s_to'] + 2.0):
+        for poly in corridor_polys(pts, st['s_from'] - 2.0, st['s_to'] + 4.0):   # + 4: the nose, 3.1 m ahead of the rear axle
             keep.add(poly)
         for key in ('pocket', 'box'):
             if key in st:
                 keep.add(st[key])
     for poly in z_legs + z_fill:
         keep.add(poly)
+    # wherever the route bends off a road's axis (a turn at a junction or a station's mouth, a sideways shift), the
+    # line clears the car's swept footprint by 0.5 m: a turning car's nose swings wide of its path
+    car = json.load(open(os.path.join(HERE, 'car-swift-2022.json'), encoding='utf-8'))
+    back, nose = car['length_m'] - car['wheelbase_m'] - car['front_overhang_m'], car['wheelbase_m'] + car['front_overhang_m']
+    side = car['width_body_m'] / 2 + 0.5
+    for q in pts:
+        if q[5] in ('link', 'exit-road') and min(abs(math.sin(q[3])), abs(math.cos(q[3]))) > 0.02:
+            c, sn = math.cos(q[3]), math.sin(q[3])
+            keep.add([(q[1] + c * al - sn * ac, q[2] + sn * al + c * ac) for al, ac in ((-back, -side), (nose, -side), (nose, side), (-back, side))])
     for sl in (hill, ramp, hill_twin, ramp_twin):                 # no lines on any slope, a twin's included
         length = sl['profile'][-1][0]
         keep.add(rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0))
     keep.finish()
     centre_lines, roads = lane_centres(world, keep.mask)
+    centre_lines = break_lines(centre_lines, [[(q[1], q[2]) for q in pts]])
     for r in roads:
-        print('road %s at %.2f: %.1f m wide%s' % (r['axis'], r['mid'], r['width'], '' if r['width'] >= 6.0 else ', one-way'))
+        print('road %s at %.2f: %.1f m wide%s; sections %s' % (r['axis'], r['mid'], r['width'], '' if r['width'] >= 6.0 else ', one-way',
+                                                         ' '.join('%.0f-%.0f@%.2f' % (a, b, m) for a, b, m, _ in r['sections'])))
 
     junctions = [
         dict(id='spine-road', polygon=rect(M(120.5, 0)[0], 21.3, M(1224, 0)[0], 29.8),

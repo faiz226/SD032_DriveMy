@@ -5,7 +5,7 @@ import type {
   StationGeometry, StationId, StationProgress, Vec2, VehicleSample,
 } from '../contracts';
 import {
-  bayHeadingLimit, bayOverhang, dir, footprint, headingErrorToAxis, pointInPolygon, rad, segmentsCross, toDeg, wrapPi,
+  bayHeadingLimit, bayOverhang, dir, distToSegment, footprint, headingErrorToAxis, pointInPolygon, rad, segmentsCross, toDeg, wrapPi,
 } from '../geom';
 
 // Progress tracking along route.samples (0.25 m apart). Engine internals, not rule thresholds.
@@ -18,7 +18,7 @@ const JUMP_M = 1;           // samples further apart than this are a manoeuvre's
 const EPS = 1e-6;           // for timers summed from many small steps
 
 type Rec = Record<string, unknown>;
-type Kind = 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb';
+type Kind = 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'centre_line';
 
 function need(o: Rec | undefined, key: string, where: string): number {
   const v = o?.[key];
@@ -38,6 +38,7 @@ function readRules(r: RulesData) {
     points: (k: Kind) => need(dm[k], 'points', `demerits.${k}`),
     clearS: (k: 'kerb' | 'pole' | 'cone') => need(dm[k], 'clear_s', `demerits.${k}`),
     rollbackLimit: need(dm.rollback, 'limit_m', 'demerits.rollback'),
+    endsRun: (k: Kind) => dm[k].ends_run === true,
     demeritBasis: (k: Kind) => String(dm[k].basis ?? ''),
     stationBasis: (id: StationId) => String(st[id].basis ?? ''),
     timeLimit: (id: StationId) => (typeof st[id].time_limit_s === 'number' ? (st[id].time_limit_s as number) : null),
@@ -107,6 +108,9 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
   let prev: Vec2 | null = null;
   let wasStopped = true;
   const roll = { id: null as null | 'hill' | 'ramp', peak: 0, faulted: false, fault: -1, worst: 0 };
+  // the centre lines, each read as one continuous line: a tyre in the gap between two dashes is still across it
+  const lines = (circuit.markings?.centre_lines ?? []).flatMap((l) => l.slice(1).map((b, i): [Vec2, Vec2] => [l[i], b]));
+  const lineReach = car.tyre_width_m / 2 + (circuit.markings?.width ?? 0) / 2;
   const kerbs = new Map<number, number>();   // ring -> last touched
   const hits = new Map<string, number>();    // obstacle -> last touched
 
@@ -254,6 +258,18 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
       fault(e.kind, station, R.points(e.kind), e.at, e.t, e.kind, R.demeritBasis(e.kind));
       const run = runs.find((r) => r.geo.id === owner);
       if (run && run.pub.status === 'armed') fail(run, null, e.at, e.t);
+    }
+  }
+
+  /** A tyre's contact patch on a centre line: the test ends there, failed (the owner, 20 Oct). */
+  function lineStep(sample: VehicleSample) {
+    for (const w of sample.wheels) {
+      const hit = lines.find(([a, b]) => distToSegment([w.x, w.y], a, b) < lineReach);
+      if (!hit) continue;
+      const station = state.current ?? runs[runs.length - 1].geo.id;
+      fault('centre_line', station, R.points('centre_line'), [w.x, w.y], sample.t, 'centreLine', R.demeritBasis('centre_line'));
+      if (R.endsRun('centre_line')) end();
+      return;
     }
   }
 
@@ -443,6 +459,8 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
       track(p);
       kerbStep(x, events);
       hitStep(events);
+      lineStep(x);
+      if (state.ended) { prev = p; return snapshot(); }
       const run = runs.find((r) => r.geo.id === state.current);
       if (run && run.pub.status === 'waiting' && !run.blocked && s >= run.geo.s_from) {
         run.pub.status = 'armed';
@@ -478,3 +496,6 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     state: snapshot,
   };
 };
+
+// Rules and the scripted line hold state for the whole run: in development, an edit reloads the page.
+import.meta.hot?.accept(() => location.reload());

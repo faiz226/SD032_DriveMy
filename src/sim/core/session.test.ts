@@ -547,6 +547,35 @@ describe('road merging', () => {
   });
 });
 
+describe('centre lines', () => {
+  /** The car parked along the middle of the first centre line, its right-hand tyres `gap` metres left of it. */
+  function besideLine(gap: number) {
+    const [a, b] = circuit.markings!.centre_lines[0];
+    const h = Math.atan2(b[1] - a[1], b[0] - a[0]);
+    const [ux, uy] = dir(h);
+    const left = swift.track_m / 2 + gap;
+    const d = assessment();
+    d.at = [(a[0] + b[0]) / 2 - ux * (L / 2) - uy * left, (a[1] + b[1]) / 2 - uy * (L / 2) + ux * left];
+    d.heading = h;
+    d.tick();
+    return d;
+  }
+
+  it('a tyre on a centre line fails the test there and then', () => {
+    const d = besideLine(0);
+    expect(d.last.faults.map((f) => [f.kind, f.reasonKey])).toEqual([['centre_line', 'sim.fault.centreLine']]);
+    expect(d.last.ended).toBe(true);
+    expect(d.last.verdict).toMatchObject({ pass: false });
+    expect(d.tick().faults).toHaveLength(1);   // nothing more is judged after the end
+  });
+
+  it('a tyre 0.3 m off the line is fine', () => {
+    const d = besideLine(0.3);
+    expect(d.last.faults).toEqual([]);
+    expect(d.last.ended).toBe(false);
+  });
+});
+
 describe('kerbs', () => {
   const touch = (d: Driver, ring: number, secs: number) => {
     d.kerbOverride = ring;

@@ -370,6 +370,8 @@ export const en = {
   "sim.resultSaved":               "Result saved successfully.",
   "sim.resultSaveFailed":          "Could not save your simulation result.",
   "sim.fault.kerb":                "A tyre went over the kerb.",
+  "sim.fault.centreLine":          "A tyre touched the centre line. That ends the test.",
+  "sim.fix.centreLine":            "Keep left of the centre line. Wait behind a stopped car; never pass it.",
   "sim.fix.kerb":                  "Turn the wheel earlier and slower, and keep the tyres inside the kerb lines.",
   "sim.fault.pole":                "The car touched a pole.",
   "sim.fix.pole":                  "Stop and check the mirrors before the car reaches a pole, then reverse slowly.",

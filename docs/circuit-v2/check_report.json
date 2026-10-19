@@ -55,7 +55,7 @@
    "section": "real",
    "check": "Z lane, as built, matches the real one",
    "ok": true,
-   "detail": "built 3.91 m on the straight legs; real 3.9-4.0 m"
+   "detail": "built 4.00 m on the straight legs; real 3.9-4.0 m"
   },
   {
    "section": "real",
@@ -91,13 +91,13 @@
    "section": "roomy",
    "check": "the driver reaches the end of every driven piece",
    "ok": true,
-   "detail": "3 pieces between manoeuvres, 581 m of route"
+   "detail": "3 pieces between manoeuvres, 587 m of route"
   },
   {
    "section": "roomy",
    "check": "clearance: link",
    "ok": true,
-   "detail": "tyres 0.55 m (need >= 0.50), body 0.20 m, worst at s = 302.8"
+   "detail": "tyres 0.50 m (need >= 0.50), body 0.15 m, worst at s = 355.6"
   },
   {
    "section": "roomy",
@@ -115,43 +115,49 @@
    "section": "roomy",
    "check": "clearance: parallel-parking",
    "ok": true,
-   "detail": "tyres 0.60 m (need >= 0.10), body 0.55 m, worst at s = 184.9"
+   "detail": "tyres 0.60 m (need >= 0.10), body 0.55 m, worst at s = 184.2"
   },
   {
    "section": "roomy",
    "check": "clearance: three-point-turn",
    "ok": true,
-   "detail": "tyres 1.70 m (need >= 0.10), body 1.70 m, worst at s = 267.0"
+   "detail": "tyres 1.70 m (need >= 0.10), body 1.70 m, worst at s = 272.4"
   },
   {
    "section": "roomy",
    "check": "clearance: s-curve",
    "ok": true,
-   "detail": "tyres 0.47 m (need >= 0.10), body 0.25 m, worst at s = 333.3"
+   "detail": "tyres 0.47 m (need >= 0.10), body 0.25 m, worst at s = 337.0"
   },
   {
    "section": "roomy",
    "check": "clearance: z-curve",
    "ok": true,
-   "detail": "tyres 0.35 m (need >= 0.10), body -0.05 m, worst at s = 417.6"
+   "detail": "tyres 0.35 m (need >= 0.10), body -0.05 m, worst at s = 422.8"
   },
   {
    "section": "roomy",
    "check": "clearance: ramp-test",
    "ok": true,
-   "detail": "tyres 2.73 m (need >= 0.10), body 2.45 m, worst at s = 482.1"
+   "detail": "tyres 1.17 m (need >= 0.10), body 1.05 m, worst at s = 485.5"
   },
   {
    "section": "roomy",
    "check": "clearance: road-merging",
    "ok": true,
-   "detail": "tyres 1.30 m (need >= 0.10), body 1.25 m, worst at s = 523.4"
+   "detail": "tyres 0.80 m (need >= 0.10), body 0.75 m, worst at s = 529.0"
   },
   {
    "section": "roomy",
    "check": "clearance: exit-road",
    "ok": true,
-   "detail": "tyres 1.75 m (need >= 0.50), body 1.50 m, worst at s = 573.7"
+   "detail": "tyres 1.20 m (need >= 0.50), body 1.20 m, worst at s = 579.4"
+  },
+  {
+   "section": "roomy",
+   "check": "the driven line keeps every tyre off the centre lines",
+   "ok": true,
+   "detail": "closest tyre 0.41 m from a line (need >= 0.30), at s = 51.5; 10 line segments"
   },
   {
    "section": "possible",
@@ -217,7 +223,7 @@
    "section": "possible",
    "check": "ramp: drive in and up without touching a kerb or the pole",
    "ok": true,
-   "detail": "tyres 0.60 m from the kerbs, body 0.81 m from the pole"
+   "detail": "tyres 0.86 m from the kerbs, body 0.81 m from the pole"
   },
   {
    "section": "possible",
@@ -229,7 +235,7 @@
    "section": "possible",
    "check": "ramp: reverse down and out, ending in the lane facing on",
    "ok": true,
-   "detail": "straight back 10.0 m, then full right lock"
+   "detail": "straight back 11.5 m, then full right lock"
   },
   {
    "section": "possible",
@@ -253,13 +259,13 @@
    "section": "cheap",
    "check": "kerbs fit in one instanced mesh",
    "ok": true,
-   "detail": "970 vertices, 1470 m of kerb (about 1470 instances at 1 m)"
+   "detail": "968 vertices, 1470 m of kerb (about 1470 instances at 1 m)"
   },
   {
    "section": "cheap",
    "check": "circuit data is small",
    "ok": true,
-   "detail": "136 KB uncompressed"
+   "detail": "135 KB uncompressed"
   },
   {
    "section": "cheap",

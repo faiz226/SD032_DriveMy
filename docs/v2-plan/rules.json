@@ -22,7 +22,10 @@
     "not_in_bay": { "points": 10, "basis": "rubric" },
     "kerb":       { "points": 5,  "clear_s": 0.5, "basis": "decided: guides list touching a kerb or line as a minor fault worth 2-5 points; 5 matches the rubric's minor weight",
                     "rule": "A tyre's contact patch over a kerb. One contact counts once; it ends when no tyre has touched that kerb for 0.5 s. Body overhang over a kerb is not a fault" },
-    "stall":      { "points": 5,  "basis": "rubric; unreachable with the automatic gearbox" }
+    "stall":      { "points": 5,  "basis": "rubric; unreachable with the automatic gearbox" },
+    "centre_line": { "points": 20, "ends_run": true,
+                    "basis": "the owner, 20 Oct: crossing or touching a centre line is an automatic fail, and the test ends there",
+                    "rule": "A tyre's contact patch touching the broken white line between the two lanes of a two-way road, read as one continuous line (a tyre in the gap between two dashes is across it). The test ends at once with a fail" }
   },
   "station_outcomes": {
     "cleared": "Did the thing the station is named after, within its rules",

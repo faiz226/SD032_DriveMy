@@ -371,6 +371,8 @@ export const ms: Record<TranslationKey, string> = {
   "sim.resultSaved":               "Keputusan berjaya disimpan.",
   "sim.resultSaveFailed":          "Tidak dapat menyimpan keputusan simulasi anda.",
   "sim.fault.kerb":                "Tayar melanggar bebendul.",
+  "sim.fault.centreLine":          "Tayar menyentuh garisan tengah. Ujian tamat di sini.",
+  "sim.fix.centreLine":            "Kekal di kiri garisan tengah. Tunggu di belakang kereta yang berhenti; jangan memotong.",
   "sim.fix.kerb":                  "Pusingkan stereng lebih awal dan perlahan, dan pastikan tayar kekal di dalam garisan bebendul.",
   "sim.fault.pole":                "Kereta menyentuh tiang.",
   "sim.fix.pole":                  "Berhenti dan semak cermin sebelum kereta sampai ke tiang, kemudian undur perlahan-lahan.",

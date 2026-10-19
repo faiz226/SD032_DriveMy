@@ -24,6 +24,7 @@ marking", and every threshold shows its basis in the UI.
 | Not in bay | 10 | rubric |
 | **Kerb** | **5 per contact.** A contact is a tyre over a kerb; it counts once and ends after 0.5 s clear. Body overhang is not a fault. | decided: guides list touching a kerb or line as a minor fault worth 2–5 points; 5 matches the rubric's minor weight |
 | Stall | 5 (cannot happen with the automatic gearbox) | rubric |
+| **Centre line** | **Automatic fail; the test ends at once.** A tyre's contact patch touching the broken white line between the two lanes of a two-way road, read as one continuous line (a tyre in the gap between two dashes is across it). The route keeps every tyre 0.4 m or more off every centre line, and the lines break where the route turns, as at a real junction. | the owner, 20 Oct |
 
 ## Stations
 

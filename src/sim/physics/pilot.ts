@@ -178,7 +178,7 @@ export class Pilot {
     this.mark('side out');
     // 3. parallel parking: an S of two full-lock reverse arcs into the box, done, and out the same way
     const box = station('parallel-parking').bay!;
-    const laneX = station('parallel-parking').start.at[0];
+    const laneX = S.find((q) => q[5] === 'parallel-parking')![1];   // the lane past the recess (the start is across the spine road)
     const phi = Math.acos(1 - (laneX - box.centre[0]) / (2 * R_LOCK));
     const startY = 34.0 + 2 * R_LOCK * Math.sin(phi);
     yield* this.follow(second, sNear([laneX, startY], station('parallel-parking').s_from, station('parallel-parking').s_to), slow, true);
@@ -234,3 +234,6 @@ export class Pilot {
     yield* this.stop();
   }
 }
+
+// Rules and the scripted line hold state for the whole run: in development, an edit reloads the page.
+import.meta.hot?.accept(() => location.reload());

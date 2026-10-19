@@ -88,7 +88,7 @@ export interface RulesData {
   schema: 'drivemy.rules/1';
   label: string;
   verdict: { fail_at_demerits: number; end_run_at_fail: boolean };
-  demerits: Record<'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'stall', { points: number; basis: string; limit_m?: number; rule?: string }>;
+  demerits: Record<'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'stall' | 'centre_line', { points: number; basis: string; limit_m?: number; rule?: string; ends_run?: boolean }>;
   stations: Record<StationId, Record<string, unknown> & { time_limit_s: number | null; basis?: string }>;
   modes: Record<'assessment' | 'practice', Record<string, unknown>>;
 }
@@ -135,7 +135,7 @@ export type SimEvent =
 export type Mode = 'assessment' | 'practice';
 
 export interface Fault {
-  kind: 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'station_failed';
+  kind: 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'station_failed' | 'centre_line';
   station: StationId;
   points: number;            // 0 for station_failed (it fails the run by itself)
   at: Vec2;                  // where it happened, for the verdict's small map

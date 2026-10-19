@@ -148,10 +148,13 @@ def main():
     ids = [s['id'] for s in stations]
     overlap = [(a, b) for i, a in enumerate(ids) for b in ids[i + 1:] if (fp[a] & fp[b]).any()]
     record('organised', 'no two stations overlap', not overlap, overlap or 'none overlap')
-    # every route sample inside another station's footprint, away from that station's own ends
+    # every route sample inside another station's footprint, away from that station's own ends and outside the
+    # junctions, where the route crosses itself by design (the side-parking band's mouth: in, and back out)
     trespass = {}
     for q in samples[::2]:
         s, x, y = q[0], q[1], q[2]
+        if any(in_poly((x, y), J) for J in junctions):
+            continue
         ix, iy = int((x - bounds[0]) / res), int((y - bounds[1]) / res)
         for st in stations:
             if st['s_from'] - 1.0 <= s <= st['s_to'] + 1.0:
@@ -253,6 +256,31 @@ def main():
         need = 0.5 if tag in ('link', 'exit-road') else 0.10      # links: comfortable; stations: no kerb touched
         record('roomy', 'clearance: %s' % tag, w['tyre'] >= need,
                'tyres %.2f m (need >= %.2f), body %.2f m, worst at s = %s' % (w['tyre'], need, w['body'], w['at']))
+    # centre lines (the owner, 20 Oct: a tyre touching one fails the test): the driven line, corners cut as a
+    # driver cuts them, keeps every tyre's contact patch off every line, read as one continuous line
+    mk = C.get('markings') or {}
+    segs = [(a, b) for line in mk.get('centre_lines', []) for a, b in zip(line, line[1:])]
+    reach = car.tyre_w / 2 + mk.get('width', 0.0) / 2
+
+    def seg_dist(px, py, a, b):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        t_ = max(0.0, min(1.0, ((px - a[0]) * dx + (py - a[1]) * dy) / (dx * dx + dy * dy or 1.0)))
+        return math.hypot(px - a[0] - t_ * dx, py - a[1] - t_ * dy)
+    near_line = (9e9, None)
+    test_end = max(q[0] for q in samples if q[5] == 'road-merging')    # past the finish the test is over: nothing is judged
+    for s, x, y, th, *_ in rec:
+        if s > test_end:
+            continue
+        c_, s_ = math.cos(th), math.sin(th)
+        for along in (0.0, car.wb):
+            for side in (-car.track / 2, car.track / 2):
+                px, py = x + c_ * along - s_ * side, y + s_ * along + c_ * side
+                for a, b in segs:
+                    d = seg_dist(px, py, a, b) - reach
+                    if d < near_line[0]:
+                        near_line = (d, round(s, 1))
+    record('roomy', 'the driven line keeps every tyre off the centre lines', near_line[0] >= 0.3,
+           'closest tyre %.2f m from a line (need >= 0.30), at s = %s; %d line segments' % (near_line[0], near_line[1], len(segs)))
 
     # ---------------------------------------------------------------- 4 Possible
     print('\n4 POSSIBLE (each exercise done with this car exactly as the PRD rules define it)')
