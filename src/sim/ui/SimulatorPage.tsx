@@ -1,7 +1,6 @@
 // DriveMy v2's simulator. One world, loaded once. Assessment is the full circuit, marked and saved; practice is
 // one station at a time, restarted at will and never saved. Picking or restarting a station moves the car;
 // nothing reloads. The verdict comes from the rules session alone: no button can pass a run.
-import { useProgress } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,6 +28,7 @@ import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
 import { CameraKick, dprFor, FrameProbe, RenderScale, WhereNext } from './scene';
 import { engineSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
+import { LoadingMap } from './LoadingMap';
 import { EXPLORE_CANVAS, ExploreHud, SpectatorCamera } from './Spectator';
 import { type SaveStatus, VerdictView } from './Verdict';
 
@@ -84,6 +84,7 @@ export function SimulatorPage() {
   const [drill, setDrill] = useState<StationId>(isStation(id) ? id : 'hill-start');
   const [start] = useState<Pose>(() => (isStation(id) ? stationStart(id) : spawnPose()));
   const [ready, setReady] = useState(false);
+  const [loads, setLoads] = useState(0);
   const [save, setSave] = useState<SaveStatus | null>(null);
   const savedRun = useRef<string | null>(null);
   const auto = useRef<Autopilot | null>(null);
@@ -177,7 +178,10 @@ export function SimulatorPage() {
 
   /** A new quality applies before the next run: the scene rebuilds at that tier, so wait for it again. */
   const changeQuality = (p: TierPref) => {
-    if (TIERS[p === 'auto' ? detected : p] !== spec) setReady(false);
+    if (TIERS[p === 'auto' ? detected : p] !== spec) {
+      setReady(false);
+      setLoads((n) => n + 1);   // a fresh loading map for the rebuild
+    }
     useQualityPref.getState().setPref(p);
   };
 
@@ -199,7 +203,7 @@ export function SimulatorPage() {
         <CameraKick />
       </Canvas>
 
-      {!ready && <Loading />}
+      <LoadingMap key={loads} ready={ready} />
       {phase === 'choose' && (
         <ModePanel
           mode={mode}
@@ -240,21 +244,6 @@ export function SimulatorPage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-/** Loading the world and the car: a bar, since the car alone is about 4 MB on the Low tier. */
-function Loading() {
-  const { t } = useLanguage();
-  const progress = useProgress((s) => s.progress);
-  const pct = Math.round(progress);
-  return (
-    <div className="absolute inset-x-0 top-0 z-10 space-y-1 p-3" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label={t('sim.loading', { pct })}>
-      <div className="h-1 w-full bg-[rgb(var(--paint)/0.2)]">
-        <div className="h-1 bg-[rgb(var(--paint))] transition-transform duration-200" style={{ width: '100%', transform: `scaleX(${pct / 100})`, transformOrigin: 'left' }} />
-      </div>
-      <p className="type-label text-xs text-[rgb(var(--paint))]">{t('sim.loading', { pct })}</p>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { useDriver, useKeyboardControls, useTouchUi } from '../input';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import { TIERS } from '../quality';
 import { TouchControls } from '../TouchControls';
+import { LoadingMap } from '../ui/LoadingMap';
 import { type Verdict, VerdictView } from '../ui/Verdict';
 
 const DEMO: Verdict = {
@@ -38,6 +39,7 @@ export function SimPreview() {
   const topDown = useDriver((s) => s.topDown) || view === 'top';
   const paused = useDriver((s) => s.paused);
   const [readout, setReadout] = useState('');
+  const [ready, setReady] = useState(false);
   const car = useRef<CarApi>(null);
   const touch = useTouchUi() || params.get('touch') === 'on';
   useKeyboardControls();
@@ -56,6 +58,7 @@ export function SimPreview() {
               quality={TIERS[tier]}
               start={start}
               firstPerson={view === 'drive' && !topDown}
+              onReady={() => setReady(true)}
               onStep={(s) => {
                 if (Math.round(s.t * 60) % 6 === 0) {
                   setReadout(`${s.speedKmh.toFixed(1)} km/h  ${s.gear}${s.handbrake ? '  HANDBRAKE' : ''}  x ${s.x.toFixed(1)} y ${s.y.toFixed(1)}  ${s.wheels.some((w) => w.onKerb !== null) ? 'KERB' : ''}`);
@@ -73,6 +76,7 @@ export function SimPreview() {
           </>
         )}
       </Canvas>
+      <LoadingMap ready={ready} />
       {touch && <TouchControls />}
       {params.get('verdict') === 'demo' && <VerdictView verdict={DEMO} save="saved" onRetry={() => {}} onPractise={() => {}} onExit={() => {}} />}
       <div style={{ position: 'absolute', left: touch ? 180 : 12, bottom: touch ? 70 : 12, padding: '6px 10px', background: 'rgba(0,0,0,0.55)', color: 'white', font: '14px monospace', borderRadius: 6 }}>

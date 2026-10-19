@@ -76,5 +76,23 @@ export function flatFace(body: THREE.Object3D, pick: SurfacePick, eye: readonly 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(position, 3));
   geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-  return { geometry, width: span[0], height: span[1] };
+
+  /** The point on the part itself (not lifted) at a place in the unwrap: u left to right, v bottom to top. */
+  const pointAt = (u: number, v: number): THREE.Vector3 => {
+    const at = new THREE.Vector2(u, v);
+    const tri = new THREE.Triangle();
+    const bary = new THREE.Vector3();
+    const flatTri = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+    for (let t = 0; t < pts.length; t += 3) {
+      for (let k = 0; k < 3; k++) flatTri[k].set(uv[(t + k) * 2], uv[(t + k) * 2 + 1], 0);
+      tri.set(flatTri[0], flatTri[1], flatTri[2]);
+      if (!tri.containsPoint(new THREE.Vector3(at.x, at.y, 0))) continue;
+      tri.getBarycoord(new THREE.Vector3(at.x, at.y, 0), bary);
+      return pts[t].clone().multiplyScalar(bary.x).addScaledVector(pts[t + 1], bary.y).addScaledVector(pts[t + 2], bary.z);
+    }
+    // between triangles: on the fitted plane
+    return ctr.clone().addScaledVector(right, lo[0] + u * span[0]).addScaledVector(up, lo[1] + v * span[1]);
+  };
+
+  return { geometry, width: span[0], height: span[1], right, up, normal, pointAt };
 }

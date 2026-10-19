@@ -4,32 +4,36 @@ import type { Vec2 } from '../contracts';
 import { circuit } from '../data';
 
 const [X0, Y0, X1, Y1] = circuit.site.bounds;
-const W = X1 - X0;
-const H = Y1 - Y0;
-const px = ([x, y]: Vec2) => `${(x - X0).toFixed(2)} ${(Y1 - y).toFixed(2)}`;   // north up
+export const W = X1 - X0;
+export const H = Y1 - Y0;
+/** A circuit point in the map's own units (metres from the site's corner), north up. */
+export const toMap = ([x, y]: Vec2): [number, number] => [x - X0, Y1 - y];
+const px = (p: Vec2) => toMap(p).map((v) => v.toFixed(2)).join(' ');
 
-const PAVEMENT = circuit.pavement.map((ring) => `M${ring.map(px).join('L')}Z`).join('');
+export const PAVEMENT = circuit.pavement.map((ring) => `M${ring.map(px).join('L')}Z`).join('');
 
-// the route's driven pieces: the line jumps where the car reverses into the side bay and turns round
-const ROUTE = (() => {
-  const S = circuit.route.samples;
+const SAMPLES = circuit.route.samples;
+/** The route's driven pieces up to `upTo` metres: the line jumps where the car reverses into the side bay and turns round. */
+export function routePath(upTo = Infinity) {
   let d = '';
-  S.forEach((q, i) => {
-    const jump = i === 0 || Math.hypot(q[1] - S[i - 1][1], q[2] - S[i - 1][2]) > 1;
+  for (let i = 0; i < SAMPLES.length && SAMPLES[i][0] <= upTo; i++) {
+    const q = SAMPLES[i];
+    const jump = i === 0 || Math.hypot(q[1] - SAMPLES[i - 1][1], q[2] - SAMPLES[i - 1][2]) > 1;
     d += `${jump ? 'M' : 'L'}${px([q[1], q[2]])}`;
-  });
+  }
   return d;
-})();
+}
+const ROUTE = routePath();
 
-const STATIONS = circuit.stations.map((st) => {
-  const q = circuit.route.samples.find((s) => s[0] >= st.s_from) ?? circuit.route.samples[0];
-  return { id: st.id, n: st.order, at: [q[1], q[2]] as Vec2 };
+export const STATIONS = circuit.stations.map((st) => {
+  const q = SAMPLES.find((s) => s[0] >= st.s_from) ?? SAMPLES[0];
+  return { id: st.id, n: st.order, s: st.s_from, at: [q[1], q[2]] as Vec2 };
 });
 
 // content colours: the yard's own grass, kerb paint and route line, not the interface's tokens
-const GRASS = '#5f7d45';
-const KERB = '#c9a227';
-const LINE = '#2f6fd0';
+export const GRASS = '#5f7d45';
+export const KERB = '#c9a227';
+export const LINE = '#2f6fd0';
 
 export interface MapMark { at: Vec2; label: string }
 

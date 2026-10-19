@@ -4,7 +4,7 @@
 import { PerspectiveCamera, useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useAfterPhysicsStep, useBeforePhysicsStep, useRapier } from '@react-three/rapier';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { SimEvent, Vec2, VehicleSample } from '../contracts';
 import { circuit } from '../data';
@@ -93,6 +93,8 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
   const wheels = useRef<(THREE.Group | null)[]>([]);
   const vehicle = useRef<Vehicle | null>(null);
   const clock = useRef(0);
+  const kmh = useRef(0);   // every step's road speed, for the dials
+  const speed = useCallback(() => kmh.current, []);
   const startRef = useRef(start);
   const onStepRef = useRef(onStep);
   onStepRef.current = onStep;
@@ -135,6 +137,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     const before = v.sample(clock.current, circuit, CAR.config.tyre_width_m);
     v.afterStep(before.slope !== null);
     const sample = v.sample(clock.current, circuit, CAR.config.tyre_width_m);
+    kmh.current = sample.speedKmh;
     // the readout and the stop-first rule need 0.5 km/h, not every step: each publish re-renders the HUD
     const was = useDriver.getState().speedKmh;
     if (Math.round(was * 2) !== Math.round(sample.speedKmh * 2) || (Math.abs(was) < 1) !== (Math.abs(sample.speedKmh) < 1)) {
@@ -168,7 +171,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
   return (
     <group ref={car}>
       <primitive object={bodyScene} />
-      <Cluster body={bodyScene} />
+      <Cluster body={bodyScene} speed={speed} />
       {blob && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -CAR.wheelRadius + 0.015, 0]} renderOrder={-1}>
           <planeGeometry args={[CAR.config.length_m + 0.5, CAR.config.width_body_m + 0.5]} />
