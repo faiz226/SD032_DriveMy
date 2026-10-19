@@ -245,21 +245,21 @@
   },
   {
    "section": "cheap",
-   "check": "flat ground plus two slopes",
+   "check": "flat ground plus the hill and the ramp, each with its twin track",
    "ok": true,
-   "detail": "2 slopes"
+   "detail": "4 slopes"
   },
   {
    "section": "cheap",
    "check": "kerbs fit in one instanced mesh",
    "ok": true,
-   "detail": "947 vertices, 1378 m of kerb (about 1378 instances at 1 m)"
+   "detail": "970 vertices, 1470 m of kerb (about 1470 instances at 1 m)"
   },
   {
    "section": "cheap",
    "check": "circuit data is small",
    "ok": true,
-   "detail": "134 KB uncompressed"
+   "detail": "136 KB uncompressed"
   },
   {
    "section": "cheap",
