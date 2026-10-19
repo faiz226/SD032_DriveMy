@@ -43,5 +43,8 @@ export const SWIFT_2022 = {
     radius: 0.18,
     speedo: { at: [0.8215, 0.5985] as [number, number], zeroDeg: 88.3, degPerUnit: 1.2497, max: 220 },
     tacho: { at: [0.1731, 0.6037] as [number, number], zeroDeg: 86.4, degPerUnit: 0.034693, max: 8000 },
+    rim: 0.0488,                                            // the painted dials' outer rim, metres (fitted)
+    rings: { material: 'Stiker_Silver', radius: 0.2 },      // the silver rings round the dials, 55 mm proud
+    bezel: 'Sticker_Plas',                                  // the faceted bezel inside them: the dial's real opening
   },
 };

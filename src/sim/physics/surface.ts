@@ -27,19 +27,27 @@ export function flatFace(body: THREE.Object3D, pick: SurfacePick, eye: readonly 
   body.updateMatrixWorld(true);
   const toBody = body.matrixWorld.clone().invert();
   const pts: THREE.Vector3[] = [];
+  const srcUv: number[] = [];   // each point's own texture coordinates, into the material's map
+  let map: THREE.Texture | null = null;
   const tri = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
   const mid = new THREE.Vector3();
   body.traverse((o) => {
     const mesh = o as THREE.Mesh;
-    if (!mesh.isMesh || (mesh.material as THREE.Material).name !== pick.material) return;
+    const material = mesh.material as THREE.MeshStandardMaterial;
+    if (!mesh.isMesh || material.name !== pick.material) return;
+    map ??= material.map ?? null;
     const m = toBody.clone().multiply(mesh.matrixWorld);
     const pos = mesh.geometry.attributes.position;
+    const uvs = mesh.geometry.attributes.uv;
     const index = mesh.geometry.index;
     const count = index ? index.count : pos.count;
     for (let t = 0; t < count; t += 3) {
-      for (let k = 0; k < 3; k++) tri[k].fromBufferAttribute(pos, index ? index.getX(t + k) : t + k).applyMatrix4(m);
+      const at = [0, 1, 2].map((k) => (index ? index.getX(t + k) : t + k));
+      for (let k = 0; k < 3; k++) tri[k].fromBufferAttribute(pos, at[k]).applyMatrix4(m);
       mid.copy(tri[0]).add(tri[1]).add(tri[2]).divideScalar(3);
-      if (mid.distanceTo(centre) <= pick.radius) pts.push(...tri.map((p) => p.clone()));
+      if (mid.distanceTo(centre) > pick.radius) continue;
+      pts.push(...tri.map((p) => p.clone()));
+      for (const i of at) srcUv.push(uvs ? uvs.getX(i) : 0, uvs ? uvs.getY(i) : 0);
     }
   });
   if (pts.length < 3) return null;
@@ -94,5 +102,25 @@ export function flatFace(body: THREE.Object3D, pick: SurfacePick, eye: readonly 
     return ctr.clone().addScaledVector(right, lo[0] + u * span[0]).addScaledVector(up, lo[1] + v * span[1]);
   };
 
-  return { geometry, width: span[0], height: span[1], right, up, normal, pointAt };
+  /** The point at unwrap (u, v) on the part's fitted plane, moved `depth` metres along its normal, toward the eye. */
+  const planePoint = (u: number, v: number, depth = 0) =>
+    ctr.clone().addScaledVector(right, lo[0] + u * span[0]).addScaledVector(up, lo[1] + v * span[1]).addScaledVector(normal, depth);
+
+  /** A place in the plane of the part (car frame) as unwrap coordinates: u left to right, v bottom to top. */
+  const toUnwrap = (p: THREE.Vector3): [number, number] => {
+    d.subVectors(p, ctr);
+    return [(d.dot(right) - lo[0]) / span[0], (d.dot(up) - lo[1]) / span[1]];
+  };
+
+  return {
+    geometry, width: span[0], height: span[1], right, up, normal, centre: ctr, pointAt, planePoint, toUnwrap,
+    /** The part laid flat: positions are unwrap coordinates (z = 0), uvs its own, for re-drawing its texture flat. */
+    flat: () => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts.flatMap((_, i) => [uv[i * 2], uv[i * 2 + 1], 0])), 3));
+      g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(srcUv), 2));
+      return g;
+    },
+    map: map as THREE.Texture | null,
+  };
 }
