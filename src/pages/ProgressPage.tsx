@@ -165,7 +165,7 @@ export function ProgressPage() {
               </div>
             ) : (
               <>
-                <div className="text-3xl font-bold font-mono font-tabular-nums text-primary">
+                <div className="text-3xl font-bold type-figure text-primary">
                   {theory ? `${Math.round(theory.percentage)}%` : "0%"}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
@@ -185,7 +185,7 @@ export function ProgressPage() {
                 <Skeleton className="h-9 w-16" />
               </div>
             ) : (
-              <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
+              <div className="text-3xl font-bold type-figure text-foreground">
                 {(quiz?.count || 0) + (mock?.count || 0) + (sim?.completed || 0)}
               </div>
             )}
@@ -201,7 +201,7 @@ export function ProgressPage() {
                 <Skeleton className="h-9 w-16" />
               </div>
             ) : (
-              <div className={`text-3xl font-bold font-mono font-tabular-nums ${mock && mock.passRate >= 84 ? "text-success" : "text-warning"}`}>
+              <div className={`text-3xl font-bold type-figure ${mock && mock.passRate >= 84 ? "text-success" : "text-warning"}`}>
                 {mock ? `${Math.round(mock.passRate)}%` : "0%"}
               </div>
             )}
@@ -217,7 +217,7 @@ export function ProgressPage() {
                 <Skeleton className="h-9 w-24" />
               </div>
             ) : (
-              <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
+              <div className="text-3xl font-bold type-figure text-foreground">
                 {(() => {
                   const total = (quiz?.totalDuration || 0) + (mock?.totalDuration || 0) + (sim?.totalDuration || 0);
                   return `${Math.floor(total / 3600)}h ${Math.floor((total / 60) % 60)}m`;
@@ -256,7 +256,7 @@ export function ProgressPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-4xl font-bold font-mono font-tabular-nums text-primary">{quiz ? Math.round(quiz.average) : 0}%</p>
+                  <p className="text-4xl font-bold type-figure text-primary">{quiz ? Math.round(quiz.average) : 0}%</p>
                   <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
                     {t("progress.bestScore")}: <span className="font-semibold text-foreground">{quiz?.best || 0}%</span>
                   </div>
@@ -301,7 +301,7 @@ export function ProgressPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-4xl font-bold font-mono font-tabular-nums text-primary">{mock ? Math.round(mock.average) : 0}%</p>
+                  <p className="text-4xl font-bold type-figure text-primary">{mock ? Math.round(mock.average) : 0}%</p>
                   <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
                     {t("progress.bestScore")}: <span className="font-semibold text-foreground">{mock?.best || 0}%</span>
                   </div>
@@ -346,7 +346,7 @@ export function ProgressPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-4xl font-bold font-mono font-tabular-nums text-primary">{sim ? Math.round(sim.averageScore) : 0}%</p>
+                  <p className="text-4xl font-bold type-figure text-primary">{sim ? Math.round(sim.averageScore) : 0}%</p>
                   <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
                     {t("progress.maneuversAttempted")}: <span className="font-semibold text-foreground">{t("progress.maneuversCount", { completed: sim?.completed || 0, total: 8 })}</span>
                   </div>

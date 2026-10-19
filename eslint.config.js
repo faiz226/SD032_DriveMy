@@ -12,6 +12,8 @@ export default defineConfig([
     'lighthouse-report.html',
     '**/*.report.html',
     '.agents/**',
+    '.claude/**',
+    'reports/coverage/**',
     // Stray editor backups left at the repo root. Not imported by anything and
     // not valid UTF-8, so ESLint reports a parse error and fails the build.
     // These should be deleted outright — see the repo-hygiene item in TechStack.md.
@@ -32,6 +34,7 @@ export default defineConfig([
     },
     languageOptions: {
       globals: globals.browser,
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
     },
     rules: {
       // Keep the core hooks rules, but avoid React Compiler-specific constraints

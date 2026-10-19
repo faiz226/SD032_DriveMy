@@ -108,7 +108,7 @@ export const en = {
   "dashboard.highestMockScore":    "Highest mock score",
   "dashboard.maneuversPractised":  "Maneuvers practised",
   "dashboard.overallReadiness":    "Overall readiness score",
-  "dashboard.readinessFormula":    "Based on simulations (40%), quiz scores (30%), and mock tests (30%).",
+  "dashboard.readinessFormula":    "Based on mock tests (45%), quiz scores (25%), theory (15%), and simulations (15%). Learning progress does not verify licence eligibility.",
   "dashboard.noActivityDesc":      "Complete a quiz or simulation to see your history here.",
 
   // ── Quiz ───────────────────────────────────────────────────────────────

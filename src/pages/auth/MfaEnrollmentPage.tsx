@@ -113,7 +113,7 @@ export function MfaEnrollmentPage() {
       </div>
 
       {error && (
-        <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 rounded-md">
+        <div role="alert" className="p-3 text-sm text-destructive bg-card border border-destructive rounded-md">
           {error}
         </div>
       )}

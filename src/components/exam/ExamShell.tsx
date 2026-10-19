@@ -1,3 +1,4 @@
+import { SpeechControl } from "@/components/shared/SpeechControl";
 // The exam room is a Jalan surface, so it brings Jalan's type with it. Routes
 // that have not converted do not import this and pay nothing for it.
 import "@/styles/jalan-type.css";
@@ -603,6 +604,7 @@ export function ExamShell({
                 ? question.question_en || question.question_ms
                 : question.question_ms || question.question_en}
             </h1>
+            <SpeechControl key={`${question.id}-${language}`} text={[(language === "en" ? question.question_en || question.question_ms : question.question_ms || question.question_en), ...optionsEn.map((option, index) => `${String.fromCharCode(65 + index)}. ${language === "ms" ? optionsMs[index] || option : option || optionsMs[index]}`)].filter(Boolean).join(". ")} />
             {language === "en" && !question.question_en && (
               <p className="type-label mt-2 text-sm italic" style={muted}>(English translation unavailable)</p>
             )}
@@ -689,6 +691,7 @@ export function ExamShell({
                     ? question.explanation_en || question.explanation_ms
                     : question.explanation_ms || question.explanation_en}
                 </p>
+                <SpeechControl kind="explanation" text={(language === "en" ? question.explanation_en || question.explanation_ms : question.explanation_ms || question.explanation_en) ?? ""} />
               </div>
             )}
           </div>

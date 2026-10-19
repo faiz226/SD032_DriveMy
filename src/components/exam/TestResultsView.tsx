@@ -1,3 +1,4 @@
+import { SpeechControl } from "@/components/shared/SpeechControl";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy, XCircle, CheckCircle, CaretDown, CaretUp, ArrowCounterClockwise, Download, House, FunnelSimple } from "phosphor-react";
@@ -15,8 +16,6 @@ import { DonutRing } from "@/components/ui/donut-ring";
 
 import type { ExamResult } from "./ExamShell";
 import type { TranslationKey } from "@/lib/translations";
-import confetti from "canvas-confetti";
-import { useEffect } from "react";
 
 interface TestResultsViewProps {
   result: ExamResult;
@@ -45,17 +44,6 @@ export function TestResultsView({
   const passed = mode === "mock"
     ? result.score >= MOCK_PASS_MARK
     : result.percentage >= 70;
-
-  // Confetti on pass
-  useEffect(() => {
-    if (passed) {
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 },
-      });
-    }
-  }, [passed]);
 
   // Category breakdown
   const categoryBreakdown = useMemo(() => {
@@ -313,6 +301,7 @@ export function TestResultsView({
                       {explanation && (
                         <div className="p-3 rounded-md bg-accent border border-border text-xs text-muted-foreground">
                           <span className="font-medium text-foreground">{t("quiz.explanation")}:</span> {explanation}
+                          <SpeechControl kind="explanation" text={explanation} />
                         </div>
                       )}
                     </div>

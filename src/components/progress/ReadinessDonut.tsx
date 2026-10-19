@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from "recharts";
+import { readinessContributions } from "@/lib/readiness";
 import { useLanguage } from "@/hooks/useLanguage";
 
 import { useChartColors } from "@/hooks/useChartColors";
@@ -12,17 +13,18 @@ interface ReadinessDonutProps {
   status: string;
 }
 
-export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite, status }: ReadinessDonutProps) {
-  const { t } = useLanguage();
+export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite }: ReadinessDonutProps) {
+  const { t, language } = useLanguage();
+  const contributions = readinessContributions({theory: theoryPct, quiz: quizPct, mock: mockPct, sim: simPct});
   const colors = useChartColors();
 
   const hasData = composite > 0;
 
   const chartData = hasData ? [
-    { name: t("progress.chart.theory"), value: theoryPct * 0.1 },
-    { name: t("progress.chart.quiz"), value: quizPct * 0.2 },
-    { name: t("progress.chart.mockTest"), value: mockPct * 0.3 },
-    { name: t("progress.chart.simulations"), value: simPct * 0.4 },
+    { name: t("progress.chart.theory"), value: contributions.theory },
+    { name: t("progress.chart.quiz"), value: contributions.quiz },
+    { name: t("progress.chart.mockTest"), value: contributions.mock },
+    { name: t("progress.chart.simulations"), value: contributions.sim },
   ] : [
     { name: "Empty", value: 100 }
   ];
@@ -49,8 +51,7 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite,
               outerRadius={90}
               paddingAngle={2}
               dataKey="value"
-              animationBegin={0}
-              animationDuration={800}
+              isAnimationActive={false}
               stroke="none"
             >
               {chartData.map((item, index) => (
@@ -59,11 +60,11 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite,
               <Label
                 value={`${Math.round(composite)}%`}
                 position="centerBottom"
-                className="text-4xl font-bold font-mono font-tabular-nums fill-foreground"
+                className="text-4xl font-bold type-figure fill-foreground"
                 dy={-10}
               />
               <Label
-                value={status}
+                value={language === "ms" ? "Kemajuan pembelajaran" : "Learning progress"}
                 position="centerTop"
                 className="text-sm fill-muted-foreground"
                 dy={15}
@@ -72,18 +73,18 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite,
             {hasData && (
               <Tooltip 
                 formatter={(val, name) => [`${Number(val ?? 0).toFixed(1)}%`, name]}
-                contentStyle={{ backgroundColor: colors.card, borderColor: colors.border, borderRadius: "8px" }}
+                contentStyle={{ backgroundColor: colors.card, borderColor: colors.border, borderRadius: "var(--radius)" }}
                 itemStyle={{ color: colors.foreground }}
               />
             )}
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex justify-center gap-4 mt-2">
+      <div className="flex flex-wrap justify-center gap-4 mt-2">
         {hasData ? chartData.map((d, index) => (
           <div key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
-            {d.name}
+            {d.name}: {d.value.toFixed(1)}%
           </div>
         )) : (
           <div className="flex gap-4">

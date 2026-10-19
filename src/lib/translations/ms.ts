@@ -109,7 +109,7 @@ export const ms: Record<TranslationKey, string> = {
   "dashboard.highestMockScore":    "Skor mock tertinggi",
   "dashboard.maneuversPractised":  "Manuver dipraktikkan",
   "dashboard.overallReadiness":    "Skor kesediaan keseluruhan",
-  "dashboard.readinessFormula":    "Berdasarkan simulasi (40%), skor kuiz (30%), dan ujian mock (30%).",
+  "dashboard.readinessFormula":    "Berdasarkan ujian percubaan (45%), skor kuiz (25%), teori (15%), dan simulasi (15%). Kemajuan pembelajaran tidak mengesahkan kelayakan lesen.",
   "dashboard.noActivityDesc":      "Selesaikan kuiz atau simulasi untuk melihat sejarah anda di sini.",
 
   // ── Quiz ───────────────────────────────────────────────────────────────

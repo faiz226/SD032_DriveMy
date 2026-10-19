@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { useUpdateTheoryProgress } from "@/hooks/useProgress";
@@ -11,7 +11,6 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { ShieldWarning, BookmarkSimple } from "phosphor-react";
 import type { TranslationKey } from "@/lib/translations";
-import confetti from "canvas-confetti";
 
 const SCENARIOS: Scenario[] = [
   {
@@ -88,7 +87,7 @@ const ETHICS_CASE_KEYS: TranslationKey[] = [
 ];
 
 export function SafetyPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuthStore();
   const { mutateAsync: updateProgress } = useUpdateTheoryProgress();
 
@@ -106,25 +105,6 @@ export function SafetyPage() {
 
   // Blended final score: defensive (max 80) + ethics avg mapped to 0-20
   const blendedScore = Math.min(score + Math.round((ethicsTotal / ETHICS_CASE_KEYS.length) * 2), 100);
-
-  // Fire confetti when results phase is reached and blendedScore >= 60
-  useEffect(() => {
-    let animationFrameId: number;
-    if (phase === "results" && blendedScore >= 60) {
-      const end = Date.now() + 2.5 * 1000;
-      const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
-      const frame = () => {
-        if (Date.now() > end) return;
-        confetti({ particleCount: 2, angle: 60, spread: 55, startVelocity: 60, origin: { x: 0, y: 0.5 }, colors });
-        confetti({ particleCount: 2, angle: 120, spread: 55, startVelocity: 60, origin: { x: 1, y: 0.5 }, colors });
-        animationFrameId = requestAnimationFrame(frame);
-      };
-      frame();
-    }
-    return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
-  }, [phase, blendedScore]);
 
   const handleScenarioNext = (isCorrect: boolean) => {
     if (isCorrect) setScore((prev) => prev + 16); // 5 scenarios × 16 pts = 80 pts max
@@ -243,7 +223,7 @@ export function SafetyPage() {
                     <div className="text-xl font-bold font-mono text-primary font-tabular-nums">{ethicsValue.toFixed(2)}</div>
                   </div>
                   <div className="p-4 rounded-md bg-muted border border-border">
-                    <div className="text-xs text-muted-foreground mb-1">{t("safety.community.avg", { avg: mockAvg.toFixed(2) })}</div>
+                    <div className="text-xs text-muted-foreground mb-1">{language === "ms" ? `Contoh perbandingan: ${mockAvg.toFixed(2)}` : `Illustrative comparison: ${mockAvg.toFixed(2)}`}</div>
                     <div className="text-xl font-bold font-mono text-muted-foreground font-tabular-nums">{mockAvg.toFixed(2)}</div>
                   </div>
                 </div>

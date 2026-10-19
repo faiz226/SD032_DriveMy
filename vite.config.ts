@@ -1,4 +1,5 @@
-import { defineConfig } from "vite";
+import { handleSpeech } from "./api/speech";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
@@ -22,6 +23,13 @@ export default defineConfig({
   },
 
   plugins: [
+    {
+      name: "local-speech-api",
+      configureServer(server) {
+        const env = loadEnv(server.config.mode, server.config.root, "");
+        server.middlewares.use("/api/speech", (req, res) => { void handleSpeech(req, res, env); });
+      },
+    },
     // ─── React with SWC (fast refresh + transform) ───────────────────────
     react(),
 

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -205,7 +206,7 @@ export function TheoryPage() {
     setLearned((prev) => {
       const nowLearned = !prev[id];
       if (nowLearned) {
-        toast.success(lang === 'en' ? 'Marked as learned! ⭐' : 'Ditandai sebagai dipelajari! ⭐', { duration: 1500 });
+        toast.success(lang === 'en' ? 'Marked as learned.' : 'Ditandai sebagai dipelajari.', { duration: 1500 });
       }
       return { ...prev, [id]: nowLearned };
     });
@@ -214,10 +215,6 @@ export function TheoryPage() {
   const toggleFlip = (id: string) => {
     setFlipped((prev) => {
       const nowFlipped = !prev[id];
-      // Auto-mark as learned on first flip to reveal the answer
-      if (nowFlipped && !learned[id]) {
-        setLearned((l) => ({ ...l, [id]: true }));
-      }
       return { ...prev, [id]: nowFlipped };
     });
   };
@@ -246,8 +243,8 @@ export function TheoryPage() {
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b shadow-sm pt-4 px-4 md:px-8 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold font-heading">Theory Learning</h1>
-            <p className="text-sm text-muted-foreground">Interactive road rules and signs guide.</p>
+            <h1 className="text-2xl font-bold font-heading">{lang === "en" ? "Theory learning" : "Pembelajaran teori"}</h1>
+            <p className="text-sm text-muted-foreground">{lang === "en" ? "Review road rules and signs." : "Ulang kaji peraturan dan tanda jalan."}</p>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -257,6 +254,7 @@ export function TheoryPage() {
                 type="text"
                 placeholder={lang === 'en' ? "Search topics..." : "Cari topik..."}
                 className="w-full h-10 pl-9 pr-4 rounded-xl border bg-muted/40 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label={lang === "en" ? "Search learning topics" : "Cari topik pembelajaran"}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -266,6 +264,7 @@ export function TheoryPage() {
       </div>
 
       <div className="px-4 md:px-8 mt-6">
+        {search && !(activeTab === "signs" ? filteredSigns.length : activeTab === "rules" ? trafficRules.filter(r => `${r.title} ${r.titleMs}`.toLowerCase().includes(search.toLowerCase())).length : safetyPrinciples.filter(p => `${p.title} ${p.titleMs}`.toLowerCase().includes(search.toLowerCase())).length) && <div role="status" className="plate p-4 mb-4"><p>{lang === "en" ? "No topics match your search." : "Tiada topik sepadan dengan carian anda."}</p><Button variant="outline" className="mt-3" onClick={() => setSearch("")}>{lang === "en" ? "Clear search" : "Kosongkan carian"}</Button></div>}
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="sticky top-[73px] sm:top-[73px] z-10 bg-background/95 backdrop-blur py-2 -mx-4 px-4 md:mx-0 md:px-0">
             <TabsList className="w-full sm:w-auto overflow-x-auto justify-start inline-flex flex-nowrap hide-scrollbar">
@@ -313,12 +312,12 @@ export function TheoryPage() {
                     {categorySigns.map((sign) => (
                       <div
                         key={sign.id}
+                        data-sign-card
                         className="relative min-w-[240px] w-[70vw] md:w-auto md:min-w-0 snap-center h-[280px] perspective-1000 cursor-pointer group"
-                        onClick={() => toggleFlip(sign.id)}
                       >
-                        <div className={`w-full h-full transition-transform duration-700 ease-out-quart transform-style-3d ${flipped[sign.id] ? 'rotate-y-180' : 'group-hover:-translate-y-2 group-hover:shadow-xl rounded-xl'}`}>
+                        <div className={`w-full h-full transition-transform [transition-duration:var(--motion-standard)] [transition-timing-function:var(--ease-jalan)] motion-reduce:transition-none transform-style-3d ${flipped[sign.id] ? 'rotate-y-180' : ''}`}>
                           {/* Front */}
-                          <Card className="rounded-xl border-border/60 text-card-foreground duration-300 hover:shadow-lg absolute inset-0 backface-hidden flex flex-col items-center justify-center bg-card border hover:border-primary/50 transition-colors shadow-sm overflow-hidden">
+                          <Card inert={!!flipped[sign.id]} aria-hidden={!!flipped[sign.id]} className="rounded-xl border-border/60 text-card-foreground duration-300 hover:shadow-lg absolute inset-0 backface-hidden flex flex-col items-center justify-center bg-card border hover:border-primary/50 transition-colors shadow-sm overflow-hidden">
                             <button
                               onClick={(e) => toggleLearned(e, sign.id)}
                               className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center hover:bg-muted transition-colors hover:scale-110 active:scale-95 duration-200"
@@ -327,16 +326,20 @@ export function TheoryPage() {
                               <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-muted-foreground hover:text-yellow-400'}`} aria-hidden="true" />
                             </button>
                             <div className="w-full flex-1 flex items-center justify-center p-6 bg-muted/10 transition-colors duration-300 group-hover:bg-muted/30">
-                              <img src={sign.img} alt={sign.name} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-500 ease-out-back" loading="lazy" />
+                              <img src={sign.img} alt={sign.name} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md transition-transform duration-500 ease-out-back" loading="lazy" />
                             </div>
-                            <div className="w-full p-4 border-t bg-background/95 backdrop-blur flex items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors duration-300">
+                            <button type="button" onClick={event => {
+                              const card = event.currentTarget.closest('[data-sign-card]');
+                              toggleFlip(sign.id);
+                              requestAnimationFrame(() => card?.querySelector<HTMLButtonElement>('button[data-flip]:not([inert] button)')?.focus());
+                            }} data-flip className="w-full p-4 border-t bg-background/95 backdrop-blur flex items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors duration-300">
                               <span className="text-sm font-semibold text-primary">{lang === 'en' ? 'Tap to reveal' : 'Ketik untuk jawapan'}</span>
-                              <Repeat className="w-4 h-4 text-primary group-hover:rotate-180 transition-transform duration-500" aria-hidden="true" />
-                            </div>
+                              <Repeat className="w-4 h-4 text-primary transition-transform duration-500" aria-hidden="true" />
+                            </button>
                           </Card>
 
                           {/* Back face — star marks as learned */}
-                          <Card className="rounded-xl border border-border/60 transition-all duration-300 hover:shadow-lg absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-primary text-primary-foreground border-none p-5 shadow-lg">
+                          <Card inert={!flipped[sign.id]} aria-hidden={!flipped[sign.id]} className="rounded-xl border border-border/60 transition-all duration-300 hover:shadow-lg absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-primary text-primary-foreground border-none p-5 shadow-lg">
                             <div className="flex items-center justify-between mb-4">
                               <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-none transition-colors">
                                 {category}
@@ -357,9 +360,13 @@ export function TheoryPage() {
                             <p className="text-sm leading-relaxed text-primary-foreground/90 overflow-y-auto pr-1">
                               {lang === 'en' ? sign.desc : sign.descMs}
                             </p>
-                            <div className="mt-auto pt-4 flex items-center justify-center gap-2 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-200">
-                              <Repeat className="w-3 h-3 group-hover:-rotate-180 transition-transform duration-500" aria-hidden="true" /> {lang === 'en' ? 'Tap to flip back' : 'Ketik untuk pusing'}
-                            </div>
+                            <button type="button" onClick={event => {
+                              const card = event.currentTarget.closest('[data-sign-card]');
+                              toggleFlip(sign.id);
+                              requestAnimationFrame(() => card?.querySelector<HTMLButtonElement>('button[data-flip]:not([inert] button)')?.focus());
+                            }} data-flip className="mt-auto pt-4 flex items-center justify-center gap-2 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-200">
+                              <Repeat className="w-3 h-3 transition-transform duration-500" aria-hidden="true" /> {lang === 'en' ? 'Tap to flip back' : 'Ketik untuk pusing'}
+                            </button>
                           </Card>
                         </div>
                       </div>

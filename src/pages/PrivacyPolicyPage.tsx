@@ -60,6 +60,10 @@ export function PrivacyPolicyPage() {
         </section>
 
         <section>
+          <h2 className="text-xl font-semibold mb-2 text-foreground">Optional narration</h2>
+          <p>When you press Listen, the displayed learning text is sent to Fish Audio to generate speech. DriveMy does not send your email address, account details or test score with that text. We record a daily request count against your account to limit audio usage. Audio does not start automatically.</p>
+        </section>
+        <section>
           <h2 className="text-xl font-semibold mb-2 text-foreground">6. Your Rights</h2>
           <p>
             You have the right to access, export and delete your personal data at
