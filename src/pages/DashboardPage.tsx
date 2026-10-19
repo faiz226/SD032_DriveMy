@@ -32,7 +32,7 @@ export function DashboardPage() {
     : !mock.data?.count ? { to: "/mock-test", title: ms ? "Cuba ujian percubaan KPP" : "Try a KPP mock test", detail: ms ? "50 soalan · 45 minit" : "50 questions · 45 minutes" }
     : rpkDone < RPK_TOPICS.length ? { to: "/rpk-rsm", title: ms ? "Sambung RPK / RSM" : "Continue RPK / RSM", detail: ms ? "Semak kenderaan dan persediaan memandu." : "Review vehicle checks and driving preparation." }
     : { to: "/quizzes", title: ms ? "Latih tubi teori" : "Practise theory", detail: ms ? "Pilih bahagian untuk diulang kaji." : "Choose a section to review." };
-  return <div className="jalan-container space-y-5">
+  return <div className="jalan-container space-y-4">
     <ReadinessRoad value={readiness.data?.composite ?? 0}/>
     <section aria-labelledby="learning-title"><div className="mb-3 flex flex-wrap items-baseline justify-between gap-2"><h2 id="learning-title" className="type-display text-xl">{ms ? "Bay pembelajaran" : "Learning bays"}</h2><p className="text-sm text-muted-foreground">{ms ? "Pilih latihan untuk disambung." : "Choose where to continue."}</p></div>
       <div className="learning-grid">

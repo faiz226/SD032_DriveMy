@@ -24,7 +24,7 @@ export function ReadinessRoad({ value }: { value: number }) {
         <span className="absolute right-0 top-0" data-gate={licenceGates.P}><LPlate letter="P" label={unknown}/></span>
         <div className="relative h-10 border-y border-[rgb(var(--paint)/.35)] flex items-center" role="progressbar" aria-label={ms ? "Skor pembelajaran" : "Learning score"} aria-valuemin={0} aria-valuemax={100} aria-valuenow={score}>
           <div className="w-full border-t-2 border-dashed border-[rgb(var(--paint))]"/>
-          <div className="absolute inset-x-0 top-1/2 h-1 origin-left bg-[rgb(var(--awas))] motion-safe:transition-transform [transition-duration:var(--motion-progress)] [transition-timing-function:var(--ease-jalan)]" style={{ transform: `scaleX(${score/100})` }}/>
+          <div className="absolute inset-x-0 top-1/2 h-0 origin-left border-t-2 border-dashed border-[rgb(var(--awas))] motion-safe:transition-transform [transition-duration:var(--motion-progress)] [transition-timing-function:var(--ease-jalan)]" style={{ transform: `scaleX(${score/100})` }}/>
           <div className="absolute inset-x-0 top-0 motion-safe:transition-transform [transition-duration:var(--motion-progress)] [transition-timing-function:var(--ease-jalan)]" style={{ transform: `translateX(${score}%)` }}><Car size={36} weight="fill" aria-hidden="true" className="-translate-x-1/2 bg-[rgb(var(--asphalt))] text-[rgb(var(--awas))]"/></div>
         </div>
         <div aria-hidden="true" className="type-figure relative mt-2 text-sm"><span className="absolute left-0">0</span><span className="absolute left-[60%] -translate-x-1/2">60</span><span className="absolute right-0">100</span></div>
