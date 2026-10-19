@@ -16,6 +16,7 @@ import type { Mode, SimEvent, StationId, VehicleSample } from '../contracts';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
 import { useDriver, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
+import { OtherCars } from '../physics/OtherCars';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import type { MirrorId } from '../physics/mirrors';
 import { TIERS, type TierPref, useQualityPref, useTier } from '../quality';
@@ -194,6 +195,7 @@ export function SimulatorPage() {
           <Physics timeStep={1 / 60} paused={paused || phase !== 'drive'}>
             <World tier={tier} />
             <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
+            <OtherCars tier={tier} />
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
           <WhereNext />

@@ -215,7 +215,7 @@ def corridor_polys(pts, s0, s1):
 # at y = middle; 'ns' runs north-south at x = middle. lane_centres refines each from the kerbs.
 ROADS = [
     ('ew', 25.6, 36.0, 111.0),     # the spine road, through the middle
-    ('ew', 55.5, 36.0, 114.0),     # the top road, under the hill
+    ('ew', 55.5, 36.0, 91.0),      # the top road, under the hill; the twin ramp takes its east end
     ('ew', 3.0, 46.0, 110.0),      # the bottom road
     ('ns', 40.3, 3.0, 57.0),       # the west road
     ('ns', 52.3, 27.0, 54.0),      # the lanes between the upper islands, west to east
@@ -474,6 +474,16 @@ def main():
     hx0, hx1 = M(478, 0)[0], M(760, 0)[0]
     hy, hh = L['hill_y'], v('hill_w') / 2
     hill_walls = [rect(hx0, hy + hh, hx1, hy + hh + ww), rect(hx0, hy - hh - ww, hx1, hy - hh)]
+    # Twin tracks (the owner, 20 Oct): a second hill strip beside ours to the north, and a second ramp beside
+    # ours to the south, each sharing the wall between them, so another learner drives the same test beside
+    # us, facing the same way. The north one needs the yard's edge pushed out along the hill; the south one
+    # takes the east end of the top road, which the route never drives.
+    hill_twin_y = hy + v('hill_w') + ww
+    ramp_twin_y = ramp_y - v('ramp_w') - ww
+    hill_walls.append(rect(hx0, hill_twin_y + hh, hx1, hill_twin_y + hh + ww))
+    ramp_walls += [rect(foot_x, ramp_twin_y - hw - ww, end_x + ww, ramp_twin_y - hw),
+                   rect(end_x, ramp_twin_y - hw - ww, end_x + ww, ramp_twin_y + hw)]
+    yard_bump = rect(hx0 - 4.0, hy, hx1 + 4.0, hill_twin_y + hh + ww + 1.2)
 
     xs = [x for x, _ in boundary]
     ys = [y for _, y in boundary]
@@ -481,6 +491,7 @@ def main():
     site = [min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad + 4.0]
     world = World(*site, res=0.05)
     world.add(boundary)
+    world.add(yard_bump)
     for k, poly in islands.items():
         world.cut(poly)
     for poly in z_legs + z_fill + s_lane:
@@ -515,6 +526,10 @@ def main():
     ramp = dict(id='ramp', start=[foot_x, ramp_y], heading_deg=0.0, width=v('ramp_w'),
                 profile=[[0.0, 0.0], [v('ramp_up'), v('ramp_rise')], [v('ramp_up') + v('ramp_top'), v('ramp_rise')]],
                 sides=sides + '; the platform ends at a wall')
+    hill_twin = dict(hill, id='hill-twin', start=[hill['start'][0], hill_twin_y],
+                     sides=sides + '; the twin track north of ours (the owner, 20 Oct), not marked')
+    ramp_twin = dict(ramp, id='ramp-twin', start=[foot_x, ramp_twin_y],
+                     sides=sides + '; the platform ends at a wall; the twin track south of ours (the owner, 20 Oct), not marked')
 
     # ------------------------------------------------------------ stations
     def s_of(name):
@@ -595,6 +610,9 @@ def main():
                 keep.add(st[key])
     for poly in z_legs + z_fill:
         keep.add(poly)
+    for sl in (hill, ramp, hill_twin, ramp_twin):                 # no lines on any slope, a twin's included
+        length = sl['profile'][-1][0]
+        keep.add(rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0))
     keep.finish()
     centre_lines, roads = lane_centres(world, keep.mask)
     for r in roads:
@@ -614,6 +632,14 @@ def main():
                     size=[round(abs(x1 - x0), 2), round(abs(y1 - y0), 2)], heading_deg=0.0)
     booths = [box(974, 217, 1024, 252), box(474, 360, 500, 400), box(473, 543, 505.5, 570.5), box(1095, 595, 1140, 625)]
     office = box(320, -10, 440, 25)
+    # the other learners (the owner, 20 Oct): stopped mid-test on the twin tracks, facing the way we do. `at` is
+    # the car's centre (the wheelbase's middle): on the hill with its front tyres on the stop band's line, on
+    # the ramp 0.6 m short of where a pole would stand
+    wb, fo = 2.45, 0.696
+    npc_cars = [
+        dict(on='hill-twin', at=[round(hill['start'][0] + v('hill_stop') * v('hill_up') - wb / 2, 3), round(hill_twin_y, 3)], heading_deg=0.0),
+        dict(on='ramp-twin', at=[round(end_x - v('ramp_pole_in') - 0.6 - fo - wb / 2, 3), round(ramp_twin_y, 3)], heading_deg=0.0),
+    ]
     spawn = dict(at=[round(L['spawn_x'], 3), round(L['hill_y'], 3)], heading_deg=0.0, handbrake=True)
 
     route = [[round(s, 3), round(x, 3), round(y, 3), round(math.degrees(h) % 360, 2), round(w, 3), tag]
@@ -632,14 +658,14 @@ def main():
         kerbs=dict(height=v('kerb_h'), width=v('kerb_w'),
                    placement='each ring is a pavement edge; the kerb sits on the grass side, inner face on the ring',
                    rings=[[[round(x, 3), round(y, 3)] for x, y in r] for r in rings]),
-        slopes=[hill, ramp],
+        slopes=[hill, ramp, hill_twin, ramp_twin],
         stations=stations,
         junctions=junctions,
         route=dict(columns=['s', 'x', 'y', 'heading_deg', 'width', 'tag'], samples=route, manoeuvres=t.jumps),
         obstacles=dict(poles=poles, cones=[]),
         markings=dict(centre_lines=[[[round(x, 3), round(y, 3)] for x, y in line] for line in centre_lines], dash=3.0, gap=3.0, width=0.12,
                       note='broken white centre lines on every two-way road (keep left); none on the stations'),
-        props=dict(booths=booths, office=office, fence=site),
+        props=dict(booths=booths, office=office, fence=site, npc_cars=npc_cars),
         spawn=spawn,
     )
     out = rnd(out)

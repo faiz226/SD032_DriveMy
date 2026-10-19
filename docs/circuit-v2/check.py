@@ -376,7 +376,7 @@ def main():
     kerb_len = sum(float(np.hypot(*np.diff(np.asarray(r), axis=0).T).sum()) for r in C['kerbs']['rings'])
     kerb_vertices = sum(len(r) for r in C['kerbs']['rings'])
     size_kb = os.path.getsize(args.circuit) / 1024
-    record('cheap', 'flat ground plus two slopes', len(C['slopes']) == 2, '%d slopes' % len(C['slopes']))
+    record('cheap', 'flat ground plus the hill and the ramp, each with its twin track', len(C['slopes']) == 4, '%d slopes' % len(C['slopes']))
     record('cheap', 'kerbs fit in one instanced mesh', kerb_vertices < 20000,
            '%d vertices, %.0f m of kerb (about %d instances at 1 m)' % (kerb_vertices, kerb_len, kerb_len))
     record('cheap', 'circuit data is small', size_kb < 400, '%.0f KB uncompressed' % size_kb)

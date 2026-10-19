@@ -41,7 +41,8 @@ export interface StationGeometry {
 }
 
 export interface Slope {
-  id: 'hill' | 'ramp';
+  /** The twins are the other learners' tracks beside ours (the owner, 20 Oct): scenery, never marked. */
+  id: 'hill' | 'ramp' | 'hill-twin' | 'ramp-twin';
   start: Vec2;
   heading_deg: number;
   width: number;
@@ -69,7 +70,11 @@ export interface CircuitData {
   obstacles: { poles: { station: StationId; at: Vec2; radius: number; height: number; base_z?: number; status: string }[]; cones: [] };
   /** Road markings: broken centre lines on the two-way roads (polylines), never on the stations. */
   markings?: { centre_lines: Vec2[][]; dash: number; gap: number; width: number; note?: string };
-  props: { booths: { centre: Vec2; size: Vec2; heading_deg: number }[]; office: { centre: Vec2; size: Vec2; heading_deg: number }; fence: number[] };
+  props: {
+    booths: { centre: Vec2; size: Vec2; heading_deg: number }[]; office: { centre: Vec2; size: Vec2; heading_deg: number }; fence: number[];
+    /** Other learners' cars, stopped mid-test on the twin tracks: `at` is the car's centre, the wheelbase's middle. */
+    npc_cars?: { on: string; at: Vec2; heading_deg: number }[];
+  };
   spawn: { at: Vec2; heading_deg: number; handbrake: boolean };
   parameters: Record<string, { value: unknown; source: string; note: string }>;
 }

@@ -226,12 +226,15 @@ export function buildWorld(c: CircuitData): WorldBuild {
     const onHill = c.route.samples.filter((q) => q[5] === 'hill-start');
     const ref = onHill.reduce((best, q) => (Math.abs(slopeLocal(hill, [q[1], q[2]]).across) < Math.abs(slopeLocal(hill, [best[1], best[2]]).across) ? q : best), onHill[0]);
     const s0 = ref[0] - slopeLocal(hill, [ref[1], ref[2]]).along;
-    const [ux, uy] = dir(rad(hill.heading_deg));
-    const w = hill.width / 2;
-    const pt = (along: number, across: number): Vec2 => [hill.start[0] + ux * along - uy * across, hill.start[1] + uy * along + ux * across];
     const a0 = band.s_from - s0;
     const a1 = band.s_to - s0;
-    paint.quad(at(pt(a0, -w), PAINT_LIFT), at(pt(a1, -w), PAINT_LIFT), at(pt(a1, w), PAINT_LIFT), at(pt(a0, w), PAINT_LIFT), YELLOW);
+    // ours, and the same band on the twin strip beside it, where the other learner stops
+    for (const strip_ of c.slopes.filter((s) => s.id === 'hill' || s.id === 'hill-twin')) {
+      const [ux, uy] = dir(rad(strip_.heading_deg));
+      const w = strip_.width / 2;
+      const pt = (along: number, across: number): Vec2 => [strip_.start[0] + ux * along - uy * across, strip_.start[1] + uy * along + ux * across];
+      paint.quad(at(pt(a0, -w), PAINT_LIFT), at(pt(a1, -w), PAINT_LIFT), at(pt(a1, w), PAINT_LIFT), at(pt(a0, w), PAINT_LIFT), YELLOW);
+    }
   }
   for (const g of c.stations) {
     if (!g.bay) continue;

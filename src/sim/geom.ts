@@ -167,6 +167,7 @@ export function slopeAt(c: CircuitData, rear: Vec2, heading: number, wheelbase: 
   const [hx, hy] = dir(heading);
   const front: Vec2 = [rear[0] + hx * wheelbase, rear[1] + hy * wheelbase];
   for (const slope of c.slopes) {
+    if (slope.id !== 'hill' && slope.id !== 'ramp') continue;   // the twins are scenery: the rules never see them
     const length = slope.profile[slope.profile.length - 1][0];
     const on = (p: Vec2) => {
       const l = slopeLocal(slope, p);
