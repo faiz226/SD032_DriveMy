@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   saveQuizResult,
+  saveSimulationResult,
   syncOfflineResults,
   clearUserResultsQueue,
   getUserPendingStatus,
@@ -12,6 +13,8 @@ import {
 } from "./results.service";
 import { newQueuedItem, isValidUUID, generateUUID } from "./offlineQueue";
 import { useAuthStore } from "@/stores/authStore";
+import { runRecord } from "@/sim/record";
+import type { SessionState } from "@/sim/contracts";
 
 // In-memory mock store for idb-keyval replicating atomic IndexedDB transaction semantics
 const memoryDb = new Map<string, unknown>();
@@ -745,6 +748,31 @@ describe("results.service (W01 rework remediation)", () => {
 
       vi.mocked(update).mockImplementation(realUpdate);
       vi.mocked(get).mockImplementation(realGet);
+    });
+  });
+  describe("simulator v2: an assessment run", () => {
+    const ended: SessionState = {
+      mode: "assessment", current: null, stations: [], demerits: 0, faults: [], ended: true, topDownSeconds: 0,
+      verdict: { pass: true, demerits: 0, failedStations: [], faults: [], topDownSeconds: 0 },
+    };
+
+    it("saved offline, then two syncs started together on reconnect, inserts one row under the run's id", async () => {
+      const inserted: Array<{ id: string; maneuver_id: string }> = [];
+      mockInsert.mockImplementation(async (row: { id: string; maneuver_id: string }) => {
+        inserted.push(row);
+        return { error: null };
+      });
+      const runId = generateUUID();
+      Object.defineProperty(navigator, "onLine", { value: false, configurable: true });
+      const saved = await saveSimulationResult(runRecord({ id: runId, userId: "user-alice", language: "en", state: ended, seconds: 300, rulesLabel: "x", car: "Swift" }));
+      expect((saved as { id: string }).id).toBe(OFFLINE_QUEUED_ID);
+
+      Object.defineProperty(navigator, "onLine", { value: true, configurable: true });
+      await Promise.all([syncOfflineResults("user-alice"), syncOfflineResults("user-alice")]);
+
+      expect(inserted).toHaveLength(1);
+      expect(inserted[0]).toMatchObject({ id: runId, maneuver_id: "full-circuit" });
+      expect(memoryDb.get("simulationQueue")).toEqual([]);
     });
   });
 });

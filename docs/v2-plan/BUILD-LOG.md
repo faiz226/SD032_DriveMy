@@ -252,3 +252,96 @@ ray-cast vehicle slides sideways a few millimetres a second while parked. The `v
 - Meshopt geometry: `@gltf-transform/cli` is not installed, and the Low tier meets its budget
   without it.
 - The mirror textures on the glb's own glass: optional in the spec.
+
+## WP4 (19 Oct): screens, verdict and results
+
+**What was built:**
+
+- `src/sim/ui/SimulatorPage.tsx`: the simulator at `/simulations/:id`, still behind the protected
+  routes.
+  - It is a full-screen layer above the app's navigation, as the exam room has its own shell. A
+    driving view needs the whole screen, especially on a phone held sideways.
+  - `/simulations/assessment` opens the assessment, and `/simulations/<station id>` opens practice
+    on that station.
+  - The world loads once. Choosing, restarting or switching a station moves the car and resets the
+    session; nothing reloads.
+  - A progress bar shows while the world and car load.
+  - A rotate prompt shows in portrait, and the run pauses.
+  - Focus loss pauses, through WP3's release.
+- `src/pages/Simulation3DView.tsx` now only re-exports the v2 page. The v1 page is gone, with its
+  manual pass button and its made-up completion time.
+- `src/sim/ui/run.ts`: the run store. It holds one rules session. The screens get a snapshot about
+  ten times a second, and at once whenever a station, a fault or the verdict changes. Each run gets
+  a fresh UUID.
+- **The HUD** (`Hud.tsx`):
+  - Station panel: the number and title, with the tip for 6 s after the station arms, then the
+    title alone.
+  - The station timer, and the demerit meter in assessment.
+  - Fault toasts, each with a synthesised tone and a small camera kick (`scene.tsx`); reduced
+    motion turns the kick off.
+  - Readouts: speed, D/R and the handbrake.
+  - The label "Practice rehearsal, not official marking", always visible under the interior mirror.
+  - The top-down toggle in both modes (T, a HUD button, or the touch button).
+  - In practice: restart the station, or pick another.
+  - The mirrors' three areas stay clear.
+- **"Where next":** a floating marker over the next station's entry on `route.samples`, shown until
+  the station arms.
+- **The verdict** (`Verdict.tsx`) is built only from `SessionState.verdict`.
+  - It shows pass or fail, the demerits against the line, the stations not cleared, the seconds
+    the top-down view was on, and whether the result saved.
+  - Each fault shows its station, a numbered marker on the minimap, the measured value against the
+    limit, one fix, and the rule's basis on request.
+  - The minimap (`Minimap.tsx`) is drawn from `circuit.json` the way `circuit-minimap.png` is.
+  - Buttons: try the assessment again, practise the failed station, or leave.
+- **Results** (`src/sim/record.ts`):
+  - Each assessment run is one versioned row: `maneuver_id` is `full-circuit`, and `attempt_data`
+    holds the schema (`drivemy.simrun/1`), the verdict and every station's status.
+  - The row's id is the run's UUID, which is the idempotency key. It is saved through
+    `saveSimulationResult`.
+  - Offline, the row is queued. The app's existing reconnect sync uploads it exactly once: the id
+    persists, the sync holds an in-flight lock, and a duplicate key is checked against the row.
+  - Practice runs are never saved.
+  - `expandSimRuns` lets the analytics read a run per station, so the readiness score and the
+    "x/8 completed" count stay truthful.
+- `SimulationsPage` gained an assessment card; the station cards open practice.
+- **Strings:** 40 new keys in both languages. The eight tips were rewritten to state only what is
+  measured, with no clutch; road merging's tip is the one the spec gives.
+- **Development only:** `/dev/sim/:id` shows the page without signing in (nothing saves), and
+  `/dev/sim?verdict=demo` shows the verdict screen with a sample failed run.
+
+**Tests (all passing):**
+
+- `run.test.ts` (3): a whole assessment fed through the run store by the kinematic driver clears
+  every station, and its verdict reports the top-down seconds. Practice starts at the station's
+  start, counts top-down time too, and restarts as a fresh run. A kerb contact makes one toast,
+  however long it lasts.
+- `Verdict.test.tsx` (5): the verdict renders only what the session decided, with every fault's
+  details and map marker. Its only buttons retry, practise or leave. The old manual pass is gone from
+  the route.
+- `record.test.ts` (3): the run record, its refusal without a verdict, and the per-station read-back.
+- `parity.test.ts` (3): English and Malay have the same keys; every key the simulator uses exists;
+  no tip mentions the clutch.
+- `TouchControls.test.tsx` (+1): the controls show at 800 × 360 with touch and a coarse pointer, and
+  stay hidden on a desktop with a mouse.
+- `results.service.test.ts` (+1): a run saved offline, then two syncs started together, inserts one
+  row under the run's id.
+
+**Decisions:**
+
+- **One record per run, not one per station.** It mirrors the real test, which is one run;
+  `expandSimRuns` gives the analytics their per-station view. Basis: the spec ("a versioned record")
+  and a truthful readiness score.
+- **The run's score is the share of stations cleared.** The column needs a number, and a
+  demerit-based score would hide a failed station. Basis: decided.
+- **The rule's basis text stays as `rules.json` writes it, in English, in both languages.** It is
+  the rule's source note, data rather than interface wording. Basis: decided.
+- **The where-next marker is `awas` yellow:** where to go next is progress, the meaning Jalan gives
+  that colour.
+
+**Not done:**
+
+- The v1 simulator's components (`SimulationHUD`, `SimulationResults`, `MobileControls`,
+  `JPJCircuit`) no longer have a route. They are left for WP6 to remove.
+- The hidden in-app browser pane draws about one frame a second, so the full drive could not be
+  clicked through there. The flow is proven headless instead: through the run store above, and with
+  real physics in WP3's scripted drive.

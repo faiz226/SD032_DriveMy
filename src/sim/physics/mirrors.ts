@@ -29,6 +29,12 @@ export const MIRRORS: MirrorSpec[] = [
 
 export const MIRROR_FAR = 60;
 
+/** The mirrors' sizes are for an 851 x 393 screen; this scales them with the screen. */
+export const mirrorScale = (w: number, h: number) => Math.min(1.6, Math.max(0.75, Math.min(w / 851, h / 393)));
+export const MIRROR_PAD = 10;
+/** Door mirrors sit this fraction of the screen height above the middle, clear of the touch controls. */
+export const DOOR_MIRROR_RISE = 0.06;
+
 export function mirrorCamera(m: MirrorSpec): THREE.PerspectiveCamera {
   const aspect = m.px[0] / m.px[1];
   const vfov = 2 * Math.atan(Math.tan(rad(m.hfovDeg) / 2) / aspect);

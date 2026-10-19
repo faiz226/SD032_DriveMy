@@ -5,9 +5,10 @@
  * surfaces content sits on, so they stay achromatic: the only saturated colour
  * on screen should belong to an actual JPJ sign or an actual pass/fail state.
  *
- * Status: `SectionHead` has a caller (the exam room). `Bay`, `Plate`,
- * `AwasPlate`, `RoadRule` and `Figure` are declared but not yet called — the
- * exam room uses their `.bay` / `.plate` / `.plate-awas` classes directly,
+ * Status: `SectionHead` has callers (the exam room, the simulator's verdict).
+ * `Bay`, `Plate` and `Figure` are called by the simulator (verdict, mode
+ * choice, HUD). `AwasPlate` and `RoadRule` are declared but not yet called —
+ * the exam room uses the `.bay` / `.plate` / `.plate-awas` classes directly,
  * because an option button has to BE the bay rather than sit inside one.
  * They are kept because DESIGN_SYSTEM.md names them as the system's API and
  * the next surfaces are expected to use them; if the theory and dashboard

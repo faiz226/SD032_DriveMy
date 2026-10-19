@@ -30,6 +30,8 @@ interface Props {
   fov?: number;
   /** The three mirrors, in the first-person view. */
   mirrors?: boolean;
+  /** The car's files have loaded and its vehicle exists. */
+  onReady?: () => void;
 }
 
 const DT = CAR.drive.dt;
@@ -40,7 +42,7 @@ function poseAt(at: Vec2, heading: number) {
   return { x: at[0], y: ground + CAR.wheelRadius + 0.02, z: -at[1], yaw: heading };
 }
 
-export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'low', start, firstPerson, onStep, fov = 50, mirrors = true }, ref) {
+export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'low', start, firstPerson, onStep, fov = 50, mirrors = true, onReady }, ref) {
   const { rapier, world } = useRapier();
   const files = CAR.files(tier);
   const body = useGLTF(files.body);
@@ -56,10 +58,13 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'lo
   const startRef = useRef(start);
   const onStepRef = useRef(onStep);
   onStepRef.current = onStep;
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
 
   useEffect(() => {
     const v = new Vehicle(rapier, world, poseAt(startRef.current.at, startRef.current.heading));
     vehicle.current = v;
+    onReadyRef.current?.();
     return () => {
       v.dispose();
       vehicle.current = null;

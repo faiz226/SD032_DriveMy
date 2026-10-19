@@ -61,6 +61,29 @@ describe('touch controls', () => {
     expect(useDriver.getState()).toMatchObject({ handbrake: true, paused: true, topDown: true });
   });
 
+  it('show at 800 x 360 with touch and a coarse pointer, and stay hidden on a desktop with a mouse', () => {
+    const device = (coarse: boolean, points: number) => {
+      Object.defineProperty(window, 'matchMedia', {
+        configurable: true,
+        value: (q: string) => ({ matches: coarse && q === '(pointer: coarse)', media: q, addEventListener: () => {}, removeEventListener: () => {} }),
+      });
+      Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, value: points });
+    };
+    const before = window.matchMedia;
+    Object.assign(window, { innerWidth: 800, innerHeight: 360 });
+    useTouchPref.setState({ pref: 'auto' });
+    try {
+      device(true, 5);
+      expect(renderHook(() => useTouchUi()).result.current).toBe(true);
+      device(false, 0);
+      Object.assign(window, { innerWidth: 1920, innerHeight: 1080 });
+      expect(renderHook(() => useTouchUi()).result.current).toBe(false);
+    } finally {
+      Object.defineProperty(window, 'matchMedia', { configurable: true, value: before });
+      Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, value: 0 });
+    }
+  });
+
   it('show on a touch device with a coarse pointer, or when the setting says so; never by screen width', () => {
     // jsdom has no coarse pointer and no touch points
     useTouchPref.setState({ pref: 'auto' });

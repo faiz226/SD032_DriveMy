@@ -30,8 +30,10 @@ const LazySafetyPage      = lazy(() => import("@/pages/SafetyPage").then(m => ({
 const LazySettingsPage    = lazy(() => import("@/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const LazyNotFoundPage    = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const LazyPrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
-// Development only: the simulator's world on its own (/dev/sim). Absent from production builds.
+// Development only: the simulator's world on its own (/dev/sim), and the simulator page without signing in
+// (/dev/sim/:id, nothing saved). Absent from production builds.
 const LazySimPreview = import.meta.env.DEV ? lazy(() => import("@/sim/dev/SimPreview").then(m => ({ default: m.SimPreview }))) : null;
+const LazySimPageDev = import.meta.env.DEV ? lazy(() => import("@/sim/ui/SimulatorPage").then(m => ({ default: m.SimulatorPage }))) : null;
 
 
 // Stores & services
@@ -171,6 +173,7 @@ function App() {
                       not having one (PDPA 2010 §7, Notice & Choice). */}
                   <Route path={ROUTES.PRIVACY} element={<LazyPrivacyPolicyPage />} />
                   {LazySimPreview && <Route path="/dev/sim" element={routed(<LazySimPreview />)} />}
+                  {LazySimPageDev && <Route path="/dev/sim/:id" element={routed(<LazySimPageDev />)} />}
 
                   {/* ── Fallbacks ─────────────────────────────────────────── */}
                   <Route path="/auth/callback" element={<AuthCallbackPage />} />

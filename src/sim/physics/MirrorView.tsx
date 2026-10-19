@@ -5,7 +5,7 @@ import { Hud, OrthographicCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { type RefObject, useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { MIRRORS, mirrorCamera, targetSize } from './mirrors';
+import { DOOR_MIRROR_RISE, MIRROR_PAD, MIRRORS, mirrorCamera, mirrorScale, targetSize } from './mirrors';
 
 interface Props {
   car: RefObject<THREE.Group | null>;
@@ -60,8 +60,8 @@ export function MirrorView({ car, perFrame = 1, budget = 256 * 128 }: Props) {
 /** The three mirror glasses, sized for an 851 x 393 screen and scaled with it. */
 function Glasses({ targets }: { targets: THREE.WebGLRenderTarget[] }) {
   const { width, height } = useThree((s) => s.size);
-  const k = Math.min(1.6, Math.max(0.75, Math.min(width / 851, height / 393)));
-  const pad = 10 * k;
+  const k = mirrorScale(width, height);
+  const pad = MIRROR_PAD * k;
   return (
     <>
       {MIRRORS.map((m, n) => {
@@ -70,7 +70,7 @@ function Glasses({ targets }: { targets: THREE.WebGLRenderTarget[] }) {
         // interior mirror top centre; door mirrors at the side edges, a little above the middle,
         // which keeps them clear of the touch controls' steering pad and pedals
         const x = m.id === 'interior' ? 0 : (m.id === 'left' ? -1 : 1) * (width / 2 - pad - w / 2);
-        const y = m.id === 'interior' ? height / 2 - pad - h / 2 : 0.06 * height;
+        const y = m.id === 'interior' ? height / 2 - pad - h / 2 : DOOR_MIRROR_RISE * height;
         return (
           <group key={m.id} position={[x, y, 0]}>
             <mesh position={[0, 0, -1]}>

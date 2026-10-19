@@ -70,7 +70,24 @@ export function SimulationsPage() {
         </div>
       </div>
 
-      {/* Maneuver grid */}
+      {/* The assessment: the whole circuit, marked like the test */}
+      <Link
+        to={`${ROUTES.SIMULATIONS}/assessment`}
+        className="feature-link flex items-center justify-between gap-4 group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="p-2.5 bg-muted rounded-full text-foreground">
+            <Car className="w-7 h-7" weight="regular" />
+          </div>
+          <div>
+            <h2 className="font-heading font-semibold text-base text-foreground">{t("sim.assessment.cardTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{t("sim.assessment.cardDesc")}</p>
+          </div>
+        </div>
+        <ArrowRight className="w-4 h-4 shrink-0 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5" />
+      </Link>
+
+      {/* Maneuver grid: each opens practice on that station */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {MANEUVERS.map((m) => (
           <Link
