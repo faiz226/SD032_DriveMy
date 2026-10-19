@@ -346,7 +346,7 @@ ray-cast vehicle slides sideways a few millimetres a second while parked. The `v
   clicked through there. The flow is proven headless instead: through the run store above, and with
   real physics in WP3's scripted drive.
 
-## WP5 (19–20 Oct): phones and the performance gate
+## WP5 (19 Oct): phones and the performance gate
 
 **What was built:**
 
@@ -401,7 +401,7 @@ texture atlas.
   flexible: touching one is still a 20-demerit fault and fails the station, but the car is no longer
   caught on a fixed post. Basis: decided; the yard's own poles.
 
-## WP6 (20 Oct): acceptance, walkthrough, demo and report draft
+## WP6 (19 Oct): acceptance, walkthrough, demo and report draft
 
 **Acceptance runs** (`src/sim/physics/scripted-drive.test.ts`). Each drives the physics car through
 the controls alone, on the real colliders, judged by the rules engine, with no teleports. All pass:
