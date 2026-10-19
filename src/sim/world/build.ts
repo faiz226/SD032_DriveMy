@@ -246,6 +246,23 @@ export function buildWorld(c: CircuitData): WorldBuild {
   }
   const finish = station('road-merging')?.gates.find((q) => q.id === 'finish');
   if (finish) strip(finish.a, finish.b, FINISH_M, RED);
+  // the two-way roads' broken centre lines: a lane each way, keeping left of the line
+  const marks = c.markings;
+  for (const line of marks?.centre_lines ?? []) {
+    let run = 0;   // metres along the line, for the dash pattern
+    for (let i = 1; i < line.length; i++) {
+      const [a, b] = [line[i - 1], line[i]];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const at = (t: number): Vec2 => [a[0] + ((b[0] - a[0]) * t) / len, a[1] + ((b[1] - a[1]) * t) / len];
+      for (let t = 0; t < len;) {
+        const phase = (run + t) % (marks!.dash + marks!.gap);
+        const left = phase < marks!.dash ? marks!.dash - phase : 0;
+        if (left > 0) strip(at(t), at(Math.min(len, t + left)), marks!.width, WHITE);
+        t += left > 0 ? left : marks!.dash + marks!.gap - phase;
+      }
+      run += len;
+    }
+  }
 
   // ---------------------------------------------------------------- poles, props and the fence
   const things = new Mesher();

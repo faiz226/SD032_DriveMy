@@ -211,6 +211,79 @@ def corridor_polys(pts, s0, s1):
     return polys
 
 
+# The yard's roads, as the map shows them: (axis, approximate middle, from, to), metres. 'ew' runs east-west
+# at y = middle; 'ns' runs north-south at x = middle. lane_centres refines each from the kerbs.
+ROADS = [
+    ('ew', 25.6, 36.0, 111.0),     # the spine road, through the middle
+    ('ew', 55.5, 36.0, 114.0),     # the top road, under the hill
+    ('ew', 3.0, 46.0, 110.0),      # the bottom road
+    ('ns', 40.3, 3.0, 57.0),       # the west road
+    ('ns', 52.3, 27.0, 54.0),      # the lanes between the upper islands, west to east
+    ('ns', 62.7, 27.0, 54.0),
+    ('ns', 74.5, 27.0, 54.0),
+    ('ns', 86.3, 27.0, 54.0),
+    ('ns', 112.3, 2.0, 57.0),      # the east road
+]
+
+
+def lane_centres(world, keep_out, min_w=6.0, max_w=10.5, step=0.25):
+    """Broken centre lines on the two-way roads (the owner, 20 Oct): a lane each way, keeping left of the
+    line. Each road in ROADS gets its middle refined from the kerbs (the median of the midpoints, ignoring
+    side-road openings and island notches) and its width; a road narrower than min_w stays one-way and
+    unmarked. Each line breaks where it crosses another road (a junction), off the pavement, and inside
+    `keep_out` (the stations, one car at a time). Returns ([polyline, ...], [road, ...])."""
+    res = world.res
+    paved = lambda x, y: (0 <= int((y - world.y0) / res) < world.mask.shape[0] and 0 <= int((x - world.x0) / res) < world.mask.shape[1]
+                          and world.mask[int((y - world.y0) / res), int((x - world.x0) / res)])
+
+    def reach(x, y, dx, dy):
+        k = 0
+        while k * res < max_w and paved(x + dx * k * res, y + dy * k * res):
+            k += 1
+        return k * res
+
+    roads = []
+    for axis, mid, a0, a1 in ROADS:
+        mids, widths = [], []
+        for t in np.arange(a0, a1, 0.5):
+            x, y = (t, mid) if axis == 'ew' else (mid, t)
+            if not paved(x, y):
+                continue
+            dx, dy = (0.0, 1.0) if axis == 'ew' else (1.0, 0.0)
+            hi, lo = reach(x, y, dx, dy), reach(x, y, -dx, -dy)
+            if hi + lo < max_w:                       # not an opening or the open apron
+                mids.append(mid + (hi - lo) / 2)
+                widths.append(hi + lo)
+        if len(mids) < 8:
+            continue
+        roads.append(dict(axis=axis, mid=float(np.median(mids)), width=float(np.median(widths)), a0=a0, a1=a1))
+
+    two_way = [r for r in roads if r['width'] >= min_w]
+
+    def inside_other(x, y, me):
+        for r in two_way:
+            if r is me:
+                continue
+            across, along = (y, x) if r['axis'] == 'ew' else (x, y)
+            if abs(across - r['mid']) <= r['width'] / 2 + 0.5 and r['a0'] <= along <= r['a1']:
+                return True
+        return False
+
+    lines = []
+    for r in two_way:
+        cur = []
+        for t in np.arange(r['a0'], r['a1'] + step / 2, step):
+            x, y = (t, r['mid']) if r['axis'] == 'ew' else (r['mid'], t)
+            ok = paved(x, y) and not keep_out[int((y - world.y0) / res), int((x - world.x0) / res)] and not inside_other(x, y, r)
+            if ok:
+                cur.append([float(x), float(y)])
+            if (not ok or t >= r['a1']) and cur:
+                if math.hypot(cur[-1][0] - cur[0][0], cur[-1][1] - cur[0][1]) >= 4.0:
+                    lines.append([cur[0], cur[-1]])
+                cur = []
+    return lines, roads
+
+
 def rect(x0, y0, x1, y1):
     return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
@@ -511,6 +584,22 @@ def main():
         st['s_from'], st['s_to'] = round(st['s_from'], 2), round(st['s_to'], 2)
         st['start'] = pose_at(pts, max(0.0, st['s_from'] - 8.0))     # practice: the car appears here
 
+    # ------------------------------------------------------------ lane lines (the owner, 20 Oct)
+    # Two-way roads, keeping left, with a broken centre line; the stations stay one car wide and unmarked.
+    keep = World(*site, res=world.res)
+    for st in stations:
+        for poly in corridor_polys(pts, st['s_from'] - 2.0, st['s_to'] + 2.0):
+            keep.add(poly)
+        for key in ('pocket', 'box'):
+            if key in st:
+                keep.add(st[key])
+    for poly in z_legs + z_fill:
+        keep.add(poly)
+    keep.finish()
+    centre_lines, roads = lane_centres(world, keep.mask)
+    for r in roads:
+        print('road %s at %.2f: %.1f m wide%s' % (r['axis'], r['mid'], r['width'], '' if r['width'] >= 6.0 else ', one-way'))
+
     junctions = [
         dict(id='spine-road', polygon=rect(M(120.5, 0)[0], 21.3, M(1224, 0)[0], 29.8),
              note='the east-west road through the middle; the STOP box sits on it'),
@@ -548,6 +637,8 @@ def main():
         junctions=junctions,
         route=dict(columns=['s', 'x', 'y', 'heading_deg', 'width', 'tag'], samples=route, manoeuvres=t.jumps),
         obstacles=dict(poles=poles, cones=[]),
+        markings=dict(centre_lines=[[[round(x, 3), round(y, 3)] for x, y in line] for line in centre_lines], dash=3.0, gap=3.0, width=0.12,
+                      note='broken white centre lines on every two-way road (keep left); none on the stations'),
         props=dict(booths=booths, office=office, fence=site),
         spawn=spawn,
     )

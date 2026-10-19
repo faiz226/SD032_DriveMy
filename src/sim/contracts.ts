@@ -67,6 +67,8 @@ export interface CircuitData {
     manoeuvres: { station: StationId; s_from: number; s_to: number; note: string }[];
   };
   obstacles: { poles: { station: StationId; at: Vec2; radius: number; height: number; base_z?: number; status: string }[]; cones: [] };
+  /** Road markings: broken centre lines on the two-way roads (polylines), never on the stations. */
+  markings?: { centre_lines: Vec2[][]; dash: number; gap: number; width: number; note?: string };
   props: { booths: { centre: Vec2; size: Vec2; heading_deg: number }[]; office: { centre: Vec2; size: Vec2; heading_deg: number }; fence: number[] };
   spawn: { at: Vec2; heading_deg: number; handbrake: boolean };
   parameters: Record<string, { value: unknown; source: string; note: string }>;
