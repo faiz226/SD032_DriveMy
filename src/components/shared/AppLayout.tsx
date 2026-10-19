@@ -1,4 +1,5 @@
-import { useState, useId } from "react";
+import "@/styles/simulator-compat.css";
+import { useState, useId, useLayoutEffect } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   GridFour,
@@ -563,6 +564,10 @@ export function AppLayout(props: AppLayoutProps) {
   const { pathname } = useLocation();
   const { examMode } = useUIStore();
   const { t } = useLanguage();
+  useLayoutEffect(() => {
+    document.documentElement.classList.toggle("simulator-surface", pathname.startsWith(ROUTES.SIMULATIONS));
+    return () => document.documentElement.classList.remove("simulator-surface");
+  }, [pathname]);
   if (pathname.startsWith(ROUTES.SIMULATIONS)) return <ExistingLayout {...props} />;
   return <div className="jalan-app min-h-[100dvh] bg-background text-foreground">
     <a href="#main-content" className="sr-only focus:not-sr-only fixed top-2 left-2 z-[90] bg-card p-3">{t("a11y.skipToContent")}</a>
