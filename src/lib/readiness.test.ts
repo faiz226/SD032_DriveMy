@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { calculateReadiness, READINESS_WEIGHTS } from "./readiness";
 import { THEORY_MODULE_IDS } from "@/services/analytics.service";
 
 /**
@@ -15,14 +16,9 @@ import { THEORY_MODULE_IDS } from "@/services/analytics.service";
  *    theory tabs reported 100% theory with a tab never opened.
  */
 
-// Mirrors the weighting in hooks/useProgressStats.ts.
-const WEIGHTS = { mock: 0.45, quiz: 0.25, theory: 0.15, sim: 0.15 } as const;
-
+const WEIGHTS = READINESS_WEIGHTS;
 function composite(mock: number, quiz: number, theory: number, sim: number): number {
-  return Math.min(
-    Math.max(mock * WEIGHTS.mock + quiz * WEIGHTS.quiz + theory * WEIGHTS.theory + sim * WEIGHTS.sim, 0),
-    100
-  );
+  return calculateReadiness({mock, quiz, theory, sim});
 }
 
 function status(v: number): string {

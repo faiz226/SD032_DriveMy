@@ -3,7 +3,7 @@ import { getTheoryProgress, updateTheoryProgress } from "@/services/progress.ser
 
 export function useTheoryProgress(userId: string) {
   return useQuery({
-    queryKey: ["progress", "theory", userId],
+    queryKey: ["theoryProgress", userId],
     queryFn: () => getTheoryProgress(userId),
     enabled: !!userId,
     staleTime: 1000 * 60 * 5,
@@ -17,6 +17,8 @@ export function useUpdateTheoryProgress() {
     onSuccess: (data) => {
       if (data?.user_id) {
         qc.invalidateQueries({ queryKey: ["progress", "theory", data.user_id] });
+        qc.invalidateQueries({ queryKey: ["theoryProgress", data.user_id] });
+        qc.invalidateQueries({ queryKey: ["progress", "readiness", data.user_id] });
       }
     },
   });

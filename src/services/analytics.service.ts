@@ -68,6 +68,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
       .limit(5),
   ]);
 
+  if (quizzes.error || mocks.error || sims.error) throw quizzes.error || mocks.error || sims.error;
   const activities: ActivityEvent[] = [];
 
   if (quizzes.data) {
@@ -77,7 +78,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "quiz" as const,
         title: q.quiz_title,
         score: q.percentage,
-        date: q.completed_at || new Date(0).toISOString(),
+        date: q.completed_at || "",
       }))
     );
   }
@@ -89,7 +90,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "mock" as const,
         title: `Mock Test - ${m.set_id}`,
         score: m.percentage,
-        date: m.completed_at || new Date(0).toISOString(),
+        date: m.completed_at || "",
       }))
     );
   }
@@ -101,13 +102,13 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "sim" as const,
         title: `Simulation: ${s.maneuver_id}`,
         score: s.score,
-        date: s.completed_at || new Date(0).toISOString(),
+        date: s.completed_at || "",
       }))
     );
   }
 
   return activities
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
     .slice(0, 5);
 }
 

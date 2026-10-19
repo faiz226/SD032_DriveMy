@@ -1,3 +1,4 @@
+import { calculateReadiness } from "@/lib/readiness";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { TOTAL_SIMULATION_MANEUVERS } from "@/lib/constants";
@@ -78,13 +79,7 @@ export function useOverallReadiness() {
       // The simulator now contributes a modest bonus rather than acting as a
       // gate: a fully-prepared learner reaches "Ready for Exam" on theory work
       // alone, and simulator practice pushes them higher still.
-      const composite = Math.min(
-        Math.max(
-          mockScore * 0.45 + quizScore * 0.25 + theoryScore * 0.15 + simScore * 0.15,
-          0
-        ),
-        100
-      );
+      const composite = calculateReadiness({ mock: mockScore, quiz: quizScore, theory: theoryScore, sim: simScore });
 
       type ReadinessStatus = "Ready for Exam" | "Getting There" | "Not Ready";
       let status: ReadinessStatus = "Not Ready";

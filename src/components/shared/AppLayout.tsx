@@ -20,6 +20,7 @@ import {
   Moon,
   Translate
 } from "phosphor-react";
+import { AppHeader } from "./AppHeader";
 import { LanguageToggle } from "./LanguageToggle";
 import { OfflineBanner } from "./OfflineBanner";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -458,7 +459,7 @@ interface AppLayoutProps {
   showSidebar?: boolean;
 }
 
-export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps) {
+function ExistingLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps) {
   const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileMenuId = useId();
@@ -555,4 +556,18 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
       </div>
     </div>
   );
+}
+
+// The simulator retains its existing shell while it is being developed separately.
+export function AppLayout(props: AppLayoutProps) {
+  const { pathname } = useLocation();
+  const { examMode } = useUIStore();
+  const { t } = useLanguage();
+  if (pathname.startsWith(ROUTES.SIMULATIONS)) return <ExistingLayout {...props} />;
+  return <div className="jalan-app min-h-[100dvh] bg-background text-foreground">
+    <a href="#main-content" className="sr-only focus:not-sr-only fixed top-2 left-2 z-[90] bg-card p-3">{t("a11y.skipToContent")}</a>
+    {!examMode && props.showSidebar !== false && <AppHeader />}
+    <OfflineBanner />
+    <main id="main-content" tabIndex={-1}><ErrorBoundary><Outlet /></ErrorBoundary></main>
+  </div>;
 }

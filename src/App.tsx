@@ -19,6 +19,7 @@ import { MfaEnrollmentPage }  from "@/pages/auth/MfaEnrollmentPage";
 
 // Lazy-load all heavy app pages to split vendor chunks
 const LazyDashboardPage   = lazy(() => import("@/pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
+const LazyRpkRsmPage = lazy(() => import("@/pages/RpkRsmPage").then(m => ({ default: m.RpkRsmPage })));
 const LazyTheoryPage      = lazy(() => import("@/pages/TheoryPage").then(m => ({ default: m.TheoryPage })));
 const LazyQuizPage        = lazy(() => import("@/pages/QuizPage").then(m => ({ default: m.QuizPage })));
 const LazyMockTestPage    = lazy(() => import("@/pages/MockTestPage").then(m => ({ default: m.MockTestPage })));
@@ -144,6 +145,7 @@ function App() {
                     }
                   >
                     <Route index                               element={routed(<LazyDashboardPage />)} />
+                    <Route path="/rpk-rsm" element={routed(<LazyRpkRsmPage />)} />
                     <Route path={ROUTES.THEORY}               element={routed(<LazyTheoryPage />)} />
                     <Route path={ROUTES.QUIZ}                 element={routed(<LazyQuizPage />)} />
                     <Route path={ROUTES.MOCK_TEST}            element={routed(<LazyMockTestPage />)} />
