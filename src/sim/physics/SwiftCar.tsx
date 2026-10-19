@@ -13,6 +13,7 @@ import { TIERS, type TierSpec } from '../quality';
 import { getWorld } from '../world/build';
 import { collidersOf } from '../world/colliders';
 import { SWIFT_2022 as CAR } from './cars/swift-2022';
+import { Cluster } from './Cluster';
 import { MirrorView } from './MirrorView';
 import { Vehicle } from './vehicle';
 
@@ -70,6 +71,16 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     });
     return scene;
   }, [body.scene, shadows, clearcoat]);
+  // the car takes more of the sky's light than the yard does; the materials are this car's alone. Not the
+  // mirror glass, which would show the sky as a white card: the HUD's mirrors are the ones that reflect.
+  useEffect(() => {
+    for (const scene of [bodyScene, steering.scene]) {
+      scene.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+        if (m?.isMeshStandardMaterial) m.envMapIntensity = m.name === 'Mirrors' ? 0.4 : CAR.cabinLight;
+      });
+    }
+  }, [bodyScene, steering.scene]);
   const wheelScenes = useMemo(() => [0, 1, 2, 3].map(() => {
     const scene = wheel.scene.clone(true);   // shares geometry and materials
     scene.traverse((o) => { o.castShadow = shadows; });
@@ -157,6 +168,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
   return (
     <group ref={car}>
       <primitive object={bodyScene} />
+      <Cluster body={bodyScene} />
       {blob && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -CAR.wheelRadius + 0.015, 0]} renderOrder={-1}>
           <planeGeometry args={[CAR.config.length_m + 0.5, CAR.config.width_body_m + 0.5]} />
@@ -179,7 +191,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       {firstPerson && (
         <PerspectiveCamera makeDefault position={CAR.eye} rotation={[EYE_PITCH, -Math.PI / 2, 0, 'YXZ']} fov={fov} near={0.05} far={600} />
       )}
-      {firstPerson && mirrors && <MirrorView car={car} {...quality.mirrors} />}
+      {firstPerson && mirrors && <MirrorView car={car} body={bodyScene} {...quality.mirrors} />}
     </group>
   );
 });

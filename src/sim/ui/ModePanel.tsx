@@ -8,6 +8,7 @@ import type { Mode, StationId } from '../contracts';
 import { circuit } from '../data';
 import type { TouchPref } from '../input';
 import type { Tier, TierPref } from '../quality';
+import type { VoicePref } from './sound';
 import { stationName } from './Verdict';
 
 interface Props {
@@ -17,12 +18,17 @@ interface Props {
   onMode(m: Mode): void;
   onDrill(id: StationId): void;
   onStart(): void;
+  /** A free camera over the circuit first: nothing marked. */
+  onExplore(): void;
   onExit(): void;
-  /** The simulator's own settings: quality tier and touch controls, each Auto by default. */
-  settings: { quality: TierPref; detected: Tier; touch: TouchPref; onQuality(p: TierPref): void; onTouch(p: TouchPref): void };
+  /** The simulator's own settings: quality tier and touch controls, each Auto by default; the instructor's voice, on. */
+  settings: {
+    quality: TierPref; detected: Tier; touch: TouchPref; voice: VoicePref;
+    onQuality(p: TierPref): void; onTouch(p: TouchPref): void; onVoice(p: VoicePref): void;
+  };
 }
 
-export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExit, settings }: Props) {
+export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExplore, onExit, settings }: Props) {
   const { t } = useLanguage();
   const choice = (selected: boolean) => cn('bay focus-paint text-left', selected ? 'bay-selected' : 'bay-open');
   return (
@@ -51,6 +57,7 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExit
           <Button disabled={!ready} onClick={onStart}>
             {mode === 'assessment' ? t('sim.mode.startAssessment') : t('sim.mode.startPractice', { station: stationName(t, drill) })}
           </Button>
+          <Button variant="outline" disabled={!ready} onClick={onExplore}>{t('sim.explore.start')}</Button>
           <Button variant="ghost" onClick={onExit}>{t('sim.hud.exit')}</Button>
         </div>
         <details className="space-y-2">
@@ -70,6 +77,12 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExit
             value={settings.touch}
             options={[['auto', t('sim.settings.touchAuto')], ['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
             onChange={settings.onTouch}
+          />
+          <Choice
+            label={t('sim.settings.voice')}
+            value={settings.voice}
+            options={[['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
+            onChange={settings.onVoice}
           />
         </details>
         <p className="type-label text-xs">{t('sim.mode.keys')}</p>

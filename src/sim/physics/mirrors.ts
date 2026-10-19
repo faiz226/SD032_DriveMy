@@ -15,16 +15,25 @@ export interface MirrorSpec {
   yawDeg: number;          // 90 looks straight back; less turns it toward the car's left, more toward its right
   pitchDeg: number;        // negative looks down
   hfovDeg: number;         // how wide it sees
-  px: [number, number];    // its size on an 851 x 393 screen, which also sets its shape
+  px: [number, number];    // its size on an 851 x 393 screen as a panel; its shape is the glass's
   near: number;            // past the housing
+  /**
+   * Shown on the car's own mirror glass, which the driver sees through the windscreen. The left door mirror is
+   * outside that view (a driver turns their head to it), so it stays a panel at the screen's edge.
+   */
+  onGlass: boolean;
 }
+
+// The glass the car's model carries ("Mirrors"), measured: door mirrors 0.152 x 0.121 m, the interior mirror
+// 0.221 x 0.063 m. Each camera takes its glass's shape, so the image is never stretched onto it.
+export const GLASS = { material: 'Mirrors', radius: 0.15 };
 
 // Door mirrors turned 15 deg outward and 14 deg down, so the flank by the rear tyre runs along the inner
 // edge, in the lower half: where learners watch the bay lines and the kerb.
 export const MIRRORS: MirrorSpec[] = [
-  { id: 'left', at: CAR.mirrors.left, yawDeg: 90 - 15, pitchDeg: -14, hfovDeg: 35, px: [150, 100], near: 0.1 },
-  { id: 'interior', at: CAR.mirrors.interior, yawDeg: 90, pitchDeg: -3, hfovDeg: 50, px: [240, 60], near: 0.05 },
-  { id: 'right', at: CAR.mirrors.right, yawDeg: 90 + 15, pitchDeg: -14, hfovDeg: 35, px: [150, 100], near: 0.1 },
+  { id: 'left', at: CAR.mirrors.left, yawDeg: 90 - 15, pitchDeg: -14, hfovDeg: 35, px: [150, 120], near: 0.1, onGlass: false },
+  { id: 'interior', at: CAR.mirrors.interior, yawDeg: 90, pitchDeg: -3, hfovDeg: 50, px: [240, 68], near: 0.05, onGlass: true },
+  { id: 'right', at: CAR.mirrors.right, yawDeg: 90 + 15, pitchDeg: -14, hfovDeg: 35, px: [150, 120], near: 0.1, onGlass: true },
 ];
 
 export const MIRROR_FAR = 60;

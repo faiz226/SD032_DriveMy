@@ -451,3 +451,43 @@ languages, with a rule test.
 The autopilot drives through the same inputs as the keyboard.
 
 **Report draft:** `REPORT-DRAFT.md`, with the chapters WP6 lists, for the owner to edit.
+
+## Owner's first look (20 Oct): cabin, dials, mirrors, views, sound, voice and sign-in
+
+The owner's notes after first opening the simulator, each handled the same night.
+
+- **The cabin was dark.** The scene had no environment light: the car's black plastics had only the
+  hemisphere's flat fill, and on Medium the roof's shadow kept the sun off them. The sky now lights the scene
+  through a 64 px light probe, rendered once in the browser from a gradient dome (blue overhead, haze at the
+  horizon, the yard's colour below), not from the Sky shader, whose sun disc lit everything twice. The car
+  takes 2.2 times the yard's share (`CAR.cabinLight`); the mirror glass less, so it no longer reads as a white
+  card.
+- **A speedometer, as the Godot build had.** Live needles on the Swift's own dials (`Cluster.tsx`): the dials are
+  painted into the car's texture, so the needles are drawn on a canvas laid over a copy of the binnacle face
+  (`surface.ts`, the Godot technique). The Godot build's dial centres did not carry over (its speed needle sat
+  on the painted 80), so both dials were refitted to the printed numerals on the model's own artwork, within
+  1.6 degrees: 0 to 220 km/h and 0 to 8,000 rpm, 277 degrees each. Checked at 40 and 100 km/h. The revs follow
+  speed the way a CVT holds them, and are marked nowhere.
+- **The mirrors on the mirrors.** The interior mirror and the right door mirror now show on the car's own glass,
+  in its real shape (0.221 x 0.063 m and 0.152 x 0.121 m, measured; each camera takes its glass's aspect). The
+  left door mirror is outside the windscreen view and stays a panel at the screen's edge.
+- **Zoom in the top-down view:** wheel, pinch, the + and - keys, and two buttons. Zoomed in, it follows the car,
+  kept inside the yard.
+- **Explore, as Minecraft's spectator mode:** a free camera from the start panel. It flies through everything;
+  nothing is marked, and the car waits at the start.
+- **Sound.** The owner's engine recording, cut into a start clip and a seamless 3 s idle loop whose pitch and
+  level follow speed and throttle; silent when paused.
+- **The instructor's voice,** from the Fish Audio key the owner added: the eight station briefs and four
+  outcomes in English and BM, spoken from the screen's own strings (`scripts/gen-voice.mjs`), played as each
+  station arms and ends. A setting turns it off. Transcribing the files back checked the English (69 to 89% of
+  words returned, the misses mostly numbers such as "0.30 m"); Fish Audio's speech-to-text does not know Malay
+  (it heard the BM lines as Dutch or Czech, phonetically right), so the BM lines need a listen.
+- **Google is the only way to sign in.** One button signs in or creates the account. Sign-in returned to the
+  old app because Supabase only allows `localhost:5173` back from Google: run the new app on 5173.
+- **Can a person pass, not only the computer?** Tried, and not settled. A keyboard learner was put between the
+  computer's line and the car: every control a quarter of a second late, and only on or off, tapped for part
+  amounts (no tap under 60 ms, 20% jitter). At 8 km/h it clipped a kerb and the side-parking mouth pole; at
+  5 km/h it reached the side bay but stopped 1.9 m off and 17 degrees crooked, and the scripted reverse, which
+  starts wherever the car stops, swept the far pole. A person straightens up before reversing; the script
+  cannot, so a fail there proves nothing about people. Not committed. The owner's walkthrough answers it.
+- **The asset plan** for a better-looking yard, and every sound the app still needs: `ASSET-PLAN.md`.

@@ -1,6 +1,6 @@
 // What the learner sees while driving. It keeps out of the mirrors' three areas (the top centre, and the
 // side edges a little above the middle) and clear of the touch controls along the bottom.
-import { ArrowCounterClockwise, ListBullets, MapTrifold, Pause, Play, SignOut } from 'phosphor-react';
+import { ArrowCounterClockwise, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut } from 'phosphor-react';
 import { type ReactNode, useEffect, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { Figure } from '@/components/ui/road';
@@ -9,7 +9,7 @@ import type { TranslationKey } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 import type { Fault, StationProgress } from '../contracts';
 import { circuit, rules } from '../data';
-import { useDriver } from '../input';
+import { useDriver, ZOOM_STEP } from '../input';
 import { MIRROR_PAD, mirrorScale } from '../physics/mirrors';
 import { useRun } from './run';
 import { faultSound } from './sound';
@@ -79,6 +79,12 @@ export function Hud({ touch, onRestart, onStations, onExit }: Props) {
           )}
           <HudButton label={t('sim.hud.exit')} onClick={onExit}><SignOut size={20} /></HudButton>
         </div>
+        {topDown && (
+          <div className="pointer-events-auto flex gap-2">
+            <HudButton label={t('sim.hud.zoomOut')} onClick={() => useDriver.getState().zoomBy(1 / ZOOM_STEP)}><MagnifyingGlassMinus size={20} /></HudButton>
+            <HudButton label={t('sim.hud.zoomIn')} onClick={() => useDriver.getState().zoomBy(ZOOM_STEP)}><MagnifyingGlassPlus size={20} /></HudButton>
+          </div>
+        )}
         {station?.status === 'armed' && station.timeLimitS !== null && (
           <p className={cn(HUD_PLATE, 'type-label px-3 py-1.5')}>
             {t('sim.hud.timeLeft')} <Figure>{clock(Math.max(0, station.timeLimitS - (now - (station.startedAt ?? now))))}</Figure>

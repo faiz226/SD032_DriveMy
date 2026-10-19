@@ -24,6 +24,14 @@ on GitHub on 14 Oct 2026.
 | React layout for a car | pmndrs [`racing-game`](https://github.com/pmndrs/racing-game), `src/models/vehicle/` (Vehicle, Chassis, Wheel) | MIT code, CC0 assets | Splitting the car into chassis, wheel and vehicle components, and a small zustand store for held keys. Its physics is cannon, not Rapier: take the structure only. |
 | Mirrors | three.js manual, ["Render Targets"](https://threejs.org/manual/en/rendertargets.html). drei's `useFBO` and `Hud` (installed: drei 10.7.7). | MIT | Render a rear-facing camera into a small texture, show it on a quad, and flip it left to right with `texture.repeat.x = -1` and `texture.offset.x = 1`. |
 
+## Media and services (20 Oct)
+
+| What | Source | Terms | Where |
+|---|---|---|---|
+| The engine sound | The owner's recording, `SFX/Engine start, then engine sound.mp3` in the main checkout, cut into a start clip and a seamless idle loop | The owner's to record: its origin goes here before submission | `public/sim/sfx/` |
+| The instructor voice | Fish Audio text-to-speech ([docs.fish.audio](https://docs.fish.audio)), model `s2.1-pro-free`, the default voice, spoken from the app's own strings by `scripts/gen-voice.mjs` | Fish Audio's terms of service; the API key stays in `.env.local` and never reaches the app | `public/sim/voice/` |
+| The dials' needles and the mirrors on the glass | The project's own Godot build (`godot/scripts/cluster.gd`, `car.gd`, branch `claude/driving-license-simulator-b9fedf`): an image laid on a copy of the car's own surface | The project's own code | `src/sim/physics/surface.ts` |
+
 ## Read for ideas only
 
 | Project | Licence | Why it is not used |

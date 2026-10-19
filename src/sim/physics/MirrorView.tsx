@@ -1,6 +1,7 @@
-// The mirrors on screen. Each rear-facing camera rides on the car and renders into its own small target,
-// a few mirrors a frame in turn; the three show on a HUD layer over the windscreen view, flipped left to
-// right as mirrors are. Only for the first-person view.
+// The mirrors. Each rear-facing camera rides on the car and renders into its own small target, a few mirrors a
+// frame in turn. The interior mirror and the right door mirror show on the car's own mirror glass (surface.ts),
+// flipped left to right as mirrors are; the left door mirror, outside the windscreen view, shows on a HUD
+// layer at the screen's edge. Only for the first-person view.
 //
 // The targets are rendered exactly as the screen is: sRGB output and the same tone mapping. three.js gives a
 // plain render target linear output and no tone mapping, which made every material switch shader programs
@@ -11,10 +12,14 @@ import { Hud, OrthographicCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { type RefObject, useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { DOOR_MIRROR_RISE, MIRROR_PAD, type MirrorId, MIRRORS, mirrorCamera, mirrorScale, targetSize } from './mirrors';
+import { SWIFT_2022 as CAR } from './cars/swift-2022';
+import { DOOR_MIRROR_RISE, GLASS, MIRROR_PAD, type MirrorId, type MirrorSpec, MIRRORS, mirrorCamera, mirrorScale, targetSize } from './mirrors';
+import { flatFace } from './surface';
 
 interface Props {
   car: RefObject<THREE.Group | null>;
+  /** The car's body, which carries the mirror glass. */
+  body: THREE.Object3D;
   /** How many mirrors re-render each frame, in turn (WP5's quality tier sets it); 0.5 is one every other frame. */
   perFrame?: number;
   /** Pixels per mirror target. */
@@ -23,14 +28,14 @@ interface Props {
   ids?: MirrorId[];
 }
 
-/** Copies a mirror target's display-ready pixels to the screen unchanged, flipped left to right. */
+/** Copies a mirror target's display-ready pixels unchanged, flipped left to right. */
 const glassMaterial = (map: THREE.Texture) => new THREE.ShaderMaterial({
   uniforms: { map: { value: map } },
   vertexShader: 'varying vec2 vUv; void main() { vUv = vec2(1.0 - uv.x, uv.y); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
   fragmentShader: 'uniform sampler2D map; varying vec2 vUv; void main() { gl_FragColor = vec4(texture2D(map, vUv).rgb, 1.0); }',
 });
 
-export function MirrorView({ car, perFrame = 1, budget = 256 * 128, ids }: Props) {
+export function MirrorView({ car, body, perFrame = 1, budget = 256 * 128, ids }: Props) {
   const shown = useMemo(() => MIRRORS.filter((m) => !ids || ids.includes(m.id)), [ids]);
   const cams = useMemo(() => shown.map(mirrorCamera), [shown]);
   const targets = useMemo(() => shown.map((m) => {
@@ -41,11 +46,15 @@ export function MirrorView({ car, perFrame = 1, budget = 256 * 128, ids }: Props
     return t;
   }), [shown, budget]);
   const glasses = useMemo(() => targets.map((t) => glassMaterial(t.texture)), [targets]);
+  // the glass each on-glass mirror shows on; one whose glass the model lacks falls back to a panel
+  const faces = useMemo(() => shown.map((m) => (m.onGlass ? flatFace(body, { ...GLASS, at: m.at }, CAR.eye) : null)), [shown, body]);
+  const onGlass = useRef<(THREE.Mesh | null)[]>([]);
   const next = useRef(0);
   const due = useRef(0);
 
   useEffect(() => () => { for (const t of targets) t.dispose(); }, [targets]);
   useEffect(() => () => { for (const g of glasses) g.dispose(); }, [glasses]);
+  useEffect(() => () => { for (const f of faces) f?.geometry.dispose(); }, [faces]);
 
   useEffect(() => {
     const g = car.current;
@@ -63,31 +72,43 @@ export function MirrorView({ car, perFrame = 1, budget = 256 * 128, ids }: Props
     const shadows = gl.shadowMap.autoUpdate;
     const prev = gl.getRenderTarget();
     gl.shadowMap.autoUpdate = false;
+    // the glass images stay out of the mirrors' own views: a target cannot be drawn while it is rendered into
+    for (const m of onGlass.current) if (m) m.visible = false;
     for (let k = 0; k < count; k++) {
       const n = next.current++ % cams.length;
       gl.setRenderTarget(targets[n]);
       gl.render(scene, cams[n]);
     }
+    for (const m of onGlass.current) if (m) m.visible = true;
     gl.setRenderTarget(prev);
     gl.shadowMap.autoUpdate = shadows;
   }, 0.5);
 
+  const panels = shown.flatMap((m, n) => (faces[n] ? [] : [{ m, glass: glasses[n] }]));
   return (
-    <Hud renderPriority={1}>
-      <OrthographicCamera makeDefault position={[0, 0, 100]} near={1} far={200} />
-      <Glasses mirrors={shown} glasses={glasses} />
-    </Hud>
+    <>
+      {shown.map((m, n) => {
+        const face = faces[n];
+        return face && <mesh key={m.id} ref={(el) => { onGlass.current[n] = el; }} geometry={face.geometry} material={glasses[n]} />;
+      })}
+      {panels.length > 0 && (
+        <Hud renderPriority={1}>
+          <OrthographicCamera makeDefault position={[0, 0, 100]} near={1} far={200} />
+          <Panels panels={panels} />
+        </Hud>
+      )}
+    </>
   );
 }
 
-/** The three mirror glasses, sized for an 851 x 393 screen and scaled with it. */
-function Glasses({ mirrors, glasses }: { mirrors: typeof MIRRORS; glasses: THREE.ShaderMaterial[] }) {
+/** Mirrors shown as panels, sized for an 851 x 393 screen and scaled with it. */
+function Panels({ panels }: { panels: { m: MirrorSpec; glass: THREE.ShaderMaterial }[] }) {
   const { width, height } = useThree((s) => s.size);
   const k = mirrorScale(width, height);
   const pad = MIRROR_PAD * k;
   return (
     <>
-      {mirrors.map((m, n) => {
+      {panels.map(({ m, glass }) => {
         const w = m.px[0] * k;
         const h = m.px[1] * k;
         // interior mirror top centre; door mirrors at the side edges, a little above the middle,
@@ -100,7 +121,7 @@ function Glasses({ mirrors, glasses }: { mirrors: typeof MIRRORS; glasses: THREE
               <planeGeometry args={[w + 6 * k, h + 6 * k]} />
               <meshBasicMaterial color="#15171a" toneMapped={false} />
             </mesh>
-            <mesh material={glasses[n]}>
+            <mesh material={glass}>
               <planeGeometry args={[w, h]} />
             </mesh>
           </group>

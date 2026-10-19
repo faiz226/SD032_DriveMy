@@ -182,7 +182,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /\/sim\/.+\.(?:glb|webp|json)$/,
+            urlPattern: /\/sim\/.+\.(?:glb|webp|json|mp3|wav)$/,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "sim-assets",

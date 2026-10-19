@@ -10,6 +10,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExt
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 import { OFFLINE_QUEUED_ID, saveSimulationResult } from '@/services/results.service';
 import { useAuthStore } from '@/stores/authStore';
 import type { Mode, SimEvent, StationId, VehicleSample } from '../contracts';
@@ -27,10 +28,11 @@ import { ModePanel } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
 import { CameraKick, dprFor, FrameProbe, RenderScale, WhereNext } from './scene';
-import { unlockSound } from './sound';
+import { engineSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
+import { EXPLORE_CANVAS, ExploreHud, SpectatorCamera } from './Spectator';
 import { type SaveStatus, VerdictView } from './Verdict';
 
-type Phase = 'choose' | 'drive' | 'verdict';
+type Phase = 'choose' | 'explore' | 'drive' | 'verdict';
 const STATIONS = new Set<string>(circuit.stations.map((s) => s.id));
 const isStation = (id: string | undefined): id is StationId => !!id && STATIONS.has(id);
 
@@ -38,6 +40,9 @@ const stationStart = (id: StationId): Pose => {
   const st = circuit.stations.find((s) => s.id === id)!;
   return { at: st.start.at, heading: rad(st.start.heading_deg) };
 };
+
+const zoomNow = () => useDriver.getState().zoom;
+const zoomBy = (f: number) => useDriver.getState().zoomBy(f);
 
 const portraitNow = () => window.innerHeight > window.innerWidth;
 const onResize = (cb: () => void) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); };
@@ -58,6 +63,7 @@ export function SimulatorPage() {
   const queryClient = useQueryClient();
   const touch = useTouchUi();
   const touchPref = useTouchPref((s) => s.pref);
+  const voicePref = useVoicePref((s) => s.pref);
   const qualityPref = useQualityPref((s) => s.pref);
   const auto_ = useTier();
   const forced = PERF_TOOLS ? params.get('quality') : null;   // performance runs can force a tier
@@ -71,6 +77,7 @@ export function SimulatorPage() {
   const verdict = useRun((s) => s.state.verdict);
 
   const car = useRef<CarApi>(null);
+  const carGroup = useCallback(() => car.current?.group() ?? null, []);
   const [phase, setPhase] = useState<Phase>('choose');
   const phaseRef = useRef<Phase>('choose');
   const [mode, setMode] = useState<Mode>(isStation(id) ? 'practice' : 'assessment');
@@ -86,13 +93,30 @@ export function SimulatorPage() {
   useKeyboardControls(phase === 'drive' && !autopilotOn);
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
   useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver }); }, []);
-  useEffect(() => () => useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false }), []);
+  useEffect(() => () => {
+    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false });
+    stopEngine();
+  }, []);
   useEffect(() => { if (portrait) useDriver.getState().set({ paused: true }); }, [portrait]);
+  useEffect(() => pauseSound(paused), [paused]);
+  // the instructor: each station's brief as it arms, its outcome, and the verdict
+  useEffect(() => useRun.subscribe((now, before) => {
+    if (phaseRef.current !== 'drive') return;
+    for (const st of now.state.stations) {
+      if (st.status === before.state.stations.find((s) => s.id === st.id)?.status) continue;
+      if (st.status === 'armed') say(`sim.tips.${st.id}`, language);
+      else if (st.status === 'cleared') say('sim.voice.cleared', language);
+      else if (st.status === 'failed') say('sim.voice.notCleared', language);
+    }
+    if (now.state.verdict && !before.state.verdict) say(now.state.verdict.pass ? 'sim.voice.pass' : 'sim.voice.fail', language);
+  }), [language]);
 
   const go = useCallback((next: Phase) => { phaseRef.current = next; setPhase(next); }, []);
+  const toChoose = useCallback(() => go('choose'), [go]);
 
   const begin = useCallback((m: Mode, d: StationId) => {
     unlockSound();
+    startEngine();
     performance.mark('sim:start');
     auto.current = autopilotOn ? new Autopilot(autopilotMode === 'faults') : null;
     const pose = useRun.getState().begin(m, d);
@@ -134,7 +158,9 @@ export function SimulatorPage() {
     if (phaseRef.current !== 'drive') return;
     if (!drove.current) { drove.current = true; performance.mark('sim:drive'); }
     const run = useRun.getState();
-    run.step(sample, events, dt, useDriver.getState().topDown);
+    const driver = useDriver.getState();
+    run.step(sample, events, dt, driver.topDown);
+    engineSound(sample.speedKmh, driver.throttle);
     if (auto.current) useDriver.getState().set(auto.current.next(sample, dt));
     const now = useRun.getState();
     if (now.mode === 'assessment' && now.state.verdict && savedRun.current !== now.runId) finish();
@@ -156,19 +182,20 @@ export function SimulatorPage() {
   };
 
   return (
-    <div className="fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--asphalt))]">
+    <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--asphalt))]', phase === 'explore' && EXPLORE_CANVAS)}>
       <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows} gl={{ powerPreference: 'high-performance' }}>
         <RenderScale spec={spec} />
         {probe && <FrameProbe />}
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused || phase !== 'drive'}>
             <World tier={tier} />
-            <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown} mirrors={mirrorsOn} onStep={onStep} onReady={ready_} />
+            <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
           </Physics>
-          <Daylight shadows={spec.shadows} follow={() => car.current?.group() ?? null} />
+          <Daylight shadows={spec.shadows} follow={carGroup} />
           <WhereNext />
         </Suspense>
-        <TopDownCamera active={topDown} />
+        <TopDownCamera active={topDown} zoom={zoomNow} onZoom={zoomBy} follow={carGroup} />
+        {phase === 'explore' && <SpectatorCamera from={carGroup} />}
         <CameraKick />
       </Canvas>
 
@@ -180,11 +207,16 @@ export function SimulatorPage() {
           ready={ready}
           onMode={setMode}
           onDrill={setDrill}
-          settings={{ quality: qualityPref, detected, touch: touchPref, onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p) }}
+          settings={{
+            quality: qualityPref, detected, touch: touchPref, voice: voicePref,
+            onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p), onVoice: (p) => useVoicePref.getState().setPref(p),
+          }}
           onStart={() => begin(mode, drill)}
+          onExplore={() => go('explore')}
           onExit={exit}
         />
       )}
+      {phase === 'explore' && <ExploreHud touch={touch} onBack={toChoose} />}
       {phase === 'drive' && (
         <>
           <Hud touch={touch} onRestart={() => begin(mode, drill)} onStations={() => { setMode('practice'); go('choose'); }} onExit={exit} />
