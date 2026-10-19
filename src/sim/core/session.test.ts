@@ -484,6 +484,18 @@ describe('ramp test', () => {
       expect(status(d, 'ramp-test')).toBe(want);
     });
 
+  it('a stop outside the window, then driving on, fails with the gap it measured against the window', () => {
+    const d = drill('ramp-test', 'assessment');
+    rampIn(d, 1.6);
+    d.stop(2.5);
+    rampOut(d);
+    d.follow(station('ramp-test').s_to + 2, 8);
+    expect(status(d, 'ramp-test')).toBe('failed');
+    expect(d.last.faults.find((f) => f.station === 'ramp-test')).toMatchObject({
+      kind: 'station_failed', reasonKey: 'sim.fault.ramp.window', fixKey: 'sim.fix.ramp.window', measured: '1.60 m', limit: '0.2-1.0 m',
+    });
+  });
+
   it('costs 20 and fails when the pole is touched', () => {
     const d = drill('ramp-test');
     rampIn(d);
@@ -579,14 +591,5 @@ describe('practice drills', () => {
 
   it('refuses restartStation in an assessment', () => {
     expect(() => assessment().session.restartStation('hill-start')).toThrow();
-  });
-});
-
-describe('the old score store', () => {
-  it('reads its weights from rules.json, the kerb included', async () => {
-    const { DEMERIT, MAX_DEMERIT } = await import('../../stores/carStore');
-    expect(DEMERIT.KERB).toBe(5);
-    expect(DEMERIT.POLE_HIT).toBe(rules.demerits.pole.points);
-    expect(MAX_DEMERIT).toBe(rules.verdict.fail_at_demerits);
   });
 });

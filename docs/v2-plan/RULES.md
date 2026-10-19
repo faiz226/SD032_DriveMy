@@ -7,7 +7,7 @@ marking", and every threshold shows its basis in the UI.
 
 **Kinds of basis:**
 
-- **rubric:** the app's existing JPJ demerit weights (`src/stores/carStore.ts`).
+- **rubric:** the app's original JPJ demerit weights (the v1 simulator's score store, `src/stores/carStore.ts`, removed in WP6; see git history).
 - **guides:** unofficial Malaysian driving-school notes and learner accounts (sources below).
   They disagree in places, and no official JPJ marking sheet was found.
 - **PRD:** already decided in the PRD.
@@ -46,7 +46,7 @@ verdict is a fail from then on, and the run carries on (`end_run_at_fail` is fal
 | 4 | 3-Point Turn | 3 min | During the **third** movement, the heading is reversed by at least 148° at 6 km/h or slower. A movement is a run of at least 0.3 m in one direction. | A fourth movement starts first; or the car leaves without turning round (one arc never clears) | PRD (148°; forward, reverse, forward) + guides (three movements at most, 3 min). decided 15 Oct: 6 km/h, not the PRD's 3, because the automatic Swift creeps at 5 km/h with no pedal |
 | 5 | S-Curve | 3 min | Gates passed in order, with the speed held at 1–18 km/h | More than 1.2 s outside the band (assessment). Practice mode restarts the drill instead. | PRD |
 | 6 | Z-Curve | 3 min | Gates passed in order. A corner gate counts only at 12 km/h or slower; too fast does not fail, the gate just waits. | Time limit, or passing it by | PRD |
-| 7 | Ramp Test | 5 min | Drive up the ramp. Stop with the front bumper **0.2–1.0 m short of the pole**. Hold still for 2 s. Then reverse back down and out past the mouth. | Touching the pole (also 20) | guides: a DA learner, "climb onto the cement block, don't hit the pole in the middle"; 5 min. decided: the stop window, the hold, the reverse out |
+| 7 | Ramp Test | 5 min | Drive up the ramp. Stop with the front bumper **0.2–1.0 m short of the pole**. Hold still for 2 s. Then reverse back down and out past the mouth. | Touching the pole (also 20). Driving on after stopping only outside the window (the verdict shows the measured gap) | guides: a DA learner, "climb onto the cement block, don't hit the pole in the middle"; 5 min. decided: the stop window, the hold, the reverse out |
 | 8 | Road Merging | none | Cross the finish gate at 15 km/h or faster. There is no traffic: a simulator simplification. | Slower (assessment). Practice mode allows a retry. | PRD |
 
 **Handbrake.** It is required on the hill. On the ramp, the brake alone may hold the car. The

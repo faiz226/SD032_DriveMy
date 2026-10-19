@@ -253,6 +253,90 @@ def radius_about_axle(o):
     return max(math.hypot(v.co.x, v.co.z) for v in o.data.vertices)
 
 
+def material_key(m):
+    """What a material looks like on a phone screen: its textures, or its colour and finish, rounded."""
+    bsdf = next((n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED"), None) if m and m.use_nodes else None
+    if bsdf is None:
+        return ("own", m.name if m else None)
+
+    def graph(node, depth=0):
+        """Everything upstream that decides a colour: node types, images, and unlinked values, rounded."""
+        if depth > 6:
+            return ("deep",)
+        parts = [node.type, node.image.name if getattr(node, "image", None) else None]
+        if getattr(node, "blend_type", None):
+            parts.append(node.blend_type)
+        if node.type == "RGB":
+            parts.append(tuple(round(c / 0.08) for c in node.outputs[0].default_value[:3]))
+        if node.type == "VALTORGB":   # a colour ramp keeps its colours in its elements, not its inputs
+            parts.append(tuple(tuple(round(c / 0.08) for c in e.color[:3]) for e in node.color_ramp.elements))
+        if getattr(node, "image", None):
+            return tuple(parts)   # where a texture is placed does not change which colours it holds
+        for inp in node.inputs:
+            if inp.is_linked and inp.type in ("RGBA", "SHADER"):
+                parts.append(graph(inp.links[0].from_node, depth + 1))
+            elif inp.type == "RGBA":
+                parts.append(tuple(round(c / 0.08) for c in inp.default_value[:3]))   # colours only: factors and coordinates do not
+        return tuple(parts)
+
+    def image(socket):
+        s = bsdf.inputs.get(socket)
+        if not (s and s.is_linked):
+            return None
+        return graph(s.links[0].from_node)
+
+    def rounded(socket, step):
+        s = bsdf.inputs.get(socket)
+        if s is None:
+            return None
+        v = s.default_value
+        # colours rounded as the eye sees them (gamma 2.2), so near-black and dark grey stay apart
+        return tuple(round(max(c, 0.0) ** (1 / 2.2) / 0.06) for c in v[:3]) if hasattr(v, "__len__") else round(v / step)
+
+    base = bsdf.inputs["Base Color"]
+    if base.is_linked and base.links[0].from_node.type != "TEX_IMAGE":
+        return ("own", m.name)   # a colour built from other nodes: too easy to misjudge, so it never merges
+
+    finish = (m.blend_method, m.use_backface_culling, rounded("Alpha", 0.1), rounded("Coat Weight", 0.5),
+              rounded("Transmission Weight", 0.5), rounded("Emission Strength", 0.5))
+    textures = tuple(image(k) for k in ("Base Color", "Normal", "Roughness", "Metallic", "Alpha", "Emission Color"))
+    if any(textures):
+        # the constants count too: a node-driven metal/roughness map says nothing about the base colour
+        return ("textured", textures, finish, rounded("Base Color", 0.08), rounded("Metallic", 0.25), rounded("Roughness", 0.2))
+    return ("flat", rounded("Base Color", 0.08), rounded("Metallic", 0.25), rounded("Roughness", 0.2), finish)
+
+
+# Only the cabin's trim may merge on the Low tier: the exterior (paint, glass, lights, chrome, badges, mirrors)
+# always keeps its own materials, so the car still looks like the real Swift from outside.
+INTERIOR = ("Roof_", "roof_", "Seat", "Door_Cloth", "Door_Blackleather", "Door_Plastic", "Console_", "Dash_", "SW_")
+
+
+def merge_lookalike_materials(o):
+    """Low tier only: one material (one draw call) for each set of cabin trim that looks the same."""
+    first = {}
+    remap = []
+    for i, slot in enumerate(o.material_slots):
+        name = slot.material.name if slot.material else ""
+        key = ("cabin", material_key(slot.material)) if name.startswith(INTERIOR) else ("own", i)
+        remap.append(first.setdefault(key, i))
+    groups = {}
+    for i, j in enumerate(remap):
+        groups.setdefault(j, []).append(o.material_slots[i].material.name if o.material_slots[i].material else "?")
+    for names in groups.values():
+        if len(names) > 1:
+            log(f"  merged: {', '.join(names)}")
+    mesh = o.data
+    idx = [0] * len(mesh.polygons)
+    mesh.polygons.foreach_get("material_index", idx)
+    mesh.polygons.foreach_set("material_index", [remap[i] for i in idx])
+    mesh.update()
+    bpy.ops.object.select_all(action="DESELECT")
+    o.select_set(True)
+    bpy.context.view_layer.objects.active = o
+    bpy.ops.object.material_slot_remove_unused()
+    return len(o.material_slots)
+
+
 def export(o, path):
     # The source's colour sets are blank (COLOR_0 all white, COLOR_1 all zero), so they change nothing
     # on screen; glTF would still carry them, about 0.7 MB of the Low tier.
@@ -368,6 +452,12 @@ def main():
             if w and max(w, h) > cap:
                 im.scale(max(1, w * cap // max(w, h)), max(1, h * cap // max(w, h)))
         (OUT / tier).mkdir(parents=True, exist_ok=True)
+        if tier == "low":
+            # Draw calls, not triangles, bound a phone's frame time (WP5 profile): merge lookalikes on Low only.
+            before = {fn: len(o.material_slots) for o, fn in ((body, "body"), (wheel, "wheel"), (steering, "steering"))}
+            after = {fn: merge_lookalike_materials(o) for o, fn in ((body, "body"), (wheel, "wheel"), (steering, "steering"))}
+            measure["materials_low"] = {k: [before[k], after[k]] for k in before}
+            log(f"low tier materials (before, after): {measure['materials_low']}")
         for o, fn in ((body, "body.glb"), (wheel, "wheel.glb"), (steering, "steering.glb")):
             export(o, OUT / tier / fn)
         measure[f"bytes_{tier}"] = {fn: (OUT / tier / fn).stat().st_size for fn in ("body.glb", "wheel.glb", "steering.glb")}

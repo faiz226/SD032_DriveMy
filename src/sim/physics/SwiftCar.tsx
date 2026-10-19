@@ -2,13 +2,14 @@
 // the driver's eye. It reads the driver's inputs every physics step and reports each step as the rules
 // engine sees it.
 import { PerspectiveCamera, useGLTF } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useAfterPhysicsStep, useBeforePhysicsStep, useRapier } from '@react-three/rapier';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { SimEvent, Vec2, VehicleSample } from '../contracts';
 import { circuit } from '../data';
 import { useDriver } from '../input';
+import { TIERS, type TierSpec } from '../quality';
 import { getWorld } from '../world/build';
 import { collidersOf } from '../world/colliders';
 import { SWIFT_2022 as CAR } from './cars/swift-2022';
@@ -19,10 +20,13 @@ export interface CarApi {
   /** Put the car at a start point, stopped: a practice restart. Nothing reloads. */
   teleport(at: Vec2, heading: number): void;
   vehicle(): Vehicle | null;
+  /** The car in the scene, for the sun's shadow to follow. */
+  group(): THREE.Group | null;
 }
 
 interface Props {
-  tier?: 'low' | 'medium';
+  /** The quality tier: which files, clearcoat, shadows and how the mirrors render. */
+  quality?: TierSpec;
   start: { at: Vec2; heading: number };
   firstPerson: boolean;
   /** Every physics step, in the circuit frame, with the step's events. */
@@ -42,13 +46,36 @@ function poseAt(at: Vec2, heading: number) {
   return { x: at[0], y: ground + CAR.wheelRadius + 0.02, z: -at[1], yaw: heading };
 }
 
-export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'low', start, firstPerson, onStep, fov = 50, mirrors = true, onReady }, ref) {
+export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = TIERS.low, start, firstPerson, onStep, fov = 50, mirrors = true, onReady }, ref) {
   const { rapier, world } = useRapier();
-  const files = CAR.files(tier);
+  const getThree = useThree((s) => s.get);
+  const files = CAR.files(quality.tier);
   const body = useGLTF(files.body);
   const wheel = useGLTF(files.wheel);
   const steering = useGLTF(files.steering);
-  const wheelScenes = useMemo(() => [0, 1, 2, 3].map(() => wheel.scene.clone(true)), [wheel.scene]);   // shares geometry and materials
+  const { shadows, clearcoat } = quality;
+  // Low tier: the paint's clearcoat goes (its own shader pass). Medium: the car casts the sun's shadow.
+  const bodyScene = useMemo(() => {
+    const scene = body.scene.clone(true);
+    scene.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      mesh.castShadow = shadows;
+      const m = mesh.material as THREE.MeshPhysicalMaterial;
+      if (!clearcoat && m.clearcoat) {
+        const plain = m.clone();
+        plain.clearcoat = 0;
+        mesh.material = plain;
+      }
+    });
+    return scene;
+  }, [body.scene, shadows, clearcoat]);
+  const wheelScenes = useMemo(() => [0, 1, 2, 3].map(() => {
+    const scene = wheel.scene.clone(true);   // shares geometry and materials
+    scene.traverse((o) => { o.castShadow = shadows; });
+    return scene;
+  }), [wheel.scene, shadows]);
+  const blob = useMemo(() => (shadows ? null : blobTexture()), [shadows]);
 
   const car = useRef<THREE.Group>(null);
   const rim = useRef<THREE.Group>(null);
@@ -64,18 +91,25 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'lo
   useEffect(() => {
     const v = new Vehicle(rapier, world, poseAt(startRef.current.at, startRef.current.heading));
     vehicle.current = v;
-    onReadyRef.current?.();
+    // compile the scene's shaders now, off the main thread where the browser can, so the first driven
+    // frames do not stall on them; then the car is ready
+    let live = true;
+    const { gl, scene, camera } = getThree();
+    const ready = () => { if (live) onReadyRef.current?.(); };
+    gl.compileAsync(scene, camera).then(ready, ready);
     return () => {
+      live = false;
       v.dispose();
       vehicle.current = null;
     };
-  }, [rapier, world]);
+  }, [rapier, world, getThree]);
 
   useImperativeHandle(ref, () => ({
     teleport(at, heading) {
       vehicle.current?.teleport(poseAt(at, heading));
     },
     vehicle: () => vehicle.current,
+    group: () => car.current,
   }), []);
 
   useBeforePhysicsStep(() => {
@@ -90,7 +124,11 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'lo
     const before = v.sample(clock.current, circuit, CAR.config.tyre_width_m);
     v.afterStep(before.slope !== null);
     const sample = v.sample(clock.current, circuit, CAR.config.tyre_width_m);
-    useDriver.setState({ speedKmh: sample.speedKmh });
+    // the readout and the stop-first rule need 0.5 km/h, not every step: each publish re-renders the HUD
+    const was = useDriver.getState().speedKmh;
+    if (Math.round(was * 2) !== Math.round(sample.speedKmh * 2) || (Math.abs(was) < 1) !== (Math.abs(sample.speedKmh) < 1)) {
+      useDriver.setState({ speedKmh: sample.speedKmh });
+    }
     const poles = collidersOf(world)?.poles;
     onStepRef.current?.(sample, poles ? v.poleHits(poles, clock.current) : [], DT);
   });
@@ -118,7 +156,13 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'lo
   const tilt = THREE.MathUtils.degToRad(CAR.steering.columnTiltDeg);
   return (
     <group ref={car}>
-      <primitive object={body.scene} />
+      <primitive object={bodyScene} />
+      {blob && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -CAR.wheelRadius + 0.015, 0]} renderOrder={-1}>
+          <planeGeometry args={[CAR.config.length_m + 0.5, CAR.config.width_body_m + 0.5]} />
+          <meshBasicMaterial map={blob} transparent depthWrite={false} toneMapped={false} />
+        </mesh>
+      )}
       {wheelScenes.map((scene, i) => (
         <group key={i} ref={(el) => { wheels.current[i] = el; }}>
           {/* the right-hand wheels are the same wheel turned round, never mirrored */}
@@ -135,7 +179,23 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ tier = 'lo
       {firstPerson && (
         <PerspectiveCamera makeDefault position={CAR.eye} rotation={[EYE_PITCH, -Math.PI / 2, 0, 'YXZ']} fov={fov} near={0.05} far={600} />
       )}
-      {firstPerson && mirrors && <MirrorView car={car} />}
+      {firstPerson && mirrors && <MirrorView car={car} {...quality.mirrors} />}
     </group>
   );
 });
+
+/** A soft dark patch under the car: the Low tier's shadow, painted once instead of rendered every frame. */
+function blobTexture() {
+  const c = document.createElement('canvas');
+  c.width = 128;
+  c.height = 64;
+  const g = c.getContext('2d')!;
+  const fill = g.createRadialGradient(64, 32, 4, 64, 32, 62);
+  fill.addColorStop(0, 'rgba(0,0,0,0.55)');
+  fill.addColorStop(0.6, 'rgba(0,0,0,0.35)');
+  fill.addColorStop(1, 'rgba(0,0,0,0)');
+  g.setTransform(1, 0, 0, 0.5, 0, 16);   // an ellipse, long along the car
+  g.fillStyle = fill;
+  g.fillRect(0, -32, 128, 128);
+  return new THREE.CanvasTexture(c);
+}

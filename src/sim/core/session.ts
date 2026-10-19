@@ -80,10 +80,11 @@ interface Work {
   gate: number;               // S, Z: the next gate
   outT: number;
   waiting: boolean;           // Z: a corner gate crossed too fast, waiting for the car to slow
+  stopGap: number | null;     // ramp: the gap to the pole at the last stop on the ramp outside the window
 }
 const freshWork = (): Work => ({
   phase: 0, holdT: 0, holdFrom: null, commitT: 0, committed: false, entryHeading: null,
-  movements: 0, moveDir: 0, pendDist: 0, gate: 0, outT: 0, waiting: false,
+  movements: 0, moveDir: 0, pendDist: 0, gate: 0, outT: 0, waiting: false, stopGap: null,
 });
 
 interface Run { geo: StationGeometry; pub: StationProgress; m: Work; blocked: boolean }
@@ -394,6 +395,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     const poleR = circuit.obstacles.poles.find((q) => q.station === g.id)?.radius ?? 0;
     const gap = (g.pole![0] - p[0] - hx * nose) * ux + (g.pole![1] - p[1] - hy * nose) * uy - poleR;
     const inWindow = gap >= R.ramp.window[0] - EPS && gap <= R.ramp.window[1] + EPS;
+    if (stopped && x.slope?.id === 'ramp') w.stopGap = inWindow ? null : gap;   // kept for the verdict if it never holds
     if (w.phase === 0 && hold(w, stopped && inWindow && (x.handbrake || !R.ramp.handbrake), p, dt, R.ramp.hold, R.ramp.still)) w.phase = 1;
     run.pub.detail = { ...run.pub.detail, gapM: r2(gap), heldS: r1(w.holdT), held: w.phase === 1 };
     if (w.phase === 1 && crossed(g.gates.find((q) => q.id === 'mouth'), p, -1)) clear(run);
@@ -454,7 +456,9 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
         if (limit !== null && elapsed > limit + EPS) fail(run, 'time', p, x.t, `${Math.round(elapsed)} s`, `${limit} s`);
         else if (s > run.geo.s_to + PASS_MARGIN_M) {
           if (run.m.committed) clear(run);   // a bay: done, and driven out past the end
-          else fail(run, 'passed', p, x.t);
+          else if (run.geo.id === 'ramp-test' && run.m.phase === 0 && run.m.stopGap !== null) {
+            fail(run, 'ramp.window', p, x.t, `${r2(run.m.stopGap).toFixed(2)} m`, `${R.ramp.window[0].toFixed(1)}-${R.ramp.window[1].toFixed(1)} m`);
+          } else fail(run, 'passed', p, x.t);
         }
       }
       if (R.endAtFail && state.demerits >= R.failAt) end();

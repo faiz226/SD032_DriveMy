@@ -52,32 +52,48 @@ what feels wrong.
 
 ## Acceptance: the release is done when all of these hold
 
-- [ ] Each of the eight stations clears on its positive drive and refuses its negative drives,
+- [x] Each of the eight stations clears on its positive drive and refuses its negative drives,
       and only while it is current. Tested every threshold just below, at and just above (WP1).
-- [ ] One continuous, input-driven assessment run with no teleports scores 0 demerits and passes
+      Evidence: `src/sim/core/session.test.ts`.
+- [x] One continuous, input-driven assessment run with no teleports scores 0 demerits and passes
       (WP6).
-- [ ] A run with one fault of each kind fails, and lists each fault with its measured value, its
+      Evidence: `scripted-drive.test.ts`, "a clean run".
+- [x] A run with one fault of each kind fails, and lists each fault with its measured value, its
       limit and a fix (WP6).
-- [ ] An assessment with no input never passes. Nothing outside the rules engine can mark a pass
+      Evidence: `scripted-drive.test.ts`, "one fault of each kind on purpose".
+- [x] An assessment with no input never passes. Nothing outside the rules engine can mark a pass
       (WP4, WP6).
-- [ ] `check.py` passes (44 checks) on the map the app imports. The top-down screenshot matches
+      Evidence: `scripted-drive.test.ts` "nothing"; `session.test.ts` "never passes with no input"; `Verdict.test.tsx`.
+- [x] `check.py` passes (44 checks) on the map the app imports. The top-down screenshot matches
       the plan (WP2).
-- [ ] Holding brake on the hill never selects reverse. The handbrake holds the car on the hill
+      Evidence: `npm run check:circuit` (44 of 44); `docs/circuit-v2/frames/world-vs-plan.png`.
+- [x] Holding brake on the hill never selects reverse. The handbrake holds the car on the hill
       (WP3).
-- [ ] The car meets every target in `physics/car-check.cjs`, and the mirrors pass the flip and
+      Evidence: `vehicle.test.ts`; `input.test.ts`.
+- [x] The car meets every target in `physics/car-check.cjs`, and the mirrors pass the flip and
       flank checks (WP3).
-- [ ] Touch controls show on a touch phone at 800 × 360 and stay hidden on a desktop with a mouse
+      Evidence: `vehicle.test.ts`; `mirrors.test.ts`.
+- [x] Touch controls show on a touch phone at 800 × 360 and stay hidden on a desktop with a mouse
       (WP4).
-- [ ] Switching tabs pauses the run and clears every input (WP3, WP4).
-- [ ] Two syncs started together insert one row. A run finished offline syncs exactly once (WP4).
-- [ ] The top-down view works in both modes, and an assessment verdict reports how long it was used (WP4).
-- [ ] Every practice level uses the one world: picking a level moves the car to that station's
+      Evidence: `TouchControls.test.tsx`.
+- [x] Switching tabs pauses the run and clears every input (WP3, WP4).
+      Evidence: `input.test.ts`.
+- [x] Two syncs started together insert one row. A run finished offline syncs exactly once (WP4).
+      Evidence: `results.service.test.ts`, "simulator v2: an assessment run".
+- [x] The top-down view works in both modes, and an assessment verdict reports how long it was used (WP4).
+      Evidence: `run.test.ts`; `Verdict.test.tsx`.
+- [x] Every practice level uses the one world: picking a level moves the car to that station's
       start with no reload (WP2, WP4).
-- [ ] Every threshold shows its basis. The simulator always shows "Practice rehearsal, not
+      Evidence: `run.test.ts`; `SimulatorPage.tsx` moves the car with no remount.
+- [x] Every threshold shows its basis. The simulator always shows "Practice rehearsal, not
       official marking" (WP4).
-- [ ] First drive within 15 s on a cold cache at 9/3 Mbps and 80 ms, within 12 MB (WP5).
+      Evidence: `Verdict.test.tsx` (basis on request); the label in `Hud.tsx` and `ModePanel.tsx`.
+- [x] First drive within 15 s on a cold cache at 9/3 Mbps and 80 ms, within 12 MB (WP5).
+      Evidence: `RESULTS.md`: 9.5 s and 5.8 MB, emulated.
 - [ ] 30 fps or more at p50 on the Low tier, real or emulated, with the label recorded (WP5).
+      **Not met:** `RESULTS.md`, 20 fps p50, emulated, with the reason and the remaining lever.
 - [ ] The owner's walkthrough is filled in, and what it found is fixed or listed (WP6).
+      `WALKTHROUGH.md` is written and waiting for the owner.
 
 ## Cut line
 

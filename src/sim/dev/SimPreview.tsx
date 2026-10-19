@@ -8,13 +8,14 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { StationId } from '../contracts';
 import { circuit } from '../data';
 import { rad } from '../geom';
 import { useDriver, useKeyboardControls, useTouchUi } from '../input';
-import { SwiftCar } from '../physics/SwiftCar';
+import { type CarApi, SwiftCar } from '../physics/SwiftCar';
+import { TIERS } from '../quality';
 import { TouchControls } from '../TouchControls';
 import { type Verdict, VerdictView } from '../ui/Verdict';
 
@@ -37,6 +38,7 @@ export function SimPreview() {
   const topDown = useDriver((s) => s.topDown) || view === 'top';
   const paused = useDriver((s) => s.paused);
   const [readout, setReadout] = useState('');
+  const car = useRef<CarApi>(null);
   const touch = useTouchUi() || params.get('touch') === 'on';
   useKeyboardControls();
   useEffect(() => { useDriver.getState().set({ handbrake: circuit.spawn.handbrake, paused: false }); }, []);
@@ -45,12 +47,13 @@ export function SimPreview() {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#9cc6e8' }}>
-      <Canvas dpr={[1, 1.5]} gl={{ preserveDrawingBuffer: true }}>
+      <Canvas dpr={[1, 1.5]} shadows={TIERS[tier].shadows} gl={{ preserveDrawingBuffer: true }}>
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused}>
             <World tier={tier} />
             <SwiftCar
-              tier={tier}
+              ref={car}
+              quality={TIERS[tier]}
               start={start}
               firstPerson={view === 'drive' && !topDown}
               onStep={(s) => {
@@ -60,7 +63,7 @@ export function SimPreview() {
               }}
             />
           </Physics>
-          <Daylight />
+          <Daylight shadows={TIERS[tier].shadows} follow={() => car.current?.group() ?? null} />
         </Suspense>
         <TopDownCamera active={topDown} />
         {view === 'orbit' && !topDown && (

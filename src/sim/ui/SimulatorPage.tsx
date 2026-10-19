@@ -6,8 +6,8 @@ import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowsClockwise } from 'phosphor-react';
-import { Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants';
 import { OFFLINE_QUEUED_ID, saveSimulationResult } from '@/services/results.service';
@@ -15,15 +15,18 @@ import { useAuthStore } from '@/stores/authStore';
 import type { Mode, SimEvent, StationId, VehicleSample } from '../contracts';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
-import { useDriver, useKeyboardControls, useTouchUi } from '../input';
+import { useDriver, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
+import type { MirrorId } from '../physics/mirrors';
+import { TIERS, type TierPref, useQualityPref, useTier } from '../quality';
 import { runRecord } from '../record';
 import { TouchControls } from '../TouchControls';
 import { Daylight, TopDownCamera, World } from '../world/World';
 import { Hud, HUD_PLATE } from './Hud';
 import { ModePanel } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
-import { CameraKick, WhereNext } from './scene';
+import { Autopilot, PERF_TOOLS } from './autopilot';
+import { CameraKick, dprFor, FrameProbe, RenderScale, WhereNext } from './scene';
 import { unlockSound } from './sound';
 import { type SaveStatus, VerdictView } from './Verdict';
 
@@ -44,11 +47,24 @@ const isDuplicate = (err: unknown) => (err as { code?: string } | null)?.code ==
 
 export function SimulatorPage() {
   const { id } = useParams<{ id: string }>();
+  const [params] = useSearchParams();
+  const autopilotMode = PERF_TOOLS ? params.get('autopilot') : null;
+  const autopilotOn = autopilotMode === '1' || autopilotMode === 'faults';
+  const probe = PERF_TOOLS && params.get('perf') === '1';
+  const mirrorsOn = !(PERF_TOOLS && params.get('mirrors') === '0');   // performance runs can switch them off
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
   const touch = useTouchUi();
+  const touchPref = useTouchPref((s) => s.pref);
+  const qualityPref = useQualityPref((s) => s.pref);
+  const auto_ = useTier();
+  const forced = PERF_TOOLS ? params.get('quality') : null;   // performance runs can force a tier
+  const tier = forced === 'low' || forced === 'medium' ? forced : auto_.tier;
+  const detected = auto_.detected;
+  const doors = PERF_TOOLS && params.get('interior') === '0';   // performance runs: the cut list's door-mirrors-only
+  const spec = useMemo(() => (doors ? { ...TIERS[tier], mirrors: { ...TIERS[tier].mirrors, ids: ['left', 'right'] as MirrorId[] } } : TIERS[tier]), [doors, tier]);
   const portrait = useSyncExternalStore(onResize, portraitNow, () => false);
   const topDown = useDriver((s) => s.topDown);
   const paused = useDriver((s) => s.paused);
@@ -63,8 +79,13 @@ export function SimulatorPage() {
   const [ready, setReady] = useState(false);
   const [save, setSave] = useState<SaveStatus | null>(null);
   const savedRun = useRef<string | null>(null);
+  const auto = useRef<Autopilot | null>(null);
+  const drove = useRef(false);
 
-  useKeyboardControls(phase === 'drive');
+  // the autopilot never loses focus to a person, so it never pauses for it
+  useKeyboardControls(phase === 'drive' && !autopilotOn);
+  // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
+  useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver }); }, []);
   useEffect(() => () => useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false }), []);
   useEffect(() => { if (portrait) useDriver.getState().set({ paused: true }); }, [portrait]);
 
@@ -72,6 +93,8 @@ export function SimulatorPage() {
 
   const begin = useCallback((m: Mode, d: StationId) => {
     unlockSound();
+    performance.mark('sim:start');
+    auto.current = autopilotOn ? new Autopilot(autopilotMode === 'faults') : null;
     const pose = useRun.getState().begin(m, d);
     car.current?.teleport(pose.at, pose.heading);
     useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false });
@@ -79,13 +102,19 @@ export function SimulatorPage() {
     setDrill(d);
     setSave(null);
     go('drive');
-  }, [go]);
+  }, [go, autopilotOn, autopilotMode]);
 
   /** An assessment's verdict is in: show it and save the run once, under the run's own id. */
   const finish = useCallback(() => {
     const run = useRun.getState();
     go('verdict');
     useDriver.getState().set({ throttle: 0, brake: 1, wheel: 0 });
+    if (auto.current) {
+      // a run the autopilot drove is never saved; it goes round again for the performance run
+      savedRun.current = run.runId;
+      window.setTimeout(() => begin('assessment', 'hill-start'), 3000);
+      return;
+    }
     if (!user || savedRun.current === run.runId) return;
     savedRun.current = run.runId;
     setSave('saving');
@@ -98,28 +127,45 @@ export function SimulatorPage() {
         }
       })
       .catch((err: unknown) => setSave(isDuplicate(err) ? 'saved' : 'failed'));
-  }, [go, user, language, queryClient]);
+  }, [go, begin, user, language, queryClient]);
 
   // every physics step: the rules see it; an assessment ends when its verdict appears
   const onStep = useCallback((sample: VehicleSample, events: SimEvent[], dt: number) => {
     if (phaseRef.current !== 'drive') return;
+    if (!drove.current) { drove.current = true; performance.mark('sim:drive'); }
     const run = useRun.getState();
     run.step(sample, events, dt, useDriver.getState().topDown);
+    if (auto.current) useDriver.getState().set(auto.current.next(sample, dt));
     const now = useRun.getState();
     if (now.mode === 'assessment' && now.state.verdict && savedRun.current !== now.runId) finish();
   }, [finish]);
 
   const exit = () => navigate(ROUTES.SIMULATIONS);
 
+  const ready_ = () => {
+    performance.mark('sim:ready');
+    window.dispatchEvent(new Event('sim:ready'));   // main.tsx: the service worker may now precache
+    setReady(true);
+    if (autopilotOn && phaseRef.current === 'choose') window.setTimeout(() => begin('assessment', 'hill-start'), 0);
+  };
+
+  /** A new quality applies before the next run: the scene rebuilds at that tier, so wait for it again. */
+  const changeQuality = (p: TierPref) => {
+    if (TIERS[p === 'auto' ? detected : p] !== spec) setReady(false);
+    useQualityPref.getState().setPref(p);
+  };
+
   return (
     <div className="fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--asphalt))]">
-      <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance' }}>
+      <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows} gl={{ powerPreference: 'high-performance' }}>
+        <RenderScale spec={spec} />
+        {probe && <FrameProbe />}
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused || phase !== 'drive'}>
-            <World />
-            <SwiftCar ref={car} start={start} firstPerson={!topDown} onStep={onStep} onReady={() => setReady(true)} />
+            <World tier={tier} />
+            <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown} mirrors={mirrorsOn} onStep={onStep} onReady={ready_} />
           </Physics>
-          <Daylight />
+          <Daylight shadows={spec.shadows} follow={() => car.current?.group() ?? null} />
           <WhereNext />
         </Suspense>
         <TopDownCamera active={topDown} />
@@ -134,6 +180,7 @@ export function SimulatorPage() {
           ready={ready}
           onMode={setMode}
           onDrill={setDrill}
+          settings={{ quality: qualityPref, detected, touch: touchPref, onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p) }}
           onStart={() => begin(mode, drill)}
           onExit={exit}
         />

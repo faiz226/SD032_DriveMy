@@ -1,0 +1,35 @@
+{
+  "when": "2026-10-19T09:59:22.932Z",
+  "conditions": {
+    "emulated": true,
+    "viewport": "1280x720 @1",
+    "cpuThrottle": 1,
+    "network": "9/3 Mbps, 80 ms",
+    "cache": "cold (fresh profile)",
+    "userAgent": "desktop Chrome",
+    "tier": "medium",
+    "gpu": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "chrome": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+  },
+  "firstDriveS": 15.16,
+  "marksMs": {
+    "sim:ready": 14686,
+    "sim:start": 15051,
+    "sim:drive": 15165
+  },
+  "bytesBeforeDrive": 7078948,
+  "requestsBeforeDrive": 72,
+  "minutes": 3,
+  "frames": {
+    "count": 14245,
+    "p50Ms": 12.4,
+    "p95Ms": 15.1,
+    "p99Ms": 18.2,
+    "fpsAtP50": 80.6,
+    "fpsAtP95": 66.2
+  },
+  "memory": {
+    "jsHeapUsedMB": 32.2,
+    "jsHeapTotalMB": 87.6
+  }
+}

@@ -40,7 +40,7 @@ describe('the run', () => {
     expect(state.verdict!.topDownSeconds).toBeGreaterThan(1);
     expect(state.verdict!.topDownSeconds).toBeCloseTo(state.topDownSeconds, 1);   // the verdict keeps one decimal
     expect(elapsed).toBeGreaterThan(60);
-  });
+  }, 30_000);   // a whole circuit at the physics step: under 1 s, but 9 s was seen on a busy machine
 
   it('practice: the car goes to the station\'s start, the top-down view works there too, and a restart is a fresh run', () => {
     const pose = useRun.getState().begin('practice', 'side-parking');

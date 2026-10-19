@@ -4,6 +4,7 @@
 // at wheel-centre height.
 import type { CarConfig } from '../../contracts';
 import base from '../../../../docs/circuit-v2/car-swift-2022.json';
+import { carFiles } from '../../assets';
 import { SWIFT_DRIVE } from '../drive';
 
 type V3 = [number, number, number];
@@ -12,11 +13,7 @@ export const SWIFT_2022 = {
   config: base as CarConfig,
   drive: SWIFT_DRIVE,
   published: { massKg: 900, powerKw: 61, torqueNm: 113, gearbox: 'CVT' },
-  files: (tier: 'low' | 'medium') => ({
-    body: `/sim/cars/swift-2022/${tier}/body.glb`,
-    wheel: `/sim/cars/swift-2022/${tier}/wheel.glb`,
-    steering: `/sim/cars/swift-2022/${tier}/steering.glb`,
-  }),
+  files: carFiles,
   wheelRadius: 0.324,
   axle: { front: 1.2251, rear: -1.2251, halfTrack: 0.7466 },
   steering: {

@@ -61,3 +61,6 @@ temp_interior.gltf
 .screenshots/
 
 
+
+# scripts/sim-perf.mjs: the performance build
+dist-perf/

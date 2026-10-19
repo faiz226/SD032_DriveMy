@@ -3,7 +3,7 @@
   "decided_on": "2026-10-14",
   "label": "Practice rehearsal, not official marking",
   "basis_legend": {
-    "rubric": "The app's existing JPJ demerit rubric (src/stores/carStore.ts)",
+    "rubric": "The app's original JPJ demerit rubric (the v1 simulator's score store, src/stores/carStore.ts, removed in WP6)",
     "guides": "Unofficial Malaysian driving-school notes and learner accounts, listed in RULES.md. No official JPJ marking sheet was available.",
     "prd": "The DriveMy v2 PRD",
     "decided": "A simulator choice made on 14 Oct 2026 with no instructor available; the reason is in the note"
@@ -86,7 +86,8 @@
       "time_limit_s": 300,
       "clear": "Drive up onto the platform and stop with the front bumper between stop_window_m short of the pole; hold still (still_m) for hold_s; then reverse down and out past the mouth gate without touching the pole",
       "stop_window_m": [0.2, 1.0], "hold_s": 2.0, "still_m": 0.05, "handbrake_required": false,
-      "fail": ["touched the pole (also 20 demerits)"],
+      "fail": ["touched the pole (also 20 demerits)",
+        "stopped only outside stop_window_m and drove on (ramp.window: the verdict shows the measured gap against the window)"],
       "basis": "guides (a DA learner: climb onto the cement block, do not hit the pole in the middle; 5 minutes) + decided (stop window, hold, reverse out)"
     },
     "road-merging": {

@@ -49,9 +49,23 @@
     "wheel.glb": 406680,
     "steering.glb": 526164
   },
+  "materials_low": {
+    "body": [
+      55,
+      47
+    ],
+    "wheel": [
+      6,
+      6
+    ],
+    "steering": [
+      7,
+      6
+    ]
+  },
   "bytes_low": {
-    "body.glb": 3522180,
+    "body.glb": 3484952,
     "wheel.glb": 262412,
-    "steering.glb": 349296
+    "steering.glb": 347980
   }
 }

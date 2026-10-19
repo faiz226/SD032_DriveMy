@@ -6,6 +6,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import type { Mode, StationId } from '../contracts';
 import { circuit } from '../data';
+import type { TouchPref } from '../input';
+import type { Tier, TierPref } from '../quality';
 import { stationName } from './Verdict';
 
 interface Props {
@@ -16,9 +18,11 @@ interface Props {
   onDrill(id: StationId): void;
   onStart(): void;
   onExit(): void;
+  /** The simulator's own settings: quality tier and touch controls, each Auto by default. */
+  settings: { quality: TierPref; detected: Tier; touch: TouchPref; onQuality(p: TierPref): void; onTouch(p: TouchPref): void };
 }
 
-export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExit }: Props) {
+export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExit, settings }: Props) {
   const { t } = useLanguage();
   const choice = (selected: boolean) => cn('bay focus-paint text-left', selected ? 'bay-selected' : 'bay-open');
   return (
@@ -49,8 +53,41 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExit
           </Button>
           <Button variant="ghost" onClick={onExit}>{t('sim.hud.exit')}</Button>
         </div>
+        <details className="space-y-2">
+          <summary className="type-label-strong cursor-pointer">{t('sim.settings.title')}</summary>
+          <Choice
+            label={t('sim.settings.quality')}
+            value={settings.quality}
+            options={[
+              ['auto', t('sim.settings.auto', { what: t(settings.detected === 'low' ? 'sim.settings.low' : 'sim.settings.medium') })],
+              ['low', t('sim.settings.low')],
+              ['medium', t('sim.settings.medium')],
+            ]}
+            onChange={settings.onQuality}
+          />
+          <Choice
+            label={t('sim.settings.touch')}
+            value={settings.touch}
+            options={[['auto', t('sim.settings.touchAuto')], ['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
+            onChange={settings.onTouch}
+          />
+        </details>
         <p className="type-label text-xs">{t('sim.mode.keys')}</p>
       </Plate>
+    </div>
+  );
+}
+
+function Choice<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: [T, string][]; onChange(v: T): void }) {
+  return (
+    <div role="radiogroup" aria-label={label} className="flex flex-wrap items-center gap-2">
+      <span className="type-label text-sm">{label}</span>
+      {options.map(([v, text]) => (
+        <button key={v} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(v)}
+          className={cn('bay focus-paint tap-sm px-2 py-1 text-sm', value === v ? 'bay-selected' : 'bay-open')}>
+          {text}
+        </button>
+      ))}
     </div>
   );
 }

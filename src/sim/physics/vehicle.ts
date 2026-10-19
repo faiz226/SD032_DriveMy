@@ -125,7 +125,7 @@ export class Vehicle {
       if (this.ctl.wheelIsInContact(i) && !(driven && engine !== 0)) held += br[i];
       if (driven) this.ctl.setWheelSteering(i, i === 0 ? left : right);
     }
-    this.ctl.updateVehicle(p.dt);
+    this.ctl.updateVehicle(p.dt, this.R.QueryFilterFlags.EXCLUDE_SENSORS);   // a wheel never stands on a pole
     if (holds(p, held, this.forward().y, engine, vf)) this.holdAt ??= { ...this.body.translation() };
     else this.holdAt = null;
   }
@@ -189,15 +189,10 @@ export class Vehicle {
   /** Touches between the body and the yard's poles in the last step. */
   poleHits(poles: Map<number, number>, t: number): SimEvent[] {
     const hits: SimEvent[] = [];
-    this.world.contactPairsWith(this.collider, (other) => {
+    this.world.intersectionPairsWith(this.collider, (other) => {
       const index = poles.get(other.handle);
-      if (index === undefined) return;
-      this.world.contactPair(this.collider, other, (m) => {
-        if (m.numContacts() > 0 && !hits.some((h) => h.type === 'obstacle-hit' && h.index === index)) {
-          const at = other.translation();
-          hits.push({ type: 'obstacle-hit', kind: 'pole', index, t, at: toCircuit(at) });
-        }
-      });
+      if (index === undefined || hits.some((h) => h.type === 'obstacle-hit' && h.index === index)) return;
+      hits.push({ type: 'obstacle-hit', kind: 'pole', index, t, at: toCircuit(other.translation()) });
     });
     return hits;
   }

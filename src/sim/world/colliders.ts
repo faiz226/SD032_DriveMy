@@ -29,7 +29,8 @@ export function addWorldColliders(R: Rapier, world: World, build: WorldBuild): W
   const map = new Map<number, number>();
   const poleBodies = poles.map((p) => {
     const pb = world.createRigidBody(R.RigidBodyDesc.fixed().setTranslation(...p.position));
-    const c = world.createCollider(R.ColliderDesc.cylinder(p.halfHeight, p.radius), pb);
+    // a sensor: JPJ yard poles are light and flexible, so touching one is a fault, never a wall the car is caught on
+    const c = world.createCollider(R.ColliderDesc.cylinder(p.halfHeight, p.radius).setSensor(true), pb);
     map.set(c.handle, p.index);
     return pb;
   });

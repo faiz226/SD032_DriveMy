@@ -345,3 +345,109 @@ ray-cast vehicle slides sideways a few millimetres a second while parked. The `v
 - The hidden in-app browser pane draws about one frame a second, so the full drive could not be
   clicked through there. The flow is proven headless instead: through the run store above, and with
   real physics in WP3's scripted drive.
+
+## WP5 (19–20 Oct): phones and the performance gate
+
+**What was built:**
+
+- **Quality tiers** (`src/sim/quality.ts`).
+  - Low: 512 px textures, a painted shadow under the car, no clearcoat, render scale 0.7–0.85 of the
+    device pixel ratio (at most 1.5), and one mirror refreshed every other frame into
+    256 × 128-pixel targets.
+  - Medium: 1024 px textures, one sun with a 1024 px shadow map kept centred on the car, clearcoat,
+    render scale 0.85–1 (at most 2), and all three mirrors every frame at 512 × 256.
+  - Android, or 4 GB of memory or less, gets Low; iPhones and desktops get Medium. The simulator's
+    settings (on the first panel) override it, and the touch controls' override sits beside it.
+  - The tier is fixed before a run starts. The render scale moves within the tier's band to hold the
+    frame rate; the tier itself never changes mid-station.
+- **The Low tier's car merges cabin trim that looks the same** (`scripts/swift_web.py`): 47 body
+  materials instead of 55. Only interior trim may merge, and only when its colours (rounded as the
+  eye sees them), finish and textures match; the exterior keeps every material.
+- **Loading.**
+  - The 3D engine (three.js, React Three Fiber, drei, Rapier) is its own chunk, loaded only with
+    the simulator; it used to ride in the shared vendor chunk every page loads.
+  - The simulator's code, car and textures are runtime-cached by the service worker, never
+    precached.
+  - The car and textures start downloading when the simulator route opens (`src/sim/assets.ts`).
+  - On simulator routes the service worker's precache waits until the car is ready.
+  - Shaders compile while the car loads.
+  - `public/_headers` carries the same Content-Security-Policy as `vercel.json`, and
+    `scripts/csp-hash.mjs` checks both, including Rapier's `'wasm-unsafe-eval'`. It now hashes the
+    LF form of `index.html`, as served: a Windows checkout's CRLF had made it report false drift.
+- **Mirrors without the shader churn.** Mirror targets render with the screen's colour settings, so
+  materials no longer switch programs twice a frame; a raw-copy shader shows them.
+- **Measurement.**
+  - `scripts/sim-perf.mjs` drives a throttled Chrome over the DevTools protocol.
+  - The in-app frame probe is `?perf=1`. `?autopilot=1` replays the scripted assessment through
+    the driver inputs, and never saves a run.
+  - The scripted assessment now lives in `src/sim/physics/pilot.ts`, shared by the test and the
+    autopilot.
+  - Both switches exist only in development and in performance builds (`VITE_SIM_PERF=1`).
+
+**Results:** `RESULTS.md`. Both load targets are met (first drive 9.5 s, 5.8 MB). The Low tier's frame
+rate is not: 20 fps p50, emulated. RESULTS.md shows the trial evidence that the cut list cannot reach
+30 fps (it is bound by draw calls, not pixels), and names the remaining lever: baking the car into a
+texture atlas.
+
+**Decisions:**
+
+- **Not cutting.** The cut list was not applied; RESULTS.md gives the evidence.
+- **Render scale.** It is a fraction of the device pixel ratio, capped (1.5 Low, 2 Medium), so a
+  2.75× phone screen is not drawn at full density. Basis: decided, from the spec's 0.7–0.85 and
+  0.85–1 bands.
+- **Low-tier mirror refresh.** Every other frame. It halves the mirrors' cost per frame. Basis:
+  measured.
+- **Poles became pass-through sensors** (the same day, for WP6). JPJ yard poles are light and
+  flexible: touching one is still a 20-demerit fault and fails the station, but the car is no longer
+  caught on a fixed post. Basis: decided; the yard's own poles.
+
+## WP6 (20 Oct): acceptance, walkthrough, demo and report draft
+
+**Acceptance runs** (`src/sim/physics/scripted-drive.test.ts`). Each drives the physics car through
+the controls alone, on the real colliders, judged by the rules engine, with no teleports. All pass:
+
+1. **A clean run** from the apron through all eight stations: 0 demerits, a pass.
+2. **One fault of each kind on purpose** (`pilot.assessment(true)`):
+   - a rollback on the hill;
+   - stopping 1.6 m short in the side bay;
+   - sweeping the inner side through the east mouth pole on the way out;
+   - a fourth three-point-turn movement (140° in three);
+   - a 2.5 s stop in the S;
+   - the left tyres over a Z kerb;
+   - a ramp stop 1.6 m short of the pole;
+   - crossing the finish at 10 km/h.
+
+   The run fails, and the verdict lists each fault with its station, a fix and its basis; the
+   rollback, ramp and merge faults also carry the measured value against the limit.
+3. **No input** for three minutes: no verdict, and no station cleared.
+
+**Rule change for the fault run.** A ramp stop outside the window used to surface only as "drove past
+without completing". The rules engine now remembers the gap at the last stop on the ramp and fails it
+as `ramp.window` ("1.60 m" against "0.2-1.0 m"). The change is in `rules.json`, `RULES.md` and both
+languages, with a rule test.
+
+**PLAN.md's acceptance list** is ticked with its evidence. Two items stay open:
+
+- the Low tier's 30 fps (20 fps emulated; see `RESULTS.md`);
+- the owner's walkthrough, which `WALKTHROUGH.md` sets out for the owner to fill in.
+
+**Also:**
+
+- `input.test.ts`: switching tabs releases every input and pauses; R changes gear only when stopped;
+  holding S never selects reverse.
+- **The v1 simulator is removed.** Its components (`SimulationHUD`, `SimulationResults`,
+  `MobileControls`, `JPJCircuit`) and its score store (`src/stores/carStore.ts`) had no route since
+  WP4. `rules.json` and `RULES.md` now say the rubric's weights came from that store, which git
+  history keeps.
+
+**Demo capture** (`scripts/sim-demo.mjs`, saved in `demo/`):
+
+- a first-person screenshot at each station;
+- both verdicts;
+- the yard from above;
+- `clean-run.mp4`, the clean run's first 80 s;
+- `world-vs-plan.png` from WP2.
+
+The autopilot drives through the same inputs as the keyboard.
+
+**Report draft:** `REPORT-DRAFT.md`, with the chapters WP6 lists, for the owner to edit.
