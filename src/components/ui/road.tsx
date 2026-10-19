@@ -5,29 +5,19 @@
  * surfaces content sits on, so they stay achromatic: the only saturated colour
  * on screen should belong to an actual JPJ sign or an actual pass/fail state.
  *
- * Status: `SectionHead` has a caller (the exam room). `Bay`, `Plate`,
- * `AwasPlate`, `RoadRule` and `Figure` are declared but not yet called — the
- * exam room uses their `.bay` / `.plate` / `.plate-awas` classes directly,
- * because an option button has to BE the bay rather than sit inside one.
- * They are kept because DESIGN_SYSTEM.md names them as the system's API and
- * the next surfaces are expected to use them; if the theory and dashboard
- * rebuilds end up reaching for the classes too, delete them rather than
- * keeping an API nothing calls.
- *
- * `Carriageway` and `LPlate` are deliberately absent until something needs
- * them.
  */
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /** Bay status. `open` is "available to start", never "empty". */
-export type BayState = "open" | "progress" | "done" | "fail";
+export type BayState = "open" | "progress" | "done" | "fail" | "locked";
 
 const BAY_STATE: Record<BayState, string> = {
   open: "bay-open",
   progress: "bay-progress",
   done: "bay-done",
   fail: "bay-fail",
+  locked: "bay-locked",
 };
 
 /**
@@ -102,6 +92,18 @@ export function Figure({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
   return <span className={cn("type-figure", className)} {...props} />;
+}
+
+export function Carriageway({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
+  return <section className={cn("carriageway", className)} {...props} />;
+}
+
+export function LPlate({ letter, verified = false, label }: { letter: "L" | "P"; verified?: boolean; label: string }) {
+  return <span className="inline-flex flex-col items-center gap-2">
+    <span className={cn("type-plate flex h-12 w-12 items-center justify-center border-2 text-3xl", !verified && "border-dashed")}
+      style={{ background: verified ? "rgb(var(--sign-info))" : "transparent", color: "rgb(var(--paint))", borderColor: "rgb(var(--paint))" }}>{letter}</span>
+    <span className="type-body text-xs text-center">{label}</span>
+  </span>;
 }
 
 /**

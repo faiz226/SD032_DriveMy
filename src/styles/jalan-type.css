@@ -1,26 +1,4 @@
-/* -----------------------------------------------------------------------------
-   Jalan type — loaded per route, not globally.
-   Fonts: Archivo (display/figure) · Barlow (body/label) · Barlow Condensed (plate)
-
-   These faces belong to Jalan, and Jalan currently owns one surface. Importing
-   them from index.css put them in the entry CSS, so every route paid for them
-   and the service worker precached them up front — a learner who never opened
-   an exam still downloaded ~332KB of type they would never see.
-
-   Importing this file from a converted surface instead lets Vite emit it with
-   that route's chunk. Unconverted routes carry nothing. As each surface moves
-   onto Jalan it imports this file too; Vite hoists it into one shared chunk, so
-   there is no per-route duplication and no growing transitional cost.
-
-   When the last route converts, this moves back into index.css and Inter /
-   JetBrains come out — at which point the cost is a straight swap, not an
-   addition.
-
-   Archivo uses wdth.css because the default entrypoint omits the width axis the
-   display role depends on. Barlow is pinned to its latin subset: the default
-   ships cyrillic, greek and vietnamese too, and this app is English and Bahasa
-   Melayu, both pure latin.
-   ----------------------------------------------------------------------------- */
+/* Shared Jalan typography. Legacy fonts remain while simulator work is separate. */
 @import "@fontsource-variable/archivo/wdth.css";
 @import "@fontsource/barlow/latin-400.css";
 @import "@fontsource/barlow/latin-500.css";

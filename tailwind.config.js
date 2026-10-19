@@ -82,10 +82,10 @@ export default {
       },
       fontFamily: {
         // Cal Sans for display headings when licensed; Inter 600 is the documented fallback
-        heading: ['"Cal Sans"', '"Inter Variable"', "Inter", "system-ui", "sans-serif"],
-        body: ['"Inter Variable"', "Inter", "system-ui", "sans-serif"],
+        heading: ['"Archivo Variable"', "Archivo", "system-ui", "sans-serif"],
+        body: ["Barlow", "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
-        sans: ['"Inter Variable"', "Inter", "system-ui", "sans-serif"],
+        sans: ["Barlow", "system-ui", "sans-serif"],
       },
       fontSize: {
         // Fluid type scale
@@ -107,7 +107,10 @@ export default {
       // Small elements: 6px (rounded-md), cards/panels: 12px (rounded-xl), modals: 16px (rounded-2xl)
       // We keep Tailwind defaults for rounded-xl/2xl and pin shadcn defaults to 6px.
       borderRadius: {
-        lg: "0.75rem",
+        lg: "var(--r-plate)",
+        xl: "var(--r-plate)",
+        "2xl": "var(--r-plate)",
+        "3xl": "var(--r-plate)",
         md: "var(--radius)",
         sm: "calc(var(--radius) - 2px)",
       },
@@ -122,8 +125,8 @@ export default {
           to: { height: "0" },
         },
         "fade-in": {
-          from: { opacity: "0", transform: "translateY(4px)" },
-          to:   { opacity: "1", transform: "translateY(0)" },
+          from: { opacity: "0" },
+          to:   { opacity: "1" },
         },
         "fade-out": {
           from: { opacity: "1", transform: "translateY(0)" },
@@ -138,8 +141,8 @@ export default {
           to:   { transform: "translateX(100%)" },
         },
         "scale-in": {
-          from: { opacity: "0", transform: "scale(0.95)" },
-          to:   { opacity: "1", transform: "scale(1)" },
+          from: { opacity: "0" },
+          to:   { opacity: "1" },
         },
         "spin-slow": {
           from: { transform: "rotate(0deg)" },
