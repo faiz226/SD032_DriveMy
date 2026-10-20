@@ -9,6 +9,23 @@ import { dir, rad, slopeHeight, slopeLocal } from '../geom';
 /** three.js position of a circuit point: X = x, Y = z (up), Z = -y. */
 export const toThree = (x: number, y: number, z = 0) => new THREE.Vector3(x, z, -y);
 
+/** Smooth value noise in [0, 1]: the grass's light and shade. */
+function smoothNoise(x: number, y: number) {
+  const hash = (i: number, j: number) => {
+    const h = Math.sin(i * 127.1 + j * 311.7) * 43758.5453;
+    return h - Math.floor(h);
+  };
+  const i = Math.floor(x);
+  const j = Math.floor(y);
+  const fx = x - i;
+  const fy = y - j;
+  const sx = fx * fx * (3 - 2 * fx);
+  const sy = fy * fy * (3 - 2 * fy);
+  const top = hash(i, j) + (hash(i + 1, j) - hash(i, j)) * sx;
+  const bottom = hash(i, j + 1) + (hash(i + 1, j + 1) - hash(i, j + 1)) * sx;
+  return top + (bottom - top) * sy;
+}
+
 export interface Trimesh { name: string; vertices: Float32Array; indices: Uint32Array }
 export interface BoxCollider { name: string; halfExtents: [number, number, number]; position: [number, number, number]; rotationY: number }
 export interface PoleCollider { index: number; position: [number, number, number]; radius: number; halfHeight: number }
@@ -495,8 +512,30 @@ export function buildWorld(c: CircuitData): WorldBuild {
     }
   }
   const boxes: BoxCollider[] = [];
+  // a building: rendered walls on a darker plinth, a band of windows round it, a door on its yard side (the south,
+  // where every one of them faces the yard), and the blue roof slab
+  const GLASS: RGB = [0.16, 0.22, 0.28];
   const building = (name: string, b: { centre: Vec2; size: Vec2; heading_deg: number }, height: number) => {
     box(b.centre, b.size, b.heading_deg, 0, height, [0.93, 0.91, 0.86]);
+    box(b.centre, [b.size[0] + 0.08, b.size[1] + 0.08], b.heading_deg, 0, 0.32, [0.56, 0.56, 0.54]);
+    const [ux, uy] = dir(rad(b.heading_deg));
+    const at = (along: number, across: number): Vec2 => [b.centre[0] + ux * along - uy * across, b.centre[1] + uy * along + ux * across];
+    const sill = 1.05;
+    const head = Math.min(height - 0.45, 2.05);
+    // windows along each long side, as many 1.4 m panes as fit with 0.8 m between them
+    const panes = Math.max(1, Math.floor((b.size[0] - 0.8) / 2.2));
+    for (const side of [-1, 1]) {
+      for (let k = 0; k < panes; k++) {
+        const along = (k - (panes - 1) / 2) * 2.2;
+        if (side < 0 && k === panes - 1) continue;   // the yard side keeps its last bay for the door
+        box(at(along, side * (b.size[1] / 2 + 0.02)), [1.4, 0.04], b.heading_deg, sill, head, GLASS);
+      }
+      // one window in each end wall
+      box(at(side * (b.size[0] / 2 + 0.02), 0), [0.04, Math.min(1.2, b.size[1] - 0.8)], b.heading_deg, sill, head, GLASS);
+    }
+    const doorAlong = ((panes - 1) / 2) * 2.2;
+    box(at(doorAlong, -(b.size[1] / 2 + 0.025)), [0.95, 0.05], b.heading_deg, 0, Math.min(height - 0.35, 2.1), [0.38, 0.29, 0.22]);
+    box(at(doorAlong, -(b.size[1] / 2 + 0.6)), [1.6, 1.2], b.heading_deg, 0, 0.04, [0.62, 0.62, 0.6]);   // its doorstep, flush
     box(b.centre, [b.size[0] + 2 * ROOF.over, b.size[1] + 2 * ROOF.over], b.heading_deg, height, height + ROOF.thick, [0.23, 0.43, 0.65]);
     boxes.push({ name, halfExtents: [b.size[0] / 2, height / 2, b.size[1] / 2], position: [b.centre[0], height / 2, -b.centre[1]], rotationY: rad(b.heading_deg) });
   };
@@ -547,9 +586,22 @@ export function buildWorld(c: CircuitData): WorldBuild {
 
   // ---------------------------------------------------------------- grass
   const [bx0, by0, bx1, by1] = c.site.bounds;
-  const grassGeo = new THREE.PlaneGeometry(bx1 - bx0 + 2 * GRASS_MARGIN, by1 - by0 + 2 * GRASS_MARGIN);
+  const grassGeo = new THREE.PlaneGeometry(bx1 - bx0 + 2 * GRASS_MARGIN, by1 - by0 + 2 * GRASS_MARGIN, 220, 220);
   grassGeo.rotateX(-Math.PI / 2);
   grassGeo.translate((bx0 + bx1) / 2, 0, -(by0 + by1) / 2);
+  {
+    // light and shade in patches: two octaves of smooth noise over the field, times the texture's own colour
+    const pos = grassGeo.getAttribute('position');
+    const shade = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = -pos.getZ(i);
+      const n = 0.65 * smoothNoise(x / 38, y / 38) + 0.35 * smoothNoise(x / 13 + 17, y / 13 + 5);
+      const k = 0.8 + 0.34 * n;
+      shade.set([k * 0.98, k, k * 0.94], i * 3);
+    }
+    grassGeo.setAttribute('color', new THREE.BufferAttribute(shade, 3));
+  }
   const grassUv = grassGeo.getAttribute('uv');
   for (let i = 0; i < grassUv.count; i++) grassUv.setXY(i, grassUv.getX(i) * (bx1 - bx0 + 2 * GRASS_MARGIN), grassUv.getY(i) * (by1 - by0 + 2 * GRASS_MARGIN));
 
@@ -557,7 +609,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
   const materials = {
     asphalt: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, metalness: 0 }),
     concrete: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0 }),
-    grass: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0 }),
+    grass: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0, vertexColors: true }),
   };
   const painted = (o: Partial<THREE.MeshStandardMaterialParameters> = {}) =>
     new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, metalness: 0, side: THREE.DoubleSide, ...o });

@@ -1,7 +1,7 @@
 // The land around the yard (the owner, 21 Oct: "beautify the landscape"): rain trees and palms on the grass
 // islands, in the grass inside the fence and in a belt of woodland outside it; bougainvillea along the fence and
-// round the booths; hazy hills on the horizon, a few clouds, the haze that softens distance; and the national
-// flag beside the office. Everything is made here, from a seeded random, so it is the same on every visit and
+// round the booths; street lights round the yard; rows of terrace houses beyond the trees; hazy hills on the
+// horizon, a few clouds, the haze that softens distance; and the national flag beside the office. Everything is made here, from a seeded random, so it is the same on every visit and
 // loads nothing. Nothing stands on the pavement, near a junction (a driver must see across it) or against a
 // booth, pole or signal; the trees the car could reach have trunks it cannot drive through.
 import { useFrame } from '@react-three/fiber';
@@ -64,14 +64,32 @@ const POINTS: Vec2[] = [
 ];
 const insideFence = (p: Vec2, m: number) => p[0] > FX0 + m && p[0] < FX1 - m && p[1] > FY0 + m && p[1] < FY1 - m;
 
+/** Walk the fence's inside, `inset` metres in, every `step` metres: each point and the way into the yard (radians). */
+function alongFence(inset: number, step: number): { at: Vec2; facing: number }[] {
+  const out: { at: Vec2; facing: number }[] = [];
+  const w = FX1 - FX0;
+  const h = FY1 - FY0;
+  for (let s = step / 2; s < 2 * (w + h); s += step) {
+    if (s < w) out.push({ at: [FX0 + s, FY0 + inset], facing: Math.PI / 2 });
+    else if (s < w + h) out.push({ at: [FX1 - inset, FY0 + s - w], facing: Math.PI });
+    else if (s < 2 * w + h) out.push({ at: [FX1 - (s - w - h), FY1 - inset], facing: -Math.PI / 2 });
+    else out.push({ at: [FX0 + inset, FY1 - (s - 2 * w - h)], facing: 0 });
+  }
+  return out;
+}
+
 /** Clear grass inside the fence: off the pavement by `edge`, clear of junctions, booths, poles and signals. */
-function clearGrass(p: Vec2, edge: number) {
+function clearGrass(p: Vec2, edge: number, points: Vec2[] = POINTS) {
   if (!insideFence(p, 1.6) || paved(p)) return false;
   if (RINGS.some((r) => ringDist(p, r) < edge)) return false;
   if (JUNCTIONS.some((j) => inRing(p, j) || ringDist(p, j) < 6)) return false;
   if (BOXES.some((b) => rectDist(p, b.centre, b.size) < 3.5)) return false;
-  return !POINTS.some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 2.5);
+  return !points.some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 2.5);
 }
+
+// street lights round the yard, on the grass inside the fence, facing in; placed before anything is planted
+const LIGHTS = alongFence(2.4, 21).filter((l) => clearGrass(l.at, 0.9));
+const POINTS_AND_LIGHTS = [...POINTS, ...LIGHTS.map((l) => l.at)];
 
 type Kind = 'rain' | 'palm';
 interface Tree { at: Vec2; kind: Kind; scale: number; turn: number; tone: number; solid: boolean }
@@ -89,7 +107,7 @@ function plant(fewer: boolean) {
   for (let x = FX0 + 2; x < FX1 - 2; x += 2.5) {
     for (let y = FY0 + 2; y < FY1 - 2; y += 2.5) {
       const p: Vec2 = [x + (rnd() - 0.5) * 2, y + (rnd() - 0.5) * 2];
-      if (rnd() > 0.5 || !clearGrass(p, 2.2) || !spaced(p, 6.5)) continue;
+      if (rnd() > 0.5 || !clearGrass(p, 2.2, POINTS_AND_LIGHTS) || !spaced(p, 6.5)) continue;
       const roomy = RINGS.every((r) => ringDist(p, r) > 3.6);
       tree(p, roomy && rnd() < 0.6 ? 'rain' : 'palm', true);
     }
@@ -111,7 +129,7 @@ function plant(fewer: boolean) {
   // bougainvillea: along the inside of the fence, round the booths and the office, and ringing the roundabout
   const bushes: Bush[] = [];
   const bush = (at: Vec2, pink = rnd() < 0.45) => {
-    if (!clearGrass(at, 1.2) || trees.some((t) => Math.hypot(t.at[0] - at[0], t.at[1] - at[1]) < 2)) return;
+    if (!clearGrass(at, 1.2, POINTS_AND_LIGHTS) || trees.some((t) => Math.hypot(t.at[0] - at[0], t.at[1] - at[1]) < 2)) return;
     bushes.push({ at, scale: 0.75 + rnd() * 0.5, tone: rnd(), pink });
   };
   for (let s = 0; s < 2 * (FX1 - FX0 + FY1 - FY0); s += 4.5) {
@@ -298,6 +316,114 @@ function Clouds() {
   return <>{sprites.map((s, i) => <primitive key={i} object={s} />)}</>;
 }
 
+// ---------------------------------------------------------------- street lights
+
+const LAMP = { height: 7, arm: 1.6 };
+
+/** A street light about its foot: a tapering pole, an arm reaching along +x, a lamp head at its end. */
+function streetLight() {
+  return merge([
+    new THREE.CylinderGeometry(0.06, 0.1, LAMP.height, 8).translate(0, LAMP.height / 2, 0),
+    new THREE.BoxGeometry(LAMP.arm, 0.07, 0.07).translate(LAMP.arm / 2, LAMP.height - 0.1, 0),
+    new THREE.BoxGeometry(0.62, 0.12, 0.26).translate(LAMP.arm - 0.12, LAMP.height - 0.2, 0),
+  ]);
+}
+
+function StreetLights({ shadows }: { shadows: boolean }) {
+  const mesh = useMemo(() => {
+    const m = new THREE.InstancedMesh(streetLight(), new THREE.MeshStandardMaterial({ color: '#9aa1a6', metalness: 0.5, roughness: 0.45 }), Math.max(1, LIGHTS.length));
+    m.count = LIGHTS.length;
+    LIGHTS.forEach((l, i) => {
+      q.setFromAxisAngle(UP, l.facing);   // the arm (+x) reaches into the yard
+      m.setMatrixAt(i, m4.compose(toThree(l.at[0], l.at[1], 0), q, new THREE.Vector3(1, 1, 1)));
+    });
+    m.castShadow = shadows;
+    m.frustumCulled = false;
+    return m;
+  }, [shadows]);
+  useEffect(() => () => { mesh.geometry.dispose(); (mesh.material as THREE.Material).dispose(); mesh.dispose(); }, [mesh]);
+  return (
+    <>
+      <primitive object={mesh} />
+      <RigidBody type="fixed" colliders={false}>
+        {LIGHTS.map((l, i) => <CylinderCollider key={i} args={[LAMP.height / 2, 0.1]} position={toThree(l.at[0], l.at[1], LAMP.height / 2).toArray()} />)}
+      </RigidBody>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------- terrace houses
+
+// Rows of double-storey terrace houses beyond the woodland, each house its own colour under one long tiled roof,
+// with the road in front of them; past the trees' belt, so the haze softens them
+const TERRACE = { w: 6.5, d: 12, h: 6.2, roof: 2.0, out: 88, road: 7 };
+const WALLS_PALETTE = ['#efe6d2', '#f3edd9', '#e4ead2', '#f1dfc8', '#e8e8e2', '#dfe6ea'].map((c) => new THREE.Color(c));
+const TILES = new THREE.Color('#9c4a2f');
+
+/** The rows: each a run of houses along one side of the yard, facing it. */
+function terraceRows() {
+  const rnd = seeded(31);
+  const rows: { start: Vec2; along: Vec2; count: number }[] = [];
+  const midX = (FX0 + FX1) / 2;
+  const midY = (FY0 + FY1) / 2;
+  const T = TERRACE;
+  rows.push({ start: [midX - 5 * T.w, FY1 + T.out], along: [1, 0], count: 10 });
+  rows.push({ start: [FX1 + T.out, midY - 4 * T.w], along: [0, 1], count: 8 });
+  rows.push({ start: [midX + 4 * T.w, FY0 - T.out], along: [-1, 0], count: 8 });
+  return { rows, tone: () => rnd() };
+}
+
+function Terraces() {
+  const { walls, roofs, roads } = useMemo(() => {
+    const { rows, tone } = terraceRows();
+    const T = TERRACE;
+    const houses: { at: Vec2; turn: number }[] = [];
+    const roofParts: THREE.BufferGeometry[] = [];
+    const roadParts: THREE.BufferGeometry[] = [];
+    for (const r of rows) {
+      const turn = Math.atan2(r.along[1], r.along[0]);   // the row's length along the house's local x
+      const len = r.count * T.w;
+      // which side is the yard: the houses' fronts and the road face it
+      const inward: Vec2 = [-r.along[1], r.along[0]];
+      const towardYard = (CENTRE[0] - r.start[0]) * inward[0] + (CENTRE[1] - r.start[1]) * inward[1] > 0 ? 1 : -1;
+      for (let k = 0; k < r.count; k++) houses.push({ at: [r.start[0] + r.along[0] * (k + 0.5) * T.w, r.start[1] + r.along[1] * (k + 0.5) * T.w], turn });
+      const mid: Vec2 = [r.start[0] + (r.along[0] * len) / 2, r.start[1] + (r.along[1] * len) / 2];
+      // one tiled roof over the row, its ridge along it (a triangular prism)
+      const roof = new THREE.CylinderGeometry(T.roof, T.roof, len + 0.6, 3, 1).rotateZ(Math.PI / 2).rotateX(-Math.PI / 2)
+        .scale(1, 1, T.d / (2 * T.roof * Math.cos(Math.PI / 6)) * 1.04);
+      roof.rotateY(turn).translate(mid[0], T.h + T.roof * 0.5, -mid[1]);
+      roofParts.push(roof);
+      // the road in front, toward the yard
+      const ahead = towardYard * (T.d / 2 + 2 + T.road / 2);
+      const road = new THREE.PlaneGeometry(len + 30, T.road).rotateX(-Math.PI / 2).rotateY(turn)
+        .translate(mid[0] + inward[0] * ahead, 0.01, -(mid[1] + inward[1] * ahead));
+      roadParts.push(road);
+    }
+    const wallMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(T.w - 0.08, T.h, T.d).translate(0, T.h / 2, 0), new THREE.MeshLambertMaterial({ color: '#ffffff' }), houses.length);
+    houses.forEach((hs, i) => {
+      q.setFromAxisAngle(UP, hs.turn);
+      wallMesh.setMatrixAt(i, m4.compose(toThree(hs.at[0], hs.at[1], 0), q, new THREE.Vector3(1, 1, 1)));
+      wallMesh.setColorAt(i, pick(WALLS_PALETTE, tone()));
+    });
+    wallMesh.frustumCulled = false;
+    return {
+      walls: wallMesh,
+      roofs: new THREE.Mesh(merge(roofParts), new THREE.MeshLambertMaterial({ color: TILES })),
+      roads: new THREE.Mesh(merge(roadParts), new THREE.MeshLambertMaterial({ color: '#4b4d50' })),
+    };
+  }, []);
+  useEffect(() => () => {
+    for (const m of [walls, roofs, roads]) { m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
+  }, [walls, roofs, roads]);
+  return (
+    <>
+      <primitive object={walls} />
+      <primitive object={roofs} />
+      <primitive object={roads} />
+    </>
+  );
+}
+
 // ---------------------------------------------------------------- the flag
 
 const FLAG = { w: 2.4, h: 1.2, pole: 7.5 };
@@ -414,6 +540,8 @@ export function Scenery({ tier = 'low' }: { tier?: Tier }) {
     <>
       <fog attach="fog" args={[HAZE, 160, 720]} />
       <Plants tier={tier} />
+      <StreetLights shadows={tier !== 'low'} />
+      <Terraces />
       <Hills />
       <Clouds />
       <Flag />
@@ -425,3 +553,4 @@ export function Scenery({ tier = 'low' }: { tier?: Tier }) {
 export const plantedForTests = () => plant(false);
 export const pavedForTests = paved;
 export const shapesForTests = () => [rainTree(), palm()];
+export const lightsForTests = () => LIGHTS;

@@ -1,7 +1,7 @@
 // The land round the yard: nothing on the pavement or in a junction, woods outside, a few trees within.
 import { describe, expect, it } from 'vitest';
 import { circuit } from '../data';
-import { pavedForTests, plantedForTests, shapesForTests } from './Scenery';
+import { lightsForTests, pavedForTests, plantedForTests, shapesForTests } from './Scenery';
 
 const [x0, y0, x1, y1] = circuit.props.fence;
 const inside = ([x, y]: [number, number]) => x > x0 && x < x1 && y > y0 && y < y1;
@@ -25,8 +25,11 @@ describe('the scenery', () => {
     expect(within.length).toBeGreaterThan(10);
     expect(within.every((t) => t.solid)).toBe(true);
   });
-  it('never on the pavement or in a junction, tree or bush', () => {
-    for (const p of [...trees, ...bushes].map((t) => t.at)) {
+  it('never on the pavement or in a junction, tree, bush or street light; the lights all inside the fence', () => {
+    const lights = lightsForTests();
+    expect(lights.length).toBeGreaterThan(8);
+    expect(lights.every((l) => inside(l.at))).toBe(true);
+    for (const p of [...trees, ...bushes, ...lights].map((t) => t.at)) {
       expect(pavedForTests(p), `${p}`).toBe(false);
       for (const j of circuit.traffic!.junctions) expect(inPoly(p, j.polygon), `${p} in ${j.id}`).toBe(false);
     }
