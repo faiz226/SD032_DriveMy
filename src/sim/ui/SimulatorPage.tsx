@@ -26,6 +26,7 @@ import { TIERS, type TierPref, useQualityPref, useTier } from '../quality';
 import { runRecord } from '../record';
 import { TouchControls } from '../TouchControls';
 import { Daylight, TopDownCamera, World } from '../world/World';
+import { Scenery } from '../world/Scenery';
 import { Hud, HUD_PLATE } from './Hud';
 import { ModePanel, type PanelMode } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
@@ -231,6 +232,7 @@ export function SimulatorPage() {
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused || phase !== 'drive'}>
             <World tier={tier} />
+            <Scenery tier={tier} />
             <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown && !chaseOn} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
             <OtherCars tier={tier} />
             <TrafficView tier={tier} traffic={getTraffic} />

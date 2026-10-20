@@ -1,5 +1,5 @@
 // The practice yard in the scene: the cached meshes, their textures, and the fixed colliders.
-import { Environment, OrthographicCamera, Sky, useTexture } from '@react-three/drei';
+import { Environment, OrthographicCamera, useTexture } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRapier } from '@react-three/rapier';
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
@@ -75,7 +75,7 @@ export function Daylight({ shadows = false, follow }: { shadows?: boolean; follo
   });
   return (
     <>
-      <Sky distance={4500} sunPosition={SUN.toArray()} turbidity={3} rayleigh={0.8} mieCoefficient={0.004} />
+      <SkyBackdrop />
       <Environment frames={1} resolution={64}>
         <SkyDome />
       </Environment>
@@ -96,6 +96,42 @@ export function Daylight({ shadows = false, follow }: { shadows?: boolean; follo
         shadow-camera-far={120}
       />
     </>
+  );
+}
+
+// The sky seen: a clear tropical one, deep blue overhead, pale at the horizon and warmer toward the sun; the
+// scenery's haze is its horizon colour (Scenery.tsx, HAZE), so distance fades into it. Painted, not the Sky shader,
+// whose horizon read as white once tone-mapped.
+const SKY = { zenith: new THREE.Color('#3b7bcb'), high: new THREE.Color('#6ea6df'), horizon: new THREE.Color('#cfe0ec'), glow: new THREE.Color('#fff4dc') };
+const BACKDROP_R = 500;   // inside the eyes' 600 m; it follows the camera, drawn first and behind everything
+
+function SkyBackdrop() {
+  const geometry = useMemo(() => {
+    const g = new THREE.SphereGeometry(BACKDROP_R, 48, 24);
+    const pos = g.attributes.position;
+    const colors = new Float32Array(pos.count * 3);
+    const c = new THREE.Color();
+    const sun = SUN.clone().setY(0).normalize();
+    const p = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) {
+      p.fromBufferAttribute(pos, i).normalize();
+      const up = Math.max(0, p.y);
+      if (up < 0.25) c.copy(SKY.horizon).lerp(SKY.high, up / 0.25);
+      else c.copy(SKY.high).lerp(SKY.zenith, Math.min(1, (up - 0.25) / 0.6));
+      const toward = Math.max(0, p.clone().setY(0).normalize().dot(sun));
+      c.lerp(SKY.glow, 0.45 * Math.pow(toward, 6) * (1 - Math.min(1, up / 0.35)));   // the sun's side, low down
+      c.toArray(colors, i * 3);
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return g;
+  }, []);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  const dome = useRef<THREE.Mesh>(null);
+  useFrame(({ camera }) => { dome.current?.position.copy(camera.position); });
+  return (
+    <mesh ref={dome} geometry={geometry} renderOrder={-10} frustumCulled={false}>
+      <meshBasicMaterial vertexColors side={THREE.BackSide} depthWrite={false} depthTest={false} fog={false} toneMapped={false} />
+    </mesh>
   );
 }
 

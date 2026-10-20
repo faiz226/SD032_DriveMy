@@ -182,8 +182,11 @@ export function RoofNote() {
     g.lineJoin = 'round';
     // white paint, edged dark so it reads on the pale roof
     const paint = (text: string, size: number, y: number) => {
-      g.font = size > 0.3 ? `bold ${Math.round(c.height * size)}px sans-serif` : `${Math.round(c.height * size)}px sans-serif`;
-      g.lineWidth = c.height * size * 0.14;
+      const font = (px: number) => `${size > 0.3 ? 'bold ' : ''}${Math.round(px)}px sans-serif`;
+      g.font = font(c.height * size);
+      const px = c.height * size * Math.min(1, (c.width * 0.92) / g.measureText(text).width);   // the roof's width at most
+      g.font = font(px);
+      g.lineWidth = px * 0.14;
       g.strokeStyle = 'rgba(16, 28, 44, 0.85)';
       g.strokeText(text, c.width / 2, c.height * y);
       g.fillStyle = '#f4f1e8';

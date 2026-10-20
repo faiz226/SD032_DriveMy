@@ -56,7 +56,7 @@ const BOOTH_H = 2.6;
 export const OFFICE_H = 3.2;
 export const ROOF = { thick: 0.15, over: 0.25 };
 const FENCE = { h: 1.8, post: 0.06, every: 3, rail: 0.04 };
-const GRASS_MARGIN = 60;
+const GRASS_MARGIN = 500;   // the grass runs on out to the haze (Scenery.tsx): no edge to the world
 
 type RGB = [number, number, number];
 type P3 = THREE.Vector3;

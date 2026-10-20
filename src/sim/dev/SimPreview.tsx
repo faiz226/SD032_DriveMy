@@ -29,6 +29,7 @@ const DEMO: Verdict = {
   ],
 };
 import { Daylight, TopDownCamera, World } from '../world/World';
+import { Scenery } from '../world/Scenery';
 
 export function SimPreview() {
   const [params] = useSearchParams();
@@ -53,6 +54,7 @@ export function SimPreview() {
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused}>
             <World tier={tier} />
+            <Scenery tier={tier} />
             <SwiftCar
               ref={car}
               quality={TIERS[tier]}
