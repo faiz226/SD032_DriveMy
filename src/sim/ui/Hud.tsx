@@ -12,12 +12,14 @@ import { circuit, rules } from '../data';
 import { useDriver, ZOOM_STEP } from '../input';
 import { blinkOn, lampClock } from '../physics/Lamps';
 import { MIRROR_PAD, mirrorScale } from '../physics/mirrors';
+import { useEggs } from './Eggs';
 import { useRun } from './run';
 import { faultSound, tickSound } from './sound';
 import { stationName } from './Verdict';
 
 const TIP_S = 6;          // rules.json modes: tips show for 6 s when a station arms
 const TOAST_S = 3.5;
+const EGG_S = 4.5;
 const INTERIOR_MIRROR_H = 60;
 
 // the HUD's own surface: asphalt with paint, the on-road palette
@@ -113,6 +115,7 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
       <div className="absolute left-1/2 flex w-[min(60vw,420px)] -translate-x-1/2 flex-col items-center gap-2" style={{ top: belowMirror }}>
         <p className={cn(HUD_PLATE, 'type-label px-2 py-0.5 text-xs')}>{t(free ? 'sim.hud.free' : 'sim.label')}</p>
         {!free && <Toasts />}
+        <EggLine />
       </div>
 
       <Readouts bottom={touch ? 72 : 12} />
@@ -160,6 +163,20 @@ function StationPanel({ station, now }: { station: StationProgress; now: number 
       {tip && <p className="type-label mt-1 text-sm">{t(`sim.tips.${station.id}` as TranslationKey)}</p>}
     </div>
   );
+}
+
+/** A surprise's line, for a few seconds. */
+function EggLine() {
+  const { t } = useLanguage();
+  const toast = useEggs((s) => s.toast);
+  const [shown, setShown] = useState<number | null>(null);
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setShown(toast.at), EGG_S * 1000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+  if (!toast || shown === toast.at) return null;
+  return <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(toast.key)}</p>;
 }
 
 /** One per fault, in the order they happened, each with a short tone. Kerbs and poles count once per contact. */

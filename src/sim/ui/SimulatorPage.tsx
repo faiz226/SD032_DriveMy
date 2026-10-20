@@ -31,7 +31,8 @@ import { ModePanel, type PanelMode } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
 import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
-import { engineSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
+import { engineSound, hornSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
+import { Eggs, RoofNote, useEggs, useKonami, ZebraCat } from './Eggs';
 import { LoadingMap } from './LoadingMap';
 import { EXPLORE_CANVAS, ExploreHud, SpectatorCamera } from './Spectator';
 import { type SaveStatus, VerdictView } from './Verdict';
@@ -89,6 +90,9 @@ export function SimulatorPage() {
   const phaseRef = useRef<Phase>('choose');
   const [mode, setMode] = useState<PanelMode>(() => modeFor(id));
   const free = useRef(false);   // the run under way is free drive: the rules never see it
+  const eggs = useRef<Eggs | null>(null);   // free drive's surprises
+  const getEggs = useCallback(() => eggs.current, []);
+  const lastSample = useRef<VehicleSample | null>(null);
   const [drill, setDrill] = useState<StationId>(isStation(id) ? id : 'hill-start');
   const [start] = useState<Pose>(() => (isStation(id) ? stationStart(id) : spawnPose()));
   const [ready, setReady] = useState(false);
@@ -105,13 +109,21 @@ export function SimulatorPage() {
   // the autopilot never loses focus to a person, so it never pauses for it
   useKeyboardControls(phase === 'drive' && !autopilotOn);
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
-  useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead }); }, []);
+  useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead, __simCar: () => car.current, __simEggs: getEggs }); }, [getEggs]);
   useEffect(() => () => {
     useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false, indicator: 0 });
     stopEngine();
   }, []);
   useEffect(() => { if (portrait) useDriver.getState().set({ paused: true }); }, [portrait]);
   useEffect(() => pauseSound(paused), [paused]);
+  useKonami(mode === 'free' && phase === 'drive');
+  // the horn, in every mode; in free drive the cars ahead flash their hazards back
+  useEffect(() => useDriver.subscribe((now, before) => {
+    if (now.horn === before.horn || phaseRef.current !== 'drive') return;
+    hornSound();
+    const at = lastSample.current;
+    if (free.current && at && traffic.current.honk(at) > 0) useEggs.getState().say('sim.egg.wave');
+  }), []);
   // the instructor: each station's brief as it arms, its outcome, and the verdict
   useEffect(() => useRun.subscribe((now, before) => {
     if (phaseRef.current !== 'drive') return;
@@ -133,10 +145,14 @@ export function SimulatorPage() {
     performance.mark('sim:start');
     traffic.current = new Traffic(circuit, swift);
     free.current = m === 'free';
+    eggs.current = m === 'free' ? new Eggs() : null;
     auto.current = autopilotOn && m !== 'free' ? new Autopilot(autopilotMode === 'faults', getTraffic) : null;
     const pose = m === 'free' ? spawnPose() : useRun.getState().begin(m, d);
     car.current?.teleport(pose.at, pose.heading);
-    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false, indicator: 0 });
+    useDriver.getState().set({
+      throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false, indicator: 0,
+      ...(m !== 'free' && { rainbow: false }),   // the marked modes drive the plain red Swift
+    });
     setMode(m);
     setDrill(d);
     setSave(null);
@@ -175,7 +191,11 @@ export function SimulatorPage() {
     const driver = useDriver.getState();
     const met = traffic.current.step(dt, sample);
     engineSound(sample.speedKmh, driver.throttle);
-    if (free.current) return;   // free drive: nothing is marked
+    lastSample.current = sample;
+    if (free.current) {   // free drive: nothing is marked; the surprises watch instead
+      eggs.current?.step(sample, dt);
+      return;
+    }
     const run = useRun.getState();
     run.step(sample, [...events, ...met], dt, driver.topDown);
     if (auto.current) useDriver.getState().set(auto.current.next(sample, dt));
@@ -217,6 +237,8 @@ export function SimulatorPage() {
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
           {mode !== 'free' && <WhereNext />}
+          <ZebraCat eggs={getEggs} />
+          <RoofNote />
         </Suspense>
         <TopDownCamera active={topDown} zoom={zoomNow} onZoom={zoomBy} follow={carGroup} />
         {phase === 'explore' && <SpectatorCamera from={carGroup} />}

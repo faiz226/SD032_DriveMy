@@ -19,6 +19,7 @@ const REHIT_S = 1.0;          // a contact with the same car counts again only a
 const ROOM_M = 1.0;           // junctions closer than a car's length plus this are taken together, as one
 const SIGNAL_M = 30;          // a car turning at a junction indicates from this far before it until it is through
 const SIGNAL_TURN = 0.5;      // radians: a junction crossed with less heading change than this is straight on
+const HONK = { m: 18, cos: 0.3, s: 2.4 };   // free drive: cars this close ahead of the horn flash their hazards this long
 
 /**
  * Junctions a path meets one after another, closer than a car: a car taking the first must take them all, or it
@@ -28,7 +29,7 @@ const SIGNAL_TURN = 0.5;      // radians: a junction crossed with less heading c
 interface Chain { ids: string[]; held: string[]; sIn: number; sOut: number }
 
 /** steer: the front wheels' angle, + left; indicator: 1 left, -1 right (as the steering wheel's sign). */
-export interface TrafficCar { id: string; kind: 'loop'; loop: string; x: number; y: number; heading: number; kmh: number; braking: boolean; steer: number; indicator: -1 | 0 | 1 }
+export interface TrafficCar { id: string; kind: 'loop'; loop: string; x: number; y: number; heading: number; kmh: number; braking: boolean; steer: number; indicator: -1 | 0 | 1; hazard: boolean }
 
 interface Car {
   id: string;
@@ -40,6 +41,7 @@ interface Car {
   a: number;
   stops: { s: number; signal: string; group: SignalGroup }[];         // where the path crosses a stop line (front bumper)
   chains: Chain[];
+  hazardUntil: number;  // the run's clock until which its hazard lamps flash (free drive's horn)
 }
 
 interface Body { id: string; x: number; y: number; heading: number; v: number; learner: boolean }
@@ -77,7 +79,7 @@ export class Traffic {
         for (let k = 0; k < lp.cars; k++) {
           const s = path.wrap(path.length * (k / lp.cars + 0.21 * li));
           this.cars.push({ id: `${lp.id}:${k}`, loop: lp.id, path, kmh: lp.kmh, s, v: lp.kmh / 3.6 / 2, a: 0,
-            stops: this.stopsOn(path), chains: this.chainsOn(path) });
+            stops: this.stopsOn(path), chains: this.chainsOn(path), hazardUntil: -1 });
         }
       });
     }
@@ -180,8 +182,23 @@ export class Traffic {
       const p = c.path.pose(c.s);
       const steer = Math.atan(wrapPi(c.path.pose(c.s + this.wheelbase).heading - p.heading));
       return { id: c.id, kind: 'loop' as const, loop: c.loop, x: p.x, y: p.y, heading: p.heading, kmh: c.v * 3.6,
-        braking: c.a < -0.5 || c.v < 0.3, steer, indicator: this.indicatorOf(c) };
+        braking: c.a < -0.5 || c.v < 0.3, steer, indicator: this.indicatorOf(c), hazard: this.t < c.hazardUntil };
     });
+  }
+
+  /** Free drive's horn, from the learner's car: the cars close ahead flash their hazard lamps back. How many did. */
+  honk(learner: VehicleSample): number {
+    let n = 0;
+    for (const c of this.cars) {
+      const p = c.path.pose(c.s);
+      const dx = p.x - learner.x;
+      const dy = p.y - learner.y;
+      const d = Math.hypot(dx, dy);
+      if (d > HONK.m || (dx * Math.cos(learner.heading) + dy * Math.sin(learner.heading)) / (d || 1) < HONK.cos) continue;
+      c.hazardUntil = this.t + HONK.s;
+      n++;
+    }
+    return n;
   }
 
   /** The side a car indicates: toward its turn at the junction ahead, from SIGNAL_M before it until it is through. */

@@ -33,6 +33,53 @@ export function faultSound() {
   tone.stop(t + 0.2);
 }
 
+/** The horn: two tones together, as a car's twin horns sound, for as long as a tap. */
+export function hornSound() {
+  if (!ctx || ctx.state !== 'running') return;
+  const t = ctx.currentTime;
+  const level = ctx.createGain();
+  const tone = ctx.createBiquadFilter();
+  tone.type = 'lowpass';
+  tone.frequency.value = 1800;
+  level.gain.setValueAtTime(0.0001, t);
+  level.gain.exponentialRampToValueAtTime(0.09, t + 0.02);
+  level.gain.setValueAtTime(0.09, t + 0.32);
+  level.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+  tone.connect(level).connect(ctx.destination);
+  for (const f of [415, 510]) {
+    const horn = ctx.createOscillator();
+    horn.type = 'sawtooth';
+    horn.frequency.value = f;
+    horn.connect(tone);
+    horn.start(t);
+    horn.stop(t + 0.42);
+  }
+}
+
+/** A cat's meow: a rising and falling cry. */
+export function meowSound() {
+  if (!ctx || ctx.state !== 'running') return;
+  const t = ctx.currentTime;
+  const cry = ctx.createOscillator();
+  const mouth = ctx.createBiquadFilter();
+  const level = ctx.createGain();
+  cry.type = 'sawtooth';
+  cry.frequency.setValueAtTime(520, t);
+  cry.frequency.exponentialRampToValueAtTime(880, t + 0.22);
+  cry.frequency.exponentialRampToValueAtTime(560, t + 0.6);
+  mouth.type = 'bandpass';
+  mouth.frequency.setValueAtTime(900, t);
+  mouth.frequency.linearRampToValueAtTime(1500, t + 0.25);
+  mouth.frequency.linearRampToValueAtTime(800, t + 0.6);
+  mouth.Q.value = 4;
+  level.gain.setValueAtTime(0.0001, t);
+  level.gain.exponentialRampToValueAtTime(0.12, t + 0.06);
+  level.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
+  cry.connect(mouth).connect(level).connect(ctx.destination);
+  cry.start(t);
+  cry.stop(t + 0.7);
+}
+
 /** The indicator relay, once per change: a short click, higher as the lamps light than as they go out. */
 export function tickSound(on: boolean) {
   if (!ctx || ctx.state !== 'running') return;

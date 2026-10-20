@@ -53,8 +53,8 @@ const PAINT_LIFT = 0.012;      // paint sits just above the surface
 const GUARD_M = 1.2;           // invisible guard rails above a slope's walls: the car cannot fall off
 const RAMP_END_WALL_M = 0.45;  // the wall at the end of the ramp's platform stands this far above the deck
 const BOOTH_H = 2.6;
-const OFFICE_H = 3.2;
-const ROOF = { thick: 0.15, over: 0.25 };
+export const OFFICE_H = 3.2;
+export const ROOF = { thick: 0.15, over: 0.25 };
 const FENCE = { h: 1.8, post: 0.06, every: 3, rail: 0.04 };
 const GRASS_MARGIN = 60;
 

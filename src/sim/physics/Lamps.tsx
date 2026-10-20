@@ -6,8 +6,8 @@ import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { SWIFT_2022 as CAR } from './cars/swift-2022';
 
-/** What a car's lamps show. indicator: 1 left, -1 right (as the steering wheel's sign). */
-export interface LampState { brake: boolean; head: boolean; reverse: boolean; indicator: -1 | 0 | 1 }
+/** What a car's lamps show. indicator: 1 left, -1 right (as the steering wheel's sign); hazard: both sides flash. */
+export interface LampState { brake: boolean; head: boolean; reverse: boolean; indicator: -1 | 0 | 1; hazard?: boolean }
 
 // 90 +/- 30 flashes a minute, lit half the time (UN R6, which JPJ type approval follows)
 export const BLINK_S = 60 / 85;
@@ -43,7 +43,7 @@ export function lampColour(lamp: Lamp, s: LampState, t: number, out: THREE.Color
     case 'stop': return on(RED, s.brake ? 2 : 0);
     case 'reverse': return on(WHITE, s.reverse ? 2 : 0);
     case 'head': return on(WHITE, s.head ? 2.2 : 0);
-    default: return on(AMBER, s.indicator !== 0 && lamp.side === -s.indicator && blinkOn(t) ? 2.2 : 0);   // left lamps are on the -z side
+    default: return on(AMBER, (s.hazard || (s.indicator !== 0 && lamp.side === -s.indicator)) && blinkOn(t) ? 2.2 : 0);   // left lamps: the -z side
   }
 }
 

@@ -12,11 +12,15 @@ export interface DriverState extends Controls {
   headlights: boolean;
   /** Free drive's view from behind the car. */
   chase: boolean;
+  /** When the horn last sounded (performance.now()); the page plays it and the traffic hears it. */
+  horn: number;
+  /** Free drive's secret: the Swift's paint in rainbow. */
+  rainbow: boolean;
   /** The top-down view's zoom: 1 shows the whole yard; above 1 it follows the car. */
   zoom: number;
   speedKmh: number;                                   // written by the car each step, for the gear rule
   notice: { key: 'stopFirst'; at: number } | null;    // shown by the screens as a toast
-  set(p: Partial<Controls & { paused: boolean; topDown: boolean; indicator: -1 | 0 | 1; headlights: boolean; chase: boolean }>): void;
+  set(p: Partial<Controls & { paused: boolean; topDown: boolean; indicator: -1 | 0 | 1; headlights: boolean; chase: boolean; horn: number; rainbow: boolean }>): void;
   /** That side's indicator on, or off if it is on already. */
   toggleIndicator(side: -1 | 1): void;
   /** D <-> R, only when stopped. Otherwise a "Stop first" notice. */
@@ -33,7 +37,7 @@ export const ZOOM_STEP = 1.5;   // one press of a zoom button or key
 
 export const useDriver = create<DriverState>((set, get) => ({
   throttle: 0, brake: 0, handbrake: false, gear: 'D', wheel: 0,
-  paused: false, topDown: false, indicator: 0, headlights: false, chase: false, zoom: 1, speedKmh: 0, notice: null,
+  paused: false, topDown: false, indicator: 0, headlights: false, chase: false, horn: 0, rainbow: false, zoom: 1, speedKmh: 0, notice: null,
   set: (p) => set(p),
   toggleIndicator: (side) => set({ indicator: get().indicator === side ? 0 : side }),
   zoomBy: (f) => set({ zoom: Math.min(ZOOM_MAX, Math.max(1, get().zoom * f)) }),
@@ -100,7 +104,7 @@ export function useTouchUi(): boolean {
   return pref === 'on' || (pref === 'auto' && device);
 }
 
-/** Keyboard: W/Up throttle, S/Down brake (never reverse), A/D or Left/Right steer, R gear, Space handbrake, P or Esc pause, T top-down, +/- its zoom, Q over the left shoulder, E down out of the driver's window, Z and C the left and right indicators, L the headlamps, V free drive's chase view. */
+/** Keyboard: W/Up throttle, S/Down brake (never reverse), A/D or Left/Right steer, R gear, Space handbrake, P or Esc pause, T top-down, +/- its zoom, Q over the left shoulder, E down out of the driver's window, Z and C the left and right indicators, L the headlamps, H the horn, V free drive's chase view. */
 export function useKeyboardControls(enabled = true) {
   useEffect(() => {
     if (!enabled) return;
@@ -131,6 +135,7 @@ export function useKeyboardControls(enabled = true) {
         case 'KeyC': d.toggleIndicator(-1); break;
         case 'KeyL': d.set({ headlights: !d.headlights }); break;
         case 'KeyV': d.set({ chase: !d.chase }); break;
+        case 'KeyH': d.set({ horn: performance.now() }); break;
         case 'Equal': case 'NumpadAdd': d.zoomBy(ZOOM_STEP); break;
         case 'Minus': case 'NumpadSubtract': d.zoomBy(1 / ZOOM_STEP); break;
         default:

@@ -64,6 +64,18 @@ function setGlow(m: THREE.MeshStandardMaterial | null, k: number) {
   if (m && m.emissiveIntensity !== k) m.emissiveIntensity = k;
 }
 
+/** The red paint (opaque, red, nothing else in it): free drive's secret code turns it to rainbow. */
+const isPaint = (m: THREE.MeshStandardMaterial) => !m.transparent && m.color.r > 0.4 && m.color.g < 0.1 && m.color.b < 0.1;
+interface Paint { m: THREE.MeshStandardMaterial; base: THREE.Color; lightness: number }
+
+/** The paint for this frame: its own red, or a hue running slowly round (outside the component, as setGlow). */
+function setPaint(paints: Paint[], rainbow: boolean, t: number) {
+  for (const p of paints) {
+    if (rainbow) p.m.color.setHSL((t * 0.08) % 1, 0.9, p.lightness);
+    else if (!p.m.color.equals(p.base)) p.m.color.copy(p.base);
+  }
+}
+
 function poseAt(at: Vec2, heading: number) {
   const ground = getWorld(circuit).surfaceHeight(at[0], at[1]);
   return { x: at[0], y: ground + CAR.wheelRadius + 0.02, z: -at[1], yaw: heading };
@@ -85,11 +97,11 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       if (!mesh.isMesh) return;
       mesh.castShadow = shadows;
       const m = mesh.material as THREE.MeshPhysicalMaterial;
-      if (m.name === 'R_Light_Metal') mesh.material = m.clone();   // the tail lamps: lit by this car's brake alone
-      else if (!clearcoat && m.clearcoat) {
-        const plain = m.clone();
-        plain.clearcoat = 0;
-        mesh.material = plain;
+      // this car's own copy: the tail lamps (lit by its brake), the paint (free drive's rainbow), or without clearcoat
+      if (m.name === 'R_Light_Metal' || isPaint(m) || (!clearcoat && m.clearcoat)) {
+        const own = m.clone();
+        if (!clearcoat) own.clearcoat = 0;
+        mesh.material = own;
       }
     });
     return scene;
@@ -117,6 +129,14 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       if (m?.name === 'R_Light_Metal') found = m;
     });
     return found as THREE.MeshStandardMaterial | null;
+  }, [bodyScene]);
+  const paints = useMemo(() => {
+    const out: Paint[] = [];
+    bodyScene.traverse((o) => {
+      const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+      if (m?.isMeshStandardMaterial && isPaint(m)) out.push({ m, base: m.color.clone(), lightness: m.color.getHSL({ h: 0, s: 0, l: 0 }).l });
+    });
+    return out;
   }, [bodyScene]);
   const turned = useRef(false);   // the wheel has gone over toward the indicated side
 
@@ -205,6 +225,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     if (rim.current) rim.current.rotation.x = -v.steer * CAR.steering.rackRatio;
     const lamps = lampState();
     setGlow(tailLamps, lamps.brake ? TAIL_GLOW.brake : lamps.head ? TAIL_GLOW.tail : TAIL_GLOW.off);
+    setPaint(paints, useDriver.getState().rainbow, performance.now() / 1000);
     // the driver's head, eased toward where it is asked to look (input.ts, useHead)
     const cam = eye.current;
     if (cam) {

@@ -59,7 +59,7 @@ function draw(model: Traffic, dt: number, spin: Float64Array, cars: THREE.Instan
       wheels.setMatrixAt(i * WHEELS.length + k, local);
     });
     LAMPS.forEach((lamp, j) => lamps.setMatrixAt(i * LAMPS.length + j, local.copy(carM).multiply(lamp.matrix)));
-    paintLamps(lamps, i * LAMPS.length, { brake: p.braking, head: false, reverse: false, indicator: p.indicator }, t);
+    paintLamps(lamps, i * LAMPS.length, { brake: p.braking, head: false, reverse: false, indicator: p.indicator, hazard: p.hazard }, t);
   });
   for (const m of [cars, wheels, lamps]) upload(m);
 }
