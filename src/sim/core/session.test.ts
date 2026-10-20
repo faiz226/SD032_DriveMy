@@ -41,7 +41,7 @@ function parkAt(d: Driver, id: StationId, across: number, turn = 0) {
 }
 
 describe('assessment run', () => {
-  it('drives all eight stations in order with no faults, and the verdict passes', () => {
+  it('drives all seven stations in order with no faults, and the verdict passes', () => {
     const d = assessment();
     for (const id of ORDER) {
       POSITIVE[id](d);

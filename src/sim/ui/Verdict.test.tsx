@@ -52,7 +52,7 @@ describe('the verdict', () => {
   it('a pass reads as a pass', () => {
     render(<VerdictView verdict={passing} save={null} {...noop} />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Pass');
-    expect(screen.getByText('All eight stations cleared.')).toBeInTheDocument();
+    expect(screen.getByText('All seven stations cleared.')).toBeInTheDocument();
   });
 
   it('no button can pass a run: they only retry, practise the failed station or leave', () => {

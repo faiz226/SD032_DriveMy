@@ -313,7 +313,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     if (stopped && !wasStopped) { roll.peak = sl.along; roll.faulted = false; roll.fault = -1; }
   }
 
-  // ---------------------------------------------------------------- the eight stations
+  // ---------------------------------------------------------------- the seven stations
 
   /** Stillness hold: true once the car has stayed within `still` metres for `hold` seconds while `ok`. */
   function hold(w: Work, ok: boolean, p: Vec2, dt: number, holdS: number, still: number): boolean {

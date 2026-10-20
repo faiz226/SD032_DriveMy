@@ -1,9 +1,9 @@
-// In the 3D scene: the "where next" marker over the next station's entry on route.samples, and a small camera
-// kick when a fault happens. Both stay still for anyone who asks for reduced motion.
-import { PerformanceMonitor } from '@react-three/drei';
+// In the 3D scene: the "where next" marker over the next station's entry on route.samples, a small camera kick when
+// a fault happens (both still for anyone who asks for reduced motion), and free drive's chase view.
+import { PerformanceMonitor, PerspectiveCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import type * as THREE from 'three';
+import * as THREE from 'three';
 import type { StationId, Vec2 } from '../contracts';
 import { circuit } from '../data';
 import type { TierSpec } from '../quality';
@@ -53,6 +53,36 @@ const LOOK_PER_PX = 0.006;   // radians of head turn per pixel dragged
  * the hill. Mouse or finger, on the open view (the touch controls keep their own touches). Let go and the head
  * comes back to the road. Only while driving, in the first-person view.
  */
+// behind and above the car, following it softly, looking a little ahead of it; a drag (or Q/E) swings it round the
+// car, nearly to the front at the head's full turn, and letting go brings it back behind
+const CHASE = { back: 6.2, up: 2.4, ahead: 3, lookUp: 0.6, easeS: 0.18, orbit: 1.6 };
+const UP = new THREE.Vector3(0, 1, 0);
+const chaseAt = new THREE.Vector3();
+const chaseFwd = new THREE.Vector3();
+const chaseWant = new THREE.Vector3();
+const chaseQ = new THREE.Quaternion();
+
+/** Free drive's view from behind the car: the wheels, the lamps and the yard around it. */
+export function ChaseCamera({ active, follow }: { active: boolean; follow: () => THREE.Object3D | null }) {
+  const cam = useRef<THREE.PerspectiveCamera>(null);
+  const was = useRef(false);
+  useFrame((_, dt) => {
+    const c = cam.current;
+    const car = follow();
+    if (!active || !c || !car) { was.current = false; return; }
+    c.rotation.order = 'YXZ';   // so z is the roll, which the camera kick sets every frame; never the heading
+    car.getWorldPosition(chaseAt);
+    car.getWorldQuaternion(chaseQ);
+    chaseFwd.set(1, 0, 0).applyQuaternion(chaseQ).setY(0).normalize().applyAxisAngle(UP, useHead.getState().yaw * CHASE.orbit);   // the nose is +x
+    chaseWant.copy(chaseAt).addScaledVector(chaseFwd, -CHASE.back).setY(chaseAt.y + CHASE.up);
+    if (was.current) c.position.lerp(chaseWant, 1 - Math.exp(-dt / CHASE.easeS));
+    else c.position.copy(chaseWant);   // on first showing, straight to its place
+    was.current = true;
+    c.lookAt(chaseAt.x + chaseFwd.x * CHASE.ahead, chaseAt.y + CHASE.lookUp, chaseAt.z + chaseFwd.z * CHASE.ahead);
+  });
+  return <PerspectiveCamera ref={cam} makeDefault={active} fov={60} near={0.1} far={600} />;
+}
+
 export function HeadDrag({ enabled }: { enabled: boolean }) {
   const gl = useThree((s) => s.gl);
   useEffect(() => {

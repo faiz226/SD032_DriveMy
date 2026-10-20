@@ -14,6 +14,7 @@ import { getWorld } from '../world/build';
 import { collidersOf } from '../world/colliders';
 import { SWIFT_2022 as CAR } from './cars/swift-2022';
 import { Cluster } from './Cluster';
+import { CarLamps, type LampState } from './Lamps';
 import { MirrorView } from './MirrorView';
 import { Vehicle } from './vehicle';
 
@@ -48,6 +49,20 @@ const HEAD_EASE_S = 0.12;  // how quickly the head turns to where it is asked to
 // glass (0.34 m away), forward past the B-pillar and up over the door's edge, it shows from 0.6 m out,
 // where the hill's yellow band meets the kerb. Every pose keeps the eye 5 cm clear of the cabin.
 const LEAN = { side: 0.34, right: 0.24, left: 0.12, forward: 0.45, up: 0.09 };
+// The tail lamps' own glow (the model's lit texture): dark by day, lit with the headlamps, bright under braking
+const TAIL_GLOW = { off: 0.3, tail: 1, brake: 2.4 };
+const SELF_CANCEL = { turned: 0.5, back: 0.15 };   // the wheel past this toward the indicated side, then back within this
+
+/** What our lamps show, from the driver's controls. */
+function lampState(): LampState {
+  const d = useDriver.getState();
+  return { brake: d.brake > 0.05, head: d.headlights, reverse: d.gear === 'R', indicator: d.indicator };
+}
+
+/** Set a material's glow (outside the component: hooks keep memos immutable). */
+function setGlow(m: THREE.MeshStandardMaterial | null, k: number) {
+  if (m && m.emissiveIntensity !== k) m.emissiveIntensity = k;
+}
 
 function poseAt(at: Vec2, heading: number) {
   const ground = getWorld(circuit).surfaceHeight(at[0], at[1]);
@@ -70,7 +85,8 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       if (!mesh.isMesh) return;
       mesh.castShadow = shadows;
       const m = mesh.material as THREE.MeshPhysicalMaterial;
-      if (!clearcoat && m.clearcoat) {
+      if (m.name === 'R_Light_Metal') mesh.material = m.clone();   // the tail lamps: lit by this car's brake alone
+      else if (!clearcoat && m.clearcoat) {
         const plain = m.clone();
         plain.clearcoat = 0;
         mesh.material = plain;
@@ -94,6 +110,15 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     return scene;
   }), [wheel.scene, shadows]);
   const blob = useMemo(() => (shadows ? null : blobTexture()), [shadows]);
+  const tailLamps = useMemo(() => {
+    let found: THREE.MeshStandardMaterial | null = null;
+    bodyScene.traverse((o) => {
+      const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+      if (m?.name === 'R_Light_Metal') found = m;
+    });
+    return found as THREE.MeshStandardMaterial | null;
+  }, [bodyScene]);
+  const turned = useRef(false);   // the wheel has gone over toward the indicated side
 
   const car = useRef<THREE.Group>(null);
   const rim = useRef<THREE.Group>(null);
@@ -137,6 +162,10 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
   useBeforePhysicsStep(() => {
     const d = useDriver.getState();
     vehicle.current?.beforeStep({ throttle: d.throttle, brake: d.brake, handbrake: d.handbrake, gear: d.gear, wheel: d.wheel });
+    // an indicator cancels itself once the wheel has turned that way and come back, as a real stalk does
+    if (d.indicator === 0) turned.current = false;
+    else if (d.wheel * d.indicator > SELF_CANCEL.turned) turned.current = true;
+    else if (turned.current && Math.abs(d.wheel) < SELF_CANCEL.back) { turned.current = false; d.set({ indicator: 0 }); }
   });
 
   useAfterPhysicsStep(() => {
@@ -174,6 +203,8 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     }
     // the rim turns at 9x the road wheels; a left input turns it anticlockwise as the driver sees it
     if (rim.current) rim.current.rotation.x = -v.steer * CAR.steering.rackRatio;
+    const lamps = lampState();
+    setGlow(tailLamps, lamps.brake ? TAIL_GLOW.brake : lamps.head ? TAIL_GLOW.tail : TAIL_GLOW.off);
     // the driver's head, eased toward where it is asked to look (input.ts, useHead)
     const cam = eye.current;
     if (cam) {
@@ -196,6 +227,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
     <group ref={car}>
       <primitive object={bodyScene} />
       <Cluster body={bodyScene} speed={speed} />
+      <CarLamps state={lampState} />
       {blob && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -CAR.wheelRadius + 0.015, 0]} renderOrder={-1}>
           <planeGeometry args={[CAR.config.length_m + 0.5, CAR.config.width_body_m + 0.5]} />

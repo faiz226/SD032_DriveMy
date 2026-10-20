@@ -75,14 +75,28 @@ function poses() {
   });
 }
 
-/** The whole Swift, wheels and all, as one coloured geometry about the wheelbase's middle, its paint left white. */
-export function swiftGeometry(body: THREE.Object3D, wheel: THREE.Object3D): THREE.BufferGeometry {
+/** The four wheels' hubs in the car frame, front first, left before right; the right-hand ones are turned round. */
+export const WHEELS = [[CAR.axle.front, -1], [CAR.axle.front, 1], [CAR.axle.rear, -1], [CAR.axle.rear, 1]].map(([x, side]) => ({
+  front: x > 0,
+  hub: new THREE.Vector3(x, 0, side * CAR.axle.halfTrack),
+  turn: new THREE.Matrix4().makeRotationY(side > 0 ? Math.PI : 0),   // the same wheel turned round, as on our car
+}));
+
+/**
+ * The Swift as one coloured geometry about the wheelbase's middle, its paint left white: with its wheels (standing
+ * still), or the body alone for cars whose wheels turn (wheelGeometry).
+ */
+export function swiftGeometry(body: THREE.Object3D, wheel: THREE.Object3D, wheels = true): THREE.BufferGeometry {
   const parts = solids(body, new THREE.Matrix4());
-  const { front, rear, halfTrack } = CAR.axle;
-  for (const [x, z, turned] of [[front, -halfTrack, false], [front, halfTrack, true], [rear, -halfTrack, false], [rear, halfTrack, true]] as const) {
-    // the right-hand wheels are the same wheel turned round, as on our car
-    parts.push(...solids(wheel, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), turned ? Math.PI : 0), new THREE.Vector3(1, 1, 1))));
-  }
+  if (wheels) for (const w of WHEELS) parts.push(...solids(wheel, new THREE.Matrix4().setPosition(w.hub).multiply(w.turn)));
+  const geometry = mergeGeometries(parts);
+  for (const p of parts) p.dispose();
+  return geometry;
+}
+
+/** One wheel as a coloured geometry about its hub, axle along z: the moving cars turn and steer each of theirs. */
+export function wheelGeometry(wheel: THREE.Object3D): THREE.BufferGeometry {
+  const parts = solids(wheel, new THREE.Matrix4());
   const geometry = mergeGeometries(parts);
   for (const p of parts) p.dispose();
   return geometry;

@@ -112,6 +112,22 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
             name = 'spine' if abs(em - 25.6) < 2 else 'top' if abs(em - 55.4) < 2 else 'bottom' if abs(em - 3.2) < 2 else 'ew%d' % round(em)
             junctions.append(dict(id='%s-%d' % (name, math.floor(n['mid'] + 0.5)),
                                   polygon=rect(round(x0, 2), round(em - ewid / 2, 2), round(x1, 2), round(em + ewid / 2, 2))))
+    # Two roads meeting a third at the same place from either side (a crossroads, a little staggered: lane C-D and the
+    # lane south of the spine road, the three-point turn's until 20 Oct) share one box. Two overlapping boxes let two
+    # cars each hold half the crossroads and wait for the other (the owner saw three cars stuck at J2, 20 Oct).
+    def extent(poly):
+        return min(q[0] for q in poly), min(q[1] for q in poly), max(q[0] for q in poly), max(q[1] for q in poly)
+    shared = []
+    for j in junctions:
+        a = extent(j['polygon'])
+        twin = next((k for k in shared if k['id'].split('-')[0] == j['id'].split('-')[0]
+                     and extent(k['polygon'])[0] < a[2] and a[0] < extent(k['polygon'])[2]), None)
+        if twin is None:
+            shared.append(j)
+            continue
+        b = extent(twin['polygon'])
+        twin['polygon'] = rect(min(a[0], b[0]), min(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3]))
+    junctions = shared
     # the band's mouth and the bottom road's west end, on the west road's south section
     wm, ww_ = roads.section('ns', 40.3, 10.0)
     junctions.append(dict(id='band-mouth', polygon=rect(round(wm - ww_ / 2, 2), 0.0, round(wm + ww_ / 2, 2), 12.0)))

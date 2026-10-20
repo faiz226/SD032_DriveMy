@@ -1,7 +1,7 @@
 // Touch: the left thumb steers (the wheel holds its angle when let go; double-tap it to centre), the right
-// thumb works the pedals (press higher up a pedal for more), and four buttons: D/R, handbrake, pause and
-// the top-down view. Every control writes the same driver inputs as the keyboard.
-import { MapTrifold, Pause, Play } from 'phosphor-react';
+// thumb works the pedals (press higher up a pedal for more), the indicators sit over the steering, and four
+// buttons: D/R, handbrake, pause and the top-down view. Every control writes the same driver inputs as the keyboard.
+import { ArrowFatLeft, ArrowFatRight, MapTrifold, Pause, Play } from 'phosphor-react';
 import { type CSSProperties, type PointerEvent, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDriver } from './input';
@@ -29,6 +29,7 @@ export function TouchControls() {
   const wheel = useDriver((s) => s.wheel);
   const paused = useDriver((s) => s.paused);
   const topDown = useDriver((s) => s.topDown);
+  const indicator = useDriver((s) => s.indicator);
   const steer = useRef<{ id: number; x: number; wheel: number } | null>(null);
   const lastTap = useRef(-Infinity);
 
@@ -76,6 +77,15 @@ export function TouchControls() {
           <path d="M -42 0 H 42 M 0 0 V 42" stroke="currentColor" strokeWidth="8" />
           <circle r="9" fill="currentColor" />
         </svg>
+      </div>
+
+      <div style={{ position: 'absolute', left: 16, bottom: 16 + 140 + 10, display: 'flex', gap: 10 }}>
+        <button type="button" className="tap" aria-label={t('sim.hud.signalLeft')} aria-pressed={indicator === 1} style={button(indicator === 1)} onClick={() => d().toggleIndicator(1)}>
+          <ArrowFatLeft size={22} />
+        </button>
+        <button type="button" className="tap" aria-label={t('sim.hud.signalRight')} aria-pressed={indicator === -1} style={button(indicator === -1)} onClick={() => d().toggleIndicator(-1)}>
+          <ArrowFatRight size={22} />
+        </button>
       </div>
 
       <Pedal kind="brake" label={t('sim.touch.brake')} text={t('sim.touch.brake')} style={{ right: 16 + 64 + 10, width: 84, height: 112 }} />

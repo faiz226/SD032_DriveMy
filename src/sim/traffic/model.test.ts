@@ -42,16 +42,22 @@ function overlap(a: Vec2[], b: Vec2[]): boolean {
 }
 
 describe('the other cars', () => {
-  it('keep apart and keep moving for ten minutes, and never pass a stop line on red', () => {
+  it('keep apart and keep moving for twenty minutes, never standing a minute, and never pass a stop line on red', () => {
     const traffic = new Traffic(circuit, swift);
     const n = traffic.cars.length;
     expect(n).toBe(data.loops.reduce((acc, lp) => acc + lp.cars, 0));
     const travelled = new Array(n).fill(0);
+    const standing = new Array(n).fill(0);   // seconds stood still, and the longest
+    const longest = new Array(n).fill(0);
     let fronts = traffic.poses().map((p) => [p.x + Math.cos(p.heading) * 3.146, p.y + Math.sin(p.heading) * 3.146] as Vec2);
-    for (let k = 0; k < 600 / DT; k++) {
+    for (let k = 0; k < 1200 / DT; k++) {
       traffic.step(DT, null);
       const poses = traffic.poses();
-      poses.forEach((p, i) => { travelled[i] += (p.kmh / 3.6) * DT; });
+      poses.forEach((p, i) => {
+        travelled[i] += (p.kmh / 3.6) * DT;
+        standing[i] = p.kmh < 0.2 ? standing[i] + DT : 0;
+        longest[i] = Math.max(longest[i], standing[i]);
+      });
       for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
           const a = poses[i];
@@ -71,9 +77,13 @@ describe('the other cars', () => {
       }
       fronts = now;
     }
-    // every car laps its loop more than twice in ten minutes: nothing gridlocked
-    traffic.cars.forEach((c, i) => expect(travelled[i], c.id).toBeGreaterThan(2 * c.path.length));
-  }, 120_000);
+    // every car laps its loop more than four times, and none stands a minute (a red light holds one for less): no
+    // gridlock, however late it would come
+    traffic.cars.forEach((c, i) => {
+      expect(travelled[i], c.id).toBeGreaterThan(4 * c.path.length);
+      expect(longest[i], c.id).toBeLessThan(60);
+    });
+  }, 240_000);
 
   it('never drive into a learner parked across a junction', () => {
     const traffic = new Traffic(circuit, swift);

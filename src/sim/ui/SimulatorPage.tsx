@@ -1,6 +1,7 @@
 // DriveMy v2's simulator. One world, loaded once. Assessment is the full circuit, marked and saved; practice is
-// one station at a time, restarted at will and never saved. Picking or restarting a station moves the car;
-// nothing reloads. The verdict comes from the rules session alone: no button can pass a run.
+// one station at a time, restarted at will and never saved; free drive (the owner, 20 Oct) is the yard for fun,
+// among the traffic, which the rules never see: nothing marked, nothing saved. Picking or restarting a station
+// moves the car; nothing reloads. The verdict comes from the rules session alone: no button can pass a run.
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,7 +13,7 @@ import { ROUTES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { OFFLINE_QUEUED_ID, saveSimulationResult } from '@/services/results.service';
 import { useAuthStore } from '@/stores/authStore';
-import type { Mode, SimEvent, StationId, VehicleSample } from '../contracts';
+import type { SimEvent, StationId, VehicleSample } from '../contracts';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
 import { useDriver, useHead, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
@@ -26,10 +27,10 @@ import { runRecord } from '../record';
 import { TouchControls } from '../TouchControls';
 import { Daylight, TopDownCamera, World } from '../world/World';
 import { Hud, HUD_PLATE } from './Hud';
-import { ModePanel } from './ModePanel';
+import { ModePanel, type PanelMode } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
-import { CameraKick, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
+import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
 import { engineSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
 import { LoadingMap } from './LoadingMap';
 import { EXPLORE_CANVAS, ExploreHud, SpectatorCamera } from './Spectator';
@@ -38,6 +39,8 @@ import { type SaveStatus, VerdictView } from './Verdict';
 type Phase = 'choose' | 'explore' | 'drive' | 'verdict';
 const STATIONS = new Set<string>(circuit.stations.map((s) => s.id));
 const isStation = (id: string | undefined): id is StationId => !!id && STATIONS.has(id);
+/** /simulations/free opens free drive; a station's id, its practice; anything else, the assessment. */
+const modeFor = (id: string | undefined): PanelMode => (id === 'free' ? 'free' : isStation(id) ? 'practice' : 'assessment');
 
 const stationStart = (id: StationId): Pose => {
   const st = circuit.stations.find((s) => s.id === id)!;
@@ -77,13 +80,15 @@ export function SimulatorPage() {
   const portrait = useSyncExternalStore(onResize, portraitNow, () => false);
   const topDown = useDriver((s) => s.topDown);
   const paused = useDriver((s) => s.paused);
+  const chase = useDriver((s) => s.chase);
   const verdict = useRun((s) => s.state.verdict);
 
   const car = useRef<CarApi>(null);
   const carGroup = useCallback(() => car.current?.group() ?? null, []);
   const [phase, setPhase] = useState<Phase>('choose');
   const phaseRef = useRef<Phase>('choose');
-  const [mode, setMode] = useState<Mode>(isStation(id) ? 'practice' : 'assessment');
+  const [mode, setMode] = useState<PanelMode>(() => modeFor(id));
+  const free = useRef(false);   // the run under way is free drive: the rules never see it
   const [drill, setDrill] = useState<StationId>(isStation(id) ? id : 'hill-start');
   const [start] = useState<Pose>(() => (isStation(id) ? stationStart(id) : spawnPose()));
   const [ready, setReady] = useState(false);
@@ -102,7 +107,7 @@ export function SimulatorPage() {
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
   useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead }); }, []);
   useEffect(() => () => {
-    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false });
+    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false, indicator: 0 });
     stopEngine();
   }, []);
   useEffect(() => { if (portrait) useDriver.getState().set({ paused: true }); }, [portrait]);
@@ -122,15 +127,16 @@ export function SimulatorPage() {
   const go = useCallback((next: Phase) => { phaseRef.current = next; setPhase(next); }, []);
   const toChoose = useCallback(() => go('choose'), [go]);
 
-  const begin = useCallback((m: Mode, d: StationId) => {
+  const begin = useCallback((m: PanelMode, d: StationId) => {
     unlockSound();
     startEngine();
     performance.mark('sim:start');
     traffic.current = new Traffic(circuit, swift);
-    auto.current = autopilotOn ? new Autopilot(autopilotMode === 'faults', getTraffic) : null;
-    const pose = useRun.getState().begin(m, d);
+    free.current = m === 'free';
+    auto.current = autopilotOn && m !== 'free' ? new Autopilot(autopilotMode === 'faults', getTraffic) : null;
+    const pose = m === 'free' ? spawnPose() : useRun.getState().begin(m, d);
     car.current?.teleport(pose.at, pose.heading);
-    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false });
+    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false, indicator: 0 });
     setMode(m);
     setDrill(d);
     setSave(null);
@@ -166,16 +172,20 @@ export function SimulatorPage() {
   const onStep = useCallback((sample: VehicleSample, events: SimEvent[], dt: number) => {
     if (phaseRef.current !== 'drive') return;
     if (!drove.current) { drove.current = true; performance.mark('sim:drive'); }
-    const run = useRun.getState();
     const driver = useDriver.getState();
-    run.step(sample, [...events, ...traffic.current.step(dt, sample)], dt, driver.topDown);
+    const met = traffic.current.step(dt, sample);
     engineSound(sample.speedKmh, driver.throttle);
+    if (free.current) return;   // free drive: nothing is marked
+    const run = useRun.getState();
+    run.step(sample, [...events, ...met], dt, driver.topDown);
     if (auto.current) useDriver.getState().set(auto.current.next(sample, dt));
     const now = useRun.getState();
     if (now.mode === 'assessment' && now.state.verdict && savedRun.current !== now.runId) finish();
   }, [finish]);
 
   const exit = () => navigate(ROUTES.SIMULATIONS);
+  // free drive's view from behind the car, unless the top-down view is on
+  const chaseOn = mode === 'free' && phase === 'drive' && chase && !topDown;
 
   const ready_ = () => {
     performance.mark('sim:ready');
@@ -201,15 +211,16 @@ export function SimulatorPage() {
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused || phase !== 'drive'}>
             <World tier={tier} />
-            <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
+            <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown && !chaseOn} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
             <OtherCars tier={tier} />
             <TrafficView tier={tier} traffic={getTraffic} />
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
-          <WhereNext />
+          {mode !== 'free' && <WhereNext />}
         </Suspense>
         <TopDownCamera active={topDown} zoom={zoomNow} onZoom={zoomBy} follow={carGroup} />
         {phase === 'explore' && <SpectatorCamera from={carGroup} />}
+        <ChaseCamera active={chaseOn} follow={carGroup} />
         <HeadDrag enabled={phase === 'drive' && !topDown} />
         <CameraKick />
       </Canvas>
@@ -234,7 +245,13 @@ export function SimulatorPage() {
       {phase === 'explore' && <ExploreHud touch={touch} onBack={toChoose} />}
       {phase === 'drive' && (
         <>
-          <Hud touch={touch} onRestart={() => begin(mode, drill)} onStations={() => { setMode('practice'); go('choose'); }} onExit={exit} />
+          <Hud
+            touch={touch}
+            free={mode === 'free'}
+            onRestart={() => begin(mode, drill)}
+            onStations={() => { if (mode !== 'free') setMode('practice'); go('choose'); }}
+            onExit={exit}
+          />
           {touch && <TouchControls />}
         </>
       )}

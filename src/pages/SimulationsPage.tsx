@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Car, Mountains, Square,
+  Car, Mountains, Square, Compass,
   Waves, Lightning, Warning, GitMerge, Trophy, ArrowRight
 } from "phosphor-react";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -81,6 +81,23 @@ export function SimulationsPage() {
           <div>
             <h2 className="font-heading font-semibold text-base text-foreground">{t("sim.assessment.cardTitle")}</h2>
             <p className="text-sm text-muted-foreground">{t("sim.assessment.cardDesc")}</p>
+          </div>
+        </div>
+        <ArrowRight className="w-4 h-4 shrink-0 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5" />
+      </Link>
+
+      {/* Free drive: the yard for fun, nothing marked */}
+      <Link
+        to={`${ROUTES.SIMULATIONS}/free`}
+        className="feature-link flex items-center justify-between gap-4 group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="p-2.5 bg-muted rounded-full text-foreground">
+            <Compass className="w-7 h-7" weight="regular" />
+          </div>
+          <div>
+            <h2 className="font-heading font-semibold text-base text-foreground">{t("sim.free.cardTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{t("sim.free.cardDesc")}</p>
           </div>
         </div>
         <ArrowRight className="w-4 h-4 shrink-0 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5" />

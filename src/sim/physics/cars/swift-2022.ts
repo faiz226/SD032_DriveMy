@@ -29,6 +29,18 @@ export const SWIFT_2022 = {
     right: [0.5349, 0.7607, 0.839] as V3,
     interior: [0.4747, 0.9705, 0.0002] as V3,
   },
+  // The lamps (the owner, 20 Oct), measured off the model's lamp glass: where each one's light shows, just outside
+  // its glass, the way it faces (out: away from the car's side) and the glow's width and height. Each is the
+  // right-hand one (z > 0) of a pair, but for the high stop lamp on the spoiler.
+  lamps: {
+    tail: { at: [-1.75, 0.55, 0.63] as V3, face: 'back', size: [0.34, 0.3] },             // the C-shaped tail and brake lamps
+    stop: { at: [-1.4, 1.046, 0] as V3, face: 'back', size: [0.3, 0.1] },
+    reverse: { at: [-1.73, 0.535, 0.579] as V3, face: 'back', size: [0.2, 0.15] },
+    rearIndicator: { at: [-1.73, 0.54, 0.674] as V3, face: 'back', size: [0.22, 0.16] },
+    frontIndicator: { at: [1.935, 0.415, 0.546] as V3, face: 'front', size: [0.22, 0.16] },
+    sideIndicator: { at: [0.539, 0.738, 0.935] as V3, face: 'out', size: [0.16, 0.08] },   // on the door mirror
+    head: { at: [1.88, 0.45, 0.62] as V3, face: 'front', size: [0.42, 0.28] },
+  } as Record<string, { at: V3; face: 'back' | 'front' | 'out'; size: [number, number] }>,
   // How much of the sky's light (World.tsx, Daylight) the car takes, against the yard's 1: the cabin's
   // black plastics read as black at 1, as a camera's auto-exposure would not let them.
   cabinLight: 2.2,

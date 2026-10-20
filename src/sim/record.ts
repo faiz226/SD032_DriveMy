@@ -4,7 +4,7 @@ import type { InsertSimulationResult } from '@/types/database';
 import type { SessionState, StationId } from './contracts';
 
 export const SIM_RUN_SCHEMA = 'drivemy.simrun/1';
-/** maneuver_id of a whole assessment run: all eight stations in one record. */
+/** maneuver_id of a whole assessment run: all seven stations in one record. */
 export const FULL_CIRCUIT = 'full-circuit';
 
 interface RunRecordInput {

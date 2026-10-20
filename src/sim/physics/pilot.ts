@@ -1,4 +1,4 @@
-// The scripted assessment: one learner's line through all eight stations, driven only through the controls a
+// The scripted assessment: one learner's line through all seven stations, driven only through the controls a
 // learner has (pedals, wheel, gear, handbrake). Each manoeuvre is a generator that yields the controls for the
 // next physics step; whoever steps the car reports each step back through observe(). The headless test steps a
 // Rapier world with it; the page's ?autopilot=1 drives the real car with it, for the performance run and the

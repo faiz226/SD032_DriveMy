@@ -1,5 +1,6 @@
-// Before driving: assessment (the full circuit, marked and saved) or practice (one station, restarted at will,
-// never saved). The world is already loading behind it, once, for both.
+// Before driving: assessment (the full circuit, marked and saved), practice (one station, restarted at will,
+// never saved) or free drive (anywhere in the yard, for fun: nothing marked or saved). The world is already
+// loading behind it, once, for all three.
 import { Button } from '@/components/ui/button';
 import { Plate } from '@/components/ui/road';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -11,11 +12,14 @@ import type { Tier, TierPref } from '../quality';
 import type { VoicePref } from './sound';
 import { stationName } from './Verdict';
 
+/** What the panel offers: the rules' two modes, and free drive, which the rules never see. */
+export type PanelMode = Mode | 'free';
+
 interface Props {
-  mode: Mode;
+  mode: PanelMode;
   drill: StationId;
   ready: boolean;
-  onMode(m: Mode): void;
+  onMode(m: PanelMode): void;
   onDrill(id: StationId): void;
   onStart(): void;
   /** A free camera over the circuit first: nothing marked. */
@@ -35,11 +39,11 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExpl
     <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[rgb(var(--asphalt)/0.55)] p-3 sm:items-center">
       <Plate className="w-full max-w-xl space-y-4 p-4 sm:p-6">
         <h1 className="type-display text-2xl">{t('sim.mode.title')}</h1>
-        <div role="radiogroup" aria-label={t('sim.mode.title')} className="grid gap-3 sm:grid-cols-2">
-          {(['assessment', 'practice'] as const).map((m) => (
+        <div role="radiogroup" aria-label={t('sim.mode.title')} className="grid gap-3 sm:grid-cols-3">
+          {(['assessment', 'practice', 'free'] as const).map((m) => (
             <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => onMode(m)} className={cn(choice(mode === m), 'flex flex-col items-start gap-1 p-3')}>
-              <span className="type-label-strong">{t(m === 'assessment' ? 'sim.mode.assessment' : 'sim.mode.practice')}</span>
-              <span className="type-label text-sm">{t(m === 'assessment' ? 'sim.mode.assessmentDesc' : 'sim.mode.practiceDesc')}</span>
+              <span className="type-label-strong">{t(`sim.mode.${m}`)}</span>
+              <span className="type-label text-sm">{t(`sim.mode.${m}Desc`)}</span>
             </button>
           ))}
         </div>
@@ -55,7 +59,7 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExpl
         <p className="type-label text-sm">{t('sim.label')}</p>
         <div className="flex flex-wrap gap-3">
           <Button disabled={!ready} onClick={onStart}>
-            {mode === 'assessment' ? t('sim.mode.startAssessment') : t('sim.mode.startPractice', { station: stationName(t, drill) })}
+            {mode === 'assessment' ? t('sim.mode.startAssessment') : mode === 'free' ? t('sim.mode.startFree') : t('sim.mode.startPractice', { station: stationName(t, drill) })}
           </Button>
           <Button variant="outline" disabled={!ready} onClick={onExplore}>{t('sim.explore.start')}</Button>
           <Button variant="ghost" onClick={onExit}>{t('sim.hud.exit')}</Button>

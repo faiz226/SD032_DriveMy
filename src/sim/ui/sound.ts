@@ -33,6 +33,22 @@ export function faultSound() {
   tone.stop(t + 0.2);
 }
 
+/** The indicator relay, once per change: a short click, higher as the lamps light than as they go out. */
+export function tickSound(on: boolean) {
+  if (!ctx || ctx.state !== 'running') return;
+  const t = ctx.currentTime;
+  const tone = ctx.createOscillator();
+  const level = ctx.createGain();
+  tone.type = 'square';
+  tone.frequency.setValueAtTime(on ? 1700 : 1250, t);
+  level.gain.setValueAtTime(0.0001, t);
+  level.gain.exponentialRampToValueAtTime(0.04, t + 0.002);
+  level.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+  tone.connect(level).connect(ctx.destination);
+  tone.start(t);
+  tone.stop(t + 0.04);
+}
+
 const ENGINE_START = '/sim/sfx/engine-start.mp3';
 const ENGINE_IDLE = '/sim/sfx/engine-idle.wav';
 const ENGINE_LEVEL = 0.5;    // under the fault tone

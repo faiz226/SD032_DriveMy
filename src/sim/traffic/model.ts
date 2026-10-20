@@ -17,6 +17,8 @@ const AMBER_STOP = 3.0;       // m/s^2: on amber a car stops if it can at this b
 const STOP_SHORT = 0.4;       // metres short of a stop line, give-way line or junction a car stops
 const REHIT_S = 1.0;          // a contact with the same car counts again only after this long apart
 const ROOM_M = 1.0;           // junctions closer than a car's length plus this are taken together, as one
+const SIGNAL_M = 30;          // a car turning at a junction indicates from this far before it until it is through
+const SIGNAL_TURN = 0.5;      // radians: a junction crossed with less heading change than this is straight on
 
 /**
  * Junctions a path meets one after another, closer than a car: a car taking the first must take them all, or it
@@ -25,7 +27,8 @@ const ROOM_M = 1.0;           // junctions closer than a car's length plus this 
  */
 interface Chain { ids: string[]; held: string[]; sIn: number; sOut: number }
 
-export interface TrafficCar { id: string; kind: 'loop'; loop: string; x: number; y: number; heading: number; kmh: number; braking: boolean }
+/** steer: the front wheels' angle, + left; indicator: 1 left, -1 right (as the steering wheel's sign). */
+export interface TrafficCar { id: string; kind: 'loop'; loop: string; x: number; y: number; heading: number; kmh: number; braking: boolean; steer: number; indicator: -1 | 0 | 1 }
 
 interface Car {
   id: string;
@@ -48,6 +51,7 @@ export class Traffic {
   private readonly back: number;
   private readonly nose: number;
   private readonly half: number;
+  private readonly wheelbase: number;
   private readonly holders = new Map<string, string>();       // junction -> the car taking it
   private readonly touching = new Map<string, number>();      // car -> last time it touched the learner
   private prevFront: Vec2 | null = null;
@@ -65,6 +69,7 @@ export class Traffic {
     this.back = car.length_m - car.wheelbase_m - car.front_overhang_m;
     this.nose = car.wheelbase_m + car.front_overhang_m;
     this.half = car.width_body_m / 2;
+    this.wheelbase = car.wheelbase_m;
     const paths = new Map(data.loops.map((lp) => [lp.id, new Path(lp.points, true)]));
     if (opts.loops !== false) {
       data.loops.forEach((lp, li) => {
@@ -134,17 +139,23 @@ export class Traffic {
     }
     boxes.sort((p, q) => p.sIn - q.sIn);
     const signal = (id: string) => !!this.data.junctions.find((j) => j.id === id)!.signal;
+    // from a to b along the path, negative where b comes first: boxes that overlap are one chain, never two (two
+    // cars would each take one and wait in it for the other)
+    const gap = (a: number, b: number) => {
+      const d = path.dist(a, b);
+      return path.closed && d > path.length / 2 ? d - path.length : d;
+    };
     const chains: Chain[] = [];
     for (const b of boxes) {
       const last = chains[chains.length - 1];
-      if (last && path.dist(last.sOut, b.sIn) < this.back + this.nose + ROOM_M) {
+      if (last && gap(last.sOut, b.sIn) < this.back + this.nose + ROOM_M) {
         last.ids.push(b.id);
         if (!signal(b.id)) last.held.push(b.id);
-        last.sOut = b.sOut;
+        if (gap(last.sOut, b.sOut) > 0) last.sOut = b.sOut;
       } else chains.push({ ids: [b.id], held: signal(b.id) ? [] : [b.id], sIn: b.sIn, sOut: b.sOut });
     }
     // round a loop, the last chain may run on into the first
-    if (path.closed && chains.length > 1 && path.dist(chains[chains.length - 1].sOut, chains[0].sIn) < this.back + this.nose + ROOM_M) {
+    if (path.closed && chains.length > 1 && gap(chains[chains.length - 1].sOut, chains[0].sIn) < this.back + this.nose + ROOM_M) {
       const last = chains.pop()!;
       chains[0] = { ids: [...last.ids, ...chains[0].ids], held: [...last.held, ...chains[0].held], sIn: last.sIn, sOut: chains[0].sOut };
     }
@@ -159,12 +170,31 @@ export class Traffic {
     return sg ? lightsAt(sg, this.t) : { ew: 'green', ns: 'green' };
   }
 
-  /** Every car's pose, for drawing it and for its collider. */
+  /**
+   * Every car's pose, for drawing it and for its collider. Its front wheels point along its line: following a path
+   * at the rear axle, the angle's tangent is the heading change over one wheelbase. Its brake lamps burn while it
+   * slows or stands.
+   */
   poses(): TrafficCar[] {
     return this.cars.map((c) => {
       const p = c.path.pose(c.s);
-      return { id: c.id, kind: 'loop' as const, loop: c.loop, x: p.x, y: p.y, heading: p.heading, kmh: c.v * 3.6, braking: c.a < -0.5 };
+      const steer = Math.atan(wrapPi(c.path.pose(c.s + this.wheelbase).heading - p.heading));
+      return { id: c.id, kind: 'loop' as const, loop: c.loop, x: p.x, y: p.y, heading: p.heading, kmh: c.v * 3.6,
+        braking: c.a < -0.5 || c.v < 0.3, steer, indicator: this.indicatorOf(c) };
     });
+  }
+
+  /** The side a car indicates: toward its turn at the junction ahead, from SIGNAL_M before it until it is through. */
+  private indicatorOf(c: Car): -1 | 0 | 1 {
+    if (c.loop === this.data.merge.loop) return 0;   // round the roundabout and never leaving it: nothing to signal
+    const front = c.s + this.nose;
+    for (const ch of c.chains) {
+      const into = c.path.dist(ch.sIn - SIGNAL_M, front);   // since the stretch where it signals began
+      if (into < 0 || into > SIGNAL_M + c.path.dist(ch.sIn, ch.sOut) + this.nose + this.back) continue;
+      const turn = wrapPi(c.path.pose(ch.sOut + 2).heading - c.path.pose(ch.sIn - 2).heading);
+      if (Math.abs(turn) > SIGNAL_TURN) return turn > 0 ? 1 : -1;
+    }
+    return 0;
   }
 
   /**
