@@ -28,3 +28,41 @@ it("lets the learner cancel a pending request", async () => {
   const signal = (fetcher.mock.calls as unknown as [string, RequestInit][])[0][1].signal;
   expect(signal?.aborted).toBe(true);
 });
+
+it("ignores a quota response that arrives after cancellation", async () => {
+  let respond!: (response: Response) => void;
+  vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((resolve) => { respond = resolve; })));
+  render(<SpeechControl text="A question"/>);
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Listen" })));
+  fireEvent.click(screen.getByRole("button", { name: "Cancel audio" }));
+  await act(async () => respond(new Response(null, { status: 429 })));
+  expect(screen.getByRole("status")).toBeEmptyDOMElement();
+  expect(screen.getByRole("button", { name: "Listen" })).toBeEnabled();
+});
+
+it("ignores old playback callbacks after a new question starts", async () => {
+  const recordings: { play: ReturnType<typeof vi.fn>; pause: ReturnType<typeof vi.fn>; onended: (() => void) | null; onerror: (() => void) | null }[] = [];
+  vi.stubGlobal("Audio", class {
+    play = vi.fn().mockResolvedValue(undefined);
+    pause = vi.fn();
+    onended: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    constructor() { recordings.push(this); }
+  });
+  const revoke = vi.fn();
+  vi.stubGlobal("URL", { createObjectURL: vi.fn(() => "blob:test"), revokeObjectURL: revoke });
+  vi.stubGlobal("fetch", vi.fn(async () => new Response(new Blob(["audio"]), { headers: { "Content-Type": "audio/mpeg" } })));
+  const view = render(<SpeechControl text="First question"/>);
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Listen" })));
+  const oldEnd = recordings[0].onended;
+  const oldError = recordings[0].onerror;
+  view.rerender(<SpeechControl text="Second question"/>);
+  expect(recordings[0].pause).toHaveBeenCalled();
+  expect(recordings[0].onended).toBeNull();
+  expect(recordings[0].onerror).toBeNull();
+  expect(revoke).toHaveBeenCalledTimes(1);
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "Listen" })));
+  act(() => { oldEnd?.(); oldError?.(); });
+  expect(screen.getByRole("button", { name: "Stop audio" })).toBeEnabled();
+  expect(recordings[1].pause).not.toHaveBeenCalled();
+});

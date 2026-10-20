@@ -10,7 +10,12 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
   const active = useRef<{ controller: AbortController; audio?: HTMLAudioElement; url?: string } | null>(null);
   const cached = useRef<Blob | null>(null);
   function stop() {
-    active.current?.controller.abort(); active.current?.audio?.pause();
+    active.current?.controller.abort();
+    if (active.current?.audio) {
+      active.current.audio.onended = null;
+      active.current.audio.onerror = null;
+      active.current.audio.pause();
+    }
     if (active.current?.url) URL.revokeObjectURL(active.current.url);
     active.current = null;
     setState("idle");
@@ -34,6 +39,7 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
         method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}` },
         body: JSON.stringify({ text, kind, language }), signal: session.controller.signal,
       });
+      if (session.controller.signal.aborted) return;
       if (response.status === 429) { setState("limit"); return; }
       if (!response.ok || !response.headers.get("Content-Type")?.startsWith("audio/")) throw new Error("unavailable");
       blob = await response.blob();
@@ -41,8 +47,8 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
       }
       if (session.controller.signal.aborted) return;
       session.url = URL.createObjectURL(blob); session.audio = new Audio(session.url);
-      session.audio.onended = stop;
-      session.audio.onerror = () => { stop(); setState("error"); };
+      session.audio.onended = () => { if (active.current === session) stop(); };
+      session.audio.onerror = () => { if (active.current === session) { stop(); setState("error"); } };
       await session.audio.play();
       if (!session.controller.signal.aborted) setState("playing");
     } catch { if (!session.controller.signal.aborted) { stop(); setState("error"); } }
@@ -55,7 +61,7 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
     </Button>
     {(state === "playing" || state === "paused") && <Button type="button" variant="outline" className="ml-2" onClick={() => {
       if (state === "playing") { active.current?.audio?.pause(); setState("paused"); }
-      else { const session = active.current; void session?.audio?.play().then(() => { if (session === active.current) setState("playing"); }).catch(() => { stop(); setState("error"); }); }
+      else { const session = active.current; void session?.audio?.play().then(() => { if (session === active.current) setState("playing"); }).catch(() => { if (session === active.current) { stop(); setState("error"); } }); }
     }}>{state === "playing" ? <Pause aria-hidden="true"/> : <Play aria-hidden="true"/>}{state === "playing" ? (ms ? "Jeda" : "Pause") : (ms ? "Sambung" : "Resume")}</Button>}
     <span role="status" className="ml-3 text-sm">
       {state === "loading" ? (ms ? "Menyediakan audio…" : "Preparing audio…") : state === "error" ? (ms ? "Audio tidak tersedia. Cuba lagi." : "Audio unavailable. Please retry.") : state === "limit" ? (ms ? "Had audio harian dicapai." : "Daily audio limit reached.") : ""}
