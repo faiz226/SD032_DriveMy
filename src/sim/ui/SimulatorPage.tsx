@@ -17,6 +17,8 @@ import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
 import { useDriver, useHead, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
 import { OtherCars } from '../physics/OtherCars';
+import { Traffic } from '../traffic/model';
+import { TrafficView } from '../traffic/TrafficView';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import type { MirrorId } from '../physics/mirrors';
 import { TIERS, type TierPref, useQualityPref, useTier } from '../quality';
@@ -90,6 +92,10 @@ export function SimulatorPage() {
   const savedRun = useRef<string | null>(null);
   const auto = useRef<Autopilot | null>(null);
   const drove = useRef(false);
+  // the other cars: a fresh yard of them each run, stepped with the physics in onStep
+  const [firstTraffic] = useState(() => new Traffic(circuit, swift));
+  const traffic = useRef(firstTraffic);
+  const getTraffic = useCallback(() => traffic.current, []);
 
   // the autopilot never loses focus to a person, so it never pauses for it
   useKeyboardControls(phase === 'drive' && !autopilotOn);
@@ -120,7 +126,8 @@ export function SimulatorPage() {
     unlockSound();
     startEngine();
     performance.mark('sim:start');
-    auto.current = autopilotOn ? new Autopilot(autopilotMode === 'faults') : null;
+    traffic.current = new Traffic(circuit, swift);
+    auto.current = autopilotOn ? new Autopilot(autopilotMode === 'faults', getTraffic) : null;
     const pose = useRun.getState().begin(m, d);
     car.current?.teleport(pose.at, pose.heading);
     useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false });
@@ -128,7 +135,7 @@ export function SimulatorPage() {
     setDrill(d);
     setSave(null);
     go('drive');
-  }, [go, autopilotOn, autopilotMode]);
+  }, [go, autopilotOn, autopilotMode, getTraffic]);
 
   /** An assessment's verdict is in: show it and save the run once, under the run's own id. */
   const finish = useCallback(() => {
@@ -161,7 +168,7 @@ export function SimulatorPage() {
     if (!drove.current) { drove.current = true; performance.mark('sim:drive'); }
     const run = useRun.getState();
     const driver = useDriver.getState();
-    run.step(sample, events, dt, driver.topDown);
+    run.step(sample, [...events, ...traffic.current.step(dt, sample)], dt, driver.topDown);
     engineSound(sample.speedKmh, driver.throttle);
     if (auto.current) useDriver.getState().set(auto.current.next(sample, dt));
     const now = useRun.getState();
@@ -196,6 +203,7 @@ export function SimulatorPage() {
             <World tier={tier} />
             <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
             <OtherCars tier={tier} />
+            <TrafficView tier={tier} traffic={getTraffic} />
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
           <WhereNext />

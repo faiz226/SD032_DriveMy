@@ -17,7 +17,7 @@ DESIGN = {
     'loop_kmh':      (25,   'decided', 'Other cars on the island roads: a yard pace, under the merge leg\'s 30'),
     'main_kmh':      (30,   'decided', 'The outer loop, which carries the merge\'s main road traffic'),
     'cycle':         ((12, 3, 1, 10, 3, 1), 'decided', 'Signal cycle, s: spine road green, amber, all red, side road green, amber, all red'),
-    'offsets':       ((0, 15), 'decided', 'Signal offsets, s: the two junctions half a cycle apart'),
+    'offsets':       ((0,), 'decided', 'Signal offset, s: one signalled junction, J1 (spine road x lane D-E); J2, 4.4 m along, is unsignalled'),
     'gap_s':         (3.0,  'decided', 'At the merge, the gap to the next main-road car a joining car needs, in seconds to the conflict point'),
     'zebra':         ((46.7, 3.0, 0.6, 0.6), 'jkr',     'Zebra crossing: centre x (decided: between the two booths across the spine road), then 4.2.4 and Fig 13 type A: a crossing 1.8 to 3.6 m wide, strips 600 mm, gaps 600 mm'),
     'zebra_stop':    (1.35, 'jkr',     '4.2.2 and Fig 13: a stop line 1.2 m before a crossing (here to the line\'s middle)'),
@@ -118,7 +118,7 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     spine_m, spine_w = roads.section('ew', 25.6, 80.0)
     J1 = next(j for j in junctions if j['id'] == 'spine-75')
     J2 = next(j for j in junctions if j['id'] == 'spine-63')
-    J1['signal'], J2['signal'] = 'J1', 'J2'
+    J1['signal'] = 'J1'   # J2 stays unsignalled: 4.4 m apart, two signals would trap a car between them (decided 20 Oct)
 
     # ------------------------------------------------------------ the other cars' loops (keep left)
     def loop_points(t):
@@ -164,7 +164,7 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     # ------------------------------------------------------------ signals
     cyc = v('cycle')
     signals = []
-    for sig, box, offset in (('J1', J1, v('offsets')[0]), ('J2', J2, v('offsets')[1])):
+    for sig, box, offset in (('J1', J1, v('offsets')[0]),):
         (x0, y0), _, (x1, y1), _ = box['polygon']
         nm = (x0 + x1) / 2
         so = v('stop_off')
@@ -173,9 +173,6 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
             dict(group='ew', heading_deg=180.0, stop=[[x1 + so, y0], [x1 + so, spine_m]]),         # from the east, westbound lane
             dict(group='ns', heading_deg=270.0, stop=[[nm, y1 + so], [x1, y1 + so]]),              # from the north, southbound lane
         ]
-        if sig == 'J2':   # the turning lane comes back north: its own kerbs, wider than the lane to the north
-            tx0 = L['tpt_x0']
-            approaches.append(dict(group='ns', heading_deg=90.0, stop=[[tx0 + 0.2, y0 - so], [L['tpt_x'] - 0.2, y0 - so]]))
         heads = []
         for a in approaches:
             (ax, ay), (bx, by) = a['stop']

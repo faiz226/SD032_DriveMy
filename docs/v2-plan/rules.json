@@ -25,7 +25,13 @@
     "stall":      { "points": 5,  "basis": "rubric; unreachable with the automatic gearbox" },
     "centre_line": { "points": 20, "ends_run": true,
                     "basis": "the owner, 20 Oct: crossing or touching a centre line is an automatic fail, and the test ends there",
-                    "rule": "A tyre's contact patch touching the broken white line between the two lanes of a two-way road, read as one continuous line (a tyre in the gap between two dashes is across it). The test ends at once with a fail" }
+                    "rule": "A tyre's contact patch touching the white line between the two lanes of a two-way road (unbroken, JKR ATJ 2D/85 4.1.2.2). The test ends at once with a fail" },
+    "collision":  { "points": 20, "ends_run": true,
+                    "basis": "decided 20 Oct, with the owner's traffic: a real test stops at a collision; the same weight as a pole",
+                    "rule": "The car's body touching another car's. One contact counts once. The test ends at once with a fail" },
+    "red_light":  { "points": 20, "ends_run": true,
+                    "basis": "decided 20 Oct, with the owner's traffic lights: running a red light ends a real test",
+                    "rule": "The front bumper crossing a signal's stop line, in its direction, while its light is red (amber is not marked). The test ends at once with a fail" }
   },
   "station_outcomes": {
     "cleared": "Did the thing the station is named after, within its rules",
@@ -95,10 +101,11 @@
     },
     "road-merging": {
       "time_limit_s": null,
-      "clear": "Cross the finish gate at min_kmh or faster. There is no traffic: a simulator simplification",
+      "clear": "Join the main road's traffic from the slip road, giving way to it, and cross the finish gate at min_kmh or faster",
       "min_kmh": 15,
-      "fail": ["crossed the finish gate below min_kmh (assessment); practice mode lets the learner retry"],
-      "basis": "prd"
+      "fail": ["crossed the finish gate below min_kmh (assessment); practice mode lets the learner retry",
+               "crossed the give-way line with a main-road car less than the merge's gap_s (circuit.json traffic.merge, 3 s) from the conflict point, or in it (merge.noYield)"],
+      "basis": "prd + the owner, 20 Oct (a vehicle joins from a slip road into moving traffic and gives way to it) + decided (a 3 s gap)"
     }
   },
   "modes": {

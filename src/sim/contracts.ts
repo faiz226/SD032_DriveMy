@@ -123,7 +123,7 @@ export interface RulesData {
   schema: 'drivemy.rules/1';
   label: string;
   verdict: { fail_at_demerits: number; end_run_at_fail: boolean };
-  demerits: Record<'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'stall' | 'centre_line', { points: number; basis: string; limit_m?: number; rule?: string; ends_run?: boolean }>;
+  demerits: Record<'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'stall' | 'centre_line' | 'collision' | 'red_light', { points: number; basis: string; limit_m?: number; rule?: string; ends_run?: boolean }>;
   stations: Record<StationId, Record<string, unknown> & { time_limit_s: number | null; basis?: string }>;
   modes: Record<'assessment' | 'practice', Record<string, unknown>>;
 }
@@ -163,14 +163,20 @@ export interface WheelSample { x: number; y: number; z: number; onKerb: number |
 /** Discrete things that happened during the step. */
 export type SimEvent =
   | { type: 'kerb-contact'; wheel: 0 | 1 | 2 | 3; ring: number; t: number; at: Vec2 }
-  | { type: 'obstacle-hit'; kind: 'pole' | 'cone'; index: number; t: number; at: Vec2 };
+  | { type: 'obstacle-hit'; kind: 'pole' | 'cone'; index: number; t: number; at: Vec2 }
+  // from the traffic (sim/traffic): the learner touched another car, crossed a stop line on red, or crossed the
+  // merge's give-way line with a main-road car gapS seconds from the conflict point
+  | { type: 'vehicle-hit'; car: string; t: number; at: Vec2 }
+  | { type: 'red-light'; signal: string; t: number; at: Vec2 }
+  | { type: 'merge-cut-in'; gapS: number; t: number; at: Vec2 }
+  | { type: 'busy-station'; station: StationId; t: number; at: Vec2 };
 
 // ---------------------------------------------------------------- rules -> screens
 
 export type Mode = 'assessment' | 'practice';
 
 export interface Fault {
-  kind: 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'station_failed' | 'centre_line';
+  kind: 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'station_failed' | 'centre_line' | 'collision' | 'red_light';
   station: StationId;
   points: number;            // 0 for station_failed (it fails the run by itself)
   at: Vec2;                  // where it happened, for the verdict's small map

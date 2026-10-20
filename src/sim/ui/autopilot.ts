@@ -4,6 +4,7 @@
 import type { VehicleSample } from '../contracts';
 import { type Plan, Pilot } from '../physics/pilot';
 import type { Controls } from '../physics/vehicle';
+import type { Traffic } from '../traffic/model';
 
 export const PERF_TOOLS = import.meta.env.DEV || import.meta.env.VITE_SIM_PERF === '1';
 
@@ -13,7 +14,9 @@ export class Autopilot {
   private pilot = new Pilot();
   private plan: Plan | null = null;
 
-  constructor(private faults = false) {}
+  constructor(private faults = false, traffic: (() => Traffic | null) | null = null) {
+    this.pilot.traffic = traffic;
+  }
 
   /** After each physics step: what the car did, and the controls for the next step. */
   next(sample: VehicleSample, dt: number): Controls {

@@ -18,7 +18,7 @@ const JUMP_M = 1;           // samples further apart than this are a manoeuvre's
 const EPS = 1e-6;           // for timers summed from many small steps
 
 type Rec = Record<string, unknown>;
-type Kind = 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'centre_line';
+type Kind = 'cone' | 'pole' | 'rollback' | 'not_in_bay' | 'kerb' | 'centre_line' | 'collision' | 'red_light';
 
 function need(o: Rec | undefined, key: string, where: string): number {
   const v = o?.[key];
@@ -274,6 +274,25 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
   }
 
   /**
+   * What the traffic reports (sim/traffic): touching another car or crossing a stop line on red ends the test, failed;
+   * crossing the merge's give-way line in front of a main-road car fails the merge.
+   */
+  function trafficStep(events: SimEvent[]) {
+    for (const e of events) {
+      if (state.ended) return;
+      const station = state.current ?? runs[runs.length - 1].geo.id;
+      if (e.type === 'vehicle-hit' || e.type === 'red-light') {
+        const kind = e.type === 'vehicle-hit' ? 'collision' : 'red_light';
+        fault(kind, station, R.points(kind), e.at, e.t, e.type === 'vehicle-hit' ? 'collision' : 'redLight', R.demeritBasis(kind));
+        if (R.endsRun(kind)) end();
+      } else if (e.type === 'merge-cut-in') {
+        const run = runs.find((r) => r.geo.id === 'road-merging');
+        if (run?.pub.status === 'armed') fail(run, 'merge.noYield', e.at, e.t, `${e.gapS.toFixed(1)} s`, `${circuit.traffic?.merge.gap_s ?? 0} s`);
+      }
+    }
+  }
+
+  /**
    * Backward travel along the current station's slope while not in reverse, from the furthest-forward point since
    * the car last stopped. Once counted, the fault keeps the worst distance until the car stops or leaves the slope.
    */
@@ -460,6 +479,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
       kerbStep(x, events);
       hitStep(events);
       lineStep(x);
+      trafficStep(events);
       if (state.ended) { prev = p; return snapshot(); }
       const run = runs.find((r) => r.geo.id === state.current);
       if (run && run.pub.status === 'waiting' && !run.blocked && s >= run.geo.s_from) {

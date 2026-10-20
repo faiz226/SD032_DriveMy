@@ -7,6 +7,7 @@ import type { StationId, Vec2, VehicleSample } from '../contracts';
 import { circuit, swift } from '../data';
 import { rad, toDeg, wrapPi } from '../geom';
 import { SWIFT_DRIVE as P, lockAt } from './drive';
+import type { Traffic } from '../traffic/model';
 import type { Controls } from './vehicle';
 
 type Piece = typeof circuit.route.samples;
@@ -39,6 +40,8 @@ export class Pilot {
   odometer = 0;
   controls: Controls = { throttle: 0, brake: 1, handbrake: true, gear: 'D', wheel: 0 };
   marks: string[] = [];
+  /** The other cars, when there are any: follow() keeps behind them, stops on red and gives way at the merge. */
+  traffic: (() => Traffic | null) | null = null;
 
   /** The step that just happened. */
   observe(sample: VehicleSample, dt: number) {
@@ -104,6 +107,7 @@ export class Pilot {
       for (let k = i; k < Math.min(piece.length - 1, i + 20); k++) turn = Math.max(turn, Math.abs(wrapPi(rad(piece[k + 1][3] - piece[k][3]))) / Math.max(0.01, piece[k + 1][0] - piece[k][0]));
       let target = Math.min(kmh(s), Math.sqrt(1.6 / Math.max(turn, 1e-3)) * 3.6);
       if (stopAtEnd) target = Math.min(target, Math.max(1.5, Math.sqrt(2 * 0.8 * left) * 3.6));
+      target = Math.min(target, this.traffic?.()?.learnerLimitKmh(s, this.last) ?? Infinity);
       this.controls = { ...this.controls, ...this.pedals(target), wheel: Math.max(-1, Math.min(1, delta / lockAt(P, this.last.speedKmh))) };
       yield this.controls;
     }

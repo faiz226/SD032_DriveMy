@@ -14,8 +14,11 @@ import { SWIFT_2022 as CAR } from './cars/swift-2022';
 
 const PAINT = /car_?paint/i;                       // the body colour's materials: tinted per car
 const GLASS = new THREE.Color(0.05, 0.07, 0.09);
-const TINTS = [new THREE.Color(0.93, 0.93, 0.92), new THREE.Color(0.55, 0.62, 0.72)];   // white, silver-blue
-const BODY = { halfLength: CAR.config.length_m / 2, halfHeight: 0.72, halfWidth: CAR.config.width_body_m / 2, rise: 0.35 };
+// white, silver-blue, then the moving cars' (traffic/TrafficView.tsx): dark grey, maroon, sky blue, silver
+export const TINTS = [[0.93, 0.93, 0.92], [0.55, 0.62, 0.72], [0.22, 0.23, 0.25], [0.45, 0.07, 0.09], [0.42, 0.62, 0.82], [0.72, 0.73, 0.74]]
+  .map(([r, g, b]) => new THREE.Color(r, g, b));
+/** The Swift's solid box, about its rear axle's height point: the colliders of the parked and moving cars. */
+export const BODY = { halfLength: CAR.config.length_m / 2, halfHeight: 0.72, halfWidth: CAR.config.width_body_m / 2, rise: 0.35 };
 
 /** A material's colour as one value: its own colour, times its texture's average where it has one. */
 function colourOf(m: THREE.MeshStandardMaterial): THREE.Color {
@@ -72,6 +75,19 @@ function poses() {
   });
 }
 
+/** The whole Swift, wheels and all, as one coloured geometry about the wheelbase's middle, its paint left white. */
+export function swiftGeometry(body: THREE.Object3D, wheel: THREE.Object3D): THREE.BufferGeometry {
+  const parts = solids(body, new THREE.Matrix4());
+  const { front, rear, halfTrack } = CAR.axle;
+  for (const [x, z, turned] of [[front, -halfTrack, false], [front, halfTrack, true], [rear, -halfTrack, false], [rear, halfTrack, true]] as const) {
+    // the right-hand wheels are the same wheel turned round, as on our car
+    parts.push(...solids(wheel, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), turned ? Math.PI : 0), new THREE.Vector3(1, 1, 1))));
+  }
+  const geometry = mergeGeometries(parts);
+  for (const p of parts) p.dispose();
+  return geometry;
+}
+
 export function OtherCars({ tier }: { tier: Tier }) {
   const files = CAR.files(tier);
   const body = useGLTF(files.body);
@@ -79,14 +95,7 @@ export function OtherCars({ tier }: { tier: Tier }) {
   const where = useMemo(() => poses(), []);
   const mesh = useMemo(() => {
     if (!where.length) return null;
-    const parts = solids(body.scene, new THREE.Matrix4());
-    const { front, rear, halfTrack } = CAR.axle;
-    for (const [x, z, turned] of [[front, -halfTrack, false], [front, halfTrack, true], [rear, -halfTrack, false], [rear, halfTrack, true]] as const) {
-      // the right-hand wheels are the same wheel turned round, as on our car
-      parts.push(...solids(wheel.scene, new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), turned ? Math.PI : 0), new THREE.Vector3(1, 1, 1))));
-    }
-    const geometry = mergeGeometries(parts);
-    for (const p of parts) p.dispose();
+    const geometry = swiftGeometry(body.scene, wheel.scene);
     const m = new THREE.InstancedMesh(geometry, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.5, metalness: 0.15 }), where.length);
     where.forEach(({ position, quaternion }, i) => {
       m.setMatrixAt(i, new THREE.Matrix4().compose(position, quaternion, new THREE.Vector3(1, 1, 1)));
