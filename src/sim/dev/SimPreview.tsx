@@ -50,7 +50,7 @@ export function SimPreview() {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: '#9cc6e8' }}>
-      <Canvas dpr={[1, 1.5]} shadows={TIERS[tier].shadows} gl={{ preserveDrawingBuffer: true }}>
+      <Canvas dpr={[1, 1.5]} shadows={TIERS[tier].shadows && 'percentage'} gl={{ preserveDrawingBuffer: true }}>
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused}>
             <World tier={tier} />

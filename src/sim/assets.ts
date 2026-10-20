@@ -26,7 +26,7 @@ export function preloadSimAssets(tier: AssetTier) {
     link.rel = 'preload';
     link.as = as;
     link.href = href;
-    if (as === 'fetch') link.crossOrigin = 'anonymous';   // GLTFLoader fetches in cors mode, same-origin credentials
+    link.crossOrigin = 'anonymous';   // GLTFLoader fetches, and three's image loader asks, in cors mode: else each file loads twice
     document.head.appendChild(link);
   };
   Object.values(carFiles(tier)).forEach((href) => hint(href, 'fetch'));

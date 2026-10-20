@@ -226,7 +226,7 @@ export function SimulatorPage() {
 
   return (
     <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--asphalt))]', phase === 'explore' && EXPLORE_CANVAS, phase === 'drive' && '[&_canvas]:touch-none')}>
-      <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows} gl={{ powerPreference: 'high-performance' }}>
+      <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows && 'percentage'} gl={{ powerPreference: 'high-performance' }}>
         <RenderScale spec={spec} />
         {probe && <FrameProbe />}
         <Suspense fallback={null}>
