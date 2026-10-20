@@ -13,9 +13,13 @@ export interface Trimesh { name: string; vertices: Float32Array; indices: Uint32
 export interface BoxCollider { name: string; halfExtents: [number, number, number]; position: [number, number, number]; rotationY: number }
 export interface PoleCollider { index: number; position: [number, number, number]; radius: number; halfHeight: number }
 
+/** A signal lamp: where it shines from, which way it faces (a circuit heading, radians) and what it shows. */
+export interface SignalLamp { signal: string; group: 'ew' | 'ns'; colour: 'red' | 'amber' | 'green'; position: THREE.Vector3; facing: number }
+
 export interface WorldBuild {
   group: THREE.Group;                   // the meshes, plus named markers (Object3D) for every placed thing
-  materials: { concrete: THREE.MeshStandardMaterial; grass: THREE.MeshStandardMaterial };
+  materials: { asphalt: THREE.MeshStandardMaterial; concrete: THREE.MeshStandardMaterial; grass: THREE.MeshStandardMaterial };
+  lamps: SignalLamp[];                  // lit by the scene (traffic/Signals.tsx) from the run's clock
   colliders: {
     ground: BoxCollider;
     trimeshes: Trimesh[];               // kerbs, slope decks and walls, invisible guards along the slopes
@@ -28,10 +32,17 @@ export interface WorldBuild {
 const KERB_COLOURS: [number, number, number][] = [[0.93, 0.74, 0.08], [0.08, 0.08, 0.08]];   // yellow, black
 const WHITE: [number, number, number] = [0.95, 0.95, 0.93];
 const YELLOW: [number, number, number] = [0.98, 0.8, 0.1];
+const LINE_YELLOW: [number, number, number] = [0.92, 0.72, 0.12];   // a no-parking edge line, a touch duller than the stop band
 const RED: [number, number, number] = [0.82, 0.12, 0.12];
 const DASH_M = 1;              // kerb paint: 1 m yellow, 1 m black
 const LINE_M = 0.1;            // painted bay lines
 const FINISH_M = 0.4;          // the finish line
+const EDGE_M = 0.1;            // yellow edge lines
+const STOP_M = 0.3;            // stop and give-way lines (give way: 0.6 m dashes, 0.3 m gaps)
+const OUTLINE_M = 0.15;        // the border round a chevron area
+const CHEVRON = { width: 0.3, every: 1.4 };
+const MARKER = { radius: 0.05, height: 1.6, band: 0.2, plate: 0.36 };   // the poles where a station's queue stops
+const SIGNAL = { pole: 0.06, height: 2.9, box: [0.24, 0.92, 0.32] as const, lamp: 0.28 };
 const PAINT_LIFT = 0.012;      // paint sits just above the surface
 const GUARD_M = 1.2;           // invisible guard rails above a slope's walls: the car cannot fall off
 const RAMP_END_WALL_M = 0.45;  // the wall at the end of the ramp's platform stands this far above the deck
@@ -111,7 +122,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
   };
   const at = (p: Vec2, lift = 0) => toThree(p[0], p[1], surfaceHeight(p[0], p[1]) + lift);
 
-  // ---------------------------------------------------------------- concrete: pavement, slope decks, wall sides
+  // ---------------------------------------------------------------- the surface: asphalt pavement; concrete slope decks and wall sides
   const shape = new THREE.Shape(rings[0].map(([x, y]) => new THREE.Vector2(x, y)));
   rings.slice(1).forEach((r) => shape.holes.push(new THREE.Path(r.map(([x, y]) => new THREE.Vector2(x, y)))));
   const pavement = new THREE.ShapeGeometry(shape).toNonIndexed();
@@ -154,7 +165,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
     const cap = THREE.ShapeUtils.triangulateShape(ring.map(([x, y]) => new THREE.Vector2(x, y)), []);
     for (const [a, b, d] of cap) wallTops.tri(toThree(ring[a][0], ring[a][1], top[a]), toThree(ring[b][0], ring[b][1], top[b]), toThree(ring[d][0], ring[d][1], top[d]), YELLOW);
   });
-  const concreteGeo = mergeGeometries([pavement, deck.geometry(), walls.geometry()].map((g) => {
+  const concreteGeo = mergeGeometries([deck.geometry(), walls.geometry()].map((g) => {
     if (!g.getAttribute('uv')) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array((g.getAttribute('position').count) * 2), 2));
     return g;
   }));
@@ -249,6 +260,20 @@ export function buildWorld(c: CircuitData): WorldBuild {
   }
   const finish = station('road-merging')?.gates.find((q) => q.id === 'finish');
   if (finish) strip(finish.a, finish.b, FINISH_M, RED);
+  // filled shapes: a convex polygon as a fan, on the surface
+  const fill = (poly: Vec2[], colour: RGB) => {
+    for (let i = 1; i < poly.length - 1; i++) paint.tri(at(poly[0], PAINT_LIFT), at(poly[i], PAINT_LIFT), at(poly[i + 1], PAINT_LIFT), colour);
+  };
+  const dashed = (a: Vec2, b: Vec2, width: number, dash: number, gap: number, colour: RGB) => {
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const p = (t: number): Vec2 => [a[0] + ((b[0] - a[0]) * t) / len, a[1] + ((b[1] - a[1]) * t) / len];
+    for (let t = 0; t < len - 1e-6; t += dash + gap) strip(p(t), p(Math.min(len, t + dash)), width, colour);
+  };
+  // a shape drawn in its own frame (x forward, y left), placed at `centre` and turned to `heading` (radians)
+  const place = (centre: Vec2, heading: number) => {
+    const [ux, uy] = dir(heading);
+    return (q: Vec2): Vec2 => [centre[0] + ux * q[0] - uy * q[1], centre[1] + uy * q[0] + ux * q[1]];
+  };
   // the two-way roads' broken centre lines: a lane each way, keeping left of the line
   const marks = c.markings;
   for (const line of marks?.centre_lines ?? []) {
@@ -264,6 +289,73 @@ export function buildWorld(c: CircuitData): WorldBuild {
         t += left > 0 ? left : marks!.dash + marks!.gap - phase;
       }
       run += len;
+    }
+  }
+
+  // yellow edge lines (no parking), stop lines, give-way lines
+  for (const line of marks?.edge_lines ?? []) for (let i = 1; i < line.length; i++) strip(line[i - 1], line[i], EDGE_M, LINE_YELLOW);
+  for (const [a, b] of marks?.stop_lines ?? []) strip(a, b, STOP_M, WHITE);
+  for (const [a, b] of marks?.give_way ?? []) dashed(a, b, STOP_M, 0.6, 0.3, WHITE);
+  // the merge's give-way triangle, in the slip lane before its line, pointing at the drivers who must give way
+  const merge = c.traffic?.merge;
+  if (merge) {
+    const [a, b] = merge.give_way;
+    const tri = place([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], rad(merge.heading_deg));
+    fill([tri([-1.2, -0.6]), tri([-1.2, 0.6]), tri([-3.7, 0])], WHITE);
+  }
+  // direction arrows: a 3.2 m shaft and head for straight on, a bent branch for each turn
+  for (const arrow of marks?.arrows ?? []) {
+    const pt = place(arrow.at, rad(arrow.heading_deg));
+    const straight = arrow.kind.includes('S');
+    const shaftEnd = straight ? 0.75 : 0.45;
+    fill([pt([-1.6, -0.08]), pt([shaftEnd, -0.08]), pt([shaftEnd, 0.08]), pt([-1.6, 0.08])], WHITE);
+    if (straight) fill([pt([0.75, -0.28]), pt([1.6, 0]), pt([0.75, 0.28])], WHITE);
+    for (const k of [...arrow.kind].filter((m) => m === 'L' || m === 'R')) {
+      const side = k === 'L' ? 1 : -1;
+      fill([pt([-0.15, -0.08 * side]), pt([0.35, 0.42 * side]), pt([0.52, 0.3 * side]), pt([0.0, -0.2 * side])], WHITE);   // the bend
+      fill([pt([0.32, 0.3 * side]), pt([0.52, 0.3 * side]), pt([0.52, 0.62 * side]), pt([0.32, 0.62 * side])], WHITE);     // across
+      fill([pt([0.18, 0.62 * side]), pt([0.66, 0.62 * side]), pt([0.42, 1.15 * side])], WHITE);                             // its head
+    }
+  }
+  // chevron areas: a white border, and V stripes pointing the way traffic flows, cut to the area
+  const clip = (poly: Vec2[], edges: Vec2[]): Vec2[] => {
+    let area = 0;
+    edges.forEach((p, i) => { const q = edges[(i + 1) % edges.length]; area += p[0] * q[1] - q[0] * p[1]; });
+    const side = (p: Vec2, a: Vec2, b: Vec2) => ((b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])) * Math.sign(area);
+    let out = poly;
+    edges.forEach((a, i) => {
+      const b = edges[(i + 1) % edges.length];
+      const next: Vec2[] = [];
+      out.forEach((p, j) => {
+        const q = out[(j + 1) % out.length];
+        const dp = side(p, a, b);
+        const dq = side(q, a, b);
+        if (dp >= 0) next.push(p);
+        if ((dp >= 0) !== (dq >= 0)) next.push([p[0] + ((q[0] - p[0]) * dp) / (dp - dq), p[1] + ((q[1] - p[1]) * dp) / (dp - dq)]);
+      });
+      out = next;
+    });
+    return out;
+  };
+  for (const ch of marks?.chevrons ?? []) {
+    const poly = ch.polygon;
+    poly.forEach((p, i) => strip(p, poly[(i + 1) % poly.length], OUTLINE_M, WHITE));
+    const centre: Vec2 = [poly.reduce((acc, p) => acc + p[0], 0) / poly.length, poly.reduce((acc, p) => acc + p[1], 0) / poly.length];
+    const reach = 2 * (Math.max(...poly.map((p) => Math.hypot(p[0] - centre[0], p[1] - centre[1]))) + 1);
+    const pt = place(centre, rad(ch.heading_deg));
+    const w = CHEVRON.width / 2;
+    for (let k = -reach; k <= reach; k += CHEVRON.every) {
+      for (const side of [1, -1]) {   // each V: two arms back from its point at 45 degrees
+        const cut = clip([pt([k + w, 0]), pt([k - reach + w, side * reach]), pt([k - reach - w, side * reach]), pt([k - w, 0])], poly);
+        if (cut.length >= 3) fill(cut, WHITE);
+      }
+    }
+  }
+  // zebra crossings: white bars along the road, side by side across it
+  for (const z of marks?.zebras ?? []) {
+    const pt = place(z.centre, rad(z.heading_deg));
+    for (let y = -z.width / 2 + 0.25; y + z.stripe <= z.width / 2 - 0.2; y += z.stripe + z.gap) {
+      fill([pt([-z.length / 2, y]), pt([z.length / 2, y]), pt([z.length / 2, y + z.stripe]), pt([-z.length / 2, y + z.stripe])], WHITE);
     }
   }
 
@@ -296,6 +388,43 @@ export function buildWorld(c: CircuitData): WorldBuild {
     }
     poles.push({ index, position: [p.at[0], base + p.height / 2, -p.at[1]], radius: p.radius, halfHeight: p.height / 2 });
   });
+  // a round post in bands of colour: the queues' marker poles and the signals' posts
+  const post = (centre: Vec2, radius: number, z0: number, z1: number, band: number, colours: RGB[]) => {
+    const segs = 10;
+    const bands = Math.max(1, Math.round((z1 - z0) / band));
+    for (let k = 0; k < bands; k++) {
+      const b0 = z0 + ((z1 - z0) * k) / bands;
+      const b1 = z0 + ((z1 - z0) * (k + 1)) / bands;
+      for (let s = 0; s < segs; s++) {
+        const t0 = (s / segs) * Math.PI * 2;
+        const t1 = ((s + 1) / segs) * Math.PI * 2;
+        const q0: Vec2 = [centre[0] + radius * Math.cos(t0), centre[1] + radius * Math.sin(t0)];
+        const q1: Vec2 = [centre[0] + radius * Math.cos(t1), centre[1] + radius * Math.sin(t1)];
+        things.quad(toThree(q0[0], q0[1], b0), toThree(q1[0], q1[1], b0), toThree(q1[0], q1[1], b1), toThree(q0[0], q0[1], b1), colours[k % colours.length]);
+      }
+    }
+  };
+  // where each station's queue stops: a yellow and black pole on the grass, a plate on top facing the road
+  for (const w of c.traffic?.waiting ?? []) {
+    post(w.pole, MARKER.radius, 0, MARKER.height, MARKER.band, [[0.08, 0.08, 0.08], YELLOW]);
+    box(w.pole, [0.04, MARKER.plate], w.heading_deg + 90, MARKER.height - 0.05, MARKER.height - 0.05 + MARKER.plate, YELLOW);
+  }
+  // the signals' posts and lamp housings; the lamps themselves are lit by the scene
+  const lamps: SignalLamp[] = [];
+  for (const sg of c.traffic?.signals ?? []) {
+    for (const hd of sg.heads) {
+      post(hd.at, SIGNAL.pole, 0, SIGNAL.height, SIGNAL.height, [[0.32, 0.34, 0.35]]);
+      const h = rad(hd.heading_deg);
+      const [ux, uy] = dir(h);
+      const front: Vec2 = [hd.at[0] + ux * 0.12, hd.at[1] + uy * 0.12];
+      const mid = SIGNAL.height + SIGNAL.box[1] / 2;
+      box(front, [SIGNAL.box[0], SIGNAL.box[2]], hd.heading_deg, mid - SIGNAL.box[1] / 2, mid + SIGNAL.box[1] / 2, [0.05, 0.05, 0.05]);
+      const face: Vec2 = [front[0] + ux * (SIGNAL.box[0] / 2 + 0.005), front[1] + uy * (SIGNAL.box[0] / 2 + 0.005)];
+      (['red', 'amber', 'green'] as const).forEach((colour, k) => {
+        lamps.push({ signal: sg.id, group: hd.group, colour, position: toThree(face[0], face[1], mid + (1 - k) * SIGNAL.lamp), facing: h });
+      });
+    }
+  }
   const boxes: BoxCollider[] = [];
   const building = (name: string, b: { centre: Vec2; size: Vec2; heading_deg: number }, height: number) => {
     box(b.centre, b.size, b.heading_deg, 0, height, [0.93, 0.91, 0.86]);
@@ -357,6 +486,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
 
   // ---------------------------------------------------------------- meshes
   const materials = {
+    asphalt: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, metalness: 0 }),
     concrete: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0 }),
     grass: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0 }),
   };
@@ -373,6 +503,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
     group.add(m);
   };
   add('grass', grassGeo, materials.grass, -0.02);
+  add('asphalt', pavement, materials.asphalt);
   add('concrete', concreteGeo, materials.concrete);
   add('kerbs', kerbGeo, painted());
   add('paint', paint.geometry(), painted({ polygonOffset: true, polygonOffsetFactor: -2, roughness: 0.6 }));
@@ -413,7 +544,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
     poles,
   };
 
-  return { group, materials, colliders, surfaceHeight };
+  return { group, materials, lamps, colliders, surfaceHeight };
 }
 
 const cache = new WeakMap<CircuitData, WorldBuild>();

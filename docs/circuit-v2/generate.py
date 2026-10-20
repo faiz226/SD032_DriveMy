@@ -26,6 +26,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 
+import traffic_gen
 from lib_geom import HERE, World
 
 PX = 0.0943                     # metres per photo pixel
@@ -325,10 +326,10 @@ def lane_centres(world, keep_out, min_w=6.0, max_w=10.5, step=0.25):
     return lines, roads
 
 
-def break_lines(lines, paths, half=5.0, min_len=4.0):
-    """A gap `half` metres either side of wherever a driven path crosses a centre line: the turn across the other
-    lane at a junction's mouth, or a straight crossing of the road. The main road's line otherwise runs on past a
-    side road, as it does on a real road."""
+def break_lines(lines, paths, boxes=(), half=5.0, min_len=1.5):
+    """A gap wherever a driven path crosses a centre line: across the whole mouth of the junction it crosses in (its
+    box, plus a metre), or `half` metres either side of a crossing outside any junction. The main road's line
+    otherwise runs on past a side road, as it does on a real road."""
     out = []
     for a, b in lines:
         ln = math.hypot(b[0] - a[0], b[1] - a[1])
@@ -346,7 +347,14 @@ def break_lines(lines, paths, half=5.0, min_len=4.0):
                 t_line = (dx * ry - dy * rx) / det
                 t_path = (ux * ry - uy * rx) / det
                 if -half <= t_line <= ln + half and 0.0 <= t_path <= 1.0:
-                    cuts.append((t_line - half, t_line + half))
+                    cx, cy = a[0] + ux * t_line, a[1] + uy * t_line
+                    box = next((bx for bx in boxes if min(q[0] for q in bx) <= cx <= max(q[0] for q in bx)
+                                and min(q[1] for q in bx) <= cy <= max(q[1] for q in bx)), None)
+                    if box is None:
+                        cuts.append((t_line - half, t_line + half))
+                    else:                                      # the box's extent along this line
+                        ts = [(q[0] - a[0]) * ux + (q[1] - a[1]) * uy for q in box]
+                        cuts.append((min(ts) - 1.0, max(ts) + 1.0))
         keep, t0 = [], 0.0
         for c0, c1 in sorted(cuts):
             if c0 > t0:
@@ -355,6 +363,25 @@ def break_lines(lines, paths, half=5.0, min_len=4.0):
         if t0 < ln:
             keep.append((t0, ln))
         out += [[[a[0] + ux * k0, a[1] + uy * k0], [a[0] + ux * k1, a[1] + uy * k1]] for k0, k1 in keep if k1 - k0 >= min_len]
+    return out
+
+
+def cut_box(lines, box, pad):
+    """Remove what lies within `pad` metres of a rectangle from axis-aligned two-point lines."""
+    xs, ys = [p[0] for p in box], [p[1] for p in box]
+    x0, x1, y0, y1 = min(xs) - pad, max(xs) + pad, min(ys) - pad, max(ys) + pad
+    out = []
+    for a, b in lines:
+        ew = abs(a[1] - b[1]) < 1e-6
+        lo, hi = sorted((a[0], b[0])) if ew else sorted((a[1], b[1]))
+        across = a[1] if ew else a[0]
+        c0, c1 = (x0, x1) if ew else (y0, y1)
+        if not ((y0 <= across <= y1) if ew else (x0 <= across <= x1)) or c1 <= lo or c0 >= hi:
+            out.append([a, b])
+            continue
+        for p0, p1 in ((lo, min(c0, hi)), (max(c1, lo), hi)):
+            if p1 - p0 >= 4.0:
+                out.append([[p0, across], [p1, across]] if ew else [[across, p0], [across, p1]])
     return out
 
 
@@ -710,7 +737,11 @@ def main():
         keep.add(rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0))
     keep.finish()
     centre_lines, roads = lane_centres(world, keep.mask)
-    centre_lines = break_lines(centre_lines, [[(q[1], q[2]) for q in pts]])
+    # the other cars, the signals, the merge, the queues and the rest of the paint (traffic_gen.py)
+    LT = dict(L, hill_w=v('hill_w'), wall_w=v('wall_w'), hill_x0_wall=hx0, tpt_x0=M(618, 0)[0])
+    traffic, more_paint, zebra_box, loop_paths = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car)
+    centre_lines = break_lines(centre_lines, [[(q[1], q[2]) for q in pts]] + loop_paths, [j['polygon'] for j in traffic['junctions']])
+    centre_lines = cut_box(centre_lines, zebra_box, 4.0)              # no centre line across or just before the zebra
     for r in roads:
         print('road %s at %.2f: %.1f m wide%s; sections %s' % (r['axis'], r['mid'], r['width'], '' if r['width'] >= 6.0 else ', one-way',
                                                          ' '.join('%.0f-%.0f@%.2f' % (a, b, m) for a, b, m, _ in r['sections'])))
@@ -761,7 +792,8 @@ def main():
         route=dict(columns=['s', 'x', 'y', 'heading_deg', 'width', 'tag'], samples=route, manoeuvres=t.jumps),
         obstacles=dict(poles=poles, cones=[]),
         markings=dict(centre_lines=[[[round(x, 3), round(y, 3)] for x, y in line] for line in centre_lines], dash=3.0, gap=3.0, width=0.12,
-                      note='broken white centre lines on every two-way road (keep left); none on the stations'),
+                      note='broken white centre lines on every two-way road (keep left); none on the stations', **more_paint),
+        traffic=traffic,
         props=dict(booths=booths, office=office, fence=site, npc_cars=npc_cars),
         spawn=spawn,
     )

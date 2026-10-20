@@ -68,14 +68,49 @@ export interface CircuitData {
     manoeuvres: { station: StationId; s_from: number; s_to: number; note: string }[];
   };
   obstacles: { poles: { station: StationId; at: Vec2; radius: number; height: number; base_z?: number; status: string }[]; cones: [] };
-  /** Road markings: broken centre lines on the two-way roads (polylines), never on the stations. */
-  markings?: { centre_lines: Vec2[][]; dash: number; gap: number; width: number; note?: string };
+  /**
+   * Road markings: broken centre lines on the two-way roads (polylines), never on the stations; yellow edge
+   * lines; stop and give-way lines; direction arrows (kind: the movements, of 'L', 'S', 'R'); chevron areas
+   * (heading_deg: the way traffic flows past them); zebra crossings.
+   */
+  markings?: {
+    centre_lines: Vec2[][]; dash: number; gap: number; width: number; note?: string;
+    edge_lines?: Vec2[][]; stop_lines?: Vec2[][]; give_way?: Vec2[][];
+    arrows?: { at: Vec2; heading_deg: number; kind: string; junction: string }[];
+    chevrons?: { polygon: Polygon; heading_deg: number; note?: string }[];
+    zebras?: Zebra[];
+  };
+  /** The other cars, the signals, the merge and the stations' queues (the owner, 20 Oct): docs/circuit-v2/traffic_gen.py. */
+  traffic?: TrafficData;
   props: {
     booths: { centre: Vec2; size: Vec2; heading_deg: number }[]; office: { centre: Vec2; size: Vec2; heading_deg: number }; fence: number[];
     /** Other learners' cars, stopped mid-test on the twin tracks: `at` is the car's centre, the wheelbase's middle. */
     npc_cars?: { on: string; at: Vec2; heading_deg: number }[];
   };
   spawn: { at: Vec2; heading_deg: number; handbrake: boolean };
+  parameters: Record<string, { value: unknown; source: string; note: string }>;
+}
+
+export interface Zebra { centre: Vec2; heading_deg: number; length: number; width: number; stripe: number; gap: number; note?: string }
+
+export type SignalGroup = 'ew' | 'ns';
+
+export interface TrafficData {
+  /** Closed lane paths the other cars drive, keeping left; points every 0.5 m. */
+  loops: { id: string; kmh: number; cars: number; points: Vec2[]; length: number; note?: string }[];
+  /** Where roads meet: the other cars take a box one at a time, and give way to the learner. */
+  junctions: { id: string; polygon: Polygon; signal?: string; merge?: boolean }[];
+  signals: {
+    id: string; junction: string; offset_s: number;
+    phases: Record<SignalGroup, { green: number; amber: number; all_red: number }>;
+    approaches: { group: SignalGroup; heading_deg: number; stop: Vec2[] }[];
+    heads: { at: Vec2; heading_deg: number; group: SignalGroup }[];
+  }[];
+  /** The last station joins the outer loop's traffic, which has priority: conflict_s and window are along that loop. */
+  merge: { give_way: Vec2[]; heading_deg: number; loop: string; conflict_point: Vec2; conflict_s: number; window: [number, number]; gap_s: number; junction: string; note?: string };
+  /** Where each station's queue stops (the rear axle at `at`, the front bumper at `front`) and its marker pole. */
+  waiting: { station: StationId; s: number; at: Vec2; heading_deg: number; front: Vec2; pole: Vec2; pole_side: 'left' | 'right'; pole_gap: number }[];
+  zebra: Zebra;
   parameters: Record<string, { value: unknown; source: string; note: string }>;
 }
 

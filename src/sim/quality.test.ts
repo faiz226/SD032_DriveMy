@@ -22,7 +22,7 @@ describe('quality tiers', () => {
   it('each tier loads its own files: 512 px textures on Low, 1024 px on Medium', () => {
     expect(carFiles('low').body).toBe('/sim/cars/swift-2022/low/body.glb');
     expect(carFiles('medium').wheel).toBe('/sim/cars/swift-2022/medium/wheel.glb');
-    expect(textureFiles('low')).toEqual(['/sim/textures/concrete-512.webp', '/sim/textures/grass-512.webp']);
+    expect(textureFiles('low')).toEqual(['/sim/textures/concrete-512.webp', '/sim/textures/grass-512.webp', '/sim/textures/asphalt-512.webp']);
     expect(textureFiles('medium')[0]).toBe('/sim/textures/concrete-1024.webp');
   });
 });

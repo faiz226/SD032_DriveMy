@@ -11,7 +11,7 @@ export const carFiles = (tier: AssetTier) => ({
 
 export const textureFiles = (tier: AssetTier) => {
   const px = tier === 'low' ? 512 : 1024;
-  return [`/sim/textures/concrete-${px}.webp`, `/sim/textures/grass-${px}.webp`];
+  return [`/sim/textures/concrete-${px}.webp`, `/sim/textures/grass-${px}.webp`, `/sim/textures/asphalt-${px}.webp`];
 };
 
 const started = new Set<string>();

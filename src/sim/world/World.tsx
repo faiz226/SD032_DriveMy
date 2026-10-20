@@ -11,7 +11,7 @@ import { addWorldColliders } from './colliders';
 
 export type Tier = 'low' | 'medium';
 
-const TILE_M = { concrete: 4, grass: 6 };   // one texture tile covers this many metres
+const TILE_M = { concrete: 4, grass: 6, asphalt: 6 };   // one texture tile covers this many metres
 
 export function World({ tier = 'low' }: { tier?: Tier }) {
   const world = getWorld(circuit);
@@ -20,11 +20,12 @@ export function World({ tier = 'low' }: { tier?: Tier }) {
     const added = addWorldColliders(physics.rapier, physics.world, world);
     return () => added.remove();
   }, [physics.rapier, physics.world, world]);
-  const [concrete, grass] = useTexture(textureFiles(tier));
+  const [concrete, grass, asphalt] = useTexture(textureFiles(tier));
 
   useLayoutEffect(() => {
     const maps: [THREE.Texture, number, THREE.MeshStandardMaterial][] = [
       [concrete, TILE_M.concrete, world.materials.concrete],
+      [asphalt, TILE_M.asphalt, world.materials.asphalt],
       [grass, TILE_M.grass, world.materials.grass],
     ];
     for (const [map, tile, material] of maps) {
@@ -36,7 +37,7 @@ export function World({ tier = 'low' }: { tier?: Tier }) {
       material.map = map;
       material.needsUpdate = true;
     }
-  }, [world, concrete, grass]);
+  }, [world, concrete, grass, asphalt]);
 
   useLayoutEffect(() => {
     world.group.traverse((o) => { o.receiveShadow = true; });   // used only when the tier turns shadows on
