@@ -27,7 +27,7 @@ const HONK = { m: 18, cos: 0.3, s: 2.4 };   // free drive: cars this close ahead
  * would wait in one for the next while another car waits in that one for it. `held` are the ones without signals
  * (the lights share out the others).
  */
-interface Chain { ids: string[]; held: string[]; sIn: number; sOut: number }
+interface Chain { ids: string[]; held: string[]; sIn: number; sOut: number; parts: { id: string; sIn: number; sOut: number }[] }
 
 /** steer: the front wheels' angle, + left; indicator: 1 left, -1 right (as the steering wheel's sign). */
 export interface TrafficCar { id: string; kind: 'loop'; loop: string; x: number; y: number; heading: number; kmh: number; braking: boolean; steer: number; indicator: -1 | 0 | 1; hazard: boolean }
@@ -95,7 +95,11 @@ export class Traffic {
     }
     for (const piece of this.route) {
       for (const st of this.stopsOn(piece.path)) this.routeStops.push({ ...st, s: st.s + piece.s0 });
-      for (const ch of this.chainsOn(piece.path)) this.routeChains.push({ ...ch, sIn: ch.sIn + piece.s0, sOut: ch.sOut + piece.s0 });
+      for (const ch of this.chainsOn(piece.path)) {
+        for (const sub of this.stretches(ch)) {
+          this.routeChains.push({ ...sub, sIn: sub.sIn + piece.s0, sOut: sub.sOut + piece.s0, parts: sub.parts.map((q) => ({ ...q, sIn: q.sIn + piece.s0, sOut: q.sOut + piece.s0 })) });
+        }
+      }
       const gw = this.crossing(piece.path, data.merge.give_way as [Vec2, Vec2], rad(data.merge.heading_deg));
       if (gw !== null) this.routeGiveWay = gw + piece.s0;
     }
@@ -158,16 +162,38 @@ export class Traffic {
       const last = chains[chains.length - 1];
       if (last && gap(last.sOut, b.sIn) < this.back + this.nose + ROOM_M) {
         last.ids.push(b.id);
+        last.parts.push(b);
         if (!signal(b.id)) last.held.push(b.id);
         if (gap(last.sOut, b.sOut) > 0) last.sOut = b.sOut;
-      } else chains.push({ ids: [b.id], held: signal(b.id) ? [] : [b.id], sIn: b.sIn, sOut: b.sOut });
+      } else chains.push({ ids: [b.id], held: signal(b.id) ? [] : [b.id], sIn: b.sIn, sOut: b.sOut, parts: [b] });
     }
     // round a loop, the last chain may run on into the first
     if (path.closed && chains.length > 1 && gap(chains[chains.length - 1].sOut, chains[0].sIn) < this.back + this.nose + ROOM_M) {
       const last = chains.pop()!;
-      chains[0] = { ids: [...last.ids, ...chains[0].ids], held: [...last.held, ...chains[0].held], sIn: last.sIn, sOut: chains[0].sOut };
+      chains[0] = { ids: [...last.ids, ...chains[0].ids], held: [...last.held, ...chains[0].held], sIn: last.sIn, sOut: chains[0].sOut, parts: [...last.parts, ...chains[0].parts] };
     }
     return chains;
+  }
+
+  /**
+   * The learner's view of a chain on its route (an open path): split where the gap between two junctions holds the
+   * whole car stopped short of the next. The learner, who never holds a junction, waits only for the stretch it
+   * cannot stop inside; on the spine road that is not the whole road.
+   */
+  private stretches(ch: Chain): Chain[] {
+    const fit = this.back + this.nose + STOP_SHORT;
+    const out: Chain[] = [];
+    for (const q of ch.parts) {
+      const last = out[out.length - 1];
+      const held = ch.held.includes(q.id);
+      if (last && q.sIn - last.sOut < fit) {
+        last.ids.push(q.id);
+        last.parts.push(q);
+        if (held) last.held.push(q.id);
+        last.sOut = Math.max(last.sOut, q.sOut);
+      } else out.push({ ids: [q.id], held: held ? [q.id] : [], sIn: q.sIn, sOut: q.sOut, parts: [q] });
+    }
+    return out;
   }
 
   // ---------------------------------------------------------------- the step
@@ -257,13 +283,17 @@ export class Traffic {
       }
       break;
     }
-    // junctions: let go of the chain behind, then take the next if it is free, else stop before it
+    // junctions: let go of each one as the car's tail leaves it (a chain is taken whole, so no car waits in one for
+    // another; let go of piece by piece, the junctions behind open sooner), then take the next chain if it is free,
+    // else stop before it
     const front = car.s + this.nose;
     for (const ch of car.chains) {
-      if (!ch.held.some((id) => this.holders.get(id) === car.id)) continue;
-      const span = car.path.dist(ch.sIn, ch.sOut);
-      const rearIn = car.path.dist(ch.sIn, car.s - this.back);
-      if (rearIn > span && rearIn < span + LOOK_M) for (const id of ch.held) if (this.holders.get(id) === car.id) this.holders.delete(id);
+      ch.parts.forEach((part, k) => {
+        if (this.holders.get(part.id) !== car.id || ch.parts.slice(k + 1).some((q) => q.id === part.id)) return;
+        const span = car.path.dist(part.sIn, part.sOut);
+        const rearIn = car.path.dist(part.sIn, car.s - this.back);
+        if (rearIn > span && rearIn < span + LOOK_M) this.holders.delete(part.id);
+      });
     }
     let next: Chain | null = null;
     let dNext = Infinity;

@@ -31,6 +31,8 @@ class Drive {
   poles: Map<number, number>;
   traffic: Traffic | null;
   met: string[] = [];   // what the other cars saw the learner do
+  still = 0;            // seconds stood still now, and the longest
+  longestStill = 0;
 
   /** `traffic`: the other cars, already this many seconds into their day (null: an empty yard). */
   constructor(traffic: number | null = null) {
@@ -53,6 +55,8 @@ class Drive {
     const s = this.car.sample(this.t, circuit, swift.tyre_width_m);
     const hits = this.car.poleHits(this.poles, this.t);
     const met = this.traffic?.step(DT, s) ?? [];
+    this.still = Math.abs(s.speedKmh) < 0.3 ? this.still + DT : 0;
+    this.longestStill = Math.max(this.longestStill, this.still);
     for (const e of met) this.met.push(`${e.type} t${this.t.toFixed(1)} (${s.x.toFixed(1)},${s.y.toFixed(1)})`);
     this.state = this.session.step(s, [...hits, ...met], DT, false);
     this.last = s;
@@ -129,6 +133,9 @@ describe('acceptance runs through the real controls (WP6)', () => {
       const { d, report } = drive((p) => p.assessment(), at);
       expect(d.met, report).toEqual([]);
       expect(d.state.verdict, report).toMatchObject({ pass: true, demerits: 0 });
+      // the spine road's junctions are let go of one by one, and the learner waits only for the stretch it cannot
+      // stop in: before, it stood 70 s at a time behind a car that held the whole road
+      expect(d.longestStill, report).toBeLessThan(40);
     }, 900_000);
   }
 
