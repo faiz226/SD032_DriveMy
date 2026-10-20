@@ -17,6 +17,7 @@ const AMBER_STOP = 3.0;       // m/s^2: on amber a car stops if it can at this b
 const STOP_SHORT = 0.4;       // metres short of a stop line, give-way line or junction a car stops
 const REHIT_S = 1.0;          // a contact with the same car counts again only after this long apart
 const ROOM_M = 1.0;           // junctions closer than a car's length plus this are taken together, as one
+const CLEAR_M = 1.0;          // the learner waits this much further short of a junction another car is crossing
 const SIGNAL_M = 30;          // a car turning at a junction indicates from this far before it until it is through
 const SIGNAL_TURN = 0.5;      // radians: a junction crossed with less heading change than this is straight on
 const HONK = { m: 18, cos: 0.3, s: 2.4 };   // free drive: cars this close ahead of the horn flash their hazards this long
@@ -103,24 +104,29 @@ export class Traffic {
   // ---------------------------------------------------------------- set-up: what each path meets
 
   /** Where a path crosses the segment a-b heading within 60 degrees of `heading`, as distance along it. */
-  private crossing(path: Path, [a, b]: [Vec2, Vec2], heading: number): number | null {
+  private crossing(path: Path, line: [Vec2, Vec2], heading: number): number | null {
+    return this.crossings(path, line, heading)[0] ?? null;
+  }
+
+  /** Every place a path crosses the segment a-b heading within 60 degrees of `heading` (a route may pass a stop line twice). */
+  private crossings(path: Path, [a, b]: [Vec2, Vec2], heading: number): number[] {
+    const out: number[] = [];
     const n = path.pts.length;
     for (let i = 0; i < (path.closed ? n : n - 1); i++) {
       const p = path.pts[i];
       const q = path.pts[(i + 1) % n];
       if (Math.hypot(q[0] - p[0], q[1] - p[1]) > 1) continue;
       if (Math.abs(wrapPi(path.heading[i] - heading)) > Math.PI / 3) continue;
-      if (segmentsCross(p, q, a, b)) return path.cum[i];
+      if (segmentsCross(p, q, a, b)) out.push(path.cum[i]);
     }
-    return null;
+    return out;
   }
 
   private stopsOn(path: Path) {
     const out: Car['stops'] = [];
     for (const sg of this.data.signals) {
       for (const ap of sg.approaches) {
-        const s = this.crossing(path, ap.stop as [Vec2, Vec2], rad(ap.heading_deg));
-        if (s !== null) out.push({ s, signal: sg.id, group: ap.group });
+        for (const s of this.crossings(path, ap.stop as [Vec2, Vec2], rad(ap.heading_deg))) out.push({ s, signal: sg.id, group: ap.group });
       }
     }
     return out.sort((p, q) => p.s - q.s);
@@ -439,6 +445,25 @@ export class Traffic {
     const ch = this.routeChains.filter((c) => c.sIn > front && c.sIn - front < LOOK_M).sort((p, q) => p.sIn - q.sIn)[0];
     const holder = ch?.held.map((id) => this.holders.get(id)).find((h) => h !== undefined);
     if (ch && holder) why(stopIn(ch.sIn - front - STOP_SHORT), `${ch.ids.join('+')} taken by ${holder}`);
+    // a junction another car is crossing, or is too close to stop short of: wait outside it, signals or not, unless
+    // that car leads on my own way. Inside, two cars crossing each other's way would each wait for the other (a car
+    // that went in on amber is still turning when my green comes); and a yellow box is never stopped in. The stop
+    // aims CLEAR_M short of the box: the car must not roll its nose in while it brakes.
+    if (ch && piece) {
+      const boxes = ch.ids.map((id) => this.data.junctions.find((j) => j.id === id)!.polygon);
+      for (const car of this.cars) {
+        const p = car.path.pose(car.s);
+        const body = { id: car.id, x: p.x, y: p.y, heading: p.heading, v: car.v, learner: false };
+        const inside = this.corners(body).some((c) => boxes.some((poly) => inPoly(c, poly)));
+        const [hx, hy] = dir(p.heading);
+        const nose: Vec2 = [p.x + hx * this.nose, p.y + hy * this.nose];
+        const committed = car.v > 0.5 && boxes.some((poly) => distToPoly(nose, poly) < (car.v * car.v) / (2 * IDM.brake) + 0.5);
+        if (!inside && !committed) continue;
+        const q = piece.path.project([p.x, p.y], s - piece.s0, LOOK_M + this.nose);
+        if (q && Math.abs(q.offset) < LANE_HALF + this.half && Math.cos(p.heading - piece.path.pose(q.s).heading) > 0.7) continue;
+        why(stopIn(ch.sIn - front - STOP_SHORT - CLEAR_M), `${ch.ids.join('+')} crossed by ${car.id}`);
+      }
+    }
     // and never into them with no room beyond: a queue, or a red light, past a junction waits before it, keeping it clear
     if (ch) {
       const past = this.routeStops.find((st) => st.s > ch.sIn && st.s < ch.sOut + this.back + this.nose + ROOM_M);

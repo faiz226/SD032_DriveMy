@@ -86,15 +86,15 @@ export class Path {
 
   /**
    * Where p falls on the path between `from` and `from + window` (forward): its distance along the path and
-   * its offset across it (+ left), or null if it is outside that stretch.
+   * its offset across it (+ left), or null if it is outside that stretch. The offset is p's true distance from
+   * the stretch, so a point far past its end, on the line its last segment points along, is far, not near.
    */
   project(p: Vec2, from: number, window: number): { s: number; offset: number } | null {
     const n = this.pts.length;
     let i = this.index(from);
     let best: { s: number; offset: number } | null = null;
     let bestD = Infinity;
-    const steps = Math.ceil(window / 0.5) + 2;
-    for (let k = 0; k < steps; k++) {
+    for (let walked = -(this.wrap(from) - this.cum[i]); walked <= window && walked < this.length; ) {
       const j = this.closed ? (i + 1) % n : i + 1;
       if (j >= n && !this.closed) break;
       const a = this.pts[i];
@@ -109,8 +109,9 @@ export class Path {
       if (d < bestD) {
         bestD = d;
         const along = this.cum[i] + u * Math.sqrt(len2);
-        best = { s: along, offset: (ex * dy - ey * dx) / Math.sqrt(len2) };
+        best = { s: along, offset: (ex * dy - ey * dx >= 0 ? 1 : -1) * d };
       }
+      walked += Math.sqrt(len2);
       i = j;
     }
     if (!best) return null;

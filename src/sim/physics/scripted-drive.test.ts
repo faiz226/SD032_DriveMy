@@ -8,6 +8,7 @@ import type { SessionState, Vec2, VehicleSample } from '../contracts';
 import { createSession } from '../core/session';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
+import { Traffic } from '../traffic/model';
 import { getWorld } from '../world/build';
 import { addWorldColliders } from '../world/colliders';
 import { G, SWIFT_DRIVE as P } from './drive';
@@ -28,8 +29,13 @@ class Drive {
   hits: string[] = [];
   maxKmh: Record<string, number> = {};
   poles: Map<number, number>;
+  traffic: Traffic | null;
+  met: string[] = [];   // what the other cars saw the learner do
 
-  constructor() {
+  /** `traffic`: the other cars, already this many seconds into their day (null: an empty yard). */
+  constructor(traffic: number | null = null) {
+    this.traffic = traffic === null ? null : new Traffic(circuit, swift);
+    for (let k = 0; this.traffic && k < Math.round((traffic ?? 0) / DT); k++) this.traffic.step(DT, null);
     this.world = new RAPIER.World({ x: 0, y: -G, z: 0 });
     this.world.timestep = DT;
     this.poles = addWorldColliders(RAPIER, this.world, getWorld(circuit)).poles;
@@ -46,7 +52,9 @@ class Drive {
     this.t += DT;
     const s = this.car.sample(this.t, circuit, swift.tyre_width_m);
     const hits = this.car.poleHits(this.poles, this.t);
-    this.state = this.session.step(s, hits, DT, false);
+    const met = this.traffic?.step(DT, s) ?? [];
+    for (const e of met) this.met.push(`${e.type} t${this.t.toFixed(1)} (${s.x.toFixed(1)},${s.y.toFixed(1)})`);
+    this.state = this.session.step(s, [...hits, ...met], DT, false);
     this.last = s;
     for (const h of hits) this.hits.push(`pole ${h.type === 'obstacle-hit' ? h.index : ''} t${this.t.toFixed(1)} (${s.x.toFixed(2)},${s.y.toFixed(2)})`);
     s.wheels.forEach((w) => { if (w.onKerb !== null) this.kerb.push({ t: this.t, at: [w.x, w.y], ring: w.onKerb }); });
@@ -60,15 +68,16 @@ beforeAll(async () => {
 });
 
 /** Step a fresh world with a plan's controls, from the spawn: the page's loop, without the screen. */
-function drive(plan: (pilot: Pilot) => Iterable<Controls>) {
-  const d = new Drive();
+function drive(plan: (pilot: Pilot) => Iterable<Controls>, traffic: number | null = null) {
+  const d = new Drive(traffic);
   const pilot = new Pilot();
+  pilot.traffic = () => d.traffic;
   pilot.observe(d.last, 0);
   for (const controls of plan(pilot)) {
     d.tick(controls);
     pilot.observe(d.last, DT);
   }
-  const report = { marks: pilot.marks, hits: d.hits, kerb: d.kerb.slice(0, 5), faults: d.state.faults, statuses: d.state.stations.map((st) => `${st.id}:${st.status}`), maxKmh: d.maxKmh, seconds: Math.round(d.t) };
+  const report = { marks: pilot.marks, hits: d.hits, met: d.met, kerb: d.kerb.slice(0, 5), faults: d.state.faults, statuses: d.state.stations.map((st) => `${st.id}:${st.status}`), maxKmh: d.maxKmh, seconds: Math.round(d.t) };
   return { d, report: JSON.stringify(report) };
 }
 
@@ -111,6 +120,17 @@ describe('acceptance runs through the real controls (WP6)', () => {
       expect(f.limit, reason).toBeTruthy();
     }
   }, 600_000);
+
+  // Among the other cars (the owner, 20 Oct), at two moments of their day: 20 s in, a car went into J1 on amber
+  // and was still turning when the learner's green came (each waited for the other, then they touched), and the
+  // route passes J1's eastbound stop line twice (the second pass ran the red).
+  for (const at of [0, 20]) {
+    it(`a clean run among the other cars, ${at} s into their day: no contact, no red light, and the verdict passes`, () => {
+      const { d, report } = drive((p) => p.assessment(), at);
+      expect(d.met, report).toEqual([]);
+      expect(d.state.verdict, report).toMatchObject({ pass: true, demerits: 0 });
+    }, 900_000);
+  }
 
   it('nothing: an assessment with no input never passes', () => {
     const { d } = drive(function* () {
