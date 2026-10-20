@@ -157,7 +157,7 @@
    "section": "roomy",
    "check": "the driven line keeps every tyre off the centre lines",
    "ok": true,
-   "detail": "closest tyre 0.41 m from a line (need >= 0.30), at s = 51.5; 10 line segments"
+   "detail": "closest tyre 0.42 m from a line (need >= 0.30), at s = 51.5; 10 line segments"
   },
   {
    "section": "possible",
@@ -265,7 +265,7 @@
    "section": "cheap",
    "check": "circuit data is small",
    "ok": true,
-   "detail": "156 KB uncompressed"
+   "detail": "157 KB uncompressed"
   },
   {
    "section": "cheap",

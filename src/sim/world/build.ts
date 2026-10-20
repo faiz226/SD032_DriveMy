@@ -29,18 +29,24 @@ export interface WorldBuild {
   surfaceHeight(x: number, y: number): number;   // the deck height on a slope, else 0
 }
 
-const KERB_COLOURS: [number, number, number][] = [[0.93, 0.74, 0.08], [0.08, 0.08, 0.08]];   // yellow, black
+// The markings follow JKR's Arahan Teknik (Jalan) 2D/85, Road Marking and Delineation (the owner, 20 Oct), cited by
+// clause and figure. Kerbs: white and black segments, white first (4.3.8: 1.5 m at most).
+const KERB_COLOURS: [number, number, number][] = [[0.95, 0.95, 0.93], [0.08, 0.08, 0.08]];
 const WHITE: [number, number, number] = [0.95, 0.95, 0.93];
 const YELLOW: [number, number, number] = [0.98, 0.8, 0.1];
-const LINE_YELLOW: [number, number, number] = [0.92, 0.72, 0.12];   // a no-parking edge line, a touch duller than the stop band
+const BOX_YELLOW: [number, number, number] = [0.95, 0.66, 0.05];    // 3.0: JKR's one yellow, BS 381C No. 356, for yellow boxes
 const RED: [number, number, number] = [0.82, 0.12, 0.12];
 const DASH_M = 1;              // kerb paint: 1 m yellow, 1 m black
 const LINE_M = 0.1;            // painted bay lines
 const FINISH_M = 0.4;          // the finish line
-const EDGE_M = 0.1;            // yellow edge lines
-const STOP_M = 0.3;            // stop and give-way lines (give way: 0.6 m dashes, 0.3 m gaps)
-const OUTLINE_M = 0.15;        // the border round a chevron area
-const CHEVRON = { width: 0.3, every: 1.4 };
+const EDGE_M = 0.15;           // 4.1.6: white edge lines
+const STOP_M = 0.3;            // 4.2.2: stop lines
+const GIVE_WAY = { width: 0.2, dash: 0.3, gap: 0.3 };                      // 4.2.3, Fig 12
+const GIVE_WAY_SIGN = { back: 2.75, long: 3.75, wide: 1.25, rim: 0.15, base: 0.6 };   // Fig 12: the triangle
+const OUTLINE_M = 0.2;         // Fig 14: the border round a chevron area
+const CHEVRON = { width: 0.3, gap: 0.6, line: 0.2, apart: 0.125 };        // Fig 14: 45 degree stripes; the double line on from the tip
+const ARROW = { long: 3.0, head: 1.125, headWide: 0.825, shaft: 0.185, turnR: 0.8, turnHead: 0.6, turnHeadWide: 0.75 };   // Fig 19, urban
+const YELLOW_BOX = { border: 0.2, line: 0.15, every: 3.05 };              // 4.3.7, Fig 24
 const MARKER = { radius: 0.05, height: 1.6, band: 0.2, plate: 0.36 };   // the poles where a station's queue stops
 const SIGNAL = { pole: 0.06, height: 2.9, box: [0.24, 0.92, 0.32] as const, lamp: 0.28 };
 const PAINT_LIFT = 0.012;      // paint sits just above the surface
@@ -163,7 +169,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
       run += len;
     });
     const cap = THREE.ShapeUtils.triangulateShape(ring.map(([x, y]) => new THREE.Vector2(x, y)), []);
-    for (const [a, b, d] of cap) wallTops.tri(toThree(ring[a][0], ring[a][1], top[a]), toThree(ring[b][0], ring[b][1], top[b]), toThree(ring[d][0], ring[d][1], top[d]), YELLOW);
+    for (const [a, b, d] of cap) wallTops.tri(toThree(ring[a][0], ring[a][1], top[a]), toThree(ring[b][0], ring[b][1], top[b]), toThree(ring[d][0], ring[d][1], top[d]), WHITE);
   });
   const concreteGeo = mergeGeometries([deck.geometry(), walls.geometry()].map((g) => {
     if (!g.getAttribute('uv')) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array((g.getAttribute('position').count) * 2), 2));
@@ -274,50 +280,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
     const [ux, uy] = dir(heading);
     return (q: Vec2): Vec2 => [centre[0] + ux * q[0] - uy * q[1], centre[1] + uy * q[0] + ux * q[1]];
   };
-  // the two-way roads' broken centre lines: a lane each way, keeping left of the line
-  const marks = c.markings;
-  for (const line of marks?.centre_lines ?? []) {
-    let run = 0;   // metres along the line, for the dash pattern
-    for (let i = 1; i < line.length; i++) {
-      const [a, b] = [line[i - 1], line[i]];
-      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      const at = (t: number): Vec2 => [a[0] + ((b[0] - a[0]) * t) / len, a[1] + ((b[1] - a[1]) * t) / len];
-      for (let t = 0; t < len;) {
-        const phase = (run + t) % (marks!.dash + marks!.gap);
-        const left = phase < marks!.dash ? marks!.dash - phase : 0;
-        if (left > 0) strip(at(t), at(Math.min(len, t + left)), marks!.width, WHITE);
-        t += left > 0 ? left : marks!.dash + marks!.gap - phase;
-      }
-      run += len;
-    }
-  }
-
-  // yellow edge lines (no parking), stop lines, give-way lines
-  for (const line of marks?.edge_lines ?? []) for (let i = 1; i < line.length; i++) strip(line[i - 1], line[i], EDGE_M, LINE_YELLOW);
-  for (const [a, b] of marks?.stop_lines ?? []) strip(a, b, STOP_M, WHITE);
-  for (const [a, b] of marks?.give_way ?? []) dashed(a, b, STOP_M, 0.6, 0.3, WHITE);
-  // the merge's give-way triangle, in the slip lane before its line, pointing at the drivers who must give way
-  const merge = c.traffic?.merge;
-  if (merge) {
-    const [a, b] = merge.give_way;
-    const tri = place([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], rad(merge.heading_deg));
-    fill([tri([-1.2, -0.6]), tri([-1.2, 0.6]), tri([-3.7, 0])], WHITE);
-  }
-  // direction arrows: a 3.2 m shaft and head for straight on, a bent branch for each turn
-  for (const arrow of marks?.arrows ?? []) {
-    const pt = place(arrow.at, rad(arrow.heading_deg));
-    const straight = arrow.kind.includes('S');
-    const shaftEnd = straight ? 0.75 : 0.45;
-    fill([pt([-1.6, -0.08]), pt([shaftEnd, -0.08]), pt([shaftEnd, 0.08]), pt([-1.6, 0.08])], WHITE);
-    if (straight) fill([pt([0.75, -0.28]), pt([1.6, 0]), pt([0.75, 0.28])], WHITE);
-    for (const k of [...arrow.kind].filter((m) => m === 'L' || m === 'R')) {
-      const side = k === 'L' ? 1 : -1;
-      fill([pt([-0.15, -0.08 * side]), pt([0.35, 0.42 * side]), pt([0.52, 0.3 * side]), pt([0.0, -0.2 * side])], WHITE);   // the bend
-      fill([pt([0.32, 0.3 * side]), pt([0.52, 0.3 * side]), pt([0.52, 0.62 * side]), pt([0.32, 0.62 * side])], WHITE);     // across
-      fill([pt([0.18, 0.62 * side]), pt([0.66, 0.62 * side]), pt([0.42, 1.15 * side])], WHITE);                             // its head
-    }
-  }
-  // chevron areas: a white border, and V stripes pointing the way traffic flows, cut to the area
+  // a convex polygon cut to a convex area (both any winding)
   const clip = (poly: Vec2[], edges: Vec2[]): Vec2[] => {
     let area = 0;
     edges.forEach((p, i) => { const q = edges[(i + 1) % edges.length]; area += p[0] * q[1] - q[0] * p[1]; });
@@ -337,25 +300,128 @@ export function buildWorld(c: CircuitData): WorldBuild {
     });
     return out;
   };
+  // a polyline as a strip of quads (arcs of arrows)
+  const polyline = (pts: Vec2[], width: number) => { for (let i = 1; i < pts.length; i++) strip(pts[i - 1], pts[i], width, WHITE); };
+
+  // centre lines (4.1.2): 100 mm white, unbroken where crossing is prohibited (gap 0), else in strokes and gaps
+  const marks = c.markings;
+  for (const line of marks?.centre_lines ?? []) {
+    if (!(marks!.gap > 0)) {
+      for (let i = 1; i < line.length; i++) strip(line[i - 1], line[i], marks!.width, WHITE);
+      continue;
+    }
+    let run = 0;   // metres along the line, for the dash pattern
+    for (let i = 1; i < line.length; i++) {
+      const [a, b] = [line[i - 1], line[i]];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const at = (t: number): Vec2 => [a[0] + ((b[0] - a[0]) * t) / len, a[1] + ((b[1] - a[1]) * t) / len];
+      for (let t = 0; t < len;) {
+        const phase = (run + t) % (marks!.dash + marks!.gap);
+        const left = phase < marks!.dash ? marks!.dash - phase : 0;
+        if (left > 0) strip(at(t), at(Math.min(len, t + left)), marks!.width, WHITE);
+        t += left > 0 ? left : marks!.dash + marks!.gap - phase;
+      }
+      run += len;
+    }
+  }
+
+  // edge lines (4.1.6), stop lines (4.2.2), give-way lines (4.2.3)
+  for (const line of marks?.edge_lines ?? []) for (let i = 1; i < line.length; i++) strip(line[i - 1], line[i], EDGE_M, WHITE);
+  for (const [a, b] of marks?.stop_lines ?? []) strip(a, b, STOP_M, WHITE);
+  for (const [a, b] of marks?.give_way ?? []) dashed(a, b, GIVE_WAY.width, GIVE_WAY.dash, GIVE_WAY.gap, WHITE);
+  // the merge's give-way triangle (Fig 12): an outline, its base 2.75 m before the line, its point at the drivers
+  const merge = c.traffic?.merge;
+  if (merge) {
+    const [a, b] = merge.give_way;
+    const t = place([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], rad(merge.heading_deg));
+    const g = GIVE_WAY_SIGN;
+    const apex = -g.back - g.long;
+    const half = (x: number) => (g.wide / 2) * ((x - apex) / g.long);           // the half width at x
+    const across = (g.rim * Math.hypot(g.long, g.wide / 2)) / g.long;             // the rim, measured across the road
+    const innerApex = apex + (g.rim * Math.hypot(g.long, g.wide / 2)) / (g.wide / 2);   // where the rims' inner edges meet
+    const x1 = -g.back - g.base;
+    fill([t([-g.back, -g.wide / 2]), t([-g.back, g.wide / 2]), t([x1, half(x1)]), t([x1, -half(x1)])], WHITE);   // the base
+    for (const sd of [1, -1]) fill([t([x1, sd * half(x1)]), t([x1, sd * (half(x1) - across)]), t([innerApex, 0]), t([apex, 0])], WHITE);
+  }
+
+  // direction arrows (Fig 19, the urban size): a 3.0 m arrow for straight on, a curved branch for each turn
+  for (const arrow of marks?.arrows ?? []) {
+    const pt = place(arrow.at, rad(arrow.heading_deg));
+    const A = ARROW;
+    const base = -A.long / 2;
+    const straight = arrow.kind.includes('S');
+    const turns = [...arrow.kind].filter((m) => m === 'L' || m === 'R');
+    const bendAt = straight ? base + 0.55 : base + A.long - A.turnR - A.turnHeadWide / 2 - 0.5;   // where a branch leaves the shaft
+    const top = straight ? A.long / 2 - A.head : bendAt;
+    fill([pt([base, -A.shaft / 2]), pt([top, -A.shaft / 2]), pt([top, A.shaft / 2]), pt([base, A.shaft / 2])], WHITE);
+    if (straight) fill([pt([top, -A.headWide / 2]), pt([A.long / 2, 0]), pt([top, A.headWide / 2])], WHITE);
+    for (const k of turns) {
+      const sd = k === 'L' ? 1 : -1;
+      const arc: Vec2[] = [];
+      for (let i = 0; i <= 8; i++) {   // a quarter circle off the shaft, ending pointed sideways
+        const u = (i / 8) * (Math.PI / 2);
+        arc.push(pt([bendAt + A.turnR * Math.sin(u), sd * A.turnR * (1 - Math.cos(u))]));
+      }
+      polyline(arc, A.shaft);
+      const ex = bendAt + A.turnR;
+      fill([pt([ex - A.turnHeadWide / 2, sd * A.turnR]), pt([ex + A.turnHeadWide / 2, sd * A.turnR]), pt([ex, sd * (A.turnR + A.turnHead)])], WHITE);
+    }
+  }
+
+  // chevron areas (Fig 14): a 200 mm border, 300 mm stripes 600 mm apart at 45 degrees whose points face the oncoming
+  // traffic, and a double line run on from the tip towards it
   for (const ch of marks?.chevrons ?? []) {
     const poly = ch.polygon;
     poly.forEach((p, i) => strip(p, poly[(i + 1) % poly.length], OUTLINE_M, WHITE));
     const centre: Vec2 = [poly.reduce((acc, p) => acc + p[0], 0) / poly.length, poly.reduce((acc, p) => acc + p[1], 0) / poly.length];
     const reach = 2 * (Math.max(...poly.map((p) => Math.hypot(p[0] - centre[0], p[1] - centre[1]))) + 1);
     const pt = place(centre, rad(ch.heading_deg));
-    const w = CHEVRON.width / 2;
-    for (let k = -reach; k <= reach; k += CHEVRON.every) {
-      for (const side of [1, -1]) {   // each V: two arms back from its point at 45 degrees
-        const cut = clip([pt([k + w, 0]), pt([k - reach + w, side * reach]), pt([k - reach - w, side * reach]), pt([k - w, 0])], poly);
+    const w = (CHEVRON.width * Math.SQRT2) / 2;       // a 45 degree stripe's half width along the flow
+    const pitch = (CHEVRON.width + CHEVRON.gap) * Math.SQRT2;
+    for (let k = -reach; k <= reach; k += pitch) {
+      for (const sd of [1, -1]) {   // each V: its point upstream, its arms opening downstream
+        const cut = clip([pt([k - w, 0]), pt([k + reach - w, sd * reach]), pt([k + reach + w, sd * reach]), pt([k + w, 0])], poly);
         if (cut.length >= 3) fill(cut, WHITE);
       }
     }
+    const tip = (ch as { tip?: Vec2 }).tip;
+    const lead = (ch as { lead?: number }).lead ?? 0;
+    if (tip && lead > 0) {
+      const back = place(tip, rad(ch.heading_deg));
+      const off = (CHEVRON.line + CHEVRON.apart) / 2;
+      for (const sd of [1, -1]) strip(back([0, sd * off]), back([-lead, sd * off]), CHEVRON.line, WHITE);
+    }
   }
-  // zebra crossings: white bars along the road, side by side across it
+
+  // zebra crossings (4.2.4, Fig 13 type A): 600 mm strips along the road, side by side across it, from 250 mm off the kerb
   for (const z of marks?.zebras ?? []) {
     const pt = place(z.centre, rad(z.heading_deg));
-    for (let y = -z.width / 2 + 0.25; y + z.stripe <= z.width / 2 - 0.2; y += z.stripe + z.gap) {
+    for (let y = -z.width / 2 + 0.25; y + z.stripe <= z.width / 2 - 0.25 + 1e-6; y += z.stripe + z.gap) {
       fill([pt([-z.length / 2, y]), pt([z.length / 2, y]), pt([z.length / 2, y + z.stripe]), pt([-z.length / 2, y + z.stripe])], WHITE);
+    }
+  }
+
+  // yellow box junctions (4.3.7, Fig 24): a 200 mm yellow border and 150 mm yellow criss-cross lines 3.05 m apart
+  for (const boxPoly of (marks as { yellow_boxes?: Vec2[][] } | undefined)?.yellow_boxes ?? []) {
+    const ring = boxPoly;
+    let area = 0;
+    ring.forEach((p, i) => { const q = ring[(i + 1) % ring.length]; area += p[0] * q[1] - q[0] * p[1]; });
+    const inside = Math.sign(area) * YELLOW_BOX.border;   // left of each edge is inside an anticlockwise ring
+    ring.forEach((p, i) => {
+      const q = ring[(i + 1) % ring.length];
+      const len = Math.hypot(q[0] - p[0], q[1] - p[1]);
+      const e = place(p, Math.atan2(q[1] - p[1], q[0] - p[0]));
+      fill([e([0, 0]), e([len, 0]), e([len, inside]), e([0, inside])], BOX_YELLOW);
+    });
+    const cx = ring.reduce((acc, p) => acc + p[0], 0) / ring.length;
+    const cy = ring.reduce((acc, p) => acc + p[1], 0) / ring.length;
+    const span = Math.max(...ring.map((p) => Math.hypot(p[0] - cx, p[1] - cy))) + 1;
+    for (const ang of [Math.PI / 4, -Math.PI / 4]) {
+      const pt = place([cx, cy], ang);
+      for (let k = -span; k <= span; k += YELLOW_BOX.every) {
+        const cut = clip([pt([-span, k - YELLOW_BOX.line / 2]), pt([span, k - YELLOW_BOX.line / 2]), pt([span, k + YELLOW_BOX.line / 2]), pt([-span, k + YELLOW_BOX.line / 2])], ring);
+        if (cut.length >= 3) fill(cut, BOX_YELLOW);
+      }
     }
   }
 

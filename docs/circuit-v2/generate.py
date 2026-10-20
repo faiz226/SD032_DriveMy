@@ -791,8 +791,10 @@ def main():
         junctions=junctions,
         route=dict(columns=['s', 'x', 'y', 'heading_deg', 'width', 'tag'], samples=route, manoeuvres=t.jumps),
         obstacles=dict(poles=poles, cones=[]),
-        markings=dict(centre_lines=[[[round(x, 3), round(y, 3)] for x, y in line] for line in centre_lines], dash=3.0, gap=3.0, width=0.12,
-                      note='broken white centre lines on every two-way road (keep left); none on the stations', **more_paint),
+        markings=dict(centre_lines=[[[round(x, 3), round(y, 3)] for x, y in line] for line in centre_lines], dash=0.0, gap=0.0, width=0.10,
+                      note='unbroken white centre lines, 100 mm, on every two-way road, none on the stations: JKR ATJ 2D/85 4.1.1 and 4.1.2.2 '
+                           'use an unbroken line where crossing is prohibited, and touching one fails the test (keep left). '
+                           'dash 0 and gap 0: unbroken', **more_paint),
         traffic=traffic,
         props=dict(booths=booths, office=office, fence=site, npc_cars=npc_cars),
         spawn=spawn,

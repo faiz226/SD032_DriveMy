@@ -3,7 +3,9 @@ junctions, the merge where the route's last station joins moving traffic, where 
 (with a marker pole on the grass beside it), a zebra crossing, arrows, chevrons, stop and give-way lines and
 yellow edge lines. generate.py calls build() once the route, the roads and the pavement are known.
 
-Every number carries its source, as in generate.py: decided (20 Oct, no public source), car, or photo.
+Every number carries its source, as in generate.py: decided (20 Oct, no public source), car, photo, or jkr: the
+markings follow JKR's Arahan Teknik (Jalan) 2D/85, Manual on Traffic Control Devices: Road Marking and
+Delineation (the owner, 20 Oct), cited by clause and figure.
 """
 import math
 
@@ -17,10 +19,14 @@ DESIGN = {
     'cycle':         ((12, 3, 1, 10, 3, 1), 'decided', 'Signal cycle, s: spine road green, amber, all red, side road green, amber, all red'),
     'offsets':       ((0, 15), 'decided', 'Signal offsets, s: the two junctions half a cycle apart'),
     'gap_s':         (3.0,  'decided', 'At the merge, the gap to the next main-road car a joining car needs, in seconds to the conflict point'),
-    'zebra':         ((46.7, 3.0, 0.5, 0.5), 'decided', 'Zebra crossing: centre x, length along the road, stripe and gap (m), between the two booths across the spine road'),
+    'zebra':         ((46.7, 3.0, 0.6, 0.6), 'jkr',     'Zebra crossing: centre x (decided: between the two booths across the spine road), then 4.2.4 and Fig 13 type A: a crossing 1.8 to 3.6 m wide, strips 600 mm, gaps 600 mm'),
+    'zebra_stop':    (1.35, 'jkr',     '4.2.2 and Fig 13: a stop line 1.2 m before a crossing (here to the line\'s middle)'),
     'arrow_back':    (6.0,  'decided', 'Direction arrows sit this far before a junction, in each lane traffic uses'),
-    'stop_off':      (0.3,  'decided', 'Stop and give-way lines sit this far outside the junction'),
-    'edge_in':       (0.3,  'decided', 'Yellow edge lines: this far inside the kerb (no parking)'),
+    'stop_off':      (1.5,  'jkr',     '4.2.2, 4.2.3, Fig 12: stop and give-way lines 1.2 m to 10 m from the edge of the road crossed (here 1.5 m to the line\'s middle)'),
+    'edge_in':       (0.325, 'jkr',    '4.1.6 and Fig 9: a 150 mm white edge line, a 0.25 m strip in from the kerb (here to the line\'s middle)'),
+    'merge_taper':   (30.0, 'jkr',     '4.1.8: a merging transition L = 0.45 V W to 0.6 V W, at least 30 m in town (V 20 km/h, W 3.3 m: 30 m)'),
+    'split_taper':   (7.0,  'jkr',     '4.1.8: a diverging transition L = 0.15 V W to 0.3 V W (V 20 km/h, W 1.2 m); site-adjusted, the apron in front of the hill strips is 14 m deep'),
+    'chevron_lead':  (5.0,  'jkr',     'Fig 14: the double line run on from a chevron area\'s tip, 5 m or to suit the site'),
 }
 
 
@@ -306,7 +312,7 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
         for k in range(2):
             ax = float(np.mean([p[k][0] for p in g['at']]))
             ay = float(np.mean([p[k][1] for p in g['at']]))
-            ends = [(ax + math.cos(h) * e, ay + math.sin(h) * e) for e in (-1.6, 0.0, 1.6)]   # the arrow is 3.2 m long
+            ends = [(ax + math.cos(h) * e, ay + math.sin(h) * e) for e in (-1.5, 0.0, 1.5)]   # JKR Fig 19: an urban arrow is 3.0 m long
             if any(kept(*q) or not paved(*q) or in_poly(q, zebra_box) or any(in_poly(q, j['polygon']) for j in junctions) for q in ends):
                 continue
             kind = ''.join(m for m in 'LSR' if m in g['moves'])
@@ -317,18 +323,22 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     hy, hh, wwall = L['hill_y'], L['hill_w'] / 2, L['wall_w']
     hx0 = L['hill_x0_wall']
     split_y = hy + hh + wwall / 2                    # the wall between our hill strip and the twin's
+    mt, st_ = v('merge_taper'), v('split_taper')
     chevrons = [
-        dict(polygon=[[round(em_, 2), round(gy, 2)], [round(ex0 + 0.2, 2), round(gy, 2)], [round(em_, 2), round(gy + 7.5, 2)]], heading_deg=270.0,
-             note='the merge: the slip road\'s unused half tapers out before the give-way line'),
-        dict(polygon=[[round(hx0, 2), round(split_y - 1.2, 2)], [round(hx0, 2), round(split_y + 1.2, 2)], [round(hx0 - 7.0, 2), round(split_y, 2)]], heading_deg=0.0,
-             note='the lane split in front of the wall between the two hill strips'),
+        dict(polygon=[[round(em_, 2), round(gy, 2)], [round(ex0 + 0.2, 2), round(gy, 2)], [round(em_, 2), round(gy + mt, 2)]], heading_deg=270.0,
+             tip=[round(em_, 2), round(gy + mt, 2)], lead=0.0,   # site-adjusted: the turn in from the top lane starts at its tip
+             note='the merge: the slip road\'s unused half tapers out before the give-way line (JKR Fig 10, Fig 14)'),
+        dict(polygon=[[round(hx0, 2), round(split_y - 1.2, 2)], [round(hx0, 2), round(split_y + 1.2, 2)], [round(hx0 - st_, 2), round(split_y, 2)]], heading_deg=0.0,
+             tip=[round(hx0 - st_, 2), round(split_y, 2)], lead=v('chevron_lead'),
+             note='the lane split in front of the wall between the two hill strips (JKR Fig 14, diverging)'),
     ]
 
     # ------------------------------------------------------------ stop, give-way and edge lines
     stop_lines = [a['stop'] for sg in signals for a in sg['approaches']]
-    give_way = [merge['give_way'],
-                [[round(zx - zlen / 2 - 1.0, 2), round(spine_m, 2)], [round(zx - zlen / 2 - 1.0, 2), round(spine_m + spine_w / 2 - 0.2, 2)]],
-                [[round(zx + zlen / 2 + 1.0, 2), round(spine_m - spine_w / 2 + 0.2, 2)], [round(zx + zlen / 2 + 1.0, 2), round(spine_m, 2)]]]
+    zs = v('zebra_stop')
+    stop_lines += [[[round(zx - zlen / 2 - zs, 2), round(spine_m, 2)], [round(zx - zlen / 2 - zs, 2), round(spine_m + spine_w / 2 - 0.2, 2)]],
+                   [[round(zx + zlen / 2 + zs, 2), round(spine_m - spine_w / 2 + 0.2, 2)], [round(zx + zlen / 2 + zs, 2), round(spine_m, 2)]]]
+    give_way = [merge['give_way']]
     edge_lines = []
     for r in roads_list:
         if r['width'] < 6.0:
@@ -353,5 +363,8 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
 
     traffic = dict(loops=loops, junctions=junctions, signals=signals, merge=merge, waiting=waiting, zebra=zebra,
                    parameters={k: dict(value=val, source=src, note=note) for k, (val, src, note) in DESIGN.items()})
-    markings = dict(edge_lines=edge_lines, stop_lines=stop_lines, give_way=give_way, arrows=arrows, chevrons=chevrons, zebras=[zebra])
+    # yellow box junctions at the signalled junctions: no waiting in them (JKR 4.3.7, Fig 24)
+    yellow_boxes = [J1['polygon'], J2['polygon']]
+    markings = dict(edge_lines=edge_lines, stop_lines=stop_lines, give_way=give_way, arrows=arrows, chevrons=chevrons, zebras=[zebra],
+                    yellow_boxes=yellow_boxes)
     return traffic, markings, zebra_box, [lp['points'] for lp in loops]
