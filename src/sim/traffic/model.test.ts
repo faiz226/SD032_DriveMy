@@ -128,6 +128,20 @@ describe('the other cars', () => {
     expect(drive(greenAt)).toEqual([]);
   });
 
+  it('report a learner joining the roundabout in front of a car going round, and not one joining an empty one', () => {
+    const gw = data.merge.give_way;
+    const y = (gw[0][1] + gw[1][1]) / 2;
+    const nose = swift.wheelbase_m + swift.front_overhang_m;
+    // heading west, the front bumper steps across the give-way line
+    const cross = (traffic: Traffic) => [0.6, -0.6].flatMap((dx) => traffic.step(DT, learner([gw[0][0] + dx + nose, y], Math.PI, 10, traffic.t)))
+      .filter((e) => e.type === 'merge-cut-in');
+    const busy = new Traffic(circuit, swift);
+    for (let k = 0; k < 120 / DT && busy.mergeGapS() >= data.merge.gap_s - 0.5; k++) busy.step(DT, null);
+    expect(busy.mergeGapS()).toBeLessThan(data.merge.gap_s);
+    expect(cross(busy)).toHaveLength(1);
+    expect(cross(new Traffic(circuit, swift, { loops: false }))).toEqual([]);
+  });
+
   it('give the merge a gap: a main-road car on its way makes the gap short, none makes it endless', () => {
     expect(new Traffic(circuit, swift, { loops: false }).mergeGapS()).toBe(Infinity);
     const traffic = new Traffic(circuit, swift);

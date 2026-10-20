@@ -1,6 +1,7 @@
 // Touch: the left thumb steers (the wheel holds its angle when let go; double-tap it to centre), the right
-// thumb works the pedals (press higher up a pedal for more), the indicators sit over the steering, and four
-// buttons: D/R, handbrake, pause and the top-down view. Every control writes the same driver inputs as the keyboard.
+// thumb works the pedals (press higher up a pedal for more), and a row of buttons between them: the left
+// indicator, D/R, handbrake, pause, the top-down view and the right indicator (on a short landscape phone, nothing
+// over the side mirrors). Every control writes the same driver inputs as the keyboard.
 import { ArrowFatLeft, ArrowFatRight, MapTrifold, Pause, Play } from 'phosphor-react';
 import { type CSSProperties, type PointerEvent, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -54,7 +55,8 @@ export function TouchControls() {
     if (steer.current?.id === e.pointerId) steer.current = null;   // the wheel keeps its angle
   };
 
-  const button = (on: boolean): CSSProperties => ({ ...pad, position: 'static', width: 52, height: 48, ...lit(on) });
+  // six of these (48 px wide, as .tap holds them) and their gaps fit between the steering pad and the pedals on a 667 px landscape phone
+  const button = (on: boolean): CSSProperties => ({ ...pad, position: 'static', width: 46, height: 48, ...lit(on) });
   const d = useDriver.getState;
 
   return (
@@ -79,19 +81,13 @@ export function TouchControls() {
         </svg>
       </div>
 
-      <div style={{ position: 'absolute', left: 16, bottom: 16 + 140 + 10, display: 'flex', gap: 10 }}>
+      <Pedal kind="brake" label={t('sim.touch.brake')} text={t('sim.touch.brake')} style={{ right: 16 + 64 + 10, width: 80, height: 112 }} />
+      <Pedal kind="throttle" label={t('sim.touch.throttle')} text={t('sim.touch.throttleShort')} style={{ right: 16, width: 64, height: 140 }} />
+
+      <div style={{ position: 'absolute', left: '50%', bottom: 16, transform: 'translateX(-50%)', display: 'flex', gap: 4 }}>
         <button type="button" className="tap" aria-label={t('sim.hud.signalLeft')} aria-pressed={indicator === 1} style={button(indicator === 1)} onClick={() => d().toggleIndicator(1)}>
           <ArrowFatLeft size={22} />
         </button>
-        <button type="button" className="tap" aria-label={t('sim.hud.signalRight')} aria-pressed={indicator === -1} style={button(indicator === -1)} onClick={() => d().toggleIndicator(-1)}>
-          <ArrowFatRight size={22} />
-        </button>
-      </div>
-
-      <Pedal kind="brake" label={t('sim.touch.brake')} text={t('sim.touch.brake')} style={{ right: 16 + 64 + 10, width: 84, height: 112 }} />
-      <Pedal kind="throttle" label={t('sim.touch.throttle')} text={t('sim.touch.throttleShort')} style={{ right: 16, width: 64, height: 140 }} />
-
-      <div style={{ position: 'absolute', left: '50%', bottom: 16, transform: 'translateX(-50%)', display: 'flex', gap: 10 }}>
         <button type="button" className="type-label-strong tap" aria-label={t('sim.touch.gear')} style={button(gear === 'R')} onClick={() => d().toggleGear()}>{gear}</button>
         <button type="button" className="type-label-strong tap" aria-label={t('sim.touch.handbrake')} aria-pressed={handbrake} style={button(handbrake)} onClick={() => d().toggleHandbrake()}>(P)</button>
         <button type="button" className="tap" aria-label={t('sim.touch.pause')} aria-pressed={paused} style={button(paused)} onClick={() => d().set({ paused: !paused })}>
@@ -99,6 +95,9 @@ export function TouchControls() {
         </button>
         <button type="button" className="tap" aria-label={t('sim.touch.topDown')} aria-pressed={topDown} style={button(topDown)} onClick={() => d().set({ topDown: !topDown })}>
           <MapTrifold size={22} />
+        </button>
+        <button type="button" className="tap" aria-label={t('sim.hud.signalRight')} aria-pressed={indicator === -1} style={button(indicator === -1)} onClick={() => d().toggleIndicator(-1)}>
+          <ArrowFatRight size={22} />
         </button>
       </div>
     </div>
