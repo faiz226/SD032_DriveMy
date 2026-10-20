@@ -6,9 +6,9 @@ import { en } from '../../lib/translations/en';
 import { ms } from '../../lib/translations/ms';
 import { createSession } from './session';
 import {
-  DT, Driver, HILL_STOP_S, L, LOCK, PAR, POSITIVE, R_LOCK, SIDE, TPT, assessment, drill, hillDrive, mergeDrive,
-  parallelDrive, parallelReverseIn, rampDrive, rampIn, rampOut, routePose, sDrive, sNear, sideDrive, sideReverseIn, station,
-  threePointDrive, zDrive,
+  DT, Driver, HILL_STOP_S, L, LOCK, PAR, POSITIVE, R_LOCK, SIDE, assessment, drill, hillDrive, mergeDrive,
+  parallelDrive, parallelReverseIn, rampDrive, rampIn, rampOut, sDrive, sNear, sideDrive, sideReverseIn, station,
+  zDrive,
 } from './testkit';
 
 vi.setConfig({ testTimeout: 120_000 });   // whole runs and 5-minute time limits are many 60 Hz steps
@@ -94,7 +94,6 @@ describe('assessment run', () => {
     d.arc(R_LOCK * PAR.phi, 4, LOCK);
     d.rs = sNear(d.at, par.s_from, par.s_to);
     d.follow(par.s_to + 2, 8);
-    threePointDrive(d);
     sDrive(d, 25);                                        // the S at 25 km/h fails the station
     zDrive(d);
     rampDrive(d);
@@ -297,82 +296,6 @@ describe('parallel parking', () => {
     parkAt(d, 'parallel-parking', -0.5);
     d.stop(1.5, true);
     expect(d.last.faults.map((f) => f.kind)).toEqual(['not_in_bay']);
-  });
-});
-
-describe('three-point turn', () => {
-  const into = (d: Driver) => d.follow(TPT.preJump, 6);
-  const turns = (d: Driver, first: number, second: number) => {
-    d.arc(R_LOCK * rad(first), 5, -LOCK);
-    d.stop(0.5);
-    d.arc(-R_LOCK * rad(second), -4, LOCK);
-    d.stop(0.5);
-  };
-
-  it('clears on the third movement', () => {
-    const d = drill('three-point-turn');
-    threePointDrive(d);
-    expect(status(d, 'three-point-turn')).toBe('cleared');
-    expect(d.stationState('three-point-turn').detail.movements).toBe(3);
-    expect(d.last.faults).toEqual([]);
-  });
-
-  it('never clears in one arc', () => {
-    const d = drill('three-point-turn');
-    into(d);
-    d.arc(R_LOCK * Math.PI, 5, -LOCK);                     // a U-turn: over the kerb and onto the grass
-    const back = routePose(TPT.rejoin);
-    d.glide(back.at, back.heading, 5);
-    d.rs = TPT.rejoin;
-    d.follow(station('three-point-turn').s_to + 2, 8);
-    expect(status(d, 'three-point-turn')).toBe('failed');
-    expect(reasons(d)).toContain('sim.fault.passed');
-    expect(d.stationState('three-point-turn').detail.movements).toBe(1);
-  });
-
-  it('fails when a fourth movement starts', () => {
-    const d = drill('three-point-turn');
-    into(d);
-    turns(d, 40, 30);
-    d.arc(R_LOCK * rad(30), 4, -LOCK);
-    d.stop(0.5);
-    d.arc(-0.5, -4, 0);
-    expect(reasons(d)).toEqual(['sim.fault.threePoint.fourth']);
-  });
-
-  it.each([[0.29, 1], [0.31, 2]])('a %s m reverse counts as %s movement(s)', (dist, n) => {
-    const d = drill('three-point-turn');
-    into(d);
-    d.stop(0.3);
-    d.arc(-dist, -3, 0);
-    d.stop(0.3);
-    expect(d.stationState('three-point-turn').detail.movements).toBe(n);
-  });
-
-  it.each([[7, 'armed'], [9, 'cleared']])('turning %s° more after 140°: %s', (third, want) => {
-    const d = drill('three-point-turn');
-    into(d);
-    turns(d, 70, 70);
-    d.arc(R_LOCK * rad(third), 4, -LOCK);
-    expect(status(d, 'three-point-turn')).toBe(want);
-  });
-
-  it('waits for creep pace: turned round at 7 km/h, it clears once at 6', () => {
-    const d = drill('three-point-turn');
-    into(d);
-    turns(d, 70, 70);
-    d.arc(R_LOCK * rad(40), 7, -LOCK);
-    expect(status(d, 'three-point-turn')).toBe('armed');
-    d.kmh = 6;
-    d.tick();
-    expect(status(d, 'three-point-turn')).toBe('cleared');
-  });
-
-  it('fails when its 3 minutes run out', () => {
-    const d = drill('three-point-turn');
-    into(d);
-    d.stop(181);
-    expect(reasons(d)).toEqual(['sim.fault.time']);
   });
 });
 

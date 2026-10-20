@@ -253,16 +253,19 @@ export function buildWorld(c: CircuitData): WorldBuild {
       paint.quad(at(pt(a0, -w), PAINT_LIFT), at(pt(a1, -w), PAINT_LIFT), at(pt(a1, w), PAINT_LIFT), at(pt(a0, w), PAINT_LIFT), YELLOW);
     }
   }
-  for (const g of c.stations) {
-    if (!g.bay) continue;
-    const [ux, uy] = dir(rad(g.bay.axis_deg));        // from the back of the bay to its mouth
-    const corner = (along: number, across: number): Vec2 => [g.bay!.centre[0] + ux * along - uy * across, g.bay!.centre[1] + uy * along + ux * across];
-    const l = g.bay.length / 2;
-    const w = g.bay.width / 2;
+  const bays = [   // the 3-side bays are open at their mouths
+    ...c.stations.flatMap((g) => (g.bay ? [{ bay: g.bay, open: g.id === 'side-parking' }] : [])),
+    ...(c.markings?.bays ?? []).map((bay) => ({ bay, open: true })),
+  ];
+  for (const { bay, open } of bays) {
+    const [ux, uy] = dir(rad(bay.axis_deg));        // from the back of the bay to its mouth
+    const corner = (along: number, across: number): Vec2 => [bay.centre[0] + ux * along - uy * across, bay.centre[1] + uy * along + ux * across];
+    const l = bay.length / 2;
+    const w = bay.width / 2;
     strip(corner(-l, -w), corner(l, -w), LINE_M, WHITE);
     strip(corner(-l, w), corner(l, w), LINE_M, WHITE);
     strip(corner(-l, -w - LINE_M / 2), corner(-l, w + LINE_M / 2), LINE_M, WHITE);              // the back
-    if (g.id !== 'side-parking') strip(corner(l, -w - LINE_M / 2), corner(l, w + LINE_M / 2), LINE_M, WHITE);   // the side bay is open at its mouth
+    if (!open) strip(corner(l, -w - LINE_M / 2), corner(l, w + LINE_M / 2), LINE_M, WHITE);
   }
   const finish = station('road-merging')?.gates.find((q) => q.id === 'finish');
   if (finish) strip(finish.a, finish.b, FINISH_M, RED);

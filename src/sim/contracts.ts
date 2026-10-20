@@ -17,7 +17,7 @@ export interface Gate { id: string; s?: number; a: Vec2; b: Vec2; heading_deg: n
 
 export interface StationGeometry {
   id: StationId;
-  order: number;            // 1..8
+  order: number;            // 1..7
   title: string;
   s_from: number;           // metres along route.samples where the station starts
   s_to: number;             // ... and ends
@@ -27,7 +27,7 @@ export interface StationGeometry {
   stop_band?: { s_from: number; s_to: number; note: string };
   pocket?: Polygon;
   bay?: { centre: Vec2; axis_deg: number; length: number; width: number; kerbed?: boolean };
-  box?: Polygon;            // three-point turn: the turning box in its lane; ramp test: the ramp's footprint
+  box?: Polygon;            // ramp test: the ramp's footprint
   width?: number;
   depth?: number;
   legs?: Polygon[];
@@ -71,7 +71,8 @@ export interface CircuitData {
   /**
    * Road markings: broken centre lines on the two-way roads (polylines), never on the stations; yellow edge
    * lines; stop and give-way lines; direction arrows (kind: the movements, of 'L', 'S', 'R'); chevron areas
-   * (heading_deg: the way traffic flows past them); zebra crossings.
+   * (heading_deg: the way traffic flows past them); zebra crossings; bays painted off the route (bays: the second
+   * 3-side parking bay, open at its mouth as station 2's is).
    */
   markings?: {
     centre_lines: Vec2[][]; dash: number; gap: number; width: number; note?: string;
@@ -79,6 +80,7 @@ export interface CircuitData {
     arrows?: { at: Vec2; heading_deg: number; kind: string; junction: string }[];
     chevrons?: { polygon: Polygon; heading_deg: number; note?: string }[];
     zebras?: Zebra[];
+    bays?: NonNullable<StationGeometry['bay']>[];
   };
   /** The other cars, the signals, the merge and the stations' queues (the owner, 20 Oct): docs/circuit-v2/traffic_gen.py. */
   traffic?: TrafficData;
@@ -115,7 +117,7 @@ export interface TrafficData {
 }
 
 export type StationId =
-  | 'hill-start' | 'side-parking' | 'parallel-parking' | 'three-point-turn'
+  | 'hill-start' | 'side-parking' | 'parallel-parking'
   | 's-curve' | 'z-curve' | 'ramp-test' | 'road-merging';
 
 // rules.json is typed loosely here; sim/core narrows it and must not hard-code its numbers.

@@ -223,20 +223,6 @@ export function parallelDrive(d: Driver) {
 }
 
 /** Three-point turn: forward right lock 70°, reverse left lock 70°, forward right lock to face back north. */
-export const TPT = { preJump: breakAt('three-point-turn').pre, rejoin: breakAt('three-point-turn').post + 3.2 };
-export function threePointDrive(d: Driver) {
-  d.follow(TPT.preJump, 6);
-  d.arc(R_LOCK * rad(70), 5, -LOCK);
-  d.stop(0.5);
-  d.arc(-R_LOCK * rad(70), -4, LOCK);
-  d.stop(0.5);
-  d.arc(R_LOCK * rad(40), 4, -LOCK);
-  const q = routePose(TPT.rejoin);
-  d.glide(q.at, q.heading, 5);
-  d.rs = TPT.rejoin;
-  d.follow(station('three-point-turn').s_to + 2, 8);
-}
-
 export function sDrive(d: Driver, kmh = 10) {
   d.follow(station('s-curve').s_to + 2, kmh);
 }
@@ -278,7 +264,6 @@ export const POSITIVE: Record<StationId, (d: Driver) => void> = {
   'hill-start': hillDrive,
   'side-parking': sideDrive,
   'parallel-parking': parallelDrive,
-  'three-point-turn': threePointDrive,
   's-curve': (d) => sDrive(d),
   'z-curve': (d) => zDrive(d),
   'ramp-test': rampDrive,

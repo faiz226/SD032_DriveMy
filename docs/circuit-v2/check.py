@@ -111,7 +111,8 @@ def main():
     # ---------------------------------------------------------------- 1 Organised
     print('\n1 ORGANISED')
     ords = [s['order'] for s in sorted(stations, key=lambda s: s['s_from'])]
-    record('organised', 'eight stations, in order along one route', ords == list(range(1, 9)), 'order along s: %s' % ords)
+    record('organised', 'the stations, in order along one route', ords == list(range(1, len(stations) + 1)),
+           '%d stations (the owner, 20 Oct: no three-point turn); order along s: %s' % (len(stations), ords))
     coarse = [(q[1], q[2]) for q in samples[::4]]
     junctions = [np.asarray(j['polygon']) for j in C.get('junctions', [])]
 
@@ -205,10 +206,6 @@ def main():
            'built %.2f m on the straight legs; real %.1f-%.1f m' % (z_built, REAL['z_lane'][0], REAL['z_lane'][1]))
     record('real', 'Z jog matches the real one', abs(prm['z_jog'] - REAL['z_jog'][0]) <= REAL['z_jog'][0] * SCALE_TOL,
            'ours %.2f m, real %.1f m' % (prm['z_jog'], REAL['z_jog'][0]))
-    tpt_c = np.array([st_ for st_ in stations if st_['id'] == 'three-point-turn'][0]['box']).mean(0)
-    tpt_built = 2 * float(world.clearance([tuple(tpt_c)]))
-    record('real', 'three-point-turn lane, as built, not narrower than the real one', tpt_built >= REAL['tpt_road'][0] * (1 - SCALE_TOL),
-           'built %.2f m across the middle of the turning box (5 cm grid); real %.2f m' % (tpt_built, REAL['tpt_road'][0]))
     hill_len = 2 * prm['hill_up'] + prm['hill_top']
     record('real', 'hill strip matches the real one', abs(hill_len - REAL['hill'][0]) <= REAL['hill'][0] * SCALE_TOL
            and prm['hill_w'] >= REAL['hill'][1] * (1 - SCALE_TOL),
@@ -285,28 +282,6 @@ def main():
     # ---------------------------------------------------------------- 4 Possible
     print('\n4 POSSIBLE (each exercise done with this car exactly as the PRD rules define it)')
     by = {s['id']: s for s in stations}
-    # three-point turn: start inside the turning box, kept to the left kerb (traffic keeps left);
-    # the first movement turns right, across the lane towards its far kerb
-    box = np.array(by['three-point-turn']['box'])
-    road_side = box[0]
-    far_side = box[3]
-    into = far_side - road_side
-    into /= np.linalg.norm(into)
-    across = box[1] - box[0]
-    width = np.linalg.norm(across)
-    across /= np.linalg.norm(across)
-    heading = math.atan2(into[1], into[0])
-    left = np.array([-math.sin(heading), math.cos(heading)])
-    edge_left = box[0] if np.dot(box[0] - box.mean(0), left) > 0 else box[1]
-    start_xy = (edge_left + into * (car.r_oh + 4.0) - left * (0.30 + car.track / 2 + car.tyre_w / 2))
-    for crit in ('tyre', 'body'):
-        ok3, h3 = three_point(car, world, (start_xy[0], start_xy[1], heading), turn=-1, crit=crit, moves=3)
-        ok1, h1 = three_point(car, world, (start_xy[0], start_xy[1], heading), turn=-1, crit=crit, moves=1)
-        record('possible', '3-point turn in three movements (%s)' % crit, ok3, 'heading change after each: %s' % h3)
-        record('possible', '3-point turn NOT possible in one arc (%s)' % crit, not ok1, 'one arc reaches %.0f deg (needs 148)' % h1[0][0])
-    record('possible', '3-point road width inside the 3-move window', 6.0 <= width <= 9.5,
-           '%.2f m (window for this car: 6.0-9.5 m, see AUDIT.md)' % width)
-
     sp = by['side-parking']
     aisle = math.radians(sp['gates'][0]['heading_deg'])
     lim = math.degrees(car.heading_limit(sp['bay']['width']))

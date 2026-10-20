@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Car, Mountains, Square, ArrowsLeftRight,
+  Car, Mountains, Square,
   Waves, Lightning, Warning, GitMerge, Trophy, ArrowRight
 } from "phosphor-react";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -27,7 +27,6 @@ const MANEUVERS: Maneuver[] = [
   { id: "hill-start",        nameKey: "progress.maneuver.hill-start",        difficulty: "Hard",   icon: <Mountains        className="w-7 h-7" weight="regular" /> },
   { id: "side-parking",      nameKey: "progress.maneuver.side-parking",      difficulty: "Medium", icon: <Square   className="w-7 h-7" weight="regular" /> },
   { id: "parallel-parking",  nameKey: "progress.maneuver.parallel-parking",  difficulty: "Hard",   icon: <Square   className="w-7 h-7" weight="regular" /> },
-  { id: "three-point-turn",  nameKey: "progress.maneuver.three-point-turn",  difficulty: "Medium", icon: <ArrowsLeftRight  className="w-7 h-7" weight="regular" /> },
   { id: "s-curve",           nameKey: "progress.maneuver.s-curve",           difficulty: "Medium", icon: <Waves           className="w-7 h-7" weight="regular" /> },
   { id: "z-curve",           nameKey: "progress.maneuver.z-curve",           difficulty: "Medium", icon: <Lightning             className="w-7 h-7" weight="regular" /> },
   { id: "ramp-test",         nameKey: "progress.maneuver.ramp-test",         difficulty: "Easy",   icon: <Warning   className="w-7 h-7" weight="regular" /> },

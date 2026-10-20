@@ -23,8 +23,8 @@ KERB_Y = (232, 197, 71)
 KERB_K = (30, 30, 30)
 ROUTE = (40, 92, 170)
 LABEL = (20, 32, 60)
-NAMES = {1: 'Hill Start', 2: 'Side Parking', 3: 'Parallel Park', 4: '3-Point Turn', 5: 'S-Curve', 6: 'Z-Curve',
-         7: 'Ramp Test', 8: 'Road Merging'}
+NAMES = {1: 'Hill Start', 2: '3-Side Parking', 3: 'Parallel Park', 4: 'S-Curve', 5: 'Z-Curve', 6: 'Ramp Test',
+         7: 'Road Merging'}
 
 
 def font(size, bold=False):
@@ -214,13 +214,13 @@ def plan_png(C):
     out = Image.new('RGB', (cv.w, cv.h + band), (255, 255, 255))
     out.paste(cv.img, (0, band))
     d = ImageDraw.Draw(out)
-    d.text((18, 14), 'DriveMy practice yard: the real ARM yard, eight stations in test order on one route',
+    d.text((18, 14), 'DriveMy practice yard: the real ARM yard, seven stations in test order on one route',
            font=font(22, True), fill=LABEL)
-    d.text((18, 46), 'Traffic keeps left. Start in the apron (white car) and follow the arrows. Breaks in the line are manoeuvres: reversing into a bay, turning round, backing off the ramp.',
+    d.text((18, 46), 'Traffic keeps left. Start in the apron (white car) and follow the arrows. Breaks in the line are manoeuvres: reversing into a bay, backing off the ramp.',
            font=font(15), fill=(60, 60, 60))
     f = font(15)
     x = 18
-    for k in range(1, 9):
+    for k in sorted(NAMES):
         txt = '%d %s' % (k, NAMES[k])
         d.ellipse([x, 84, x + 22, 106], fill=LABEL)
         d.text((x + 11, 95), str(k), font=font(14, True), fill=(255, 255, 255), anchor='mm')

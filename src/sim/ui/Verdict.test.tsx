@@ -31,7 +31,7 @@ describe('the verdict', () => {
     render(<VerdictView verdict={failing} save="saved" {...noop} />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Fail');
     expect(screen.getByText(/The fail line is 20/)).toBeInTheDocument();
-    expect(screen.getByText(/Not cleared: Side Parking/i)).toBeInTheDocument();
+    expect(screen.getByText(/Not cleared: 3-Side Parking/i)).toBeInTheDocument();
     expect(screen.getByText('Top-down view on for 42 s. No penalty.')).toBeInTheDocument();
     expect(screen.getByText('Result saved successfully.')).toBeInTheDocument();
   });
@@ -59,7 +59,7 @@ describe('the verdict', () => {
     const calls = { onRetry: vi.fn(), onPractise: vi.fn(), onExit: vi.fn() };
     render(<VerdictView verdict={failing} save={null} {...calls} />);
     const buttons = screen.getAllByRole('button');
-    expect(buttons.map((b) => b.textContent)).toEqual(['Try the assessment again', 'Practise Side Parking', 'Leave simulator']);
+    expect(buttons.map((b) => b.textContent)).toEqual(['Try the assessment again', 'Practise 3-Side Parking', 'Leave simulator']);
     for (const b of buttons) fireEvent.click(b);
     expect(calls.onRetry).toHaveBeenCalledOnce();
     expect(calls.onPractise).toHaveBeenCalledWith('side-parking');

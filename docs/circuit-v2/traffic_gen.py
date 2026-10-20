@@ -15,7 +15,8 @@ DESIGN = {
     'turn_left_r':   (3.5,  'decided', 'Other cars turn left at 3.5 m, inside their lane at the narrow island corners'),
     'turn_right_r':  (4.5,  'decided', 'Other cars turn right at 4.5 m, across the junction'),
     'loop_kmh':      (25,   'decided', 'Other cars on the island roads: a yard pace, under the merge leg\'s 30'),
-    'main_kmh':      (30,   'decided', 'The outer loop, which carries the merge\'s main road traffic'),
+    'main_kmh':      (30,   'decided', 'The outer loop, round the yard\'s edge roads'),
+    'ring_kmh':      (20,   'decided', 'Cars going round the roundabout (its bend holds them to about 16 km/h)'),
     'cycle':         ((12, 3, 1, 10, 3, 1), 'decided', 'Signal cycle, s: spine road green, amber, all red, side road green, amber, all red'),
     'offsets':       ((0,), 'decided', 'Signal offset, s: one signalled junction, J1 (spine road x lane D-E); J2, 4.4 m along, is unsignalled'),
     'gap_s':         (3.0,  'decided', 'At the merge, the gap to the next main-road car a joining car needs, in seconds to the conflict point'),
@@ -158,8 +159,17 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     t.line_to(n_west + RR, 3.6); t.arc(RR, -90, 3.6)
     t.line_to(14.0, 3.6)
     outer = t
-    loops.append(dict(id='outer', kmh=v('main_kmh'), cars=2, points=loop_points(t), length=round(t.s, 2),
-                      note='up the west road, along the spine road, down the east road (the merge\'s main road), back along the bottom road'))
+    loops.append(dict(id='outer', kmh=v('main_kmh'), cars=1, points=loop_points(t), length=round(t.s, 2),
+                      note='up the west road, along the spine road, down the east road, back along the bottom road'))
+    # D: round the roundabout, clockwise (traffic keeps left): the traffic road merging joins (the owner, 20 Oct)
+    rc, rr = L['rb_c'], L['rb_r']
+    t = Turtle(rc[0] + rr, rc[1], 270.0, 3.6)
+    t.arc(rr, -360.0, 3.6)
+    ring_pts = loop_points(t)
+    if math.hypot(ring_pts[-1][0] - ring_pts[0][0], ring_pts[-1][1] - ring_pts[0][1]) < 0.05:
+        ring_pts = ring_pts[:-1]
+    loops.append(dict(id='roundabout', kmh=v('ring_kmh'), cars=2, points=ring_pts, length=round(t.s, 2),
+                      note='round the roundabout, clockwise: the traffic the last station joins'))
 
     # ------------------------------------------------------------ signals
     cyc = v('cycle')
@@ -187,23 +197,19 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
                             approaches=[dict(a, stop=[[round(p[0], 2), round(p[1], 2)] for p in a['stop']]) for a in approaches],
                             heads=heads))
 
-    # ------------------------------------------------------------ the merge
-    east_box = next(j for j in junctions if j['id'].startswith('spine-112'))
-    (ex0, ey0), _, (ex1, ey1), _ = east_box['polygon']
-    em_, _ew = roads.section('ns', 112.3, 40.0)
-    gy = ey1 + v('stop_off')
-    outer_pts = loop_points(outer)
+    # ------------------------------------------------------------ the merge, at the roundabout
+    # the route joins the circle at its mark 'rb_join'; the give-way line crosses the approach lane just before the join
+    # arc starts, 3.7 m from the circulating lane's edge (JKR 4.2.3: 1.2 m to 10 m)
+    join = next(q for q in pts if q[0] >= L['marks']['rb_join'])
     cum = [0.0]
-    for a, b in zip(outer_pts, outer_pts[1:]):
+    for a, b in zip(ring_pts, ring_pts[1:]):
         cum.append(cum[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
-    lx_route = L['east_sb']
-    k_cp = min(range(len(outer_pts)), key=lambda k: abs(outer_pts[k][0] - lx_route) + (0 if 20 < outer_pts[k][1] < 27.6 else 99))
-    merge = dict(give_way=[[round(em_, 2), round(gy, 2)], [round(ex1 - 0.2, 2), round(gy, 2)]], heading_deg=270.0, loop='outer',
-                 conflict_point=outer_pts[k_cp], conflict_s=round(cum[k_cp], 2), window=[round(cum[k_cp] - 28.0, 2), round(cum[k_cp] + 4.0, 2)],
-                 gap_s=v('gap_s'), junction=east_box['id'],
-                 note='the learner joins from the slip road (the east road\'s north half, one way south) into the outer loop\'s traffic, '
-                      'which turns down the east road from the spine road and has priority')
-    east_box['merge'] = True
+    k_cp = min(range(len(ring_pts)), key=lambda k: math.hypot(ring_pts[k][0] - join[1], ring_pts[k][1] - join[2]))
+    gx = L['rb_entry_x'] + 0.3
+    merge = dict(give_way=[[round(gx, 2), round(spine_m - spine_w / 2 + 0.2, 2)], [round(gx, 2), round(spine_m, 2)]], heading_deg=180.0,
+                 loop='roundabout', conflict_point=ring_pts[k_cp], conflict_s=round(cum[k_cp], 2),
+                 window=[round(cum[k_cp] - 20.0, 2), round(cum[k_cp] + 4.0, 2)], gap_s=v('gap_s'), junction='roundabout',
+                 note='the learner gives way at the roundabout\'s entry to the cars already going round, which have priority, and joins them')
 
     # ------------------------------------------------------------ the zebra crossing (between the booths at x 46)
     zx, zlen, zstripe, zgap = v('zebra')
@@ -320,11 +326,8 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     hy, hh, wwall = L['hill_y'], L['hill_w'] / 2, L['wall_w']
     hx0 = L['hill_x0_wall']
     split_y = hy + hh + wwall / 2                    # the wall between our hill strip and the twin's
-    mt, st_ = v('merge_taper'), v('split_taper')
+    st_ = v('split_taper')
     chevrons = [
-        dict(polygon=[[round(em_, 2), round(gy, 2)], [round(ex0 + 0.2, 2), round(gy, 2)], [round(em_, 2), round(gy + mt, 2)]], heading_deg=270.0,
-             tip=[round(em_, 2), round(gy + mt, 2)], lead=0.0,   # site-adjusted: the turn in from the top lane starts at its tip
-             note='the merge: the slip road\'s unused half tapers out before the give-way line (JKR Fig 10, Fig 14)'),
         dict(polygon=[[round(hx0, 2), round(split_y - 1.2, 2)], [round(hx0, 2), round(split_y + 1.2, 2)], [round(hx0 - st_, 2), round(split_y, 2)]], heading_deg=0.0,
              tip=[round(hx0 - st_, 2), round(split_y, 2)], lead=v('chevron_lead'),
              note='the lane split in front of the wall between the two hill strips (JKR Fig 14, diverging)'),
@@ -358,10 +361,17 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
                             edge_lines.append([cur[0], cur[-1]])
                         cur = []
 
+    # the second 3-side parking bay (the owner, 20 Oct): the pocket off the lane cut into island F, painted as station
+    # 2's is, with another learner reversed into it
+    fx0, fx1 = L['M'](1044, 0)[0], L['M'](1100.5, 0)[0]
+    fy0, fy1 = L['M'](0, 382)[1], L['M'](0, 332)[1]
+    twin_bay = dict(centre=[round((fx0 + fx1) / 2, 3), round((fy0 + fy1) / 2, 3)], axis_deg=180.0, length=5.0, width=2.6,
+                    note='the second 3-side parking bay, in the pocket off the lane cut into island F; its mouth faces west')
+
     traffic = dict(loops=loops, junctions=junctions, signals=signals, merge=merge, waiting=waiting, zebra=zebra,
                    parameters={k: dict(value=val, source=src, note=note) for k, (val, src, note) in DESIGN.items()})
     # yellow box junctions at the signalled junctions: no waiting in them (JKR 4.3.7, Fig 24)
     yellow_boxes = [J1['polygon'], J2['polygon']]
     markings = dict(edge_lines=edge_lines, stop_lines=stop_lines, give_way=give_way, arrows=arrows, chevrons=chevrons, zebras=[zebra],
-                    yellow_boxes=yellow_boxes)
-    return traffic, markings, zebra_box, [lp['points'] for lp in loops]
+                    yellow_boxes=yellow_boxes, bays=[twin_bay])
+    return traffic, markings, zebra_box, [lp['points'] for lp in loops], twin_bay

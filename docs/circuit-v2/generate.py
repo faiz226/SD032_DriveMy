@@ -231,6 +231,7 @@ ROADS = [
     ('ns', 74.5, 27.0, 54.0),
     ('ns', 86.3, 27.0, 54.0),
     ('ns', 112.3, 2.0, 57.0),      # the east road
+    ('ns', 62.1, 4.0, 22.0),       # the lane between the Z and S blocks (the three-point turn's until 20 Oct)
 ]
 
 
@@ -456,24 +457,14 @@ def build_route(L):
     t.mark('par_in')
     t.line_to(L['par_out_y'], 7.07, 'parallel-parking')
     t.mark('par_out')
-    # to 4: right along the top area, right down lane C-D, across the spine road into the lane
+    # to 4 (the owner, 20 Oct: no three-point turn; its lane is an ordinary road): right along the top road, right
+    # down lane C-D, left into the spine road's eastbound lane, then right into the S
     t.line_to(L['top_eb'] - R, 7.07)
     t.arc(R, -90, 7.8)
     t.line_to(L['cd_sb'] - R, 7.8)
     t.arc(R, -90, 7.8)
-    t.line_to(L['spine_n'] - 0.2, 7.17)
-    t.shift(L['tpt_x'] - L['cd_sb'], 7.4, 7.17)               # across the spine road, to the turning lane's line
-    t.line_to(L['tpt_y0'], 7.17)
-    t.mark('tpt_in')
-    t.line_to(L['tpt_turn_y'], 4.0, 'three-point-turn')
-    t.mark('tpt_turn')
-    t.jump(L['tpt_nb'], L['tpt_turn_y'], 90, 4.0, 'three-point-turn', 'three-point-turn',
-           'turn the car round in three movements')
-    t.line_to(L['tpt_y0'], 4.0, 'three-point-turn')
-    t.mark('tpt_out')
-    # to 5: north into the spine road, right, then right into the S
-    t.line_to(L['spine_eb'] - R, 7.7)
-    t.arc(R, -90, 7.7)
+    t.line_to(L['spine_eb'] + R, 7.17)
+    t.arc(R, 90, 7.7)
     t.line_to(L['s_x'] - R, 7.7)
     t.arc(R, -90, 7.7)
     t.line_to(L['s_top'] + 0.5, 7.7)
@@ -512,15 +503,26 @@ def build_route(L):
     t.mark('ramp_in')
     t.line_to(L['ramp_out_y'], 8.0, 'ramp-test')
     t.mark('ramp_out')
-    # to 8: right along the top lane, right down the east road
+    # to 7: right along the top lane, right down the east road, right along the spine road to the roundabout
     t.arc(R, -90, 4.1)
     t.line_to(L['east_sb'] - R, 4.1)
     t.arc(R, -90, 6.4)
-    # 8 Road merging: build speed down the east road and cross the finish at road speed
+    t.shift(0.3, 6.0, 6.4)                                     # into the southbound lane's middle, clear of its centre line
+    t.line_to(L['spine_wb'] + L['rb_turn_r'], 6.4)
+    t.arc(L['rb_turn_r'], -90, 7.4)
+    t.line_to(L['merge_in_x'], 7.4)
+    # 7 Road merging (the owner, 20 Oct: at the roundabout): give way at its entry to the traffic already going round
+    # (clockwise: traffic keeps left), join it, leave by the north arm, and cross the finish at road speed
     t.mark('merge_in')
-    t.line_to(L['merge_finish_y'], 6.4, 'road-merging')
+    t.line_to(L['rb_entry_x'], 7.4, 'road-merging')
+    t.mark('rb_give_way')
+    t.arc(L['rb_join_r'], L['rb_join_deg'], 5.0, 'road-merging')
+    t.mark('rb_join')
+    t.arc(L['rb_r'], -L['rb_round_deg'], 5.0, 'road-merging')        # the lane round: the car and a margin
+    t.arc(L['rb_exit_r'], L['rb_exit_deg'], 5.0, 'road-merging')
+    t.line_to(L['merge_finish_y'], 7.0, 'road-merging')
     t.mark('merge_finish')
-    t.line_to(L['end_y'], 6.4, 'exit-road')
+    t.line_to(L['end_y'], 7.0, 'exit-road')
     t.mark('end')
     return t
 
@@ -541,16 +543,29 @@ def main():
         pocket_x=(M(267.75, 0)[0] + M(317.75, 0)[0]) / 2, pocket_mouth=M(0, 626.5)[1], pocket_back=M(0, 565.25)[1],
         par_out_y=46.0,
         top_eb=57.2,
-        cd_sb=64.4, tpt_x=M(666, 0)[0] + 0.5,
-        tpt_y0=21.4, tpt_turn_y=14.0, tpt_nb=60.9,
+        cd_sb=64.4,
         bottom_turn=2.05, bottom_wb=1.8, ef_nb=84.7,
         s_x=M(774.25, 0)[0], s_top=M(0, 519)[1], s_bottom=None,
         z_x0=M(499, 0)[0], z_x1=M(581, 0)[0], z_jog_y=M(0, 602)[1], z_top=M(0, 518)[1], z_bottom=M(0, 688)[1],
         ef_x=(M(878, 0)[0] + M(955.5, 0)[0]) / 2, islands_top=M(0, 202)[1],
         ramp_out_y=66.0 - R,
         east_sb=113.4,
-        merge_finish_y=12.0, end_y=4.5,
+        merge_in_x=30.6, merge_finish_y=46.0, end_y=52.0, rb_turn_r=4.5,   # the station starts just past the last junction
     )
+    # The roundabout (the owner, 20 Oct: road merging is there). Traffic goes round clockwise on a circle rb_r from
+    # its middle. The route comes west along the spine road's westbound lane, joins the circle by a left arc that
+    # meets it tangentially, goes round to the north-west, and leaves by a left arc onto the north arm's
+    # northbound lane. Join and exit arcs are solved so every piece meets the next tangentially.
+    rbc = M(*ROUNDABOUT_PX[0])
+    L['rb_c'], L['rb_r'] = rbc, 9.0
+    L['rb_join_deg'], th_j = 55.0, math.radians(55.0 - 90.0)
+    L['rb_join_r'] = (L['spine_wb'] - rbc[1] - L['rb_r'] * math.sin(th_j)) / (1 + math.sin(th_j))
+    L['rb_entry_x'] = rbc[0] + (L['rb_r'] + L['rb_join_r']) * math.cos(th_j)
+    th_x = math.radians(120.0)                                  # leave the circle to the north-west
+    L['rb_round_deg'] = (math.degrees(th_j) - (120.0 - 360.0)) % 360.0
+    L['rb_north_x'] = 13.3                                      # the north arm's northbound lane
+    L['rb_exit_r'] = (L['rb_north_x'] - rbc[0] - L['rb_r'] * math.cos(th_x)) / (1 + math.cos(th_x))
+    L['rb_exit_deg'] = 90.0 - (math.degrees(th_x) - 90.0)
     # the S as built: 3 m straight, two opposite arcs of s_turn at s_r, 3 m straight. Each arc drops
     # s_r * sin(s_turn), which puts its exit on the block's south edge (photo: py 683)
     L['s_bottom'] = L['s_top'] - 3.0 - 2 * v('s_r') * math.sin(math.radians(v('s_turn'))) - 3.0
@@ -660,8 +675,6 @@ def main():
     pocket = to_m([(267.75, 626.5), (317.75, 626.5), (317.75, 565.25), (267.75, 565.25)])
     par_c = (M(353, 0)[0] + v('par_box_w') / 2, (M(0, 329)[1] + M(0, 399)[1]) / 2)
     par_recess = to_m([(353, 399), (393, 399), (393, 329), (353, 329)])
-    tpt_x0, tpt_x1 = M(618, 0)[0], M(699, 0)[0]
-    tpt_box = [(tpt_x1, 19.0), (tpt_x0, 19.0), (tpt_x0, 9.0), (tpt_x1, 9.0)]    # [0]->[1] across, [0]->[3] the way in
     # the ramp's footprint, from where a car turning in from lane E-F's northbound lane leaves it (the rules hold the
     # car's progress along the route while it is inside)
     ramp_box = rect(L['ef_nb'] + 1.0, ramp_y - hw - ww, end_x + ww, ramp_y + hw + ww)
@@ -676,7 +689,7 @@ def main():
              stop_line_height=round(v('hill_stop') * v('hill_rise'), 3),
              stop_band=dict(s_from=round(stop_s - v('hill_band') / 2, 2), s_to=round(stop_s + v('hill_band') / 2, 2),
                             note='painted yellow; the front wheels must stop on it')),
-        dict(id='side-parking', order=2, title='Side Parking', s_from=s_of('side_in'), s_to=s_of('side_out'),
+        dict(id='side-parking', order=2, title='3-Side Parking', s_from=s_of('side_in'), s_to=s_of('side_out'),
              pocket=pocket, bay=dict(centre=[round(bay_c[0], 3), round(bay_c[1], 3)], axis_deg=270.0,
                                      length=v('side_bay_l'), width=v('side_bay_w')),
              gates=[gate(pts, s_of('side_in'), gid='enter'), gate(pts, s_of('side_out'), gid='leave')],
@@ -687,26 +700,23 @@ def main():
                       length=v('par_slot_l'), width=v('par_box_w'), kerbed=True,
                       note='painted box against the recess kerb; the recess itself is 3.77 m deep'),
              gates=[gate(pts, s_of('par_in'), gid='enter'), gate(pts, s_of('par_out'), gid='leave')]),
-        dict(id='three-point-turn', order=4, title='3-Point Turn', s_from=s_of('tpt_in'), s_to=s_of('tpt_out'),
-             box=tpt_box, width=v('tpt_w'), depth=10.0,
-             gates=[gate(pts, s_of('tpt_in'), gid='throat')],
-             manoeuvre='drive south into the lane, turn round in three movements, drive back north'),
-        dict(id='s-curve', order=5, title='S-Curve', s_from=s_of('s_in'), s_to=s_of('s_out'),
+        dict(id='s-curve', order=4, title='S-Curve', s_from=s_of('s_in'), s_to=s_of('s_out'),
              gates=[gate(pts, s_of('s_a'), gid='entry'), gate(pts, (s_of('s_a') + s_of('s_mid')) / 2, gid='apex-1'),
                     gate(pts, s_of('s_mid'), gid='inflection'), gate(pts, (s_of('s_mid') + s_of('s_b')) / 2, gid='apex-2'),
                     gate(pts, s_of('s_b'), gid='exit')]),
-        dict(id='z-curve', order=6, title='Z-Curve', s_from=s_of('z_in'), s_to=s_of('z_out'),
+        dict(id='z-curve', order=5, title='Z-Curve', s_from=s_of('z_in'), s_to=s_of('z_out'),
              legs=z_legs, fillets=z_fill,
              gates=[gate(pts, s_of('z_in') + 4.5 * math.pi / 2 + 0.5, gid='entry', w_pad=0.2), gate(pts, s_of('z_c1'), gid='corner-1', w_pad=0.2),
                     gate(pts, s_of('z_c2'), gid='corner-2', w_pad=0.2), gate(pts, s_of('z_out') - 0.5, gid='exit', w_pad=0.2)]),
-        dict(id='ramp-test', order=7, title='Ramp Test', s_from=s_of('ramp_in'), s_to=s_of('ramp_out'), slope='ramp',
+        dict(id='ramp-test', order=6, title='Ramp Test', s_from=s_of('ramp_in'), s_to=s_of('ramp_out'), slope='ramp',
              box=ramp_box, pole=[round(pole_at[0], 3), round(pole_at[1], 3)],
              axis=dict(start=[round(foot_x, 3), round(ramp_y, 3)], heading_deg=0.0),
              gates=[across(mouth_x + 0.5, 'mouth'), across(foot_x + v('ramp_up'), 'platform')],
              manoeuvre='turn right into the ramp, drive up, stop short of the pole, hold still, reverse down and out, then carry on north'),
-        dict(id='road-merging', order=8, title='Road Merging', s_from=s_of('merge_in'), s_to=s_of('merge_finish'),
-             gates=[gate(pts, s_of('merge_in'), gid='lane-start'), gate(pts, s_of('merge_finish'), gid='finish', w_pad=0.3)],
-             note='Simulator simplification: there is no traffic on the east road'),
+        dict(id='road-merging', order=7, title='Road Merging', s_from=s_of('merge_in'), s_to=s_of('merge_finish'),
+             gates=[gate(pts, s_of('merge_in'), gid='lane-start'), gate(pts, s_of('rb_give_way'), gid='give-way'),
+                    gate(pts, s_of('merge_finish'), gid='finish', w_pad=0.3)],
+             note='at the roundabout (the owner, 20 Oct): give way to the traffic going round, join it, leave by the north arm'),
     ]
     for st in stations:
         st['s_from'], st['s_to'] = round(st['s_from'], 2), round(st['s_to'], 2)
@@ -738,8 +748,8 @@ def main():
     keep.finish()
     centre_lines, roads = lane_centres(world, keep.mask)
     # the other cars, the signals, the merge, the queues and the rest of the paint (traffic_gen.py)
-    LT = dict(L, hill_w=v('hill_w'), wall_w=v('wall_w'), hill_x0_wall=hx0, tpt_x0=M(618, 0)[0])
-    traffic, more_paint, zebra_box, loop_paths = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car)
+    LT = dict(L, hill_w=v('hill_w'), wall_w=v('wall_w'), hill_x0_wall=hx0, marks={k: m['s'] for k, m in t.marks.items()}, M=M)
+    traffic, more_paint, zebra_box, loop_paths, twin_bay = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car)
     centre_lines = break_lines(centre_lines, [[(q[1], q[2]) for q in pts]] + loop_paths, [j['polygon'] for j in traffic['junctions']])
     centre_lines = cut_box(centre_lines, zebra_box, 4.0)              # no centre line across or just before the zebra
     for r in roads:
@@ -796,7 +806,8 @@ def main():
                            'use an unbroken line where crossing is prohibited, and touching one fails the test (keep left). '
                            'dash 0 and gap 0: unbroken', **more_paint),
         traffic=traffic,
-        props=dict(booths=booths, office=office, fence=site, npc_cars=npc_cars),
+        props=dict(booths=booths, office=office, fence=site,
+                   npc_cars=npc_cars + [dict(on='side-twin', at=twin_bay['centre'], heading_deg=180.0)]),
         spawn=spawn,
     )
     out = rnd(out)

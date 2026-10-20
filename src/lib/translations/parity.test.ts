@@ -20,7 +20,7 @@ describe('translations', () => {
     expect(used.size).toBeGreaterThan(30);
     for (const k of used) expect(en, k).toHaveProperty([k]);
     // keys built from ids: tips, station names, fault reasons and fixes
-    for (const id of ['hill-start', 'side-parking', 'parallel-parking', 'three-point-turn', 's-curve', 'z-curve', 'ramp-test', 'road-merging']) {
+    for (const id of ['hill-start', 'side-parking', 'parallel-parking', 's-curve', 'z-curve', 'ramp-test', 'road-merging']) {
       expect(en).toHaveProperty([`sim.tips.${id}`]);
       expect(en).toHaveProperty([`progress.maneuver.${id}`]);
     }
@@ -30,6 +30,6 @@ describe('translations', () => {
     for (const [k, v] of [...Object.entries(en), ...Object.entries(ms)]) {
       if (k.startsWith('sim.tips.')) expect(v.toLowerCase(), k).not.toMatch(/clutch|klac/);
     }
-    expect(en['sim.tips.road-merging']).toBe('Build speed on the approach. Join at road speed.');
+    expect(en['sim.tips.road-merging']).toMatch(/give way/);
   });
 });

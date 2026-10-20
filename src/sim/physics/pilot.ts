@@ -147,12 +147,12 @@ export class Pilot {
   }
 
   /**
-   * All eight stations, from the spawn to a stop past the finish. With `faults` (WP6), the same line commits
-   * one fault of each kind on purpose: a rollback, not in the bay, a pole touch, a fourth three-point-turn
-   * movement, the S's speed band, a kerb touch, a ramp stop outside its window and a slow merge.
+   * Every station, from the spawn to a stop past the finish. With `faults` (WP6), the same line commits one fault
+   * of each kind on purpose: a rollback, not in the bay, a pole touch, the S's speed band, a kerb touch, a ramp
+   * stop outside its window and a slow merge.
    */
   *assessment(faults = false): Plan {
-    const [first, second, third] = PIECES;
+    const [first, second] = PIECES;   // the route breaks once, where the car reverses into the 3-side bay
     const slow = () => 8;
     // 1. hill start: front tyres on the yellow band, handbrake 2.5 s, then away over the crest
     yield* this.hold(0.5, true);
@@ -195,33 +195,20 @@ export class Pilot {
     yield* this.turn(phiDeg, -1, false);
     yield* this.turn(phiDeg, 1, false);
     this.mark('parallel out');
-    // 4. three-point turn: forward right lock, reverse left lock, forward right lock
-    yield* this.follow(second, second[second.length - 1][0], () => 6, true);
-    this.mark('3pt start');
-    if (faults) {   // 140 deg in three movements is short of the 148 the rule wants, so a fourth starts
-      yield* this.turn(60, -1, false);
-      yield* this.turn(60, 1, true);
-      yield* this.turn(20, -1, false);
-      yield* this.turn(40, 1, true);
-    } else {
-      yield* this.turn(70, -1, false);
-      yield* this.turn(70, 1, true);
-      yield* this.turn(40, -1, false);
-    }
-    this.mark('3pt done');
-    // 5-6. the S and the Z at 8 km/h; then to the ramp's turning point
+    // 4-5. the S and the Z at 8 km/h; then to the ramp's turning point
     const ramp = station('ramp-test');
     const turnIn = sNear([ramp.start.at[0], ramp.axis!.start[1] - R_LOCK], ramp.s_from - 3, ramp.s_to);
     if (faults) {   // a stop in the middle of the S, longer than its grace; then the left tyres over a Z kerb
       const s = station('s-curve');
-      yield* this.follow(third, (s.s_from + s.s_to) / 2, slow, true);
+      yield* this.follow(second, (s.s_from + s.s_to) / 2, slow, true);
       yield* this.hold(2.5, false);
-      yield* this.follow(third, turnIn, slow, true, (q) => (q > 404.5 && q < 408.5 ? 1.3 : 0));
+      const z = station('z-curve');   // the left tyres over the Z's first leg's kerb
+      yield* this.follow(second, turnIn, slow, true, (q) => (q > z.s_from + 2.9 && q < z.s_from + 6.9 ? 1.3 : 0));
     } else {
-      yield* this.follow(third, turnIn, slow, true);
+      yield* this.follow(second, turnIn, slow, true);
     }
     this.mark('ramp turn-in');
-    // 7. ramp: turn in, climb to 0.6 m short of the pole, hold, reverse out and turn back into the lane
+    // 6. ramp: turn in, climb to 0.6 m short of the pole, hold, reverse out and turn back into the lane
     const pole = circuit.obstacles.poles.find((p) => p.station === 'ramp-test')!;
     yield* this.turn(90, -1, false);
     const gap = faults ? 1.6 : 0.6;   // the window is 0.2-1.0 m
@@ -231,10 +218,12 @@ export class Pilot {
     yield* this.arc(-(this.last.x - (ramp.gates.find((g) => g.id === 'mouth')!.a[0] - 1)), 0);
     yield* this.turn(90, -1, true);
     this.mark('ramp out');
-    // 8. road merging: build speed down the east road through the finish; the rule wants 15 km/h or more there
+    // 7. road merging, at the roundabout: give way at its entry (follow() waits for a gap in the traffic), go round,
+    //    leave by the north arm and build speed through the finish; the rule wants 15 km/h or more there
     const merge = station('road-merging');
-    const joinKmh = faults ? 10 : 16;   // the rule wants 15 or more at the finish
-    yield* this.follow(third, Math.min(merge.s_to + 6, third[third.length - 1][0] - 1), (s) => (s > merge.s_from ? joinKmh : 8), false);
+    const finish = merge.gates.find((g) => g.id === 'finish')!.s!;
+    const joinKmh = faults ? 10 : 18;
+    yield* this.follow(second, Math.min(merge.s_to + 5, second[second.length - 1][0] - 1), (s) => (s > finish - 9 ? joinKmh : 12), false);
     yield* this.stop();
   }
 }

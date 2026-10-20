@@ -5,15 +5,15 @@
  "results": [
   {
    "section": "organised",
-   "check": "eight stations, in order along one route",
+   "check": "the stations, in order along one route",
    "ok": true,
-   "detail": "order along s: [1, 2, 3, 4, 5, 6, 7, 8]"
+   "detail": "7 stations (the owner, 20 Oct: no three-point turn); order along s: [1, 2, 3, 4, 5, 6, 7]"
   },
   {
    "section": "organised",
    "check": "the route crosses itself only at junctions",
    "ok": true,
-   "detail": "7 crossings, all inside: spine-road, band-mouth"
+   "detail": "6 crossings, all inside: spine-road, band-mouth"
   },
   {
    "section": "organised",
@@ -31,7 +31,7 @@
    "section": "organised",
    "check": "stations stay apart on the 400 x 200 px map",
    "ok": true,
-   "detail": "closest pair three-point-turn / z-curve: 1.5 m = 3.6 px at 2.38 px/m"
+   "detail": "closest pair side-parking / road-merging: 2.0 m = 4.8 px at 2.38 px/m"
   },
   {
    "section": "organised",
@@ -65,12 +65,6 @@
   },
   {
    "section": "real",
-   "check": "three-point-turn lane, as built, not narrower than the real one",
-   "ok": true,
-   "detail": "built 7.50 m across the middle of the turning box (5 cm grid); real 7.64 m"
-  },
-  {
-   "section": "real",
    "check": "hill strip matches the real one",
    "ok": true,
    "detail": "ours 25.75 x 4.5 m, real 26.6 x 4.6 m"
@@ -91,13 +85,13 @@
    "section": "roomy",
    "check": "the driver reaches the end of every driven piece",
    "ok": true,
-   "detail": "3 pieces between manoeuvres, 587 m of route"
+   "detail": "2 pieces between manoeuvres, 678 m of route"
   },
   {
    "section": "roomy",
    "check": "clearance: link",
    "ok": true,
-   "detail": "tyres 0.50 m (need >= 0.50), body 0.15 m, worst at s = 355.6"
+   "detail": "tyres 0.50 m (need >= 0.50), body 0.15 m, worst at s = 323.2"
   },
   {
    "section": "roomy",
@@ -119,75 +113,39 @@
   },
   {
    "section": "roomy",
-   "check": "clearance: three-point-turn",
-   "ok": true,
-   "detail": "tyres 1.70 m (need >= 0.10), body 1.70 m, worst at s = 272.4"
-  },
-  {
-   "section": "roomy",
    "check": "clearance: s-curve",
    "ok": true,
-   "detail": "tyres 0.47 m (need >= 0.10), body 0.25 m, worst at s = 337.0"
+   "detail": "tyres 0.47 m (need >= 0.10), body 0.22 m, worst at s = 304.8"
   },
   {
    "section": "roomy",
    "check": "clearance: z-curve",
    "ok": true,
-   "detail": "tyres 0.35 m (need >= 0.10), body -0.05 m, worst at s = 422.8"
+   "detail": "tyres 0.35 m (need >= 0.10), body -0.05 m, worst at s = 390.4"
   },
   {
    "section": "roomy",
    "check": "clearance: ramp-test",
    "ok": true,
-   "detail": "tyres 1.17 m (need >= 0.10), body 1.05 m, worst at s = 485.5"
+   "detail": "tyres 1.18 m (need >= 0.10), body 1.05 m, worst at s = 453.1"
   },
   {
    "section": "roomy",
    "check": "clearance: road-merging",
    "ok": true,
-   "detail": "tyres 0.80 m (need >= 0.10), body 0.75 m, worst at s = 529.0"
+   "detail": "tyres 1.20 m (need >= 0.10), body 1.15 m, worst at s = 667.2"
   },
   {
    "section": "roomy",
    "check": "clearance: exit-road",
    "ok": true,
-   "detail": "tyres 1.20 m (need >= 0.50), body 1.20 m, worst at s = 579.4"
+   "detail": "tyres 1.20 m (need >= 0.50), body 1.15 m, worst at s = 672.2"
   },
   {
    "section": "roomy",
    "check": "the driven line keeps every tyre off the centre lines",
    "ok": true,
-   "detail": "closest tyre 0.42 m from a line (need >= 0.30), at s = 51.5; 10 line segments"
-  },
-  {
-   "section": "possible",
-   "check": "3-point turn in three movements (tyre)",
-   "ok": true,
-   "detail": "heading change after each: [(94.5, 5.66), (199.7, 6.3)]"
-  },
-  {
-   "section": "possible",
-   "check": "3-point turn NOT possible in one arc (tyre)",
-   "ok": true,
-   "detail": "one arc reaches 94 deg (needs 148)"
-  },
-  {
-   "section": "possible",
-   "check": "3-point turn in three movements (body)",
-   "ok": true,
-   "detail": "heading change after each: [(87.8, 5.26), (156.9, 4.14)]"
-  },
-  {
-   "section": "possible",
-   "check": "3-point turn NOT possible in one arc (body)",
-   "ok": true,
-   "detail": "one arc reaches 88 deg (needs 148)"
-  },
-  {
-   "section": "possible",
-   "check": "3-point road width inside the 3-move window",
-   "ok": true,
-   "detail": "7.64 m (window for this car: 6.0-9.5 m, see AUDIT.md)"
+   "detail": "closest tyre 0.42 m from a line (need >= 0.30), at s = 51.5; 13 line segments"
   },
   {
    "section": "possible",
@@ -241,13 +199,13 @@
    "section": "possible",
    "check": "merge: room to reach 15 km/h before the finish",
    "ok": true,
-   "detail": "50.4 m of lane; 5.8 m needed at 1.5 m/s^2 (assumed, conservative)"
+   "detail": "56.1 m of lane; 5.8 m needed at 1.5 m/s^2 (assumed, conservative)"
   },
   {
    "section": "possible",
    "check": "every station has a practice start on the road, clear of kerbs",
    "ok": true,
-   "detail": "one map, 8 start points"
+   "detail": "one map, 7 start points"
   },
   {
    "section": "cheap",
@@ -265,7 +223,7 @@
    "section": "cheap",
    "check": "circuit data is small",
    "ok": true,
-   "detail": "156 KB uncompressed"
+   "detail": "172 KB uncompressed"
   },
   {
    "section": "cheap",

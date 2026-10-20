@@ -5,7 +5,7 @@ import type {
   StationGeometry, StationId, StationProgress, Vec2, VehicleSample,
 } from '../contracts';
 import {
-  bayHeadingLimit, bayOverhang, dir, distToSegment, footprint, headingErrorToAxis, pointInPolygon, rad, segmentsCross, toDeg, wrapPi,
+  bayHeadingLimit, bayOverhang, dir, distToSegment, footprint, headingErrorToAxis, pointInPolygon, rad, segmentsCross, toDeg,
 } from '../geom';
 
 // Progress tracking along route.samples (0.25 m apart). Engine internals, not rule thresholds.
@@ -48,12 +48,6 @@ function readRules(r: RulesData) {
       handbrake: st['hill-start'].handbrake_required === true,
     },
     commitS: (id: StationId) => need(st[id], 'commit_s', id),
-    tpt: {
-      minMove: need(st['three-point-turn'], 'movement_min_m', 'three-point-turn'),
-      movements: need(st['three-point-turn'], 'movements', 'three-point-turn'),
-      turnDeg: need(st['three-point-turn'], 'turn_deg', 'three-point-turn'),
-      settleKmh: need(st['three-point-turn'], 'settle_kmh', 'three-point-turn'),
-    },
     sBand: [need({ v: band?.[0] }, 'v', 's-curve.speed_band_kmh[0]'), need({ v: band?.[1] }, 'v', 's-curve.speed_band_kmh[1]')],
     sGrace: need(st['s-curve'], 'grace_s', 's-curve'),
     cornerKmh: need(st['z-curve'], 'corner_kmh', 'z-curve'),
@@ -74,18 +68,13 @@ interface Work {
   holdFrom: Vec2 | null;
   commitT: number;            // bays
   committed: boolean;
-  entryHeading: number | null; // three-point turn
-  movements: number;
-  moveDir: number;
-  pendDist: number;
   gate: number;               // S, Z: the next gate
   outT: number;
   waiting: boolean;           // Z: a corner gate crossed too fast, waiting for the car to slow
   stopGap: number | null;     // ramp: the gap to the pole at the last stop on the ramp outside the window
 }
 const freshWork = (): Work => ({
-  phase: 0, holdT: 0, holdFrom: null, commitT: 0, committed: false, entryHeading: null,
-  movements: 0, moveDir: 0, pendDist: 0, gate: 0, outT: 0, waiting: false, stopGap: null,
+  phase: 0, holdT: 0, holdFrom: null, commitT: 0, committed: false, gate: 0, outT: 0, waiting: false, stopGap: null,
 });
 
 interface Run { geo: StationGeometry; pub: StationProgress; m: Work; blocked: boolean }
@@ -369,29 +358,6 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     }
   }
 
-  function threePoint(run: Run, x: VehicleSample, p: Vec2, dt: number) {
-    const w = run.m;
-    const T = R.tpt;
-    if (w.entryHeading === null) {
-      if (!pointInPolygon(p, run.geo.box!)) return;
-      w.entryHeading = x.heading;
-      w.movements = 1;
-      w.moveDir = x.speedKmh < 0 ? -1 : 1;
-    }
-    if (Math.abs(x.speedKmh) >= R.stoppedKmh) {
-      const d = x.speedKmh < 0 ? -1 : 1;
-      if (d === w.moveDir) w.pendDist = 0;
-      else {
-        w.pendDist += (Math.abs(x.speedKmh) / 3.6) * dt;
-        if (w.pendDist >= T.minMove - EPS) { w.movements += 1; w.moveDir = d; w.pendDist = 0; }
-      }
-    }
-    const turned = toDeg(Math.abs(wrapPi(x.heading - w.entryHeading)));
-    run.pub.detail = { movements: w.movements, turnedDeg: Math.round(turned) };
-    if (w.movements > T.movements) fail(run, 'threePoint.fourth', p, x.t, `${w.movements} movements`, `${T.movements} movements`);
-    else if (w.movements === T.movements && turned >= T.turnDeg && Math.abs(x.speedKmh) <= T.settleKmh) clear(run);
-  }
-
   function sCurve(run: Run, x: VehicleSample, p: Vec2, dt: number) {
     const w = run.m;
     const gates = run.geo.gates;
@@ -450,7 +416,6 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
       case 'hill-start': return hill(run, x, p, dt, stopped);
       case 'side-parking':
       case 'parallel-parking': return bay(run, x, p, dt, stopped);
-      case 'three-point-turn': return threePoint(run, x, p, dt);
       case 's-curve': return sCurve(run, x, p, dt);
       case 'z-curve': return zCurve(run, x, p);
       case 'ramp-test': return ramp(run, x, p, dt, stopped);

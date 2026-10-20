@@ -70,14 +70,6 @@
       "outside_at_commit": "not_in_bay (10); the station still counts as done",
       "basis": "rubric + guides + decided (time limit as side parking)"
     },
-    "three-point-turn": {
-      "time_limit_s": 180,
-      "movement": "A run in one direction (forward or reverse) of at least movement_min_m. Stopping without changing direction does not start a new movement. Counting starts when the rear axle enters the turning box",
-      "movement_min_m": 0.3, "movements": 3, "turn_deg": 148, "settle_kmh": 6,
-      "clear": "During the third movement, the heading is reversed by at least turn_deg from the heading on entering the turning box, at settle_kmh or slower",
-      "fail": ["a fourth movement starts before the turn is complete", "the car leaves the station without turning round (one continuous arc never clears)"],
-      "basis": "prd (148 degrees; three movements: forward, reverse, forward) + guides (three movements at most; touching lines is a fault; 3 minutes) + decided 15 Oct (6 km/h, not 3: the automatic Swift creeps at 5 km/h with no pedal, so 3 km/h would force an unnatural stop; the ceiling still rules out turning under throttle)"
-    },
     "s-curve": {
       "time_limit_s": 180,
       "clear": "Gates passed in order with the speed held between speed_band_kmh",
