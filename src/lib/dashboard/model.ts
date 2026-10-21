@@ -13,9 +13,8 @@ export interface MockAttempt {
 }
 
 export interface DashboardInput {
-  quizPct: number;
   mock: { count: number; history: MockAttempt[] } | undefined;
-  theory: { completedModules: number; percentage: number; byModule: { module_id: string; completed: boolean }[] } | undefined;
+  theory: { completedModules: number; totalModules: number; percentage: number; byModule: { module_id: string; completed: boolean }[] } | undefined;
 }
 
 export interface DashboardModel {
@@ -26,7 +25,13 @@ export interface DashboardModel {
   /** Best mock score minus the pass mark; negative means short of it. */
   headroom: number | undefined;
   next: NextStep;
-  bays: { quiz: LearningState; rpk: LearningState; rules: LearningState };
+  /**
+   * The KPP 01 bay is the 50-question mock, not the 10-question practice
+   * quiz: it is "done" only once a full mock has reached the pass mark.
+   */
+  bays: { kpp: LearningState; rpk: LearningState; rules: LearningState };
+  /** Fractions painted on the in-progress warning diamonds. */
+  progressLabels: { kpp?: string; rpk: string; rules?: string };
 }
 
 export function bestFullMock(history: MockAttempt[]): MockAttempt | undefined {
@@ -35,7 +40,7 @@ export function bestFullMock(history: MockAttempt[]): MockAttempt | undefined {
     .reduce<MockAttempt | undefined>((best, row) => (!best || row.score > best.score ? row : best), undefined);
 }
 
-export function dashboardModel({ quizPct, mock, theory }: DashboardInput): DashboardModel {
+export function dashboardModel({ mock, theory }: DashboardInput): DashboardModel {
   const rpkDone = countRpkCompleted(theory?.byModule ?? []);
   const rpkTotal = RPK_TOPICS.length;
   const bestMock = bestFullMock(mock?.history ?? []);
@@ -47,9 +52,14 @@ export function dashboardModel({ quizPct, mock, theory }: DashboardInput): Dashb
     headroom: bestMock ? bestMock.score - MOCK_PASS_MARK : undefined,
     next,
     bays: {
-      quiz: quizPct > 0 ? "progress" : "open",
+      kpp: bestMock && bestMock.score >= MOCK_PASS_MARK ? "done" : mock?.count ? "progress" : "open",
       rpk: rpkDone === rpkTotal ? "done" : rpkDone ? "progress" : "open",
       rules: theory?.percentage === 100 ? "done" : theory?.completedModules ? "progress" : "open",
+    },
+    progressLabels: {
+      kpp: bestMock ? `${bestMock.score}/${MOCK_TOTAL_QUESTIONS}` : undefined,
+      rpk: `${rpkDone}/${rpkTotal}`,
+      rules: theory ? `${theory.completedModules}/${theory.totalModules}` : undefined,
     },
   };
 }

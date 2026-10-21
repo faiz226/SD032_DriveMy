@@ -525,14 +525,23 @@
 .dashboard-deck { display: grid; gap: var(--panel-gap); }
 @media (min-width: 768px) {
   .learning-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .dashboard-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .dashboard-performance { grid-column: 1 / -1; }
+  /* The next step lives on the carriageway now, so the deck is two panels:
+     performance leads, recent activity supports. */
+  .dashboard-deck { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
 }
 @media (min-width: 1200px) {
   .learning-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .dashboard-deck { grid-template-columns: 1.4fr 1fr 1fr; }
-  .dashboard-performance { grid-column: auto; }
 }
+
+/* Marks earned on the readiness road: a paired solid line (DESIGN.md §6).
+   The fill hides the broken "open" line running underneath. */
+.road-earned { border-block: 2px solid rgb(var(--paint)); background: rgb(var(--asphalt)); }
+.road-scroller { scrollbar-width: thin; scrollbar-color: rgb(var(--paint) / .4) transparent; }
+
+/* Browser surfaces carry the system too: selection and caret use road ink,
+   never a signal colour. */
+.jalan-app ::selection { background: rgb(var(--road-ink)); color: rgb(var(--background)); }
+.jalan-app { caret-color: rgb(var(--road-ink)); }
 
 /* Warning paint is a background, not low-contrast text on the daylight road. */
 .jalan-app .text-warning { color: rgb(var(--road-ink)); }
