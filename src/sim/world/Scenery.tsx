@@ -179,6 +179,17 @@ function merge(parts: THREE.BufferGeometry[]) {
   return merged;
 }
 
+/** A shape painted one colour, by vertex: to be merged and drawn with the yard's own material. */
+function tinted(g: THREE.BufferGeometry, c: THREE.Color) {
+  const n = g.attributes.position.count;
+  const colour = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) colour.set([c.r, c.g, c.b], i * 3);
+  g.setAttribute('color', new THREE.BufferAttribute(colour, 3));
+  return g;
+}
+// the yard's own material (build.ts): what is drawn with it shares its shader program, and costs no compile
+const yardMaterial = () => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, metalness: 0, side: THREE.DoubleSide });
+
 /** A rain tree: a short trunk under a broad, flat-topped crown of a few lumps. Crown about its base, trunk below. */
 function rainTree() {
   const trunk = new THREE.CylinderGeometry(0.18, 0.28, 2.6, 7).translate(0, 1.3, 0);
@@ -353,17 +364,13 @@ function streetLight() {
 
 function StreetLights({ shadows }: { shadows: boolean }) {
   const mesh = useMemo(() => {
-    const m = new THREE.InstancedMesh(streetLight(), new THREE.MeshStandardMaterial({ color: '#9aa1a6', metalness: 0.5, roughness: 0.45 }), Math.max(1, LIGHTS.length));
-    m.count = LIGHTS.length;
-    LIGHTS.forEach((l, i) => {
-      q.setFromAxisAngle(UP, l.facing);   // the arm (+x) reaches into the yard
-      m.setMatrixAt(i, m4.compose(toThree(l.at[0], l.at[1], 0), q, new THREE.Vector3(1, 1, 1)));
-    });
+    // one mesh in the yard's material; each light's arm (+x) reaches into the yard
+    const grey = new THREE.Color('#9aa1a6');
+    const m = new THREE.Mesh(merge(LIGHTS.map((l) => tinted(streetLight().rotateY(l.facing), grey).translate(l.at[0], 0, -l.at[1]))), yardMaterial());
     m.castShadow = shadows;
-    m.frustumCulled = false;
     return m;
   }, [shadows]);
-  useEffect(() => () => { mesh.geometry.dispose(); (mesh.material as THREE.Material).dispose(); mesh.dispose(); }, [mesh]);
+  useEffect(() => () => { mesh.geometry.dispose(); mesh.material.dispose(); }, [mesh]);
   return (
     <>
       <primitive object={mesh} />
@@ -396,12 +403,14 @@ function terraceRows() {
 }
 
 function Terraces() {
-  const { walls, roofs, roads } = useMemo(() => {
+  // one mesh in the yard's material: every house's walls, the rows' roofs and their roads
+  const mesh = useMemo(() => {
     const { rows, tone } = terraceRows();
     const T = TERRACE;
     const houses: { at: Vec2; turn: number }[] = [];
     const roofParts: THREE.BufferGeometry[] = [];
     const roadParts: THREE.BufferGeometry[] = [];
+    const road = new THREE.Color('#4b4d50');
     for (const r of rows) {
       const turn = Math.atan2(r.along[1], r.along[0]);   // the row's length along the house's local x
       const len = r.count * T.w;
@@ -414,36 +423,18 @@ function Terraces() {
       const roof = new THREE.CylinderGeometry(T.roof, T.roof, len + 0.6, 3, 1).rotateZ(Math.PI / 2).rotateX(-Math.PI / 2)
         .scale(1, 1, T.d / (2 * T.roof * Math.cos(Math.PI / 6)) * 1.04);
       roof.rotateY(turn).translate(mid[0], T.h + T.roof * 0.5, -mid[1]);
-      roofParts.push(roof);
+      roofParts.push(tinted(roof, TILES));
       // the road in front, toward the yard
       const ahead = towardYard * (T.d / 2 + 2 + T.road / 2);
-      const road = new THREE.PlaneGeometry(len + 30, T.road).rotateX(-Math.PI / 2).rotateY(turn)
-        .translate(mid[0] + inward[0] * ahead, 0.01, -(mid[1] + inward[1] * ahead));
-      roadParts.push(road);
+      roadParts.push(tinted(new THREE.PlaneGeometry(len + 30, T.road).rotateX(-Math.PI / 2).rotateY(turn)
+        .translate(mid[0] + inward[0] * ahead, 0.01, -(mid[1] + inward[1] * ahead)), road));
     }
-    const wallMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(T.w - 0.08, T.h, T.d).translate(0, T.h / 2, 0), new THREE.MeshLambertMaterial({ color: '#ffffff' }), houses.length);
-    houses.forEach((hs, i) => {
-      q.setFromAxisAngle(UP, hs.turn);
-      wallMesh.setMatrixAt(i, m4.compose(toThree(hs.at[0], hs.at[1], 0), q, new THREE.Vector3(1, 1, 1)));
-      wallMesh.setColorAt(i, pick(WALLS_PALETTE, tone()));
-    });
-    wallMesh.frustumCulled = false;
-    return {
-      walls: wallMesh,
-      roofs: new THREE.Mesh(merge(roofParts), new THREE.MeshLambertMaterial({ color: TILES })),
-      roads: new THREE.Mesh(merge(roadParts), new THREE.MeshLambertMaterial({ color: '#4b4d50' })),
-    };
+    const walls = houses.map((hs) => tinted(new THREE.BoxGeometry(T.w - 0.08, T.h, T.d).translate(0, T.h / 2, 0).rotateY(hs.turn), pick(WALLS_PALETTE, tone()))
+      .translate(hs.at[0], 0, -hs.at[1]));
+    return new THREE.Mesh(merge([...walls, ...roofParts, ...roadParts]), yardMaterial());
   }, []);
-  useEffect(() => () => {
-    for (const m of [walls, roofs, roads]) { m.geometry.dispose(); (m.material as THREE.Material).dispose(); }
-  }, [walls, roofs, roads]);
-  return (
-    <>
-      <primitive object={walls} />
-      <primitive object={roofs} />
-      <primitive object={roads} />
-    </>
-  );
+  useEffect(() => () => { mesh.geometry.dispose(); (mesh.material as THREE.Material).dispose(); }, [mesh]);
+  return <primitive object={mesh} />;
 }
 
 // ---------------------------------------------------------------- the flag

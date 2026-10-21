@@ -22,6 +22,8 @@ export const BODY = { halfLength: CAR.config.length_m / 2, halfHeight: 0.72, hal
 
 // each texture's average colour, worked out once: the car's meshes share a few textures
 const average = new WeakMap<object, THREE.Color>();
+// the cabin's insides, which these cars' dark, opaque glass hides: left out (a third of the body's triangles)
+const INSIDE = /^(dash|console|seath?_|seat_|roof_(beige|blackleather|seatb|pedal)|roof_carpet|door_cloth|ornamelta|defros|sticker_plas|stiker_silver)/i;
 
 /** A material's colour as one value: its own colour, times its texture's average where it has one. */
 function colourOf(m: THREE.MeshStandardMaterial): THREE.Color {
@@ -53,7 +55,7 @@ function solids(scene: THREE.Object3D, place: THREE.Matrix4) {
   const out: THREE.BufferGeometry[] = [];
   scene.traverse((o) => {
     const mesh = o as THREE.Mesh;
-    if (!mesh.isMesh) return;
+    if (!mesh.isMesh || INSIDE.test((mesh.material as THREE.Material).name)) return;
     let g = mesh.geometry.clone();
     if (g.index) g = g.toNonIndexed();
     for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
@@ -95,12 +97,21 @@ export const WHEELS = [[CAR.axle.front, -1], [CAR.axle.front, 1], [CAR.axle.rear
  * still), or the body alone for cars whose wheels turn (wheelGeometry).
  */
 export function swiftGeometry(body: THREE.Object3D, wheel: THREE.Object3D, wheels = true): THREE.BufferGeometry {
-  const parts = solids(body, new THREE.Matrix4());
-  if (wheels) for (const w of WHEELS) parts.push(...solids(wheel, new THREE.Matrix4().setPosition(w.hub).multiply(w.turn)));
-  const geometry = mergeGeometries(parts);
+  // the body is worked out once for the parked cars and the moving ones; each gets its own copy to dispose
+  let shell = shells.get(body);
+  if (!shell) {
+    const parts = solids(body, new THREE.Matrix4());
+    shell = mergeGeometries(parts);
+    for (const p of parts) p.dispose();
+    shells.set(body, shell);
+  }
+  if (!wheels) return shell.clone();
+  const parts = WHEELS.flatMap((w) => solids(wheel, new THREE.Matrix4().setPosition(w.hub).multiply(w.turn)));
+  const geometry = mergeGeometries([shell, ...parts]);
   for (const p of parts) p.dispose();
   return geometry;
 }
+const shells = new WeakMap<THREE.Object3D, THREE.BufferGeometry>();
 
 /** One wheel as a coloured geometry about its hub, axle along z: the moving cars turn and steer each of theirs. */
 export function wheelGeometry(wheel: THREE.Object3D): THREE.BufferGeometry {

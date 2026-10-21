@@ -178,8 +178,22 @@ export function FrameProbe() {
     lastFrame = now;
     if (frames.length > 120_000) frames.splice(0, 60_000);
   });
+  const gl = useThree((st) => st.gl);
+  const scene = useThree((st) => st.scene);
   useEffect(() => {
-    Object.assign(window, { __simPerf: { reset: () => { frames.length = 0; lastFrame = 0; }, stats: frameStats } });
-  }, []);
+    // programs: each shader program the renderer built, and the materials (and their meshes) that use it
+    const programs = () => {
+      const users = new Map<unknown, string[]>();
+      scene.traverse((o) => {
+        const mats = (o as THREE.Mesh).material;
+        for (const m of Array.isArray(mats) ? mats : mats ? [mats] : []) {
+          const prog = (gl.properties.get(m) as { currentProgram?: unknown }).currentProgram;
+          if (prog) users.set(prog, [...(users.get(prog) ?? []), `${o.type}:${o.name || o.parent?.name || '?'}/${m.name || m.type}`]);
+        }
+      });
+      return (gl.info.programs ?? []).map((p) => `${p.name} x${p.usedTimes}: ${[...new Set(users.get(p) ?? [])].slice(0, 4).join(', ')}${(users.get(p)?.length ?? 0) > 4 ? ' ...' : ''}`);
+    };
+    Object.assign(window, { __simPerf: { reset: () => { frames.length = 0; lastFrame = 0; }, stats: frameStats, programs } });
+  }, [gl, scene]);
   return null;
 }
