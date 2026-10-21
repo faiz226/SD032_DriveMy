@@ -87,7 +87,7 @@ const ETHICS_CASE_KEYS: TranslationKey[] = [
 ];
 
 export function SafetyPage() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { user } = useAuthStore();
   const { mutateAsync: updateProgress } = useUpdateTheoryProgress();
 
@@ -223,7 +223,7 @@ export function SafetyPage() {
                     <div className="text-xl font-bold font-mono text-primary font-tabular-nums">{ethicsValue.toFixed(2)}</div>
                   </div>
                   <div className="p-4 rounded-md bg-muted border border-border">
-                    <div className="text-xs text-muted-foreground mb-1">{language === "ms" ? `Contoh perbandingan: ${mockAvg.toFixed(2)}` : `Illustrative comparison: ${mockAvg.toFixed(2)}`}</div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("safety.illustrativeComparison", { value: mockAvg.toFixed(2) })}</div>
                     <div className="text-xl font-bold font-mono text-muted-foreground font-tabular-nums">{mockAvg.toFixed(2)}</div>
                   </div>
                 </div>

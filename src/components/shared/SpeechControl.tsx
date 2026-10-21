@@ -5,7 +5,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 
 export function SpeechControl({ text, kind = "question" }: { text: string; kind?: "question" | "explanation" }) {
-  const { language } = useLanguage(); const ms = language === "ms";
+  const { language, t } = useLanguage();
   const [state, setState] = useState<"idle" | "loading" | "playing" | "paused" | "error" | "limit">("idle");
   const active = useRef<{ controller: AbortController; audio?: HTMLAudioElement; url?: string } | null>(null);
   const cached = useRef<Blob | null>(null);
@@ -51,14 +51,14 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
   return <div className="my-3">
     <Button type="button" variant="outline" onClick={() => { if (running) stop(); else void play(); }} aria-pressed={running}>
       {running ? <Stop aria-hidden="true"/> : <SpeakerHigh aria-hidden="true"/>}
-      {state === "loading" ? (ms ? "Batal audio" : "Cancel audio") : running ? (ms ? "Hentikan audio" : "Stop audio") : (ms ? "Dengar" : "Listen")}
+      {t(state === "loading" ? "speech.cancel" : running ? "speech.stop" : "speech.listen")}
     </Button>
     {(state === "playing" || state === "paused") && <Button type="button" variant="outline" className="ml-2" onClick={() => {
       if (state === "playing") { active.current?.audio?.pause(); setState("paused"); }
       else { const session = active.current; void session?.audio?.play().then(() => { if (session === active.current) setState("playing"); }).catch(() => { if (session === active.current) { stop(); setState("error"); } }); }
-    }}>{state === "playing" ? <Pause aria-hidden="true"/> : <Play aria-hidden="true"/>}{state === "playing" ? (ms ? "Jeda" : "Pause") : (ms ? "Sambung" : "Resume")}</Button>}
+    }}>{state === "playing" ? <Pause aria-hidden="true"/> : <Play aria-hidden="true"/>}{t(state === "playing" ? "speech.pause" : "speech.resume")}</Button>}
     <span role="status" className="ml-3 text-sm">
-      {state === "loading" ? (ms ? "Menyediakan audio…" : "Preparing audio…") : state === "error" ? (ms ? "Audio tidak tersedia. Cuba lagi." : "Audio unavailable. Please retry.") : state === "limit" ? (ms ? "Had audio harian dicapai." : "Daily audio limit reached.") : ""}
+      {state === "loading" ? t("speech.preparing") : state === "error" ? t("speech.unavailable") : state === "limit" ? t("speech.limit") : ""}
     </span>
   </div>;
 }

@@ -14,7 +14,7 @@ interface ReadinessDonutProps {
 }
 
 export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite }: ReadinessDonutProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const contributions = readinessContributions({theory: theoryPct, quiz: quizPct, mock: mockPct, sim: simPct});
   const colors = useChartColors();
 
@@ -64,7 +64,7 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite 
                 dy={-10}
               />
               <Label
-                value={language === "ms" ? "Kemajuan pembelajaran" : "Learning progress"}
+                value={t("readiness.learningProgress")}
                 position="centerTop"
                 className="text-sm fill-muted-foreground"
                 dy={15}

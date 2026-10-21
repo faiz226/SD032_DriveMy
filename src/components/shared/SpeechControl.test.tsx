@@ -2,7 +2,10 @@ import { act, fireEvent, render, screen, cleanup } from "@testing-library/react"
 import { afterEach, expect, it, vi } from "vitest";
 import { SpeechControl } from "./SpeechControl";
 
-vi.mock("@/hooks/useLanguage", () => ({ useLanguage: () => ({ language: "en" }) }));
+vi.mock("@/hooks/useLanguage", async () => {
+  const { translate } = await vi.importActual<typeof import("@/lib/translations")>("@/lib/translations");
+  return { useLanguage: () => ({ language: "en", t: (key: Parameters<typeof translate>[0]) => translate(key, "en") }) };
+});
 vi.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: async () => ({ data: { session: { access_token: "test" } } }) } } }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
