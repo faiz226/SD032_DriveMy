@@ -1,5 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
-import { LanguageToggle } from "./LanguageToggle";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { useLanguage } from "@/hooks/useLanguage";
 import { cn } from "@/lib/utils";
 

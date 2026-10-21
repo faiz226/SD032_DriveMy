@@ -11,7 +11,6 @@
    origin also removes two DNS lookups and two TLS handshakes from the critical
    path, so first paint gets faster. Same fonts, same files. */
 @import "./styles/jalan-type.css";
-@import "@fontsource-variable/inter";
 @import "@fontsource-variable/jetbrains-mono";
 
 /* Jalan: Archivo carries headings and figures, Barlow does the working text

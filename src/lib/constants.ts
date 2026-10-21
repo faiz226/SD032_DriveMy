@@ -10,6 +10,7 @@ export const ROUTES = {
   SIMULATIONS: "/simulations",
   PROGRESS: "/progress",
   SAFETY: "/safety",
+  RPK_RSM: "/rpk-rsm",
   PROFILE: "/profile",
   SETTINGS: "/settings",
   AUTH: "/auth",

@@ -5,9 +5,10 @@ import * as Menu from "@radix-ui/react-dropdown-menu";
 import { Bell, CaretDown, List, X, UserCircle } from "phosphor-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
-import { LanguageToggle } from "./LanguageToggle";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { NAV_GROUPS } from "@/app/navigation";
 
 export function AppHeader() {
   const { language, t } = useLanguage();
@@ -15,13 +16,7 @@ export function AppHeader() {
   const { user, signOut } = useAuthStore();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
-  const groups = [
-    { label: t("nav.dashboard"), items: [{ label: t("nav.dashboard"), href: "/" }] },
-    { label: ms ? "Kurikulum" : "Curriculum", items: [{ label: t("nav.learn"), href: "/theory" }, { label: "RPK / RSM", href: "/rpk-rsm" }] },
-    { label: ms ? "Ujian" : "Tests", items: [{ label: t("nav.quiz"), href: "/quizzes" }, { label: t("nav.mockTest"), href: "/mock-test" }] },
-    { label: ms ? "Litar & praktikal" : "Circuit & practical", items: [{ label: t("nav.simulator"), href: "/simulations" }] },
-    { label: ms ? "Sumber" : "Resources", items: [{ label: ms ? "Keselamatan jalan raya" : "Road safety", href: "/safety" }, { label: t("nav.colorblind"), href: "/color-vision" }, { label: t("nav.progress"), href: "/progress" }] },
-  ];
+  const groups = NAV_GROUPS.map(group => ({ label: t(group.labelKey), items: group.items.map(item => ({ label: t(item.labelKey), href: item.href })) }));
   const name = typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : user?.email?.split("@")[0];
   const navStyle = "inline-flex min-h-12 items-center gap-2 rounded px-3 text-sm font-medium no-underline hover:no-underline";
   const menuStyle = "plate z-[70] min-w-48 p-1 shadow-sm";

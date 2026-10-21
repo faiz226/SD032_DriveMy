@@ -19,12 +19,13 @@ import {
   CaretRight,
   Sun,
   Moon,
-  Translate
+  Translate,
+  Wrench
 } from "phosphor-react";
-import { AppHeader } from "./AppHeader";
-import { LanguageToggle } from "./LanguageToggle";
-import { OfflineBanner } from "./OfflineBanner";
-import { ErrorBoundary } from "./ErrorBoundary";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { OfflineBanner } from "@/components/shared/OfflineBanner";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { NAV_DESTINATIONS } from "@/app/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -46,16 +47,24 @@ interface NavItem {
   end?:     boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { labelKey: "nav.dashboard",  href: ROUTES.DASHBOARD,    icon: <GridFour weight="fill" className="h-5 w-5" />, end: true },
-  { labelKey: "nav.learn",      href: ROUTES.THEORY,       icon: <BookOpen weight="fill" className="h-5 w-5" /> },
-  { labelKey: "nav.quiz",       href: ROUTES.QUIZ,         icon: <Book weight="fill" className="h-5 w-5" /> },
-  { labelKey: "nav.mockTest",   href: ROUTES.MOCK_TEST,    icon: <Clipboard weight="fill" className="h-5 w-5" /> },
-  { labelKey: "nav.roadSigns",  href: ROUTES.SAFETY,       icon: <ShieldWarning weight="fill" className="h-5 w-5" /> },
-  { labelKey: "nav.simulator",  href: ROUTES.SIMULATIONS,  icon: <Car weight="fill" className="h-5 w-5" /> },
-  { labelKey: "nav.colorblind", href: ROUTES.COLOR_VISION, icon: <Eye weight="fill" className="h-5 w-5" /> },
-  { labelKey: "nav.progress",   href: ROUTES.PROGRESS,     icon: <TrendUp weight="fill" className="h-5 w-5" /> },
-];
+const NAV_ICONS: Record<string, React.ReactNode> = {
+  [ROUTES.DASHBOARD]:    <GridFour weight="fill" className="h-5 w-5" />,
+  [ROUTES.THEORY]:       <BookOpen weight="fill" className="h-5 w-5" />,
+  [ROUTES.RPK_RSM]:      <Wrench weight="fill" className="h-5 w-5" />,
+  [ROUTES.QUIZ]:         <Book weight="fill" className="h-5 w-5" />,
+  [ROUTES.MOCK_TEST]:    <Clipboard weight="fill" className="h-5 w-5" />,
+  [ROUTES.SIMULATIONS]:  <Car weight="fill" className="h-5 w-5" />,
+  [ROUTES.SAFETY]:       <ShieldWarning weight="fill" className="h-5 w-5" />,
+  [ROUTES.COLOR_VISION]: <Eye weight="fill" className="h-5 w-5" />,
+  [ROUTES.PROGRESS]:     <TrendUp weight="fill" className="h-5 w-5" />,
+};
+
+// Same destinations as the Jalan header, so the two menus cannot drift apart.
+const NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.map(item => ({
+  ...item,
+  icon: NAV_ICONS[item.href],
+  end: item.href === ROUTES.DASHBOARD,
+}));
 
 const UTILITY_ITEMS: NavItem[] = [
   { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="fill" className="h-5 w-5" /> },
@@ -460,11 +469,23 @@ interface AppLayoutProps {
   showSidebar?: boolean;
 }
 
-function ExistingLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps) {
+/**
+ * The pre-Jalan shell, kept for the simulator routes while the simulator is
+ * rebuilt separately (feat/sim-v2). It is loaded lazily with those routes, so
+ * its dock, theme toggler and compatibility stylesheet stay out of everyone
+ * else's bundle. Delete it once the new simulator owns its page.
+ */
+export function SimulatorLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps) {
   const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileMenuId = useId();
   const { sidebarCollapsed, toggleSidebar, examMode } = useUIStore();
+
+  // simulator-compat.css restores the old palette under this class.
+  useLayoutEffect(() => {
+    document.documentElement.classList.add("simulator-surface");
+    return () => document.documentElement.classList.remove("simulator-surface");
+  }, []);
 
   // An exam in progress gets the screen to itself. The nav is removed rather
   // than hidden, so it is also out of the tab order and the accessibility tree
@@ -557,22 +578,4 @@ function ExistingLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps)
       </div>
     </div>
   );
-}
-
-// The simulator retains its existing shell while it is being developed separately.
-export function AppLayout(props: AppLayoutProps) {
-  const { pathname } = useLocation();
-  const { examMode } = useUIStore();
-  const { t } = useLanguage();
-  useLayoutEffect(() => {
-    document.documentElement.classList.toggle("simulator-surface", pathname.startsWith(ROUTES.SIMULATIONS));
-    return () => document.documentElement.classList.remove("simulator-surface");
-  }, [pathname]);
-  if (pathname.startsWith(ROUTES.SIMULATIONS)) return <ExistingLayout {...props} />;
-  return <div className="jalan-app min-h-[100dvh] bg-background text-foreground">
-    <a href="#main-content" className="sr-only focus:not-sr-only fixed top-2 left-2 z-[90] bg-card p-3">{t("a11y.skipToContent")}</a>
-    {!examMode && props.showSidebar !== false && <AppHeader />}
-    <OfflineBanner />
-    <main id="main-content" tabIndex={-1}><ErrorBoundary><Outlet /></ErrorBoundary></main>
-  </div>;
 }

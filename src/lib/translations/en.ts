@@ -24,6 +24,12 @@ export const en = {
   "nav.profile":             "Profile",
   "nav.settings":            "Settings",
   "nav.signOut":             "Sign Out",
+  "nav.rpkRsm":              "RPK / RSM",
+  "nav.roadSafety":          "Road safety",
+  "nav.group.curriculum":    "Curriculum",
+  "nav.group.tests":         "Tests",
+  "nav.group.practical":     "Circuit & practical",
+  "nav.group.resources":     "Resources",
 
   // ── Auth ───────────────────────────────────────────────────────────────
   "auth.signIn":             "Sign In",

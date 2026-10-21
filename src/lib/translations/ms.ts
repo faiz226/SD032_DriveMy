@@ -25,6 +25,12 @@ export const ms: Record<TranslationKey, string> = {
   "nav.profile":             "Profil",
   "nav.settings":            "Tetapan",
   "nav.signOut":             "Log Keluar",
+  "nav.rpkRsm":              "RPK / RSM",
+  "nav.roadSafety":          "Keselamatan jalan raya",
+  "nav.group.curriculum":    "Kurikulum",
+  "nav.group.tests":         "Ujian",
+  "nav.group.practical":     "Litar & praktikal",
+  "nav.group.resources":     "Sumber",
 
   // ── Auth ───────────────────────────────────────────────────────────────
   "auth.signIn":             "Log Masuk",

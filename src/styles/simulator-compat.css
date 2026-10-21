@@ -1,4 +1,6 @@
 /* Preserve the existing simulator theme while its separate redesign is in progress. */
+/* Inter belongs to the old theme only, so it loads with the simulator routes. */
+@import "@fontsource-variable/inter";
 html.simulator-surface {
     /* Canvas & surfaces */
     --background: 249 249 249; /* #f9f9f9 Soft Alabaster */
