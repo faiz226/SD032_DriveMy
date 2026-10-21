@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { getMfaAssuranceLevel, enrollTotp, verifyTotp, unenrollTotp } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
@@ -21,13 +21,13 @@ export function MfaEnrollmentPage() {
   // Declared before the effect that calls it — referencing it earlier is a
   // use-before-declare that the React Hooks lint rules reject.
   const checkMfaStatus = useCallback(async () => {
-    const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    if (data.currentLevel === "aal2") {
-      setIsEnrolled(true);
+    try {
+      const data = await getMfaAssuranceLevel();
+      if (data.currentLevel === "aal2") {
+        setIsEnrolled(true);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
     }
   }, []);
 
@@ -39,11 +39,7 @@ export function MfaEnrollmentPage() {
     setIsPending(true);
     setError(null);
     try {
-      const { data, error } = await supabase.auth.mfa.enroll({
-        factorType: "totp",
-      });
-      if (error) throw error;
-      
+      const data = await enrollTotp();
       setFactorId(data.id);
       setQrCode(data.totp.qr_code);
     } catch (err: any) {
@@ -60,17 +56,7 @@ export function MfaEnrollmentPage() {
     setIsPending(true);
     setError(null);
     try {
-      const challenge = await supabase.auth.mfa.challenge({ factorId });
-      if (challenge.error) throw challenge.error;
-
-      const verify = await supabase.auth.mfa.verify({
-        factorId,
-        challengeId: challenge.data.id,
-        code: verifyCode,
-      });
-      
-      if (verify.error) throw verify.error;
-
+      await verifyTotp(factorId, verifyCode);
       toast.success("MFA successfully enabled!");
       setIsEnrolled(true);
       navigate(ROUTES.DASHBOARD, { replace: true });
@@ -85,11 +71,7 @@ export function MfaEnrollmentPage() {
     if (!window.confirm("Are you sure you want to disable MFA?")) return;
     setIsPending(true);
     try {
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      if (factors && factors.totp.length > 0) {
-        const factor = factors.totp[0];
-        const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
-        if (error) throw error;
+      if (await unenrollTotp()) {
         toast.success("MFA disabled.");
         setIsEnrolled(false);
         setQrCode(null);

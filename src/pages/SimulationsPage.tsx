@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/constants";
 import { getSimulationsDone } from "@/services/analytics.service";
+import { learnerKeys } from "@/lib/queryKeys";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TranslationKey } from "@/lib/translations";
 
@@ -48,7 +49,7 @@ export function SimulationsPage() {
 
   // Fetch how many unique maneuvers this user has completed
   const { data: completedCount = 0, isPending: countPending } = useQuery({
-    queryKey: ["simsDone", user?.id],
+    queryKey: learnerKeys.simsDone(user?.id),
     queryFn: () => getSimulationsDone(user!.id),
     enabled: !!user,
   });

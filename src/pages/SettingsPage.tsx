@@ -10,13 +10,12 @@ import { useThemeStore } from "@/stores/themeStore";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { del } from "idb-keyval";
 import { format } from "date-fns";
 import { useTheoryProgress, useOverallReadiness } from "@/hooks/useProgressStats";
-import { getBestQuizScore, getBestMockTestScore, getSimulationsDone } from "@/services/analytics.service";
-import { exportUserData, deleteAccount, AccountCleanupError } from "@/services/account.service";
+import { getBestQuizScore, getBestMockTestScore, getSimulationsDone, getBestColorVisionScore } from "@/services/analytics.service";
+import { exportUserData, deleteAccount, resetProgress, AccountCleanupError } from "@/services/account.service";
+import { learnerKeys, invalidateLearnerData } from "@/lib/queryKeys";
 import { getUserPendingStatus, getUserDeadLetterItems, retryUserDeadLetterItem, syncOfflineResults } from "@/services/results.service";
 import { LocalSessionTerminationError } from "@/services/auth.service";
 import { hasTelemetryConsent, writeConsent } from "@/lib/consent";
@@ -212,27 +211,8 @@ export function SettingsPage() {
     }
     setIsResetting(true);
     try {
-      // 1. Delete from Supabase
-      const tables = ['quiz_results', 'mock_test_results', 'simulation_results', 'colorblind_results', 'theory_progress'];
-      await Promise.all(
-        tables.map(tb => supabase.from(tb).delete().eq('user_id', user.id))
-      );
-
-      // 2. Clear offline queues in IndexedDB
-      const queues = ['quizQueue', 'mockQueue', 'simulationQueue', 'colorblindQueue'];
-      await Promise.all(queues.map(q => del(q)));
-
-      // 3. Invalidate TanStack Query cache to update UI immediately
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["theoryProgress"] }),
-        queryClient.invalidateQueries({ queryKey: ["quizBest"] }),
-        queryClient.invalidateQueries({ queryKey: ["mockBest"] }),
-        queryClient.invalidateQueries({ queryKey: ["simsDone"] }),
-        queryClient.invalidateQueries({ queryKey: ["recentActivity"] }),
-        queryClient.invalidateQueries({ queryKey: ["profile"] }),
-        queryClient.invalidateQueries({ queryKey: ["progress"] }),
-      ]);
-
+      await resetProgress(user.id);
+      await invalidateLearnerData(queryClient);
       toast.success(t("settings.progressResetSuccess"));
     } catch {
       toast.error(t("common.error"));
@@ -360,38 +340,29 @@ export function SettingsPage() {
   const { data: readiness, isPending: readinessPending } = useOverallReadiness();
 
   const { data: quizBest = 0, isPending: quizPending } = useQuery({
-    queryKey: ["profile", "quizBest", userId],
+    queryKey: learnerKeys.profileBest("quiz", userId),
     queryFn: () => getBestQuizScore(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: mockBest = 0, isPending: mockPending } = useQuery({
-    queryKey: ["profile", "mockBest", userId],
+    queryKey: learnerKeys.profileBest("mock", userId),
     queryFn: () => getBestMockTestScore(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: simsDone = 0, isPending: simsPending } = useQuery({
-    queryKey: ["profile", "simsDone", userId],
+    queryKey: learnerKeys.profileBest("sims", userId),
     queryFn: () => getSimulationsDone(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: colorBest, isPending: colorPending } = useQuery({
-    queryKey: ["profile", "colorBest", userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("colorblind_results")
-        .select("percentage")
-        .eq("user_id", userId!)
-        .order("percentage", { ascending: false })
-        .limit(1);
-      if (error) throw error;
-      return data && data.length > 0 ? (data[0] as { percentage: number }).percentage : null;
-    },
+    queryKey: learnerKeys.profileBest("color", userId),
+    queryFn: () => getBestColorVisionScore(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });

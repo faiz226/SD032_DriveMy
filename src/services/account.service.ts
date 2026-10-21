@@ -49,6 +49,22 @@ export async function exportUserData(userId: string): Promise<Blob> {
   return new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
 }
 
+/**
+ * Erase the learner's results and theory progress but keep the account.
+ *
+ * This learner's offline queues go first, so a background sync cannot
+ * re-upload a result between the server delete and the local clean-up; other
+ * learners' pending work on a shared device is left alone. Every delete is
+ * checked because supabase-js reports a failure in `error` instead of
+ * throwing — unchecked, a half-done reset looked like success.
+ */
+export async function resetProgress(userId: string): Promise<void> {
+  await clearUserResultsQueue(userId);
+  const results = await Promise.all(USER_DATA_TABLES.map(table => supabase.from(table).delete().eq("user_id", userId)));
+  const failed = results.find(result => result.error);
+  if (failed?.error) throw failed.error;
+}
+
 export class AccountCleanupError extends Error {
   constructor(message: string, public readonly cause?: unknown) {
     super(message);

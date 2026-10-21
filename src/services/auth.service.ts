@@ -1,3 +1,4 @@
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
 /**
@@ -210,6 +211,52 @@ export async function getSession() {
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
   return data.session;
+}
+
+/** Subscribe to sign-in, sign-out, refresh and recovery events. Returns the unsubscribe. */
+export function onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void): () => void {
+  const { data } = supabase.auth.onAuthStateChange(callback);
+  return () => data.subscription.unsubscribe();
+}
+
+/** PKCE: trade the one-time `?code=` from an OAuth or email redirect for a session. */
+export async function exchangeCodeForSession(code: string) {
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) throw error;
+}
+
+// ── Two-factor (TOTP) ─────────────────────────────────────────────────────────
+
+/** `currentLevel === "aal2"` means a verified authenticator is in use. */
+export async function getMfaAssuranceLevel() {
+  const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (error) throw error;
+  return data;
+}
+
+export async function enrollTotp() {
+  const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+  if (error) throw error;
+  return data;
+}
+
+/** Challenge the factor and check the learner's six-digit code in one step. */
+export async function verifyTotp(factorId: string, code: string) {
+  const challenge = await supabase.auth.mfa.challenge({ factorId });
+  if (challenge.error) throw challenge.error;
+  const { error } = await supabase.auth.mfa.verify({ factorId, challengeId: challenge.data.id, code });
+  if (error) throw error;
+}
+
+/** Remove the enrolled authenticator. Returns false when none was enrolled. */
+export async function unenrollTotp(): Promise<boolean> {
+  const { data, error } = await supabase.auth.mfa.listFactors();
+  if (error) throw error;
+  const factor = data.totp[0];
+  if (!factor) return false;
+  const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
+  if (unenrollError) throw unenrollError;
+  return true;
 }
 
 /** Send a password-reset email. redirectTo must be the /reset-password page. */

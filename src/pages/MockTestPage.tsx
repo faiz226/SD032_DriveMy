@@ -10,6 +10,7 @@ import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/question
 import { applyAnswerKey, hasCompleteAnswerKey } from "@/lib/exam/scoring";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { OFFLINE_QUEUED_ID, saveMockResult } from "@/services/results.service";
+import { invalidateLearnerData } from "@/lib/queryKeys";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
 import { TestResultsView } from "@/components/exam/TestResultsView";
@@ -43,12 +44,7 @@ export function MockTestPage() {
     onSuccess: (saved) => {
       if ((saved as { id?: string } | null)?.id === OFFLINE_QUEUED_ID) return;
       toast.success(t("exam.saved"));
-      queryClient.invalidateQueries({ queryKey: ["mockBest"] });
-      queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: ["progress", "mock", user.id] });
-        queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
-      }
+      void invalidateLearnerData(queryClient);
     },
     onError: (error) => {
       console.error("Failed to save mock result", error);

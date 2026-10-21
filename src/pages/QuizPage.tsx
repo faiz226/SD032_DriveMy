@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
 import { fetchQuizQuestions } from "@/services/questions.service";
 import { saveQuizResult } from "@/services/results.service";
+import { invalidateLearnerData } from "@/lib/queryKeys";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
@@ -38,12 +39,7 @@ export function QuizPage() {
     mutationFn: saveQuizResult,
     onSuccess: () => {
       toast.success(t("exam.saved"));
-      queryClient.invalidateQueries({ queryKey: ["quizBest"] });
-      queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: ["progress", "quiz", user.id] });
-        queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
-      }
+      void invalidateLearnerData(queryClient);
     },
     onError: (error) => {
       console.error("Failed to save quiz result", error);

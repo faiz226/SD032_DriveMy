@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { exchangeCodeForSession, getSession } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { useLanguage } from "@/hooks/useLanguage";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
@@ -50,12 +50,13 @@ export function AuthCallbackPage() {
       if (code) {
         if (exchangedRef.current === code) return;
         exchangedRef.current = code;
-        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-        if (cancelled) return;
-        if (exchangeError) {
-          setError(sanitizeError(exchangeError.message));
+        try {
+          await exchangeCodeForSession(code);
+        } catch (exchangeError) {
+          if (!cancelled) setError(sanitizeError(exchangeError instanceof Error ? exchangeError.message : null));
           return;
         }
+        if (cancelled) return;
         // Session is now active; onAuthStateChange (in AuthInit) will update
         // the store. Navigate to dashboard immediately.
         navigate(nextUrl, { replace: true });
@@ -65,13 +66,15 @@ export function AuthCallbackPage() {
       // ── Implicit / magic-link fallback: check if session already hydrated ─
       // Supabase JS auto-parses the hash fragment (#access_token=...) on init.
       // Give it a tick, then check.
-      const { data, error: sessionError } = await supabase.auth.getSession();
-      if (cancelled) return;
-      if (sessionError) {
-        setError(sanitizeError(sessionError.message));
+      let session: Awaited<ReturnType<typeof getSession>>;
+      try {
+        session = await getSession();
+      } catch (sessionError) {
+        if (!cancelled) setError(sanitizeError(sessionError instanceof Error ? sessionError.message : null));
         return;
       }
-      if (data.session) {
+      if (cancelled) return;
+      if (session) {
         navigate(nextUrl, { replace: true });
         return;
       }

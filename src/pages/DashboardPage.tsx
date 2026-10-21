@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LoadError } from "@/components/shared/LoadError";
 import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS } from "@/lib/constants";
 import { dashboardModel } from "@/lib/dashboard/model";
+import { learnerKeys } from "@/lib/queryKeys";
 
 export function DashboardPage() {
   const { language, t } = useLanguage();
@@ -21,7 +22,7 @@ export function DashboardPage() {
   const readiness = useOverallReadiness();
   const mock = useMockStats();
   const theory = useTheoryProgress();
-  const activity = useQuery({ queryKey: ["recentActivity", user?.id], queryFn: () => getRecentActivity(user!.id), enabled: !!user });
+  const activity = useQuery({ queryKey: learnerKeys.activity(user?.id), queryFn: () => getRecentActivity(user!.id), enabled: !!user });
   const queries = [readiness, mock, theory, activity];
   if (queries.some(q => q.isError)) return <div className="jalan-container"><LoadError onRetry={() => { queries.forEach(q => { void q.refetch(); }); }}/></div>;
   if (queries.some(q => q.isPending)) return <div className="jalan-container space-y-4" aria-busy="true" aria-label={t("common.loading")}><Skeleton className="h-80 w-full"/><div className="learning-grid">{[1,2,3,4,5,6].map(i => <Skeleton key={i} className="h-48"/>)}</div></div>;

@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
 import { useLanguage } from "@/hooks/useLanguage";
-import { updatePassword } from "@/services/auth.service";
-import { supabase } from "@/lib/supabase";
+import { updatePassword, onAuthStateChange, getSession } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -58,22 +57,20 @@ export function ResetPasswordPage() {
       return;
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const unsubscribe = onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setTokenError(null);
       }
     });
 
-    supabase.auth.getSession().then(({ data }) => {
+    void getSession().catch(() => null).then((session) => {
       const hasAuthParams = hashStr.includes('access_token') || searchStr.includes('code');
-      if (!data.session && !hasAuthParams) {
+      if (!session && !hasAuthParams) {
         setTokenError(t("auth.resetLinkInvalid"));
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return unsubscribe;
   }, [t]);
 
   const onSubmit = async (values: FormValues) => {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { SpeakerHigh, Stop, Pause, Play } from "phosphor-react";
-import { supabase } from "@/lib/supabase";
+import { requestSpeech, SpeechUnavailableError } from "@/services/speech.service";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 
@@ -32,18 +32,8 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
     try {
       let blob = cached.current;
       if (!blob) {
-      const { data } = await supabase.auth.getSession();
-      if (session.controller.signal.aborted) return;
-      if (!data.session) throw new Error("sign_in");
-      const response = await fetch("/api/speech", {
-        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session.access_token}` },
-        body: JSON.stringify({ text, kind, language }), signal: session.controller.signal,
-      });
-      if (session.controller.signal.aborted) return;
-      if (response.status === 429) { setState("limit"); return; }
-      if (!response.ok || !response.headers.get("Content-Type")?.startsWith("audio/")) throw new Error("unavailable");
-      blob = await response.blob();
-      if (!session.controller.signal.aborted) cached.current = blob;
+        blob = await requestSpeech(text, kind, language, session.controller.signal);
+        if (!session.controller.signal.aborted) cached.current = blob;
       }
       if (session.controller.signal.aborted) return;
       session.url = URL.createObjectURL(blob); session.audio = new Audio(session.url);
@@ -51,7 +41,11 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
       session.audio.onerror = () => { if (active.current === session) { stop(); setState("error"); } };
       await session.audio.play();
       if (!session.controller.signal.aborted) setState("playing");
-    } catch { if (!session.controller.signal.aborted) { stop(); setState("error"); } }
+    } catch (err) {
+      if (session.controller.signal.aborted) return;
+      if (err instanceof SpeechUnavailableError && err.reason === "limit") { setState("limit"); return; }
+      stop(); setState("error");
+    }
   }
   const running = state === "playing" || state === "paused" || state === "loading";
   return <div className="my-3">

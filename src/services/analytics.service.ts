@@ -25,6 +25,18 @@ export async function getBestMockTestScore(userId: string): Promise<number> {
   return rows.length > 0 ? Number(rows[0].percentage) || 0 : 0;
 }
 
+/** Best colour-vision percentage, or null when the learner has not taken the test. */
+export async function getBestColorVisionScore(userId: string): Promise<number | null> {
+  const { data, error } = await supabase
+    .from("colorblind_results")
+    .select("percentage")
+    .eq("user_id", userId)
+    .order("percentage", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  return data && data.length > 0 ? (data[0] as { percentage: number }).percentage : null;
+}
+
 export async function getSimulationsDone(userId: string): Promise<number> {
   const { data, error } = await supabase
     .from("simulation_results")

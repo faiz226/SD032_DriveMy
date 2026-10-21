@@ -2,6 +2,7 @@ import { calculateReadiness } from "@/lib/readiness";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { TOTAL_SIMULATION_MANEUVERS } from "@/lib/constants";
+import { learnerKeys } from "@/lib/queryKeys";
 import {
   getQuizStats,
   getMockStats,
@@ -12,7 +13,7 @@ import {
 export function useQuizStats(dateRange?: number) {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: ["progress", "quiz", user?.id, dateRange],
+    queryKey: learnerKeys.quizStats(user?.id, dateRange),
     queryFn: () => getQuizStats(user!.id, dateRange),
     enabled: !!user,
   });
@@ -21,7 +22,7 @@ export function useQuizStats(dateRange?: number) {
 export function useMockStats(dateRange?: number) {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: ["progress", "mock", user?.id, dateRange],
+    queryKey: learnerKeys.mockStats(user?.id, dateRange),
     queryFn: () => getMockStats(user!.id, dateRange),
     enabled: !!user,
   });
@@ -30,7 +31,7 @@ export function useMockStats(dateRange?: number) {
 export function useSimStats(dateRange?: number) {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: ["progress", "sim", user?.id, dateRange],
+    queryKey: learnerKeys.simStats(user?.id, dateRange),
     queryFn: () => getSimStats(user!.id, dateRange),
     enabled: !!user,
   });
@@ -39,7 +40,7 @@ export function useSimStats(dateRange?: number) {
 export function useTheoryProgress() {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: ["progress", "theory", user?.id],
+    queryKey: learnerKeys.theoryStats(user?.id),
     queryFn: () => getTheoryProgressStats(user!.id),
     enabled: !!user,
   });
@@ -49,7 +50,7 @@ export function useOverallReadiness() {
   const { user } = useAuthStore();
 
   return useQuery({
-    queryKey: ["progress", "readiness", user?.id],
+    queryKey: learnerKeys.readiness(user?.id),
     queryFn: async () => {
       if (!user) throw new Error("No user");
 
