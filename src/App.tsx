@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -39,6 +39,7 @@ const LazyPrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage").the
 // Stores & services
 import { ROUTES }        from "@/lib/constants";
 import { useTheme }      from "@/hooks/useTheme";
+import { useLanguage }   from "@/hooks/useLanguage";
 
 // ─── TanStack Query client ────────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -77,6 +78,10 @@ const PageSpinner = (
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   useTheme();
+  const { language } = useLanguage();
+  // Screen readers choose pronunciation from <html lang>, and chart dates
+  // follow it, so it must change when the learner switches language.
+  useEffect(() => { document.documentElement.lang = language; }, [language]);
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

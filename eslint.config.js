@@ -20,6 +20,11 @@ export default defineConfig([
     'backup_layout.tsx',
     'backup_layout*.txt',
     'graphify-out/**',
+    // Vendored bklit chart source, installed and updated with
+    // `npx shadcn add @bklit/<chart>`. It is upstream code: patching it to
+    // satisfy the React Compiler hook rules would fork it. Our wrappers in
+    // src/components/progress are linted as usual, and tsc still checks it.
+    'src/components/charts/**',
   ]),
   {
     files: ['**/*.{ts,tsx}'],

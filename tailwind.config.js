@@ -60,13 +60,6 @@ export default {
           primary: "rgb(var(--sidebar-primary) / <alpha-value>)",
           ring: "rgb(var(--sidebar-ring) / <alpha-value>)",
         },
-        chart: {
-          1: "rgb(var(--chart-1) / <alpha-value>)",
-          2: "rgb(var(--chart-2) / <alpha-value>)",
-          3: "rgb(var(--chart-3) / <alpha-value>)",
-          4: "rgb(var(--chart-4) / <alpha-value>)",
-          5: "rgb(var(--chart-5) / <alpha-value>)",
-        },
         success: {
           DEFAULT: "rgb(var(--success) / <alpha-value>)",
           foreground: "rgb(var(--success-foreground) / <alpha-value>)",

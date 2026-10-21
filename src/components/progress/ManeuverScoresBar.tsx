@@ -1,76 +1,58 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart } from "@/components/charts/bar-chart";
+import { Bar } from "@/components/charts/bar";
+import { BarYAxis } from "@/components/charts/bar-y-axis";
+import { Grid } from "@/components/charts/grid";
+import { ChartTooltip } from "@/components/charts/tooltip";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
-import { useChartColors } from "@/hooks/useChartColors";
+import { ChartFigure } from "./ChartFigure";
 
 interface ManeuverScoresBarProps {
   data: { maneuver: string; bestScore: number; attempts: number }[];
 }
 
-const MANEUVER_KEYS: Record<string, { key: TranslationKey; difficulty: string }> = {
-  "hill-start": { key: "progress.maneuver.hill-start", difficulty: "hard" },
-  "side-parking": { key: "progress.maneuver.side-parking", difficulty: "medium" },
-  "parallel-parking": { key: "progress.maneuver.parallel-parking", difficulty: "hard" },
-  "three-point-turn": { key: "progress.maneuver.three-point-turn", difficulty: "medium" },
-  "s-curve": { key: "progress.maneuver.s-curve", difficulty: "medium" },
-  "z-curve": { key: "progress.maneuver.z-curve", difficulty: "medium" },
-  "ramp-test": { key: "progress.maneuver.ramp-test", difficulty: "easy" },
-  "road-merging": { key: "progress.maneuver.road-merging", difficulty: "hard" },
+const MANEUVER_KEYS: Record<string, TranslationKey> = {
+  "hill-start": "progress.maneuver.hill-start",
+  "side-parking": "progress.maneuver.side-parking",
+  "parallel-parking": "progress.maneuver.parallel-parking",
+  "three-point-turn": "progress.maneuver.three-point-turn",
+  "s-curve": "progress.maneuver.s-curve",
+  "z-curve": "progress.maneuver.z-curve",
+  "ramp-test": "progress.maneuver.ramp-test",
+  "road-merging": "progress.maneuver.road-merging",
 };
 
+/**
+ * Best simulator score per maneuver. These bars used to be red, yellow or
+ * green by *difficulty* — signal colours spent on something that is not a
+ * pass or a fail. They are one neutral ink now; horizontal so the maneuver
+ * names stay readable on a phone instead of being tilted 45°.
+ */
 export function ManeuverScoresBar({ data }: ManeuverScoresBarProps) {
   const { t } = useLanguage();
-  const colors = useChartColors();
-
-  const chartData = data.map(d => {
-    const meta = MANEUVER_KEYS[d.maneuver];
-    let color = colors.success;
-    if (meta?.difficulty === "medium") color = colors.warning;
-    if (meta?.difficulty === "hard") color = colors.destructive;
-
-    return {
-      name: meta ? t(meta.key) : d.maneuver,
-      score: d.bestScore,
-      color,
-      attempts: d.attempts
-    };
-  });
+  const rows = data.map(d => ({
+    name: MANEUVER_KEYS[d.maneuver] ? t(MANEUVER_KEYS[d.maneuver]) : d.maneuver,
+    score: Math.round(d.bestScore),
+    attempts: d.attempts,
+  }));
 
   return (
-    <div className="h-[300px] w-full" aria-label={t("progress.maneuverChartAria")}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.border} />
-          <XAxis 
-            dataKey="name" 
-            angle={-45} 
-            textAnchor="end" 
-            height={60} 
-            tick={{ fill: colors.mutedForeground, fontSize: 12 }} 
-            axisLine={{ stroke: colors.border }}
-            tickLine={false}
-          />
-          <YAxis 
-            domain={[0, 100]} 
-            tick={{ fill: colors.mutedForeground, fontSize: 12 }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip 
-            contentStyle={{ backgroundColor: colors.card, borderColor: colors.border, borderRadius: "8px" }}
-            itemStyle={{ color: colors.foreground }}
-            formatter={(value, _name, props) => [
-              `${Number(value ?? 0)}% (${props?.payload?.attempts ?? 0} attempts)`,
-              t("progress.chart.score")
-            ]}
-          />
-          <Bar dataKey="score" radius={[4, 4, 0, 0]} barSize={32}>
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <ChartFigure
+      label={t("progress.maneuverChartAria")}
+      table={{
+        columns: [t("progress.chart.maneuver"), t("progress.bestScore"), t("progress.chart.attemptCount")],
+        rows: rows.map(row => [row.name, `${row.score}%`, row.attempts]),
+      }}
+    >
+      <BarChart data={rows} xDataKey="name" orientation="horizontal" aspectRatio={rows.length > 4 ? "5 / 3" : "5 / 2"} margin={{ top: 8, right: 16, bottom: 8, left: 136 }}>
+        <Grid vertical strokeDasharray="2 6" />
+        <Bar dataKey="score" fill="var(--chart-line-primary)" lineCap="butt" animate={false} />
+        <BarYAxis showAllLabels />
+        <ChartTooltip
+          showDatePill={false}
+          rows={point => [{ color: "var(--chart-line-primary)", label: t("progress.bestScore"), value: `${point.score as number}% · ${t("progress.attempts", { count: point.attempts as number })}` }]}
+        />
+      </BarChart>
+    </ChartFigure>
   );
 }

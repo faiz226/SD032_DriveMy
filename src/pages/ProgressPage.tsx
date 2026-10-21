@@ -16,13 +16,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ReadinessDonut } from "@/components/progress/ReadinessDonut";
 import { ManeuverScoresBar } from "@/components/progress/ManeuverScoresBar";
-import { QuizTrendLine } from "@/components/progress/QuizTrendLine";
-import { MockTrendLine } from "@/components/progress/MockTrendLine";
+import { ScoreTrendChart } from "@/components/progress/ScoreTrendChart";
 import { CategoryBreakdownBar } from "@/components/progress/CategoryBreakdownBar";
 import { QuizHistoryTable } from "@/components/progress/QuizHistoryTable";
 import { MockHistoryTable } from "@/components/progress/MockHistoryTable";
 import { SimHistoryTable } from "@/components/progress/SimHistoryTable";
 import { LoadError } from "@/components/shared/LoadError";
+import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS } from "@/lib/constants";
+
+// A trend needs two points; one attempt is listed in the history table below.
+const MIN_TREND_POINTS = 2;
 
 export function ProgressPage() {
   const { t, language } = useLanguage();
@@ -59,27 +62,22 @@ export function ProgressPage() {
   const handleExport = async () => {
     if (!hasData) return;
 
+    if (!user) {
+      toast.error(t("common.error"));
+      return;
+    }
     try {
-      const { exportProgressReportFromFrame } = await import("@/lib/exportProgressReport");
-      await exportProgressReportFromFrame("progress-report-print-frame");
+      const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
+      await generateProgressPDF({
+        language,
+        userName: user.email?.split("@")[0] || "Student",
+        theory: theory || { completedModules: 0, totalModules: 3, percentage: 0 },
+        quiz: quiz || { average: 0, totalDuration: 0, history: [], trend: [] },
+        mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
+        sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
+      });
     } catch {
-      if (!user) {
-        toast.error(t("common.error"));
-        return;
-      }
-      try {
-        const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
-        await generateProgressPDF({
-          language,
-          userName: user.email?.split("@")[0] || "Student",
-          theory: theory || { completedModules: 0, totalModules: 3, percentage: 0 },
-          quiz: quiz || { average: 0, totalDuration: 0, history: [], trend: [] },
-          mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
-          sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
-        });
-      } catch {
-        toast.error(t("common.error"));
-      }
+      toast.error(t("common.error"));
     }
   };
 
@@ -134,7 +132,7 @@ export function ProgressPage() {
         </div>
       </div>
 
-      <div id="progress-report-print-frame" className="space-y-6">
+      <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card-premium p-6 flex flex-col md:col-span-1">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -267,8 +265,8 @@ export function ProgressPage() {
               <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
               {quizPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : quiz?.trend && quiz.trend.length > 0 ? (
-                <QuizTrendLine key={activeTab} data={quiz.trend} />
+              ) : quiz?.trend && quiz.trend.length >= MIN_TREND_POINTS ? (
+                <ScoreTrendChart key={activeTab} data={quiz.trend} label={t("progress.chart.quizTrend")} limit={20} />
               ) : (
                 <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
               )}
@@ -312,8 +310,8 @@ export function ProgressPage() {
               <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
               {mockPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : mock?.trend && mock.trend.length > 0 ? (
-                <MockTrendLine key={activeTab} data={mock.trend} />
+              ) : mock?.trend && mock.trend.length >= MIN_TREND_POINTS ? (
+                <ScoreTrendChart key={activeTab} data={mock.trend} label={t("progress.chart.mockTrend")} limit={10} passMark={Math.round((MOCK_PASS_MARK / MOCK_TOTAL_QUESTIONS) * 100)} />
               ) : (
                 <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
               )}

@@ -65,11 +65,6 @@
     --sidebar-accent-foreground: var(--road-ink);
     --sidebar-primary: var(--asphalt);
     --sidebar-ring: var(--awas);
-    --chart-1: var(--grade-1);
-    --chart-2: var(--grade-2);
-    --chart-3: var(--grade-3);
-    --chart-4: var(--grade-4);
-    --chart-5: var(--grade-5);
     --hud-highlight: 255 255 255 / 0.65;
     --space-unit: .25rem;
     --layout-width: 82.5rem;
@@ -90,10 +85,6 @@
     --accent: var(--grade-2);
     --border: var(--grade-4);
     --surface-elevated: var(--grade-2);
-    --chart-1: var(--paint);
-    --chart-2: var(--grade-7);
-    --chart-3: var(--grade-6);
-    --chart-4: var(--grade-5);
   }
   @media (min-width: 768px) { :root { --layout-gutter: 1.25rem; } }
 }
@@ -505,33 +496,6 @@
   }
 }
 
-/* Progress PDF capture — resolved light-theme colors for html2canvas */
-[data-print-mode="true"] {
-  --background: 249 249 249;
-  --foreground: 32 32 32;
-  --card: 252 252 252;
-  --card-foreground: 32 32 32;
-  --popover: 252 252 252;
-  --popover-foreground: 32 32 32;
-  --primary: 17 17 17;
-  --primary-foreground: 255 255 255;
-  --secondary: 255 223 181;
-  --secondary-foreground: 88 45 29;
-  --muted: 239 239 239;
-  --muted-foreground: 75 75 75;
-  --accent: 232 232 232;
-  --accent-foreground: 32 32 32;
-  --destructive: 239 68 68;
-  --destructive-foreground: 255 255 255;
-  --border: 216 216 216;
-  --input: 216 216 216;
-  --ring: 17 17 17;
-  --surface: 252 252 252;
-  --surface-card: 245 245 245;
-  --surface-elevated: 239 239 239;
-  background-color: rgb(var(--background)) !important;
-  color: rgb(var(--foreground)) !important;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -602,5 +566,53 @@
   .jalan-app *, .jalan-app *::before, .jalan-app *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* Chart tokens for the bklit charts in src/components/charts.
+   `npx shadcn add @bklit/<chart>` writes its own purple --chart-* values into
+   the theme block at the top of this file; this later block wins the cascade,
+   so an update cannot repaint the charts. Values are full colours, not the
+   channel triples used above, because bklit reads them directly. Series are
+   asphalt greys: a line is data, not a state. Green and red appear only as
+   --chart-positive and --chart-negative. */
+@layer base {
+  :root {
+    --chart-1: rgb(var(--road-ink));
+    --chart-2: rgb(var(--grade-3));
+    --chart-3: rgb(var(--grade-5));
+    --chart-4: rgb(var(--grade-6));
+    --chart-5: rgb(var(--grade-7));
+    --chart-positive: rgb(var(--lulus));
+    --chart-negative: rgb(var(--berhenti));
+    --chart-background: rgb(var(--card));
+    --chart-foreground: rgb(var(--foreground));
+    --chart-foreground-muted: rgb(var(--muted-foreground));
+    --chart-line-primary: var(--chart-1);
+    --chart-line-secondary: var(--chart-3);
+    --chart-crosshair: rgb(var(--muted-foreground));
+    --chart-grid: rgb(var(--border));
+    --chart-brush-border: var(--chart-grid);
+    --chart-tooltip-background: rgb(var(--popover));
+    --chart-tooltip-foreground: rgb(var(--popover-foreground));
+    --chart-tooltip-muted: rgb(var(--muted-foreground));
+    --chart-marker-background: rgb(var(--card));
+    --chart-marker-border: rgb(var(--border));
+    --chart-marker-foreground: rgb(var(--foreground));
+    --chart-marker-badge-background: rgb(var(--road-ink));
+    --chart-marker-badge-foreground: rgb(var(--background));
+    --chart-indicator-color: rgb(var(--road-ink));
+    --chart-indicator-secondary-color: rgb(var(--muted-foreground));
+    --chart-segment-line: rgb(var(--road-ink));
+    --chart-segment-background: rgb(var(--muted));
+    --chart-label: rgb(var(--muted-foreground));
+  }
+  /* Lighter greys first on a dark carriageway; everything else follows the
+     semantic tokens, which already switch with the theme. */
+  .dark {
+    --chart-2: rgb(var(--grade-7));
+    --chart-3: rgb(var(--grade-5));
+    --chart-4: rgb(var(--grade-4));
+    --chart-5: rgb(var(--grade-3));
   }
 }

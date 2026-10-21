@@ -57,30 +57,38 @@ interface PDFProgressData {
   };
 }
 
+// Jalan's asphalt ramp, as RGB for jsPDF (see DESIGN.md colour tokens).
+const INK: [number, number, number] = [35, 33, 30];          // --asphalt
+const INK_SECONDARY: [number, number, number] = [94, 92, 89]; // --grade-3
+const INK_MUTED: [number, number, number] = [124, 122, 118];  // --grade-4
+const RULE: [number, number, number] = [222, 220, 215];       // --grade-8
+const CONCRETE: [number, number, number] = [228, 227, 222];   // --concrete
+const PAINT: [number, number, number] = [247, 245, 240];      // --paint
+
 export async function generateProgressPDF(data: PDFProgressData): Promise<void> {
   const doc = new jsPDF();
   const lang = (data.language === "ms" ? "ms" : "en") as Language;
   const t = (key: Parameters<typeof translate>[0]) => translate(key, lang);
 
   doc.setFontSize(24);
-  doc.setTextColor(17, 17, 17);
+  doc.setTextColor(...INK);
   doc.text("DriveMy", 14, 20);
 
   doc.setFontSize(14);
-  doc.setTextColor(51, 65, 85);
+  doc.setTextColor(...INK_SECONDARY);
   doc.text(t("progress.pdf.title"), 14, 30);
 
   doc.setFontSize(10);
-  doc.setTextColor(100, 116, 139);
+  doc.setTextColor(...INK_MUTED);
   const dateStr = format(new Date(), "PPP p", { locale: lang === "en" ? enUS : ms });
   doc.text(`${t("progress.pdf.generatedOn")}: ${dateStr}`, 14, 36);
   doc.text(`${t("progress.pdf.student")}: ${data.userName}`, 14, 42);
 
-  doc.setDrawColor(226, 232, 240);
+  doc.setDrawColor(...RULE);
   doc.line(14, 46, 196, 46);
 
   doc.setFontSize(12);
-  doc.setTextColor(15, 23, 42);
+  doc.setTextColor(...INK);
   doc.text(t("progress.pdf.executiveSummary"), 14, 55);
 
   const totalDurationMinutes =
@@ -103,8 +111,8 @@ export async function generateProgressPDF(data: PDFProgressData): Promise<void> 
       [t("progress.pdf.avgSim"), `${data.sim.averageScore.toFixed(1)}%`],
     ],
     theme: "grid",
-    headStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
+    headStyles: { fillColor: [...CONCRETE], textColor: [...INK] },
+    alternateRowStyles: { fillColor: [...PAINT] },
     margin: { left: 14, right: 14 },
   });
 
@@ -176,9 +184,9 @@ export async function generateProgressPDF(data: PDFProgressData): Promise<void> 
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
-    doc.setTextColor(148, 163, 184);
+    doc.setTextColor(...INK_MUTED);
     doc.text(
-      `DriveMy Progress Report - ${t("progress.pdf.page")} ${i} / ${pageCount}`,
+      `DriveMy · ${t("progress.pdf.title")} · ${t("progress.pdf.page")} ${i} / ${pageCount}`,
       14,
       doc.internal.pageSize.getHeight() - 10
     );
