@@ -20,9 +20,16 @@ and for whoever builds it next.
 2. **Download.** The first drive costs 5.8 MB of Low's 12 MB budget. The plan may add **at most 2 MB on Low**
    (4 MB on Medium), with KTX2 textures and meshopt geometry.
 3. **The geometry is evidence.** The circuit was traced off the ARM Driving Institute's drone photo and proved
-   by 44 checks. Decoration never moves a kerb, line, pole or bay: `npm run check:circuit` stays 44/44.
+   by 38 checks. Decoration never moves a kerb, line, pole or bay: `npm run check:circuit` stays 38/38.
 4. **Signs are sourced, never generated** (the Jalan rule): Arahan Teknik Jalan shapes only. A plausible but
    wrong sign teaches a learner the wrong answer.
+
+**Done (21 Oct), in code rather than from the files below** (`src/sim/world/Scenery.tsx`, `build.ts`, `World.tsx`):
+the horizon (item 6: two rings of hazy hills, clouds, a painted sky, grass running on to the haze), fog matched to
+the horizon (item 5, the fog half), trees (item 9: rain trees and palms, instanced, half the woodland on Low),
+light and shade over the grass (item 3, by noise instead of a second texture), windows and doors on the booths and
+the office (instead of item 7's model), and from Phase 4 the flag. Also beyond the plan: bougainvillea, street
+lights and terrace houses. Its draw calls on the Low tier are not yet measured against limit 1.
 
 ## The look: one palette, each colour with a job
 
@@ -80,8 +87,8 @@ the sky; a second car parked by the office.
 ## Sound: what exists and what the app still needs
 
 **Done (20 Oct):** the engine start and idle loop (the owner's recording, pitched with speed), the fault tone
-(synthesised), and the instructor voice (Fish Audio text-to-speech, English and BM: the eight station briefs and
-four outcomes, `scripts/gen-voice.mjs`).
+(synthesised), and the instructor voice (Fish Audio text-to-speech, English and BM: the station briefs and
+four outcomes, `scripts/gen-voice.mjs`; the free-drive brief since 21 Oct).
 
 **Still needed, most useful first:**
 

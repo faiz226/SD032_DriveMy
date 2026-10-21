@@ -236,7 +236,7 @@ ROADS = [
 
 
 def lane_centres(world, keep_out, min_w=6.0, max_w=10.5, step=0.25):
-    """Broken centre lines on the two-way roads (the owner, 20 Oct): a lane each way, keeping left of the
+    """Centre lines on the two-way roads (the owner, 20 Oct; unbroken, JKR 4.1.2.2): a lane each way, keeping left of the
     line. Each road in ROADS gets its middle and width refined from the kerbs, section by section between the
     roads that cross it: the islands either side of a junction need not line up (the west road's middle moves
     1.2 m across the spine road). A section's middle is the median of its midpoints, ignoring side-road
@@ -477,11 +477,11 @@ def build_route(L):
     t.mark('s_b')
     t.line_to(L['s_bottom'], v('s_w'), 's-curve')
     t.mark('s_out')
-    # to 6: right along the bottom lane, right into the Z's south end
+    # to 5: right along the bottom lane, right into the Z's south end
     t.arc(L['s_bottom'] - L['bottom_turn'], -90, 6.0)          # one arc from the S's mouth, its outer tyres 0.5 m off the edge,
     t.shift(L['bottom_turn'] - L['bottom_wb'], 5.0, 6.0)       # then into the westbound lane's middle
     t.line_to(L['z_x0'] + 4.5, 6.0)
-    # 6 Z-curve, driven north: in from the bottom lane, right, then left
+    # 5 Z-curve, driven north: in from the bottom lane, right, then left
     t.mark('z_in')
     t.arc(4.5, -90, v('z_w'), 'z-curve')
     rc = v('z_rc')
@@ -493,13 +493,13 @@ def build_route(L):
     t.mark('z_c2')
     t.line_to(L['z_top'], v('z_w'), 'z-curve')
     t.mark('z_out')
-    # to 7: right along the spine road, left up lane E-F
+    # to 6: right along the spine road, left up lane E-F
     t.line_to(L['spine_eb'] - R, 7.7)
     t.arc(R, -90, 7.7)
     t.line_to(L['ef_nb'] - R, 7.7)
     t.arc(R, 90, 7.7)
     t.line_to(L['islands_top'], 7.3)
-    # 7 Ramp test: past the ramp's mouth on the right; drive in, stop, reverse out, carry on north
+    # 6 Ramp test: past the ramp's mouth on the right; drive in, stop, reverse out, carry on north
     t.mark('ramp_in')
     t.line_to(L['ramp_out_y'], 8.0, 'ramp-test')
     t.mark('ramp_out')
@@ -723,7 +723,7 @@ def main():
         st['start'] = pose_at(pts, max(0.0, st['s_from'] - 8.0))     # practice: the car appears here
 
     # ------------------------------------------------------------ lane lines (the owner, 20 Oct)
-    # Two-way roads, keeping left, with a broken centre line; the stations stay one car wide and unmarked.
+    # Two-way roads, keeping left, with an unbroken centre line; the stations stay one car wide and unmarked.
     keep = World(*site, res=world.res)
     for st in stations:
         for poly in corridor_polys(pts, st['s_from'] - 2.0, st['s_to'] + 4.0):   # + 4: the nose, 3.1 m ahead of the rear axle

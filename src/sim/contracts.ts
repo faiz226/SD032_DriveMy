@@ -69,8 +69,8 @@ export interface CircuitData {
   };
   obstacles: { poles: { station: StationId; at: Vec2; radius: number; height: number; base_z?: number; status: string }[]; cones: [] };
   /**
-   * Road markings: broken centre lines on the two-way roads (polylines), never on the stations; yellow edge
-   * lines; stop and give-way lines; direction arrows (kind: the movements, of 'L', 'S', 'R'); chevron areas
+   * Road markings: centre lines on the two-way roads (polylines; dash and gap 0: unbroken), never on the stations;
+   * white edge lines; stop and give-way lines; direction arrows (kind: the movements, of 'L', 'S', 'R'); chevron areas
    * (heading_deg: the way traffic flows past them); zebra crossings; bays painted off the route (bays: the second
    * 3-side parking bay, open at its mouth as station 2's is).
    */

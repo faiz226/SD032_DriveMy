@@ -1,5 +1,8 @@
 # WP6: Final acceptance, demo capture and report draft (about 1 day)
 
+> **Historical: the brief WP6 was built from.** Since 20 Oct the yard has seven stations (no three-point turn), road merging at the roundabout, and
+> other cars with a signalled junction. `RULES.md`, `rules.json` and `../circuit-v2/README.md` are current; where this file differs, they win.
+
 Paste everything below the line into Claude Code started in
 `C:\Users\ASUS\Documents\2026\SEM 2\FYP\FYP1 D-Day\SourceCode\SD032-sim-v2`. Start it after WP5.
 

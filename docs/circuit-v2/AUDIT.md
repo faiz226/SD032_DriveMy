@@ -1,5 +1,8 @@
 # Circuit v2: audit trail
 
+> **Historical: the audit up to 15 Oct.** Since 20 Oct the yard has seven stations (no three-point turn), road merging at the roundabout, and
+> other cars with a signalled junction. `README.md` and `../v2-plan/RULES.md` are current; where this file differs, they win.
+
 ## What happened
 
 The plan was for a builder model (Sonnet) to draft the circuit from `PROMPT.md`, and for the

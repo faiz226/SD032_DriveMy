@@ -1,5 +1,8 @@
 # WP1: The rules engine, sim/core (about 1 day)
 
+> **Historical: the brief WP1 was built from.** Since 20 Oct the yard has seven stations (no three-point turn), road merging at the roundabout, and
+> other cars with a signalled junction. `RULES.md`, `rules.json` and `../circuit-v2/README.md` are current; where this file differs, they win.
+
 Paste everything below the line into Claude Code started in
 `C:\Users\ASUS\Documents\2026\SEM 2\FYP\FYP1 D-Day\SourceCode\SD032-sim-v2`. It can run at the
 same time as WP2 and WP3 in separate sessions.

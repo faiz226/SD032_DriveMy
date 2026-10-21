@@ -1,5 +1,8 @@
 # DriveMy v2: the build plan (14–23 Oct 2026)
 
+> **Historical: the build plan of 14 Oct, its acceptance list ticked on 19 Oct.** Since 20 Oct the yard has seven stations (no three-point turn), road merging at the roundabout, and
+> other cars with a signalled junction. `RULES.md`, `rules.json` and `../circuit-v2/README.md` are current; where this file differs, they win.
+
 Everything is decided, so an AI worker can build from these files alone without asking anyone:
 
 - `RULES.md`: every rule decision and its basis.

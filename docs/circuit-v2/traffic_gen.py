@@ -1,7 +1,7 @@
-"""The yard's traffic and road markings (the owner, 20 Oct): other cars on the two-way roads, two signalled
-junctions, the merge where the route's last station joins moving traffic, where each station's queue waits
+"""The yard's traffic and road markings (the owner, 20 Oct): other cars on the two-way roads, a signalled
+junction, the merge where the route's last station joins moving traffic, where each station's queue waits
 (with a marker pole on the grass beside it), a zebra crossing, arrows, chevrons, stop and give-way lines and
-yellow edge lines. generate.py calls build() once the route, the roads and the pavement are known.
+white edge lines. generate.py calls build() once the route, the roads and the pavement are known.
 
 Every number carries its source, as in generate.py: decided (20 Oct, no public source), car, photo, or jkr: the
 markings follow JKR's Arahan Teknik (Jalan) 2D/85, Manual on Traffic Control Devices: Road Marking and
@@ -386,7 +386,7 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
 
     traffic = dict(loops=loops, junctions=junctions, signals=signals, merge=merge, waiting=waiting, zebra=zebra,
                    parameters={k: dict(value=val, source=src, note=note) for k, (val, src, note) in DESIGN.items()})
-    # yellow box junctions at the signalled junctions: no waiting in them (JKR 4.3.7, Fig 24)
+    # yellow box junctions at J1 (signalled) and J2 (the crossroads): no waiting in them (JKR 4.3.7, Fig 24)
     yellow_boxes = [J1['polygon'], J2['polygon']]
     markings = dict(edge_lines=edge_lines, stop_lines=stop_lines, give_way=give_way, arrows=arrows, chevrons=chevrons, zebras=[zebra],
                     yellow_boxes=yellow_boxes, bays=[twin_bay])

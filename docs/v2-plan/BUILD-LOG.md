@@ -491,3 +491,97 @@ The owner's notes after first opening the simulator, each handled the same night
   starts wherever the car stops, swept the far pole. A person straightens up before reversing; the script
   cannot, so a fail there proves nothing about people. Not committed. The owner's walkthrough answers it.
 - **The asset plan** for a better-looking yard, and every sound the app still needs: `ASSET-PLAN.md`.
+
+## 20 Oct: JKR markings, other cars, the owner's layout, lamps and free drive
+
+The owner's asks through the day, in order. Each was committed the same day.
+
+- **Road markings to JKR's manual** (Arahan Teknik (Jalan) 2D/85, which the owner supplied). Every marking
+  cites its clause or figure:
+  - centre lines 100 mm, white and unbroken, because a tyre on one fails the test (4.1.1, 4.1.2.2);
+  - edge lines white, 150 mm, 0.25 m from the kerb (4.1.6, Fig 9); they were yellow;
+  - stop lines 300 mm, 1.2 to 10 m from the road crossed (4.2.2); the give-way line and its triangle
+    (4.2.3, Fig 12); zebra strips 600 mm (4.2.4, Fig 13);
+  - chevrons and a 30 m merge taper (4.1.8, Fig 14), 3.0 m arrows (Fig 19), white-and-black kerbs
+    (4.3.8), and yellow boxes at J1 and J2 (4.3.7, Fig 24).
+- **The centre line ends the test.** A tyre touching the line between a two-way road's lanes is an
+  automatic fail (the owner). The generator keeps every tyre on the route 0.4 m or more off every centre
+  line, and `check.py` proves it.
+- **Other cars** (`src/sim/traffic`): a traffic model in plain TypeScript, stepped with the physics.
+  - Five cars on keep-left loops at a yard's pace (20 to 30 km/h). Each follows the car ahead with the
+    intelligent driver model, slows for bends and stops on red.
+  - Junctions closer than a car's length are taken as one chain, so two cars never each hold half a
+    crossroads. The cars give way to the learner, except where they have priority (the roundabout).
+  - One signal, at J1. Two signals 4.4 m apart trapped cars between them.
+  - Touching a car and running a red light each end the test; cutting in at the roundabout fails road
+    merging.
+- **The owner's layout: seven stations.** The three-point turn is gone; its lane is an ordinary road.
+  Road merging moved to the roundabout: give way at its entry to the two cars going round, join, leave by
+  the north arm, and cross the finish at 15 km/h or faster. A second 3-side bay, painted in island F's
+  notch, holds a parked learner. The route is 678 m; the layout checks are 38 of 38.
+- **Lamps and wheels.** Brake and tail lamps, the high stop lamp, reverse, indicators (front, rear and the
+  mirror repeaters) and headlamps glow on the model's own lamp glass, on our car and on the other cars.
+  - Z and C work the indicators, which cancel themselves as the wheel comes back; L works the headlamps.
+    A dashboard arrow and a relay tick go with them.
+  - The other cars light their brake lamps while slowing or standing, and indicate at junction turns.
+    Their wheels turn with the road, and their front wheels steer with their line.
+- **Three cars stood at the centre for good** (the owner's screenshot). The old three-point-turn lane
+  made a second junction box overlapping J2, and two cars each held half of it, waiting for the other.
+  The generator now gives a crossroads one box, and the model takes overlapping boxes as one chain. The
+  traffic test runs 20 minutes and fails if any car stands for a minute; it stuck at 5 min 47 s before.
+- **The chase view rolled 90 degrees** (the owner's screenshot). The camera's kick set its roll in the
+  wrong rotation order; the chase camera now turns yaw first (`YXZ`).
+- **Free drive**, a third mode: the whole yard among the traffic, with nothing marked or saved. The rules
+  engine never sees the run. It has a view from behind the car (V; drag to swing round it), "Back to the
+  start", its own route (`/simulations/free`) and a card on the simulations page.
+- **Surprises**, all in free drive, where nothing is marked:
+  - an orange cat at the zebra thanks a driver who stops for it, and leaps clear of one who does not;
+  - the horn (H, in every mode) gets the cars ahead to flash their hazard lamps back;
+  - three doughnuts get a word from the yard;
+  - up, up, down, down, left, right, left, right, B, A paints the Swift in rainbow;
+  - a note on the office roof waits for anyone who flies over it (in any mode).
+
+## 21 Oct: the bug hunt, the land round the yard, and the start
+
+- **The autopilot failed among traffic** at every moment of the traffic's day tried. Three causes:
+  - `Path.project` measured a point's offset from the infinite line of its nearest segment, so a car far
+    past the end of a stretch looked as if it were in the lane: the learner waited 25 s for a car 50 m
+    away. It also stepped a fixed number of segments, which on the route's 0.25 m samples covered half
+    its window. It now walks the window by distance and reports the true distance (`path.test.ts`).
+  - The route crosses J1's eastbound stop line twice, and only the first crossing was recorded, so the
+    second ran the red. Every crossing is recorded now.
+  - A car that entered J1 on amber was still turning when the learner's green came. Each waited for the
+    other, then they touched. The learner now waits short of a junction another car is crossing.
+
+  Five moments of the traffic's day now pass with 0 demerits and no contact; two of them are acceptance
+  tests.
+- **The spine road waited as one junction.** A car took its chain of junctions whole and held every one
+  until its tail left the last, so the learner stood up to 70 s. A car now lets go of each junction as its
+  tail leaves it, and the learner waits only for the part of a chain it cannot stop inside. The longest
+  wait is now 14 to 23 s; the acceptance tests fail on 40 s.
+- **The touch indicators stood over the left mirror** on a landscape phone. They are now the two ends of
+  the bottom row, and six buttons fit between the steering pad and the pedals on a 667 px phone.
+- **Each texture downloaded twice**: the preloads asked without CORS and three's loader with it, so the
+  browser could not reuse them. They now ask the same way. The shadow-type warning is gone too. The
+  "program object expected" warnings come only from React's double mount in development; a production
+  build has none.
+- **The land round the yard**, in two passes. All of it is made in code from a seeded random, so it is the
+  same on every visit and nothing is downloaded; the woodland is half as dense on the Low tier.
+  - First: rain trees and palms, bougainvillea along the fence and round the booths, a belt of woodland,
+    two rings of hazy hills, clouds, a haze that fades distance, a painted tropical sky, and the Jalur
+    Gemilang by the office.
+  - Second: windows, doors and a plinth on the booths and the office; light and shade in patches over the
+    grass, so its repeat no longer shows; street lights round the yard; and rows of terrace houses beyond
+    the trees.
+  - Nothing stands on the pavement, within 6 m of a junction (sightlines), or in a street light, and every
+    shape builds (`Scenery.test.ts`). The test caught a crash: three cannot merge indexed with unindexed
+    geometry, so every shape is now merged unindexed.
+- **Every start runs brief, engine, go** (the owner). A start, restart or new drill holds the car on its
+  brakes while the instructor reads the brief, then starts the engine afresh, and frees the car once the
+  engine has caught. Each brief is read once per visit, so a restart goes straight to the engine. The HUD
+  says what the car is waiting for.
+  - A line ends when it ends, or after its own length if the audio clock stalls; one that has not loaded in
+    8 s is skipped. The car is never held for good.
+  - Free drive has its own brief, in the same voice.
+  - Not heard by ear: the preview browser runs hidden and suspends audio, so the timing of the brief
+    against the engine was checked in code and tests, not by listening.
