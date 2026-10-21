@@ -167,20 +167,27 @@ desktop; every string exists in English and Malay.
 **In all**, 278 tests in 31 files pass (`npm test`), alongside `npm run build`, the lint and the
 map's 39 checks.
 
-**Performance** (`RESULTS.md`). Measured on 19 Oct, before the other cars, the lamps and the yard's
-surroundings were added, with `scripts/sim-perf.mjs` in Chrome with a phone's
+**Performance** (`RESULTS.md`). Measured on 19 Oct and again on 21 Oct, after the other cars, the lamps and
+the yard's surroundings, with `scripts/sim-perf.mjs` in Chrome with a phone's
 conditions (851 × 393, 4× CPU throttling, 9/3 Mbps, 80 ms, cold cache). Every figure is marked
 emulated: no Redmi 9T or iPhone Xs was to hand, and a laptop GPU stands in for the phone's.
 
-| Measure (Low tier, emulated) | Result | Target |
-|---|---|---|
-| Time to first drive | 9.5 s | 15 s or less: met |
-| Transferred before it | 5.8 MB | 12 MB or less: met |
-| Frame rate, p50 | 20 fps | 30 fps or more: not met |
+| Measure (Low tier, emulated) | 19 Oct | 21 Oct | Target |
+|---|---|---|---|
+| Time to first drive | 9.5 s | 19.3 s | 15 s or less: missed on 21 Oct |
+| Transferred before it | 5.8 MB | 6.1 MB | 12 MB or less: met |
+| Frame rate, p50 | 20 fps | 30 fps | 30 fps or more: borderline |
+
+The other cars and the land round the yard doubled the load time, mostly in shader programs to compile, the
+trees' placement and the other cars' geometry. Profiling found and fixed the worst: the traffic's projection of
+points onto paths (a fifth of the main thread while driving, now about 4%), the trees' placement (3 s, now
+1 s), the clouds' 65 draw calls (now one) and, on Medium, the woodland drawn in full detail into every mirror
+and the shadow map. The whole run's frame rate now meets the target, but the first four minutes of the drive,
+with most of the yard in view, run at 13–18 fps.
 
 The frame rate is bound by the cost of issuing draw calls on a throttled CPU: even with the mirrors
 switched off the Low tier reached only 25–27 fps in trials. On a laptop without throttling, the Medium
-tier runs at 81 fps p50.
+tier ran at 81 fps p50 on 19 Oct and at 42 fps on 21 Oct, with three mirrors and the traffic.
 
 ## 5. Limitations
 
@@ -193,9 +200,9 @@ tier runs at 81 fps p50.
   learner everywhere except the roundabout. The other learners in the yard are parked mid-test, not
   queueing or taking turns.
 - **An automatic gearbox only.** Clutch control, part of the manual test, is not simulated.
-- **Emulated performance, and a frame-rate shortfall.** Phone figures come from desktop emulation,
-  not the phones themselves, and the Low tier's emulated 20 fps falls short of the 30 fps target. The
-  figures predate the traffic and the yard's surroundings.
+- **Emulated performance, and two shortfalls.** Phone figures come from desktop emulation, not the
+  phones themselves. Since the traffic and the yard's surroundings, the load takes 19.3 s against the
+  15 s target, and the start of the drive runs at 13–18 fps against 30.
 - **The spoken brief's timing** against the engine start was checked in code and tests, not by ear.
 - **The rule's basis is shown in English** in both languages, as `rules.json` records it.
 
@@ -207,5 +214,8 @@ tier runs at 81 fps p50.
   view.
 - A review of the thresholds by a JPJ-licensed instructor.
 - A circuit editor, so other institutes' yards can be traced and added.
-- Baking the car's materials into one or two texture atlases, so phones draw it in a few calls and
+- Building the distant scenery after the car is ready, while the instructor reads the brief, and a
+  low-detail car for the other cars.
+- Baking the car's materials into one or two texture atlases, so phones draw it in a few calls, compile
+  far fewer shader programs while loading, and
   reach 30 fps.

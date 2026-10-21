@@ -599,3 +599,13 @@ The owner's asks through the day, in order. Each was committed the same day.
   drive car. Two heads that meet at a corner share a post. `check.py` now looks from both drivers' eyes,
   using the windscreen read off the owner's screenshot and the roof measured off the model (1.51 m; the
   1.62 m top is the aerial): it fails on the old heads for every approach and passes on the new.
+- **Re-measured: slower, then partly recovered** (`RESULTS.md`). Under the phone's conditions the first drive
+  had gone from 9.5 s to 23.4 s, and on a laptop the Medium tier from 81 fps to 22 fps. The 19 Oct build was
+  rebuilt and timed beside the new one, and both profiled: the extra load time is mostly shader programs, the
+  trees' placement and the other cars' geometry; while driving, the traffic's path projection was a fifth of
+  the main thread. Fixed: the projection without square roots (4% now), the trees placed against bounding
+  boxes and a grid (3 s to 1 s), the clouds in one draw call instead of 65, the other cars without their hidden
+  insides and built once, the terraces and street lights on the yard's own material, and coarse, shadowless
+  woodland outside the fence. Now: first drive 19.3 s (target 15 s, missed), the whole drive's p50 30 fps but
+  13–18 fps in its first minutes, and Medium 42 fps. Performance builds can switch the scenery and the moving
+  cars' drawing off (`scenery=0`, `traffic=0`), and `__simPerf.programs()` lists each shader program's users.

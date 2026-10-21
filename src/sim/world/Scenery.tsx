@@ -243,11 +243,18 @@ function Plants({ tier }: { tier: Tier }) {
     const leaves = new THREE.MeshLambertMaterial({ color: '#ffffff' });
     const bark = new THREE.MeshLambertMaterial({ color: BARK });
     const out: THREE.InstancedMesh[] = [];
-    // the Low tier's rain trees have coarser crowns: a quarter of the triangles, the faceted look of a far tree
-    for (const [kind, shape, palette] of [['rain', rainTree(tier === 'low' ? 0 : 1), LEAF], ['palm', palm(), FROND]] as const) {
-      const these = trees.filter((t) => t.kind === kind);
-      out.push(instanced(shape.trunk, bark, these, () => BARK, shadows));
-      out.push(instanced(shape.crown, leaves, these, (i) => pick(palette, these[i].tone), shadows));
+    // Coarse rain-tree crowns (a quarter of the triangles, the faceted look of a far tree) wherever they are far or
+    // the tier is Low; and the woodland outside the fence casts no shadow. Every tree is drawn in the main view and
+    // each mirror, and on Medium into the sun's shadow map too: the woodland in full was most of the triangles.
+    const groups: { these: (t: Tree) => boolean; detail: number; cast: boolean }[] = tier === 'low'
+      ? [{ these: () => true, detail: 0, cast: false }]
+      : [{ these: (t) => t.solid, detail: 1, cast: shadows }, { these: (t) => !t.solid, detail: 0, cast: false }];
+    for (const g of groups) {
+      for (const [kind, shape, palette] of [['rain', rainTree(g.detail), LEAF], ['palm', palm(), FROND]] as const) {
+        const these = trees.filter((t) => t.kind === kind && g.these(t));
+        out.push(instanced(shape.trunk, bark, these, () => BARK, g.cast));
+        out.push(instanced(shape.crown, leaves, these, (i) => pick(palette, these[i].tone), g.cast));
+      }
     }
     const blob = new THREE.IcosahedronGeometry(0.75, 1).scale(1, 0.75, 1).translate(0, 0.45, 0);
     out.push(instanced(blob, leaves, bushes, (i) => (bushes[i].pink ? pick(PINK, bushes[i].tone) : pick(SHRUB, bushes[i].tone)), false));
