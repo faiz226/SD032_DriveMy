@@ -323,6 +323,9 @@ export class Traffic {
 
   /** A body in my way ahead on my path: its nearest point's gap from my front bumper, and its speed along my path. */
   private ahead(path: Path, s: number, b: Body): { gap: number; v: number } | null {
+    // along the path is never shorter than straight across: a body further than the window can't be in it
+    const me = path.pose(s);
+    if (Math.hypot(b.x - me.x, b.y - me.y) > LOOK_M + 2 * (this.nose + this.back)) return null;
     const [hx, hy] = dir(b.heading);
     let best: { gap: number; v: number } | null = null;
     for (const along of [-this.back, (this.nose - this.back) / 2, this.nose]) {

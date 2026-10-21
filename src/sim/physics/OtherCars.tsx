@@ -20,12 +20,16 @@ export const TINTS = [[0.93, 0.93, 0.92], [0.55, 0.62, 0.72], [0.22, 0.23, 0.25]
 /** The Swift's solid box, about its rear axle's height point: the colliders of the parked and moving cars. */
 export const BODY = { halfLength: CAR.config.length_m / 2, halfHeight: 0.72, halfWidth: CAR.config.width_body_m / 2, rise: 0.35 };
 
+// each texture's average colour, worked out once: the car's meshes share a few textures
+const average = new WeakMap<object, THREE.Color>();
+
 /** A material's colour as one value: its own colour, times its texture's average where it has one. */
 function colourOf(m: THREE.MeshStandardMaterial): THREE.Color {
   if (m.transparent || m.opacity < 1) return GLASS;
   const c = m.color.clone();
   if (PAINT.test(m.name) && c.r > 0.4 && c.g < 0.1) return new THREE.Color(1, 1, 1);
   const image = m.map?.image as CanvasImageSource | undefined;
+  if (image && average.has(image)) return c.multiply(average.get(image)!);
   if (image) {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 4;
@@ -35,7 +39,9 @@ function colourOf(m: THREE.MeshStandardMaterial): THREE.Color {
       const px = g.getImageData(0, 0, 4, 4).data;
       let r = 0, gr = 0, b = 0;
       for (let i = 0; i < px.length; i += 4) { r += px[i]; gr += px[i + 1]; b += px[i + 2]; }
-      c.multiply(new THREE.Color().setRGB(r / 16 / 255, gr / 16 / 255, b / 16 / 255, THREE.SRGBColorSpace));
+      const mean = new THREE.Color().setRGB(r / 16 / 255, gr / 16 / 255, b / 16 / 255, THREE.SRGBColorSpace);
+      average.set(image, mean);
+      c.multiply(mean);
     }
   }
   return c;
@@ -54,7 +60,9 @@ function solids(scene: THREE.Object3D, place: THREE.Matrix4) {
     g.applyMatrix4(place.clone().multiply(mesh.matrixWorld));
     const c = colourOf(mesh.material as THREE.MeshStandardMaterial);
     const n = g.attributes.position.count;
-    g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3).map((_, i) => [c.r, c.g, c.b][i % 3]), 3));
+    const colour = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) colour.set([c.r, c.g, c.b], i * 3);
+    g.setAttribute('color', new THREE.BufferAttribute(colour, 3));
     out.push(g);
   });
   return out;

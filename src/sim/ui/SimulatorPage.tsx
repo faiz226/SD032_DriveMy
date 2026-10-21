@@ -66,6 +66,8 @@ export function SimulatorPage() {
   const autopilotOn = autopilotMode === '1' || autopilotMode === 'faults';
   const probe = PERF_TOOLS && params.get('perf') === '1';
   const mirrorsOn = !(PERF_TOOLS && params.get('mirrors') === '0');   // performance runs can switch them off
+  const sceneryOn = !(PERF_TOOLS && params.get('scenery') === '0');   // and the land round the yard
+  const trafficOn = !(PERF_TOOLS && params.get('traffic') === '0');   // and the moving cars' drawing (they still drive)
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const user = useAuthStore((s) => s.user);
@@ -251,10 +253,10 @@ export function SimulatorPage() {
         <Suspense fallback={null}>
           <Physics timeStep={1 / 60} paused={paused || phase !== 'drive'}>
             <World tier={tier} />
-            <Scenery tier={tier} />
+            {sceneryOn && <Scenery tier={tier} />}
             <SwiftCar ref={car} quality={spec} start={start} firstPerson={!topDown && !chaseOn} mirrors={mirrorsOn && phase !== 'explore'} onStep={onStep} onReady={ready_} />
             <OtherCars tier={tier} />
-            <TrafficView tier={tier} traffic={getTraffic} />
+            {trafficOn && <TrafficView tier={tier} traffic={getTraffic} />}
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
           {mode !== 'free' && <WhereNext />}

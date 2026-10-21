@@ -42,9 +42,14 @@ const inRing = (p: Vec2, r: Vec2[]) => {
   return inside;
 };
 const area = (r: Vec2[]) => Math.abs(r.reduce((s, p, i) => s + p[0] * r[(i + 1) % r.length][1] - r[(i + 1) % r.length][0] * p[1], 0)) / 2;
+// a ring's bounding box: a point further than m outside it is further than m from the ring, and not inside it
+type Box = [number, number, number, number];
+const boxOf = (r: Vec2[]): Box => r.reduce<Box>((b, p) => [Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
+const inBox = (p: Vec2, b: Box, m: number) => p[0] > b[0] - m && p[0] < b[2] + m && p[1] > b[1] - m && p[1] < b[3] + m;
+const RING_BOX = RINGS.map(boxOf);
 // small holes are the slopes' walls and the hill's dividers: concrete, not grass
 const WALLS = RINGS.slice(1).filter((r) => area(r) < 40);
-const paved = (p: Vec2) => RINGS.reduce((n, r) => n + (inRing(p, r) ? 1 : 0), 0) % 2 === 1 || WALLS.some((r) => inRing(p, r));
+const paved = (p: Vec2) => RINGS.reduce((n, r, k) => n + (inBox(p, RING_BOX[k], 0) && inRing(p, r) ? 1 : 0), 0) % 2 === 1 || WALLS.some((r) => inRing(p, r));
 
 function segDist(p: Vec2, a: Vec2, b: Vec2) {
   const ex = b[0] - a[0];
@@ -52,10 +57,13 @@ function segDist(p: Vec2, a: Vec2, b: Vec2) {
   const u = Math.max(0, Math.min(1, ((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / (ex * ex + ey * ey || 1)));
   return Math.hypot(p[0] - a[0] - ex * u, p[1] - a[1] - ey * u);
 }
-const ringDist = (p: Vec2, r: Vec2[]) => r.reduce((m, a, i) => Math.min(m, segDist(p, a, r[(i + 1) % r.length])), Infinity);
+/** Is p within d of ring r's line? Its box first, then each side, stopping at the first that is. */
+const nearRing = (p: Vec2, r: Vec2[], d: number, b: Box = boxOf(r)) => inBox(p, b, d) && r.some((a, i) => segDist(p, a, r[(i + 1) % r.length]) < d);
+const nearAnyRing = (p: Vec2, d: number) => RINGS.some((r, k) => nearRing(p, r, d, RING_BOX[k]));
 const rectDist = (p: Vec2, c: Vec2, size: Vec2) => Math.hypot(Math.max(0, Math.abs(p[0] - c[0]) - size[0] / 2), Math.max(0, Math.abs(p[1] - c[1]) - size[1] / 2));
 
 const JUNCTIONS = (C.traffic?.junctions ?? []).map((j) => j.polygon);
+const JUNCTION_BOX = JUNCTIONS.map(boxOf);
 const BOXES = [...C.props.booths, C.props.office];
 const POINTS: Vec2[] = [
   ...C.obstacles.poles.map((p) => p.at),
@@ -81,8 +89,8 @@ function alongFence(inset: number, step: number): { at: Vec2; facing: number }[]
 /** Clear grass inside the fence: off the pavement by `edge`, clear of junctions, booths, poles and signals. */
 function clearGrass(p: Vec2, edge: number, points: Vec2[] = POINTS) {
   if (!insideFence(p, 1.6) || paved(p)) return false;
-  if (RINGS.some((r) => ringDist(p, r) < edge)) return false;
-  if (JUNCTIONS.some((j) => inRing(p, j) || ringDist(p, j) < 6)) return false;
+  if (nearAnyRing(p, edge)) return false;
+  if (JUNCTIONS.some((j, k) => nearRing(p, j, 6, JUNCTION_BOX[k]) || (inBox(p, JUNCTION_BOX[k], 0) && inRing(p, j)))) return false;
   if (BOXES.some((b) => rectDist(p, b.centre, b.size) < 3.5)) return false;
   return !points.some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 2.5);
 }
@@ -99,16 +107,30 @@ interface Bush { at: Vec2; scale: number; tone: number; pink: boolean }
 function plant(fewer: boolean) {
   const rnd = seeded(20261021);
   const trees: Tree[] = [];
-  const spaced = (p: Vec2, d: number) => trees.every((t) => Math.hypot(t.at[0] - p[0], t.at[1] - p[1]) >= d);
-  const tree = (at: Vec2, kind: Kind, solid: boolean) =>
-    trees.push({ at, kind, scale: 0.8 + rnd() * 0.45, turn: rnd() * Math.PI * 2, tone: rnd(), solid });
+  // the trees by 9 m cells: no spacing asked for is wider, so a tree too near p is in p's cell or one beside it
+  const cells = new Map<string, Tree[]>();
+  const cell = (x: number, y: number) => `${Math.floor(x / 9)},${Math.floor(y / 9)}`;
+  const spaced = (p: Vec2, d: number) => {
+    for (let i = -9; i <= 9; i += 9) {
+      for (let j = -9; j <= 9; j += 9) {
+        for (const t of cells.get(cell(p[0] + i, p[1] + j)) ?? []) if (Math.hypot(t.at[0] - p[0], t.at[1] - p[1]) < d) return false;
+      }
+    }
+    return true;
+  };
+  const tree = (at: Vec2, kind: Kind, solid: boolean) => {
+    const t: Tree = { at, kind, scale: 0.8 + rnd() * 0.45, turn: rnd() * Math.PI * 2, tone: rnd(), solid };
+    trees.push(t);
+    const k = cell(at[0], at[1]);
+    cells.set(k, [...(cells.get(k) ?? []), t]);
+  };
   // inside the fence: the islands and the grass round the yard, a tree every few metres where there is room;
   // on a narrow island only palms, whose crowns stand above the traffic
   for (let x = FX0 + 2; x < FX1 - 2; x += 2.5) {
     for (let y = FY0 + 2; y < FY1 - 2; y += 2.5) {
       const p: Vec2 = [x + (rnd() - 0.5) * 2, y + (rnd() - 0.5) * 2];
       if (rnd() > 0.5 || !clearGrass(p, 2.2, POINTS_AND_LIGHTS) || !spaced(p, 6.5)) continue;
-      const roomy = RINGS.every((r) => ringDist(p, r) > 3.6);
+      const roomy = !nearAnyRing(p, 3.6);
       tree(p, roomy && rnd() < 0.6 ? 'rain' : 'palm', true);
     }
   }
@@ -129,7 +151,7 @@ function plant(fewer: boolean) {
   // bougainvillea: along the inside of the fence, round the booths and the office, and ringing the roundabout
   const bushes: Bush[] = [];
   const bush = (at: Vec2, pink = rnd() < 0.45) => {
-    if (!clearGrass(at, 1.2, POINTS_AND_LIGHTS) || trees.some((t) => Math.hypot(t.at[0] - at[0], t.at[1] - at[1]) < 2)) return;
+    if (!clearGrass(at, 1.2, POINTS_AND_LIGHTS) || !spaced(at, 2)) return;
     bushes.push({ at, scale: 0.75 + rnd() * 0.5, tone: rnd(), pink });
   };
   for (let s = 0; s < 2 * (FX1 - FX0 + FY1 - FY0); s += 4.5) {
@@ -486,7 +508,7 @@ const FLAG_AT: Vec2 = (() => {
     for (let dy = -8; dy <= 8; dy += 0.5) {
       const p: Vec2 = [want[0] + dx, want[1] + dy];
       const d = Math.hypot(dx, dy);
-      if (d < bestD && insideFence(p, 1) && !paved(p) && RINGS.every((r) => ringDist(p, r) > 1.2) && rectDist(p, centre, size) > 1.5) { best = p; bestD = d; }
+      if (d < bestD && insideFence(p, 1) && !paved(p) && !nearAnyRing(p, 1.2) && rectDist(p, centre, size) > 1.5) { best = p; bestD = d; }
     }
   }
   return best;

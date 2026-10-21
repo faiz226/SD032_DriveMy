@@ -90,10 +90,12 @@ export class Path {
    * the stretch, so a point far past its end, on the line its last segment points along, is far, not near.
    */
   project(p: Vec2, from: number, window: number): { s: number; offset: number } | null {
+    // the hot loop of the traffic (dozens of calls a step): squared distances, segment lengths from cum, no roots
     const n = this.pts.length;
     let i = this.index(from);
-    let best: { s: number; offset: number } | null = null;
-    let bestD = Infinity;
+    let bestD2 = Infinity;
+    let bestI = -1;
+    let bestU = 0;
     for (let walked = -(this.wrap(from) - this.cum[i]); walked <= window && walked < this.length; ) {
       const j = this.closed ? (i + 1) % n : i + 1;
       if (j >= n && !this.closed) break;
@@ -105,17 +107,19 @@ export class Path {
       const u = Math.max(0, Math.min(1, ((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / len2));
       const dx = p[0] - (a[0] + ex * u);
       const dy = p[1] - (a[1] + ey * u);
-      const d = Math.hypot(dx, dy);
-      if (d < bestD) {
-        bestD = d;
-        const along = this.cum[i] + u * Math.sqrt(len2);
-        best = { s: along, offset: (ex * dy - ey * dx >= 0 ? 1 : -1) * d };
-      }
-      walked += Math.sqrt(len2);
+      const d2 = dx * dx + dy * dy;
+      if (d2 < bestD2) { bestD2 = d2; bestI = i; bestU = u; }
+      walked += (j === 0 ? this.length : this.cum[j]) - this.cum[i];
       i = j;
     }
-    if (!best) return null;
-    const ahead = this.dist(from, best.s);
-    return ahead <= window ? best : null;
+    if (bestI < 0) return null;
+    const j = this.closed ? (bestI + 1) % n : bestI + 1;
+    const a = this.pts[bestI];
+    const ex = this.pts[j][0] - a[0];
+    const ey = this.pts[j][1] - a[1];
+    const dx = p[0] - (a[0] + ex * bestU);
+    const dy = p[1] - (a[1] + ey * bestU);
+    const best = { s: this.cum[bestI] + bestU * ((j === 0 ? this.length : this.cum[j]) - this.cum[bestI]), offset: (ex * dy - ey * dx >= 0 ? 1 : -1) * Math.sqrt(bestD2) };
+    return this.dist(from, best.s) <= window ? best : null;
   }
 }
