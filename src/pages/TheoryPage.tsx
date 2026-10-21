@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuthStore } from '@/stores/authStore';
-import { useUpdateTheoryProgress } from '@/hooks/useProgress';
+import { useTheoryProgress, useUpdateTheoryProgress } from '@/hooks/useProgress';
 import { toast } from 'sonner';
 
 // ── Regulatory / Prohibitory – vector renders, confirmed correct by browser audit
@@ -164,41 +164,18 @@ export function TheoryPage() {
   const { language } = useLanguage();
   const lang = language === 'en' ? 'en' : 'bm';
   const { user } = useAuthStore();
-  const { mutate: markCompleted } = useUpdateTheoryProgress();
+  const completion = useUpdateTheoryProgress();
+  const progress = useTheoryProgress(user?.id ?? "");
   const [learned, setLearned] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState('signs');
 
-  // Mark the visited tab as a completed theory module in Supabase
+  const moduleCompleted = progress.data?.some(row => row.module_id === `theory-${activeTab}` && row.completed);
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    if (!user?.id) return;
-    markCompleted({
-      user_id: user.id,
-      module_id: `theory-${tab}`,
-      completed: true,
-      completed_at: new Date().toISOString(),
-    });
+    completion.reset();
   };
-
-  // Mark the default tab ("signs") as completed — onValueChange only fires when
-  // the user switches tabs, so the initial tab needs its own write.
-  //
-  // Keyed on user?.id rather than running once on mount: at mount the Supabase
-  // session is often still resolving, so the previous mount-only version hit
-  // the `!user?.id` guard and silently dropped the write, leaving the module
-  // permanently unmarked. updateTheoryProgress() is an upsert with
-  // onConflict "user_id,module_id", so re-running it is idempotent.
-  useEffect(() => {
-    if (!user?.id) return;
-    markCompleted({
-      user_id: user.id,
-      module_id: 'theory-signs',
-      completed: true,
-      completed_at: new Date().toISOString(),
-    });
-  }, [user?.id, markCompleted]);
 
   // Toggle learned state for a sign (star button)
   const toggleLearned = (e: React.MouseEvent, id: string) => {
@@ -228,14 +205,12 @@ export function TheoryPage() {
 
   const categories = ['Regulatory', 'Warning', 'Informational'];
 
-  const getCategoryColor = (type: string) => {
-    switch (type) {
-      case 'Regulatory': return 'bg-destructive/10 text-destructive border-destructive/20';
-      case 'Warning': return 'bg-warning/10 border-warning/20 text-yellow-700';
-      case 'Informational': return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-      default: return 'bg-muted text-foreground border-border';
-    }
-  };
+  const categoryLabels: Record<string, string> = lang === "en"
+    ? { Regulatory: "Regulatory signs", Warning: "Warning signs", Informational: "Information signs" }
+    : { Regulatory: "Tanda peraturan", Warning: "Tanda amaran", Informational: "Tanda maklumat" };
+  const learnedLabel = (done: boolean) => lang === "en"
+    ? (done ? "Mark as not learned" : "Mark as learned")
+    : (done ? "Tandakan belum dipelajari" : "Tandakan sudah dipelajari");
 
   return (
     <div className="max-w-6xl mx-auto pb-24">
@@ -285,8 +260,8 @@ export function TheoryPage() {
                 <div key={category} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <h2 className="text-xl font-bold font-heading">{category} Signs</h2>
-                      <Badge className={getCategoryColor(category)} variant="outline">{categorySigns.length}</Badge>
+                      <h2 className="text-xl font-bold font-heading">{categoryLabels[category]}</h2>
+                      <Badge className="bg-muted text-foreground border-border" variant="outline">{categorySigns.length}</Badge>
                     </div>
                     {/* Progress Ring */}
                     <div className="flex items-center gap-2">
@@ -321,12 +296,12 @@ export function TheoryPage() {
                             <button
                               onClick={(e) => toggleLearned(e, sign.id)}
                               className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center hover:bg-muted transition-colors hover:scale-110 active:scale-95 duration-200"
-                              aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
+                              aria-label={learnedLabel(!!learned[sign.id])}
                             >
                               <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-muted-foreground hover:text-yellow-400'}`} aria-hidden="true" />
                             </button>
                             <div className="w-full flex-1 flex items-center justify-center p-6 bg-muted/10 transition-colors duration-300 group-hover:bg-muted/30">
-                              <img src={sign.img} alt={sign.name} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md transition-transform duration-500 ease-out-back" loading="lazy" />
+                              <img src={sign.img} alt={lang === 'en' ? sign.name : sign.nameMs} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md transition-transform duration-500 ease-out-back" loading="lazy" />
                             </div>
                             <button type="button" onClick={event => {
                               const card = event.currentTarget.closest('[data-sign-card]');
@@ -342,13 +317,13 @@ export function TheoryPage() {
                           <Card inert={!flipped[sign.id]} aria-hidden={!flipped[sign.id]} className="rounded-xl border border-border/60 transition-all duration-300 hover:shadow-lg absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-primary text-primary-foreground border-none p-5 shadow-lg">
                             <div className="flex items-center justify-between mb-4">
                               <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-none transition-colors">
-                                {category}
+                                {categoryLabels[category]}
                               </Badge>
                               {/* Star on back face: tap to toggle learned */}
                               <button
                                 onClick={(e) => toggleLearned(e, sign.id)}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
-                                aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
+                                aria-label={learnedLabel(!!learned[sign.id])}
                               >
                                 <Star
                                   className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-300 text-yellow-300 scale-110' : 'text-primary-foreground/60 hover:text-yellow-300'}`}
@@ -378,7 +353,7 @@ export function TheoryPage() {
                     <div>
                       <h4 className="font-heading font-bold text-base flex items-center gap-2">
                         <Star className="w-4 h-4 text-accent fill-accent" aria-hidden="true" />
-                        {lang === 'en' ? `Knowledge Check: ${category}` : `Uji Minda: ${category}`}
+                        {lang === 'en' ? `Knowledge check: ${categoryLabels[category]}` : `Uji minda: ${categoryLabels[category]}`}
                       </h4>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lang === 'en' ? 'Test your memory on these signs before moving on.' : 'Uji ingatan anda tentang papan tanda ini.'}
@@ -426,6 +401,14 @@ export function TheoryPage() {
             </div>
           </TabsContent>
         </Tabs>
+        <div className="plate mt-6 p-5 space-y-3">
+          <p>{lang === 'en' ? 'Finished reviewing this module? Save your completion when you are ready.' : 'Sudah mengulang kaji modul ini? Simpan penyiapan apabila anda bersedia.'}</p>
+          <Button disabled={!user || progress.isPending || progress.isError || moduleCompleted || completion.isPending} loading={completion.isPending} onClick={() => {
+            if (user) completion.mutate({ user_id: user.id, module_id: `theory-${activeTab}`, completed: true, completed_at: new Date().toISOString() });
+          }}>{moduleCompleted ? (lang === 'en' ? 'Module completed' : 'Modul selesai') : (lang === 'en' ? 'Mark module complete' : 'Tandakan modul selesai')}</Button>
+          {completion.isSuccess && <p role="status">{lang === 'en' ? 'Completion saved.' : 'Penyiapan disimpan.'}</p>}
+          {(progress.isError || completion.isError) && <p role="alert">{lang === 'en' ? 'Could not load or save completion. Please reload and try again.' : 'Tidak dapat memuatkan atau menyimpan penyiapan. Muat semula dan cuba lagi.'}</p>}
+        </div>
       </div>
     </div>
   );

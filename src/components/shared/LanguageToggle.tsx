@@ -63,7 +63,7 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
       role="group"
       aria-label={t("a11y.toggleLanguage")}
       className={cn(
-        "inline-flex rounded-full border border-border bg-muted p-0.5 gap-0.5",
+        "language-toggle inline-flex rounded-full border border-border bg-muted p-0.5 gap-0.5",
         className
       )}
     >

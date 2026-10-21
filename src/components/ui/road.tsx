@@ -77,7 +77,7 @@ export function RoadRule({
   return (
     <hr
       role="separator"
-      className={cn("w-full border-0", RULE_MARKING[marking], className)}
+      className={cn("w-full", RULE_MARKING[marking], className)}
       {...props}
     />
   );

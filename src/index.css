@@ -579,6 +579,20 @@
   padding-inline: var(--space-unit);
 }
 .jalan-app :is(button, [role="button"]) { min-height: 48px; }
+.jalan-app [role="tablist"] { height: auto; }
+.jalan-app .language-toggle,
+.jalan-app .language-toggle button { border-radius: var(--r-plate); }
+.jalan-app a.sr-only:focus {
+  position: fixed;
+  top: calc(var(--space-unit) * 2);
+  left: calc(var(--space-unit) * 2);
+}
+/* Required fields are not failures; keep their markers with the label. */
+.jalan-app label .text-destructive[aria-hidden="true"] {
+  color: inherit;
+  background: transparent;
+  padding-inline: 0;
+}
 .jalan-app :is(button, [role="button"]):focus-visible {
   outline: 3px solid rgb(var(--awas));
   outline-offset: 3px;

@@ -72,6 +72,8 @@ export interface ExamResult {
   score: number;
   total: number;
   percentage: number;
+  /** Authoritative mock pass status, when returned by the server. */
+  passed?: boolean;
   durationSeconds: number;
   questions: ExamQuestion[];
   autoSubmitted?: boolean;

@@ -56,17 +56,14 @@ export async function fetchQuizQuestions({
   limit?: number;
 }): Promise<KppQuestion[]> {
   let query = supabase
-    .from("kpp_questions")
+    .from("kpp_practice_questions" as never)
     .select("*")
-    .eq("set_id", "quiz-pool")
     .order("order_index", { ascending: true })
     .limit(limit);
-
   if (category) query = query.eq("category", category);
-
   const { data, error } = await query;
   if (error) throw new Error(`fetchQuizQuestions: ${error.message}`);
-  return data ?? [];
+  return (data ?? []) as KppQuestion[];
 }
 
 /**
@@ -86,23 +83,21 @@ export async function fetchMockQuestionsBySet(setId: string): Promise<ExamQuesti
   return (data ?? []) as unknown as ExamQuestion[];
 }
 
-/**
- * The answer key for a mock set. Call only once the exam has been submitted —
- * fetching it earlier reopens exactly the hole this split exists to close.
- */
-export async function fetchMockAnswerKey(setId: string): Promise<AnswerKeyEntry[]> {
-  const { data, error } = await supabase
-    .from("kpp_questions")
-    .select("id, correct_index, explanation_en, explanation_ms")
-    .eq("set_id", setId);
-
-  if (error) throw new Error(`fetchMockAnswerKey(${setId}): ${error.message}`);
-  return (data ?? []) as unknown as AnswerKeyEntry[];
+/** Only a saved, caller-owned attempt can release the mock answer key. */
+export async function fetchMockAnswerKey(testResultId: string): Promise<AnswerKeyEntry[]> {
+  if (!testResultId || testResultId === "offline-queued") {
+    throw new Error("fetchMockAnswerKey: a saved result ID is required");
+  }
+  const { data, error } = await supabase.rpc("get_mock_test_answer_key" as never, {
+    p_test_result_id: testResultId,
+  } as never);
+  if (error) throw new Error(`fetchMockAnswerKey: ${error.message}`);
+  return (data ?? []) as AnswerKeyEntry[];
 }
 
 export async function fetchQuestionsByCategory(category: string): Promise<KppQuestion[]> {
   const { data, error } = await supabase
-    .from("kpp_questions")
+    .from("kpp_practice_questions" as never)
     .select("*")
     .eq("category", category)
     .order("set_id", { ascending: true })

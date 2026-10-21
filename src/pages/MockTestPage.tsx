@@ -5,11 +5,11 @@ import { Warning } from "phosphor-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
-import { MOCK_TIME_LIMIT, MOCK_PASS_MARK, QUESTIONS_BY_SET } from "@/lib/constants";
+import { MOCK_TIME_LIMIT, QUESTIONS_BY_SET } from "@/lib/constants";
 import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/questions.service";
-import { applyAnswerKey, countCorrect } from "@/components/exam/examScoring";
+import { applyAnswerKey, hasCompleteAnswerKey } from "@/components/exam/examScoring";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
-import { saveMockResult } from "@/services/results.service";
+import { OFFLINE_QUEUED_ID, saveMockResult } from "@/services/results.service";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
 import { TestResultsView } from "@/components/exam/TestResultsView";
@@ -27,6 +27,7 @@ export function MockTestPage() {
   const [phase, setPhase] = useState<Phase>("launch");
   const [examLang, setExamLang] = useState<"en" | "ms">(globalLang);
   const [selectedSet, setSelectedSet] = useState("mock-1");
+  const [submissionStatus, setSubmissionStatus] = useState<"queued" | "failed" | null>(null);
   const [result, setResult] = useState<ExamResult | null>(null);
 
   // Fetch questions for selected set
@@ -39,7 +40,8 @@ export function MockTestPage() {
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: saveMockResult,
-    onSuccess: () => {
+    onSuccess: (saved) => {
+      if ((saved as { id?: string } | null)?.id === OFFLINE_QUEUED_ID) return;
       toast.success(t("exam.saved"));
       queryClient.invalidateQueries({ queryKey: ["mockBest"] });
       queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
@@ -84,56 +86,56 @@ export function MockTestPage() {
   };
 
   const handleComplete = async (examResult: ExamResult) => {
-    // The answer key is deliberately withheld during a mock exam, so grading
-    // happens here — once the learner has committed their answers. Fetch it,
-    // map each correct_index from database order onto the shuffled position
-    // the learner actually saw, and score against that.
     setPhase("grading");
-
-    let graded = examResult;
+    setSubmissionStatus(null);
+    setResult(examResult);
     try {
-      const key = await fetchMockAnswerKey(selectedSet);
-      const questions = applyAnswerKey(examResult.questions, examResult.permutations, key);
-      const score = countCorrect(questions, examResult.answers);
-      graded = {
-        ...examResult,
-        questions,
-        score,
-        percentage: Math.round((score / examResult.total) * 100),
-      };
-    } catch (err) {
-      // Degraded: the attempt is still saved and the server still grades it,
-      // but the per-question review cannot be shown. Better than pretending
-      // every answer was wrong, which is what a zeroed score would imply.
-      console.error("[mock] could not fetch answer key for review", err);
-      toast.error(t("exam.reviewUnavailable"));
-    }
-
-    setResult(graded);
-    setPhase("results");
-
-    // Save to DB. score/percentage/passed here are provisional — the
-    // recompute_exam_score trigger regrades server-side and overwrites them,
-    // which is what makes withholding the key safe in the first place.
-    if (user) {
-      saveMutation.mutate({
+      if (!user) throw new Error("A signed-in account is required to save a mock attempt");
+      const saved = await saveMutation.mutateAsync({
         user_id: user.id,
         set_id: selectedSet,
-        score: graded.score,
-        total_questions: graded.total,
-        percentage: graded.percentage,
-        passed: graded.score >= MOCK_PASS_MARK,
-        duration_seconds: graded.durationSeconds,
-        // Original-order indices — the server trigger regrades against the
-        // unshuffled kpp_questions.correct_index.
-        answers: graded.answersForStorage,
+        score: 0,
+        total_questions: examResult.total,
+        percentage: 0,
+        passed: false,
+        duration_seconds: examResult.durationSeconds,
+        answers: examResult.answersForStorage,
         language: examLang,
-      });
+      }) as { id: string; score: number; total_questions: number; percentage: number; passed: boolean } | null;
+      if (!saved) throw new Error("The server did not return a saved result");
+      if (saved.id === OFFLINE_QUEUED_ID) {
+        setSubmissionStatus("queued");
+        setPhase("results");
+        return;
+      }
+      // The returned row contains the trigger's authoritative grade.
+      let graded: ExamResult = {
+        ...examResult,
+        score: saved.score,
+        total: saved.total_questions,
+        percentage: Number(saved.percentage),
+        passed: saved.passed,
+        questions: [], // Do not mark answers wrong when the key is unavailable.
+      };
+      try {
+        const key = await fetchMockAnswerKey(saved.id);
+        const reviewed = applyAnswerKey(examResult.questions, examResult.permutations, key);
+        if (!hasCompleteAnswerKey(reviewed)) throw new Error("Incomplete answer review");
+        graded = { ...graded, questions: reviewed };
+      } catch {
+        toast.error(t("exam.reviewUnavailable"));
+      }
+      setResult(graded);
+      setPhase("results");
+    } catch {
+      setSubmissionStatus("failed");
+      setPhase("results");
     }
   };
 
   const handleRetry = () => {
     setResult(null);
+    setSubmissionStatus(null);
     setPhase("launch");
   };
 
@@ -214,7 +216,16 @@ export function MockTestPage() {
         </div>
       )}
 
-      {phase === "results" && result && (
+      {phase === "results" && result && submissionStatus && (
+        <div className="plate p-6 space-y-4" role="status">
+          <p>{t(submissionStatus === "queued" ? "exam.queuedUngraded" : "exam.saveFailedUngraded")}</p>
+          {submissionStatus === "failed" && (
+            <Button onClick={() => handleComplete(result)}>{t("exam.retrySave")}</Button>
+          )}
+          <Button variant="outline" onClick={handleRetry}>{t("common.back")}</Button>
+        </div>
+      )}
+      {phase === "results" && result && !submissionStatus && (
         <TestResultsView
           result={result}
           mode="mock"

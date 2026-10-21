@@ -404,7 +404,7 @@ export function AuthPage() {
       </div>
 
       <Tabs defaultValue="login">
-        <TabsList className="w-full mb-6 h-11 bg-muted p-1 rounded-md">
+        <TabsList className="w-full mb-6 h-auto bg-muted p-1 rounded-md">
           <TabsTrigger value="login" className="flex-1 rounded-md" aria-label={t("auth.signIn")}>
             {t("auth.signIn")}
           </TabsTrigger>
