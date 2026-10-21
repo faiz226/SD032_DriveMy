@@ -191,10 +191,10 @@ function tinted(g: THREE.BufferGeometry, c: THREE.Color) {
 const yardMaterial = () => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, metalness: 0, side: THREE.DoubleSide });
 
 /** A rain tree: a short trunk under a broad, flat-topped crown of a few lumps. Crown about its base, trunk below. */
-function rainTree() {
+function rainTree(detail = 1) {
   const trunk = new THREE.CylinderGeometry(0.18, 0.28, 2.6, 7).translate(0, 1.3, 0);
   const lumps = [[0, 3.9, 0, 2.3], [1.5, 3.6, 0.6, 1.7], [-1.3, 3.7, -0.7, 1.8], [0.3, 3.5, -1.5, 1.6], [-0.4, 3.6, 1.4, 1.6]]
-    .map(([x, y, z, r]) => new THREE.IcosahedronGeometry(r, 1).scale(1, 0.62, 1).translate(x, y, z));
+    .map(([x, y, z, r]) => new THREE.IcosahedronGeometry(r, detail).scale(1, 0.62, 1).translate(x, y, z));
   return { trunk, crown: merge(lumps) };
 }
 
@@ -243,7 +243,8 @@ function Plants({ tier }: { tier: Tier }) {
     const leaves = new THREE.MeshLambertMaterial({ color: '#ffffff' });
     const bark = new THREE.MeshLambertMaterial({ color: BARK });
     const out: THREE.InstancedMesh[] = [];
-    for (const [kind, shape, palette] of [['rain', rainTree(), LEAF], ['palm', palm(), FROND]] as const) {
+    // the Low tier's rain trees have coarser crowns: a quarter of the triangles, the faceted look of a far tree
+    for (const [kind, shape, palette] of [['rain', rainTree(tier === 'low' ? 0 : 1), LEAF], ['palm', palm(), FROND]] as const) {
       const these = trees.filter((t) => t.kind === kind);
       out.push(instanced(shape.trunk, bark, these, () => BARK, shadows));
       out.push(instanced(shape.crown, leaves, these, (i) => pick(palette, these[i].tone), shadows));
@@ -251,7 +252,7 @@ function Plants({ tier }: { tier: Tier }) {
     const blob = new THREE.IcosahedronGeometry(0.75, 1).scale(1, 0.75, 1).translate(0, 0.45, 0);
     out.push(instanced(blob, leaves, bushes, (i) => (bushes[i].pink ? pick(PINK, bushes[i].tone) : pick(SHRUB, bushes[i].tone)), false));
     return out;
-  }, [trees, bushes, shadows]);
+  }, [trees, bushes, shadows, tier]);
   useEffect(() => () => {
     for (const m of meshes) { m.geometry.dispose(); m.dispose(); }
     (meshes[0]?.material as THREE.Material | undefined)?.dispose();
@@ -326,27 +327,29 @@ function puffTexture() {
 
 /** A dozen fair-weather clouds above the hills, each a cluster of puffs (sprites: they always face the eye). */
 function Clouds() {
-  const sprites = useMemo(() => {
+  // every puff in one mesh, one draw call (as 65 sprites they were 65): each a flat square turned to face the yard's
+  // middle, which from anywhere in the yard, 280 m and more away, looks as a sprite would
+  const mesh = useMemo(() => {
     const rnd = seeded(7);
-    const material = new THREE.SpriteMaterial({ map: puffTexture(), transparent: true, depthWrite: false, fog: false, opacity: 0.9 });
-    const out: THREE.Sprite[] = [];
+    const puffs: THREE.BufferGeometry[] = [];
     for (let k = 0; k < 13; k++) {
       const a = rnd() * Math.PI * 2;
       const r = 280 + rnd() * 180;   // inside the eye's 600 m
       const y = 85 + rnd() * 70;
       const size = 40 + rnd() * 45;
       for (let p = 0; p < 5; p++) {
-        const s = new THREE.Sprite(material);
         const off = (p - 2) * size * 0.32;
-        s.position.set(CENTRE[0] + Math.cos(a) * r - Math.sin(a) * off, y + (rnd() - 0.5) * size * 0.18, -(CENTRE[1] + Math.sin(a) * r + Math.cos(a) * off));
-        s.scale.setScalar(size * (0.6 + rnd() * 0.5));
-        out.push(s);
+        const x = CENTRE[0] + Math.cos(a) * r - Math.sin(a) * off;
+        const z = -(CENTRE[1] + Math.sin(a) * r + Math.cos(a) * off);
+        const up = y + (rnd() - 0.5) * size * 0.18;
+        const s = size * (0.6 + rnd() * 0.5);
+        puffs.push(new THREE.PlaneGeometry(s, s).rotateY(Math.atan2(CENTRE[0] - x, -CENTRE[1] - z)).translate(x, up, z));
       }
     }
-    return out;
+    return new THREE.Mesh(merge(puffs), new THREE.MeshBasicMaterial({ map: puffTexture(), transparent: true, depthWrite: false, fog: false, opacity: 0.9 }));
   }, []);
-  useEffect(() => () => { sprites[0]?.material.map?.dispose(); sprites[0]?.material.dispose(); }, [sprites]);
-  return <>{sprites.map((s, i) => <primitive key={i} object={s} />)}</>;
+  useEffect(() => () => { mesh.geometry.dispose(); mesh.material.map?.dispose(); mesh.material.dispose(); }, [mesh]);
+  return <primitive object={mesh} />;
 }
 
 // ---------------------------------------------------------------- street lights
