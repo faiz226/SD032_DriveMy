@@ -20,7 +20,7 @@ and for whoever builds it next.
 2. **Download.** The first drive costs 5.8 MB of Low's 12 MB budget. The plan may add **at most 2 MB on Low**
    (4 MB on Medium), with KTX2 textures and meshopt geometry.
 3. **The geometry is evidence.** The circuit was traced off the ARM Driving Institute's drone photo and proved
-   by 38 checks. Decoration never moves a kerb, line, pole or bay: `npm run check:circuit` stays 38/38.
+   by 39 checks. Decoration never moves a kerb, line, pole or bay: `npm run check:circuit` stays 39/39.
 4. **Signs are sourced, never generated** (the Jalan rule): Arahan Teknik Jalan shapes only. A plausible but
    wrong sign teaches a learner the wrong answer.
 

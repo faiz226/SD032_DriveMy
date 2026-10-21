@@ -585,3 +585,17 @@ The owner's asks through the day, in order. Each was committed the same day.
   - Free drive has its own brief, in the same voice.
   - Not heard by ear: the preview browser runs hidden and suspends audio, so the timing of the brief
     against the engine was checked in code and tests, not by listening.
+- **The cat is rigged** (the owner): a joint at each shoulder or hip and each knee, the neck and three along
+  the tail, each a pivot its bone hangs from. Its stride follows the distance it walks, so a paw on the road
+  stays where it landed while its leg leans from ahead of its shoulder to behind it; then the paw lifts,
+  folds and swings forward. The body dips as the standing legs lean. A test walks it a metre: no standing
+  paw slides more than 1 mm, and no paw goes into the road. It leaps stretched out, nose up, then down.
+- **The signals could not be seen from the queue** (the owner's screenshot). J1's one head per approach
+  stood 0.4 m before the stop line: beside the first car's bonnet, about 30 degrees up, and from the
+  second car its lamps were above the windscreen's edge, behind the interior mirror. Each approach now has
+  a head 1 m past the line, for the queue further back, and a second across the junction, on the left: the
+  first car at the line sees it 13 to 15 degrees left of ahead and 8 to 11 degrees up, the second 9 to 10
+  degrees left, over the car ahead's roof. On the right it would stand behind the pillar of a right-hand
+  drive car. Two heads that meet at a corner share a post. `check.py` now looks from both drivers' eyes,
+  using the windscreen read off the owner's screenshot and the roof measured off the model (1.51 m; the
+  1.62 m top is the aerial): it fails on the old heads for every approach and passes on the new.

@@ -70,6 +70,10 @@ handbrake is also the "I'm done" signal in both parking bays.
   ahead, stop on red, take a junction one at a time, give way to the learner except where they have
   priority (the roundabout), indicate at junction turns and light their brake lamps. J1 (the spine
   road at lane D-E) has signals: east-west 12 s green, north-south 10 s, 3 s amber, 1 s all-red.
+  Each approach has two heads on the left: one 1 m past the stop line, for the queue, and one across
+  the junction, which the first car at the line and the second behind it see through the windscreen
+  (the owner, 21 Oct: from the queue the one head was out of sight; decided: a primary and a secondary
+  signal, as British practice lays them out).
 - **Other learners:** parked mid-test on the twin hill, the twin ramp and the second 3-side bay (in
   island F's notch). They are scenery: solid, never marked.
 - **Hill:** the real strip along the top of the yard. Rise 1.3 m over 10.8 m (12%): v1's value; no

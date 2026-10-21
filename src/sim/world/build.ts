@@ -65,7 +65,9 @@ const CHEVRON = { width: 0.3, gap: 0.6, line: 0.2, apart: 0.125 };        // Fig
 const ARROW = { long: 3.0, head: 1.125, headWide: 0.825, shaft: 0.185, turnR: 0.8, turnHead: 0.6, turnHeadWide: 0.75 };   // Fig 19, urban
 const YELLOW_BOX = { border: 0.2, line: 0.15, every: 3.05 };              // 4.3.7, Fig 24
 const MARKER = { radius: 0.05, height: 1.6, band: 0.2, plate: 0.36 };   // the poles where a station's queue stops
-const SIGNAL = { pole: 0.06, height: 2.9, box: [0.24, 0.92, 0.32] as const, lamp: 0.28 };
+// a signal: its post, the housing's underside, size (deep, high, wide) and lamp spacing; the housing stands this far
+// out from the post on a bracket, so two heads on one post facing different ways stay clear of each other
+const SIGNAL = { pole: 0.06, height: 2.9, box: [0.24, 0.92, 0.32] as const, lamp: 0.28, bracket: 0.28 };
 const PAINT_LIFT = 0.012;      // paint sits just above the surface
 const GUARD_M = 1.2;           // invisible guard rails above a slope's walls: the car cannot fall off
 const RAMP_END_WALL_M = 0.45;  // the wall at the end of the ramp's platform stands this far above the deck
@@ -502,7 +504,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
       post(hd.at, SIGNAL.pole, 0, SIGNAL.height, SIGNAL.height, [[0.32, 0.34, 0.35]]);
       const h = rad(hd.heading_deg);
       const [ux, uy] = dir(h);
-      const front: Vec2 = [hd.at[0] + ux * 0.12, hd.at[1] + uy * 0.12];
+      const front: Vec2 = [hd.at[0] + ux * SIGNAL.bracket, hd.at[1] + uy * SIGNAL.bracket];
       const mid = SIGNAL.height + SIGNAL.box[1] / 2;
       box(front, [SIGNAL.box[0], SIGNAL.box[2]], hd.heading_deg, mid - SIGNAL.box[1] / 2, mid + SIGNAL.box[1] / 2, [0.05, 0.05, 0.05]);
       const face: Vec2 = [front[0] + ux * (SIGNAL.box[0] / 2 + 0.005), front[1] + uy * (SIGNAL.box[0] / 2 + 0.005)];

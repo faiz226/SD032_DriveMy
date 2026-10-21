@@ -199,15 +199,23 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
             dict(group='ew', heading_deg=180.0, stop=[[x1 + so, y0], [x1 + so, spine_m]]),         # from the east, westbound lane
             dict(group='ns', heading_deg=270.0, stop=[[nm, y1 + so], [x1, y1 + so]]),              # from the north, southbound lane
         ]
+        # Two heads for each approach, facing the drivers they govern, each 0.9 m outside the kerb on the approach's
+        # left (the owner, 21 Oct: the first car in the queue could not see the only head, beside its bonnet, and the
+        # cars behind saw it above the windscreen). The primary stands 1 m past the stop line, for the queue behind;
+        # the secondary across the junction, for the first car at the line (and over it, the second). check.py looks
+        # from both drivers' eyes. A head that would stand within 0.8 m of another shares its pole.
         heads = []
         for a in approaches:
             (ax, ay), (bx, by) = a['stop']
             h = math.radians(a['heading_deg'])
-            # on the near side's left, past the kerb, facing the drivers it governs
-            lx, ly = -math.sin(h), math.cos(h)
+            fx, fy, lx, ly = math.cos(h), math.sin(h), -math.sin(h), math.cos(h)
             end = (ax, ay) if (ax - (ax + bx) / 2) * lx + (ay - (ay + by) / 2) * ly > 0 else (bx, by)
-            heads.append(dict(at=[round(end[0] + lx * 0.9 - math.cos(h) * 0.4, 2), round(end[1] + ly * 0.9 - math.sin(h) * 0.4, 2)],
-                              heading_deg=round((a['heading_deg'] + 180) % 360, 1), group=a['group']))
+            far = max((cx - end[0]) * fx + (cy - end[1]) * fy for cx, cy in box['polygon'])   # the junction's far edge
+            for ahead in (1.0, far + 1.0):
+                at = [end[0] + lx * 0.9 + fx * ahead, end[1] + ly * 0.9 + fy * ahead]
+                pole = next((hd['at'] for hd in heads if math.dist(hd['at'], at) < 0.8), None)
+                heads.append(dict(at=pole or [round(at[0], 2), round(at[1], 2)],
+                                  heading_deg=round((a['heading_deg'] + 180) % 360, 1), group=a['group']))
         signals.append(dict(id=sig, junction=box['id'], offset_s=offset,
                             phases=dict(ew=dict(green=cyc[0], amber=cyc[1], all_red=cyc[2]), ns=dict(green=cyc[3], amber=cyc[4], all_red=cyc[5])),
                             approaches=[dict(a, stop=[[round(p[0], 2), round(p[1], 2)] for p in a['stop']]) for a in approaches],

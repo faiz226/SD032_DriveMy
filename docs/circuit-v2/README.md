@@ -57,13 +57,14 @@ Exact `s` values are in `circuit.json`.
 **The other cars** (`traffic_gen.py` writes them; `src/sim/traffic` drives them): five cars on
 keep-left loops, one round each of islands C and D each way, one round the outer roads and two round
 the roundabout, at 20 to 30 km/h. J1, the spine road at lane D-E, has signals: east-west 12 s green,
-north-south 10 s, 3 s amber, 1 s all-red. The markings follow JKR's Arahan Teknik (Jalan) 2D/85, each
+north-south 10 s, 3 s amber, 1 s all-red. Each approach has two heads on the left: one 1 m past the stop line, for the queue, and one across
+the junction, which the first car at the line and the second behind it see through the windscreen. The markings follow JKR's Arahan Teknik (Jalan) 2D/85, each
 value cited by clause or figure.
 
 ## What the checks prove
 
 `python check.py` reads only `circuit.json`, the car config and `../v2-plan/rules.json`, and exits
-0 only if every check passes. The latest run is 38 of 38 (`check_report.json`).
+0 only if every check passes. The latest run is 39 of 39 (`check_report.json`).
 
 - **Organised.**
   - The seven stations come in order along one route.
@@ -86,6 +87,9 @@ value cited by clause or figure.
     facing on.
   - **Merge:** 56 m of lane to reach 15 km/h, where 5.8 m would do.
   - **Practice:** every station's start point is on the road, clear of the kerbs.
+  - **Signals:** from the driver's eye of the first car at each stop line and of the second behind it, a
+    head shows all three lamps through the windscreen, below the roof's edge, clear of the interior
+    mirror and, for the second, over the car ahead's roof.
 - **Cheap.** Flat ground plus four slopes (the hill and the ramp, each with its twin); 19 kerb rings,
   968 vertices; a 172 KB data file; four booths, one office and five poles.
 

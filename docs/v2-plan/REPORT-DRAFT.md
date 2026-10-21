@@ -67,10 +67,11 @@ attempt or leave. The previous simulator's manual "pass" button is gone (`Verdic
 The yard is the real ARM Driving Institute circuit in Kota Kinabalu, traced off a drone photo at its
 measured scale (`docs/circuit-v2/README.md`, `YARD-TRACE.md`). One map serves every level; practice
 only changes where the car starts. The assessment route is 678 m and passes the seven stations in
-test order. `docs/circuit-v2/check.py` proves the map's geometry with 38 checks: every lane is wide
+test order. `docs/circuit-v2/check.py` proves the map's geometry with 39 checks: every lane is wide
 enough for the car, every bay fits it with margin, every reversing manoeuvre has a path a real car
 can drive (its planners print each plan), the route keeps every tyre off the centre lines, and nothing
-overlaps that should not. The map also carries the other cars' loops, the signal and the road
+overlaps that should not; and each signal shows its lamps through the windscreen of the first and second
+car in its queue. The map also carries the other cars' loops, the signal and the road
 markings, which follow JKR's Arahan Teknik (Jalan) 2D/85 clause by clause (`traffic_gen.py`).
 
 ### 2.3 Rule decisions and their sources
@@ -132,7 +133,7 @@ commercial games.
 that clears it, and refused by drives that break each rule. Every threshold is tested just below, at
 and just above its value.
 
-**The map** (`check.py`). 38 checks on the map the app imports.
+**The map** (`check.py`). 39 checks on the map the app imports.
 
 **The car** (`src/sim/physics/vehicle.test.ts`). Rapier runs headless in the tests. The car creeps at
 4–6 km/h, reaches 30 km/h in 2.5–3.5 s and stops from it in 4–6 m; on the 12% hill the handbrake or
@@ -163,8 +164,8 @@ decision; the top-down view works in both modes and the verdict reports its use;
 once per visit; two syncs started together insert one row; the touch controls appear at 800 × 360 on a touch phone and stay hidden on a
 desktop; every string exists in English and Malay.
 
-**In all**, 277 tests in 31 files pass (`npm test`), alongside `npm run build`, the lint and the
-map's 38 checks.
+**In all**, 278 tests in 31 files pass (`npm test`), alongside `npm run build`, the lint and the
+map's 39 checks.
 
 **Performance** (`RESULTS.md`). Measured on 19 Oct, before the other cars, the lamps and the yard's
 surroundings were added, with `scripts/sim-perf.mjs` in Chrome with a phone's

@@ -208,6 +208,12 @@
    "detail": "one map, 7 start points"
   },
   {
+   "section": "possible",
+   "check": "every signal is seen from the first and second car in its queue",
+   "ok": true,
+   "detail": "3 approaches; e.g. J1 eastbound, first car: 15 deg left, 9-11 deg up"
+  },
+  {
    "section": "cheap",
    "check": "flat ground plus the hill and the ramp, each with its twin track",
    "ok": true,

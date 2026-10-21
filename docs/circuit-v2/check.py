@@ -38,6 +38,20 @@ REAL = {
 }
 SCALE_TOL = 0.05   # the photo's scale is +/-5%
 
+# What a driver sees of a signal (the owner, 21 Oct: from the queue, nobody could). The eye is 1.20 m up, 0.265 m behind
+# the wheelbase's middle and 0.33 m right of the car's (swift-2022.ts). Through the windscreen, as angles from the eye,
+# read off the owner's first-person screenshot (50 deg vertical field of view, the eye pitched 4 deg down): the roof's
+# edge 12.5 deg above level, the right pillar 15 deg right, the left door mirror's panel from 29 deg left, and the
+# interior mirror 16.5 to 31 deg left, 4.5 to 10 deg up. The car ahead's roof is 1.51 m, measured off the model (its
+# 1.62 m top is the aerial, a 1 cm rod). A queue: the first car stops 0.4 m short of the line, the next 2.0 m behind it
+# (src/sim/traffic/model.ts). Each head is drawn as build.ts draws it: its housing's underside 2.9 m up, its lamps
+# 0.28 m apart about the housing's middle, 0.46 m above the underside, on a 0.28 m bracket.
+EYE = dict(up=1.20, behind_mid=0.265, right=0.33)
+SCREEN = dict(top=12.5, right=15.0, left=29.0, mirror=(16.5, 31.0, 4.5, 10.0))
+ROOF_M = 1.51
+QUEUE = dict(short=0.4, gap=2.0)
+HEAD = dict(underside=2.9, middle=0.46, lamp=0.28, bracket=0.28, deep=0.24)
+
 
 def load(path):
     with open(path, encoding='utf-8') as f:
@@ -373,6 +387,41 @@ def main():
             bad.append(st['id'])
     record('possible', 'every station has a practice start on the road, clear of kerbs', not bad,
            ('one map, %d start points' % len(stations)) if not bad else 'missing or too close to a kerb: %s' % bad)
+
+    # each signal, from the driver's seat of the first car at its stop line and of the second behind it: at least one
+    # head facing them shows all three lamps through the windscreen, clear of the interior mirror, and for the second
+    # over the car ahead's roof; and every head's post stands off the road, its kerb and 0.1 m more
+    eye_back = car.wb / 2 + car.f_oh + EYE['behind_mid']   # nose to eye
+    seen, unseen, on_road = [], [], []
+    for sg in (C.get('traffic') or {}).get('signals', []):
+        on_road += [hd['at'] for hd in sg['heads'] if world.clearance([hd['at']]) > -(C['kerbs']['width'] + 0.1)]
+        for a in sg['approaches']:
+            h = math.radians(a['heading_deg'])
+            fx, fy, rx, ry = math.cos(h), math.sin(h), math.sin(h), -math.cos(h)   # forward and right
+            (ax, ay), (bx, by) = a['stop']
+            mx, my = (ax + bx) / 2, (ay + by) / 2
+            facing = [hd for hd in sg['heads'] if hd['group'] == a['group'] and abs((hd['heading_deg'] - a['heading_deg']) % 360 - 180) < 1]
+            for who, nose in (('first', 0.0), ('second', QUEUE['short'] + car.L + QUEUE['gap'])):
+                ex, ey = mx - fx * (nose + eye_back) + rx * EYE['right'], my - fy * (nose + eye_back) + ry * EYE['right']
+                ahead = QUEUE['gap'] + eye_back if who == 'second' else None   # the car ahead's tail, from the eye
+                views = []
+                for hd in facing:
+                    u = math.radians(hd['heading_deg'])
+                    lx = hd['at'][0] + math.cos(u) * (HEAD['bracket'] + HEAD['deep'] / 2)
+                    ly = hd['at'][1] + math.sin(u) * (HEAD['bracket'] + HEAD['deep'] / 2)
+                    f, r = (lx - ex) * fx + (ly - ey) * fy, (lx - ex) * rx + (ly - ey) * ry
+                    az, dist = math.degrees(math.atan2(r, f)), math.hypot(f, r)
+                    els = [math.degrees(math.atan2(HEAD['underside'] + HEAD['middle'] + k * HEAD['lamp'] - EYE['up'], dist)) for k in (1, 0, -1)]
+                    ml, mr, mb, mt = SCREEN['mirror']
+                    ok = f > 0 and -SCREEN['left'] <= az <= SCREEN['right'] and max(els) <= SCREEN['top'] and not (
+                        -mr <= az <= -ml and min(els) <= mt and max(els) >= mb)
+                    if ok and ahead is not None:
+                        ok = EYE['up'] + ahead * math.tan(math.radians(min(els))) > ROOF_M
+                    if ok:
+                        views.append('%.0f deg %s, %.0f-%.0f deg up' % (abs(az), 'left' if az < 0 else 'right', min(els), max(els)))
+                (seen if views else unseen).append('%s %s, %s car: %s' % (sg['id'], {0.0: 'eastbound', 90.0: 'northbound', 180.0: 'westbound', 270.0: 'southbound'}.get(a['heading_deg'], a['heading_deg']), who, ', '.join(views) or 'sees none'))
+    record('possible', 'every signal is seen from the first and second car in its queue', not unseen and not on_road,
+           ('; '.join(unseen) or ('posts on the road: %s' % on_road) if (unseen or on_road) else '%d approaches; e.g. %s' % (len(seen) // 2, seen[0])))
 
     # ---------------------------------------------------------------- 5 Cheap
     print('\n5 CHEAP')
