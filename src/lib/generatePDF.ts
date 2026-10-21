@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { ExamResult } from "@/components/exam/ExamShell";
+import type { ExamResult } from "@/lib/exam/scoring";
 import { translate } from "@/lib/translations";
 import type { Language } from "@/lib/constants";
 

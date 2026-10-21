@@ -5,7 +5,7 @@ import {
   applyAnswerKey,
   countCorrect,
   hasCompleteAnswerKey,
-} from "./examScoring";
+} from "./scoring";
 import type { ExamQuestion } from "@/services/questions.service";
 import type { KppQuestion } from "@/types/database";
 

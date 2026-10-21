@@ -40,44 +40,11 @@ import {
   shuffleQuestionOptions,
   toStorageAnswers,
   countCorrect,
+  type ExamResult,
   type OptionPermutations,
-} from "./examScoring";
+} from "@/lib/exam/scoring";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export interface ExamResult {
-  /**
-   * Answers in DISPLAY order — indices into the shuffled option arrays on
-   * `questions`. Use for the local results view, which renders those same
-   * shuffled questions. Do NOT persist these.
-   */
-  answers: Record<string, number>;
-  /**
-   * Answers remapped to the ORIGINAL database option order. This is what must
-   * be written to quiz_results / mock_test_results: the recompute_exam_score
-   * trigger grades against kpp_questions.correct_index, which is unshuffled.
-   */
-  answersForStorage: Record<string, number>;
-  /**
-   * Option permutations for this attempt, so a caller that fetches the answer
-   * key AFTER submission (mock exams) can map each correct_index from database
-   * order onto the position the learner actually saw. See applyAnswerKey().
-   */
-  permutations: OptionPermutations;
-  /**
-   * Provisional. Zero for a mock exam until the key is fetched, because the
-   * key is deliberately not sent to the browser during the exam. The server
-   * regrades on insert regardless — that is the authoritative score.
-   */
-  score: number;
-  total: number;
-  percentage: number;
-  /** Authoritative mock pass status, when returned by the server. */
-  passed?: boolean;
-  durationSeconds: number;
-  questions: ExamQuestion[];
-  autoSubmitted?: boolean;
-}
+export type { ExamResult };
 
 interface ExamShellProps {
   questions: ExamQuestion[];

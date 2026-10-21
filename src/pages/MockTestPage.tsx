@@ -7,7 +7,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { MOCK_TIME_LIMIT, QUESTIONS_BY_SET } from "@/lib/constants";
 import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/questions.service";
-import { applyAnswerKey, hasCompleteAnswerKey } from "@/components/exam/examScoring";
+import { applyAnswerKey, hasCompleteAnswerKey } from "@/lib/exam/scoring";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { OFFLINE_QUEUED_ID, saveMockResult } from "@/services/results.service";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";

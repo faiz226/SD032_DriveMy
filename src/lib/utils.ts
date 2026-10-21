@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { useLanguageStore } from "@/stores/languageStore";
 
 /**
  * Merge Tailwind classes safely — combines clsx conditional logic
@@ -8,20 +7,6 @@ import { useLanguageStore } from "@/stores/languageStore";
  */
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
-}
-
-/**
- * Format a date using date-fns with Malaysian locale fallback.
- */
-export function formatDate(date: Date | string): string {
-  const d = typeof date === "string" ? new Date(date) : date;
-  const lang = useLanguageStore.getState().language === "ms" ? "ms-MY" : "en-MY";
-  
-  return d.toLocaleDateString(lang, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 /**
@@ -52,20 +37,6 @@ export function truncate(str: string, maxLength: number): string {
   if (str.length <= maxLength) return str;
   if (maxLength <= 3) return str.slice(0, maxLength);
   return `${str.slice(0, maxLength - 3)}...`;
-}
-
-/**
- * Debounce a function call.
- */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timer: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
 }
 
 /**
