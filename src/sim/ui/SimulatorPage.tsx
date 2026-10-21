@@ -33,6 +33,7 @@ import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
 import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
 import { engineSound, hornSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
+import { briefFor } from './start';
 import { Eggs, RoofNote, useEggs, useKonami, ZebraCat } from './Eggs';
 import { LoadingMap } from './LoadingMap';
 import { EXPLORE_CANVAS, ExploreHud, SpectatorCamera } from './Spectator';
@@ -94,6 +95,8 @@ export function SimulatorPage() {
   const eggs = useRef<Eggs | null>(null);   // free drive's surprises
   const getEggs = useCallback(() => eggs.current, []);
   const lastSample = useRef<VehicleSample | null>(null);
+  const spoken = useRef(new Set<string>());   // the briefs read this visit: each once, never again on a respawn
+  const starts = useRef(0);                   // the latest start: an older one stops where it is
   const [drill, setDrill] = useState<StationId>(isStation(id) ? id : 'hill-start');
   const [start] = useState<Pose>(() => (isStation(id) ? stationStart(id) : spawnPose()));
   const [ready, setReady] = useState(false);
@@ -112,7 +115,7 @@ export function SimulatorPage() {
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
   useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead, __simCar: () => car.current, __simEggs: getEggs }); }, [getEggs]);
   useEffect(() => () => {
-    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false, indicator: 0 });
+    useDriver.getState().set({ throttle: 0, brake: 0, wheel: 0, paused: false, topDown: false, indicator: 0, starting: null });
     stopEngine();
   }, []);
   useEffect(() => { if (portrait) useDriver.getState().set({ paused: true }); }, [portrait]);
@@ -130,7 +133,8 @@ export function SimulatorPage() {
     if (phaseRef.current !== 'drive') return;
     for (const st of now.state.stations) {
       if (st.status === before.state.stations.find((s) => s.id === st.id)?.status) continue;
-      if (st.status === 'armed') say(`sim.tips.${st.id}`, language);
+      const brief = `sim.tips.${st.id}`;
+      if (st.status === 'armed') { if (!spoken.current.has(brief)) { spoken.current.add(brief); void say(brief, language); } }
       else if (st.status === 'cleared') say('sim.voice.cleared', language);
       else if (st.status === 'failed') say('sim.voice.notCleared', language);
     }
@@ -142,7 +146,6 @@ export function SimulatorPage() {
 
   const begin = useCallback((m: PanelMode, d: StationId) => {
     unlockSound();
-    startEngine();
     performance.mark('sim:start');
     traffic.current = new Traffic(circuit, swift);
     free.current = m === 'free';
@@ -154,11 +157,27 @@ export function SimulatorPage() {
       throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false, indicator: 0,
       ...(m !== 'free' && { rainbow: false }),   // the marked modes drive the plain red Swift
     });
+    // the start (the owner, 21 Oct): the brief, read once a visit; then the engine, started afresh every time;
+    // only then is the car free to move. A newer start (a restart mid-way) takes over from this one.
+    const run = ++starts.current;
+    const brief = briefFor(m, d, spoken.current);
+    useDriver.getState().set({ starting: brief ? 'brief' : 'engine' });
+    const within = (p: Promise<void>, s: number) => Promise.race([p, new Promise<void>((done) => { window.setTimeout(done, s * 1000); })]);
+    void (async () => {
+      if (brief) {
+        spoken.current.add(brief);
+        await say(brief, language);   // held while the game is paused, as the line is
+        if (run !== starts.current) return;
+        useDriver.getState().set({ starting: 'engine' });
+      }
+      await within(startEngine(), 6);
+      if (run === starts.current) useDriver.getState().set({ starting: null });
+    })();
     setMode(m);
     setDrill(d);
     setSave(null);
     go('drive');
-  }, [go, autopilotOn, autopilotMode, getTraffic]);
+  }, [go, autopilotOn, autopilotMode, getTraffic, language]);
 
   /** An assessment's verdict is in: show it and save the run once, under the run's own id. */
   const finish = useCallback(() => {

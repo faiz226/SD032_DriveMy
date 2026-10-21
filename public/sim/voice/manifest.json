@@ -22,5 +22,7 @@
   "ms/sim.voice.cleared": "3402bb6e1d34",
   "ms/sim.voice.notCleared": "bb7c34d7f70d",
   "ms/sim.voice.pass": "d83a41bd684b",
-  "ms/sim.voice.fail": "723f64c06bbe"
+  "ms/sim.voice.fail": "723f64c06bbe",
+  "en/sim.voice.free": "c749d0488a4e",
+  "ms/sim.voice.free": "c01dab2dc5fa"
 }

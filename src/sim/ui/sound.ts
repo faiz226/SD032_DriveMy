@@ -102,23 +102,35 @@ const ENGINE_LEVEL = 0.5;    // under the fault tone
 const HANDOVER_S = 3;        // where the recording has settled to idle; the start clip fades out from here
 
 let engineFiles: Promise<AudioBuffer[]> | null = null;
-let engine: { src: AudioBufferSourceNode; level: GainNode } | null = null;
+interface Engine { src: AudioBufferSourceNode; level: GainNode; once?: AudioBufferSourceNode }
+let engine: Engine | null = null;
 
 const decode = (c: AudioContext, url: string) =>
   fetch(url).then((r) => r.arrayBuffer()).then((b) => c.decodeAudioData(b));
 
-/** The engine starts: the starter and the catch, then the idle. Once per visit: a restart keeps it running. */
-export function startEngine() {
+/**
+ * The engine starts: the starter and the catch, then the idle. Every start and respawn starts it afresh (the owner,
+ * 21 Oct): one already running is switched off first. Resolves once it has caught, so the car may move then.
+ */
+export function startEngine(): Promise<void> {
   const c = ctx;
-  if (!c || engine) return;
+  if (!c) return Promise.resolve();
+  if (engine) {
+    const old = engine;
+    engine = null;
+    old.level.gain.setTargetAtTime(0, c.currentTime, 0.05);
+    try { old.src.stop(c.currentTime + 0.3); } catch { /* never started */ }
+    try { old.once?.stop(); } catch { /* already ended */ }
+  }
   engineFiles ??= Promise.all([decode(c, ENGINE_START), decode(c, ENGINE_IDLE)]);
   const src = c.createBufferSource();
   const level = c.createGain();
   src.loop = true;
   level.gain.value = 0;
   src.connect(level).connect(c.destination);
-  engine = { src, level };   // claimed now, so a second call before the files arrive does nothing
-  engineFiles.then(([start, idle]) => {
+  const claimed: Engine = { src, level };
+  engine = claimed;   // claimed now: a newer start, or leaving, replaces it
+  return engineFiles.then(([start, idle]) => {
     if (engine?.src !== src) return;   // stopped while the files loaded
     const t = c.currentTime + 0.05;
     const once = c.createBufferSource();
@@ -127,10 +139,14 @@ export function startEngine() {
     onceLevel.gain.value = ENGINE_LEVEL;
     once.connect(onceLevel).connect(c.destination);
     once.start(t);
+    claimed.once = once;
     src.buffer = idle;
     src.start(t + HANDOVER_S);
     level.gain.setValueAtTime(0, t + HANDOVER_S);
     level.gain.linearRampToValueAtTime(ENGINE_LEVEL, t + HANDOVER_S + 0.3);
+    // caught: the car may move (no sound allowed yet, as before a first tap: no wait)
+    if (c.state !== 'running') return;
+    return new Promise<void>((done) => { window.setTimeout(done, HANDOVER_S * 1000); });
   }).catch(() => { /* no engine files: the drive carries on without them */ });
 }
 
@@ -150,7 +166,7 @@ export function pauseSound(paused: boolean) {
 
 /** Leaving the simulator: the engine stops, and the instructor stops mid-line. */
 export function stopEngine() {
-  queue.length = 0;
+  for (const line of queue.splice(0)) line.done();
   try { speaking?.stop(); } catch { /* already ended */ }
   if (!ctx || !engine) return;
   const { src, level } = engine;
@@ -181,36 +197,57 @@ export const useVoicePref = create<{ pref: VoicePref; setPref(p: VoicePref): voi
 }));
 
 const lines = new Map<string, Promise<AudioBuffer>>();
-const queue: string[] = [];
+const queue: { url: string; done: () => void }[] = [];
 let speaking: AudioBufferSourceNode | null = null;
 let busy = false;
 
-/** The instructor says a line, public/sim/voice/<lang>/<key>.mp3, after the one already speaking. */
-export function say(key: string, lang: Language) {
-  if (!ctx || useVoicePref.getState().pref === 'off') return;
-  queue.push(`/sim/voice/${lang}/${key}.mp3`);
-  if (queue.length > 2) queue.splice(0, queue.length - 2);   // a backlog of stale lines helps nobody
-  if (!busy) void sayNext();
+/**
+ * The instructor says a line, public/sim/voice/<lang>/<key>.mp3, after the one already speaking. Resolves when it
+ * has been said, or at once when there is nothing to say it with (the voice off, or no sound allowed yet).
+ */
+export function say(key: string, lang: Language): Promise<void> {
+  return new Promise((done) => {
+    if (!ctx || ctx.state !== 'running' || useVoicePref.getState().pref === 'off') { done(); return; }
+    queue.push({ url: `/sim/voice/${lang}/${key}.mp3`, done });
+    while (queue.length > 2) queue.shift()!.done();   // a backlog of stale lines helps nobody
+    if (!busy) void sayNext();
+  });
 }
 
 async function sayNext() {
   const c = ctx;
-  const url = queue.shift();
+  const line = queue.shift();
   speaking = null;
-  if (!c || !url) { busy = false; return; }
+  if (!c || !line) { busy = false; return; }
   busy = true;
   try {
-    if (!lines.has(url)) lines.set(url, decode(c, url));
+    if (!lines.has(line.url)) lines.set(line.url, decode(c, line.url));
     const src = c.createBufferSource();
-    src.buffer = await lines.get(url)!;
+    // a line that does not arrive in 8 s is skipped (and tried again next time), never waited for
+    src.buffer = await Promise.race([lines.get(line.url)!, new Promise<never>((_, no) => { window.setTimeout(() => no(new Error('slow')), 8000); })]);
     const level = c.createGain();
     level.gain.value = VOICE_LEVEL;
     src.connect(level).connect(c.destination);
-    src.onended = () => void sayNext();
+    // said: when it ends, or by its own length (a stalled audio clock never ends a line), held while paused
+    let said = false;
+    let timer = 0;
+    const finish = () => {
+      if (said) return;
+      said = true;
+      window.clearTimeout(timer);
+      line.done();
+      void sayNext();
+    };
+    const watch = (s: number) => {
+      timer = window.setTimeout(() => (c.state === 'running' ? finish() : watch(1)), s * 1000);
+    };
+    src.onended = finish;
     speaking = src;
     src.start();
+    watch(src.buffer.duration + 0.6);
   } catch {
-    lines.delete(url);   // a line that will not load is skipped, and tried again next time
+    lines.delete(line.url);   // a line that will not load is skipped, and tried again next time
+    line.done();
     void sayNext();
   }
 }

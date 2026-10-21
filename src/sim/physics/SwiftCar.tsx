@@ -181,7 +181,9 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
 
   useBeforePhysicsStep(() => {
     const d = useDriver.getState();
-    vehicle.current?.beforeStep({ throttle: d.throttle, brake: d.brake, handbrake: d.handbrake, gear: d.gear, wheel: d.wheel });
+    // while the run starts (the brief, then the engine) the car is held on its brakes
+    const held = d.starting !== null;
+    vehicle.current?.beforeStep({ throttle: held ? 0 : d.throttle, brake: held ? 1 : d.brake, handbrake: d.handbrake, gear: d.gear, wheel: d.wheel });
     // an indicator cancels itself once the wheel has turned that way and come back, as a real stalk does
     if (d.indicator === 0) turned.current = false;
     else if (d.wheel * d.indicator > SELF_CANCEL.turned) turned.current = true;

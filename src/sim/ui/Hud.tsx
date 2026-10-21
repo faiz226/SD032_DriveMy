@@ -53,6 +53,7 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
   const topDown = useDriver((s) => s.topDown);
   const chase = useDriver((s) => s.chase);
   const headlights = useDriver((s) => s.headlights);
+  const starting = useDriver((s) => s.starting);
   const [w, h] = useWindowSize();
   const k = mirrorScale(w, h);
   const belowMirror = topDown ? 12 : MIRROR_PAD * k + INTERIOR_MIRROR_H * k + 8;
@@ -114,6 +115,7 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
 
       <div className="absolute left-1/2 flex w-[min(60vw,420px)] -translate-x-1/2 flex-col items-center gap-2" style={{ top: belowMirror }}>
         <p className={cn(HUD_PLATE, 'type-label px-2 py-0.5 text-xs')}>{t(free ? 'sim.hud.free' : 'sim.label')}</p>
+        {starting && <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(starting === 'brief' ? 'sim.hud.brief' : 'sim.hud.engine')}</p>}
         {!free && <Toasts />}
         <EggLine />
       </div>

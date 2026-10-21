@@ -16,11 +16,13 @@ export interface DriverState extends Controls {
   horn: number;
   /** Free drive's secret: the Swift's paint in rainbow. */
   rainbow: boolean;
+  /** A run starting (the owner, 21 Oct): the brief being read, then the engine starting; the car is held till then. */
+  starting: 'brief' | 'engine' | null;
   /** The top-down view's zoom: 1 shows the whole yard; above 1 it follows the car. */
   zoom: number;
   speedKmh: number;                                   // written by the car each step, for the gear rule
   notice: { key: 'stopFirst'; at: number } | null;    // shown by the screens as a toast
-  set(p: Partial<Controls & { paused: boolean; topDown: boolean; indicator: -1 | 0 | 1; headlights: boolean; chase: boolean; horn: number; rainbow: boolean }>): void;
+  set(p: Partial<Controls & { paused: boolean; topDown: boolean; indicator: -1 | 0 | 1; headlights: boolean; chase: boolean; horn: number; rainbow: boolean; starting: 'brief' | 'engine' | null }>): void;
   /** That side's indicator on, or off if it is on already. */
   toggleIndicator(side: -1 | 1): void;
   /** D <-> R, only when stopped. Otherwise a "Stop first" notice. */
@@ -37,7 +39,7 @@ export const ZOOM_STEP = 1.5;   // one press of a zoom button or key
 
 export const useDriver = create<DriverState>((set, get) => ({
   throttle: 0, brake: 0, handbrake: false, gear: 'D', wheel: 0,
-  paused: false, topDown: false, indicator: 0, headlights: false, chase: false, horn: 0, rainbow: false, zoom: 1, speedKmh: 0, notice: null,
+  paused: false, topDown: false, indicator: 0, headlights: false, chase: false, horn: 0, rainbow: false, starting: null, zoom: 1, speedKmh: 0, notice: null,
   set: (p) => set(p),
   toggleIndicator: (side) => set({ indicator: get().indicator === side ? 0 : side }),
   zoomBy: (f) => set({ zoom: Math.min(ZOOM_MAX, Math.max(1, get().zoom * f)) }),
