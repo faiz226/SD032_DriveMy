@@ -5,7 +5,6 @@ import { TestResultsView } from "./TestResultsView";
 import type { ExamResult } from "./ExamShell";
 
 vi.mock("canvas-confetti", () => ({ default: vi.fn() }));
-vi.mock("@/components/ui/number-ticker", () => ({ NumberTicker: ({ value }: { value: number }) => <span>{value}</span> }));
 const result: ExamResult = { questions: [], answers: {}, answersForStorage: {}, permutations: {},
   score: 42, total: 60, percentage: 70, passed: false, durationSeconds: 10 };
 describe("authoritative mock result display", () => {
