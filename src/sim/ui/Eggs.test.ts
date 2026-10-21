@@ -1,8 +1,9 @@
 // Free drive's surprises: the cat at the zebra crossing, and the doughnuts.
+import * as THREE from 'three';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { VehicleSample } from '../contracts';
 import { circuit } from '../data';
-import { Eggs, useEggs } from './Eggs';
+import { catRig, Eggs, LEG, poseCat, useEggs } from './Eggs';
 
 const DT = 1 / 60;
 const z = circuit.traffic!.zebra;   // across the spine road, which runs east-west
@@ -43,6 +44,26 @@ describe('free drive surprises', () => {
     while (!eggs.cat.on) x = drive(eggs, x, 20, DT);
     drive(eggs, x, 20, 8);
     expect(said()).toBe('sim.egg.catJump');
+  });
+
+  it('the rigged cat walks: a paw on the road stays where it landed, and no paw goes into the road', () => {
+    const r = catRig();
+    const landed: (number | null)[] = [null, null, null, null];
+    const standing = [0, 0, 0, 0];
+    for (let u = 0; u < 1; u += 0.002) {
+      r.root.position.x = u;   // walking along +x
+      poseCat(r, u, -1);
+      r.root.updateMatrixWorld(true);
+      r.knees.forEach((knee, i) => {
+        const paw = knee.localToWorld(new THREE.Vector3(0, -LEG.lower, 0));
+        expect(paw.y, `paw ${i} at ${u.toFixed(3)} m`).toBeGreaterThan(-0.001);
+        if (Math.abs(paw.y) > 1e-4) { landed[i] = null; return; }   // in the air
+        landed[i] ??= paw.x;
+        standing[i]++;
+        expect(Math.abs(paw.x - landed[i]!), `paw ${i} slides at ${u.toFixed(3)} m`).toBeLessThan(0.001);
+      });
+    }
+    for (const n of standing) expect(n).toBeGreaterThan(150);   // each paw stood for about half the walk
   });
 
   it('three turns on the spot are doughnuts; fewer are not', () => {

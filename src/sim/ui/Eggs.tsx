@@ -3,7 +3,7 @@
 // driver who stops for it (and leaps clear of one who does not); three doughnuts get a word; a secret code paints
 // the Swift in rainbow. And a note on the office roof waits for anyone who flies over it, in any mode.
 import { useFrame } from '@react-three/fiber';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 import { create } from 'zustand';
 import type { TranslationKey } from '@/lib/translations';
@@ -124,46 +124,108 @@ export class Eggs {
   }
 }
 
-// an orange cat, as Malaysian roads know them; its frame: x the way it walks, y up, about its feet
+// an orange cat, as Malaysian roads know them, rigged: a joint at each shoulder or hip and each knee, at the neck and
+// three along the tail. Each joint is a group at its pivot, its bone's mesh hanging from it. The cat's frame: x the
+// way it walks, y up, about its feet
 const ORANGE = '#e0812b';
-const LEGS: [number, number][] = [[0.14, -0.06], [0.14, 0.06], [-0.14, -0.06], [-0.14, 0.06]];
+const LEGS: [number, number][] = [[0.14, -0.06], [0.14, 0.06], [-0.14, -0.06], [-0.14, 0.06]];   // forelegs first; 0 and 3 step together
+// the leg's two bones; how far it leans each way (rad); how high a paw lifts as it is carried forward, and how far
+// its lower bone folds back
+export const LEG = { upper: 0.08, lower: 0.07, lean: 0.5, lift: 0.025, fold: 0.7 };
+const LEG_M = LEG.upper + LEG.lower;   // shoulder to paw, straight: the shoulders stand this high
+const REACH = LEG_M * Math.sin(LEG.lean);   // a paw lands this far ahead of its shoulder and leaves this far behind
+const STRIDE_M = 4 * REACH;   // walked in one stride: each paw stands still on the road for half of it
+
+export type CatRig = { root: THREE.Group; body: THREE.Group; hips: THREE.Group[]; knees: THREE.Group[]; neck: THREE.Group; tail: THREE.Group[] };
+
+export function catRig(): CatRig {
+  const fur = new THREE.MeshStandardMaterial({ color: ORANGE });
+  const eye = new THREE.MeshStandardMaterial({ color: '#1d2a10' });
+  const part = (geo: THREE.BufferGeometry, [x, y, z]: number[], mat = fur) => {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x, y, z);
+    m.castShadow = true;
+    return m;
+  };
+  const joint = (parent: THREE.Object3D, [x, y, z]: number[], ...parts: THREE.Object3D[]) => {
+    const g = new THREE.Group();
+    g.position.set(x, y, z);
+    g.add(...parts);
+    parent.add(g);
+    return g;
+  };
+  const root = new THREE.Group();
+  const body = joint(root, [0, 0, 0], part(new THREE.BoxGeometry(0.42, 0.18, 0.17), [0, 0.2, 0]));
+  const hips = LEGS.map(([x, z]) => joint(body, [x, LEG_M, z], part(new THREE.BoxGeometry(0.045, LEG.upper, 0.045), [0, -LEG.upper / 2, 0])));
+  const knees = hips.map((hip) => joint(hip, [0, -LEG.upper, 0], part(new THREE.BoxGeometry(0.04, LEG.lower, 0.04), [0, -LEG.lower / 2, 0])));
+  const neck = joint(body, [0.19, 0.27, 0], part(new THREE.BoxGeometry(0.16, 0.15, 0.15), [0.06, 0.03, 0]),
+    ...[-0.045, 0.045].map((z) => part(new THREE.ConeGeometry(0.035, 0.07, 4), [0.06, 0.13, z])),
+    ...[-0.035, 0.035].map((z) => part(new THREE.SphereGeometry(0.014, 6, 6), [0.145, 0.05, z], eye)));
+  const tail: THREE.Group[] = [];
+  for (let k = 0; k < 3; k++) {
+    const w = 0.035 - 0.006 * k;   // tapering to the tip
+    tail.push(joint(k ? tail[k - 1] : body, k ? [-0.1, 0, 0] : [-0.21, 0.26, 0], part(new THREE.BoxGeometry(0.1, w, w), [-0.05, 0, 0])));
+  }
+  return { root, body, hips, knees, neck, tail };
+}
+
+/** The cat's pose `walked` metres across, or `leap` (0 to 1) through its leap clear of a car; -1: walking. */
+export function poseCat(r: CatRig, walked: number, leap: number) {
+  if (leap >= 0) {
+    // stretched out: forelegs reaching, hind legs pushed back; nose up as it springs, down as it lands
+    const out = Math.sin(leap * Math.PI);
+    r.hips.forEach((hip, i) => {
+      hip.rotation.z = (i < 2 ? 0.9 : -0.9) * out;
+      hip.position.y = LEG_M;
+      r.knees[i].rotation.z = 0;
+    });
+    r.body.position.y = 0;
+    r.body.rotation.z = 0.4 * Math.sin(2 * Math.PI * leap);
+    r.neck.rotation.z = 0;
+    r.tail.forEach((j, k) => j.rotation.set(0, 0, k ? 0 : -0.2));
+    return;
+  }
+  // diagonal pairs step together. A paw on the road stays where it landed: its leg leans from REACH ahead to REACH
+  // behind as the cat walks 2 REACH; then it is lifted, folded and carried forward again
+  const stride = walked / STRIDE_M;
+  let stanceAhead = 0;
+  r.hips.forEach((hip, i) => {
+    const q = (((stride + (i === 0 || i === 3 ? 0 : 0.5)) % 1) + 1) % 1;
+    const air = q < 0.5 ? 0 : Math.sin((q - 0.5) * 2 * Math.PI);
+    const ahead = q < 0.5 ? REACH * (1 - 4 * q) : -REACH * Math.cos((q - 0.5) * 2 * Math.PI);
+    if (q < 0.5) stanceAhead = ahead;
+    hip.rotation.z = Math.asin(ahead / LEG_M);
+    hip.position.y = LEG_M + LEG.lift * air;
+    r.knees[i].rotation.z = -LEG.fold * air;
+  });
+  r.body.position.y = Math.sqrt(LEG_M * LEG_M - stanceAhead * stanceAhead) - LEG_M;   // so the standing paws meet the road
+  r.body.rotation.z = 0;
+  r.neck.rotation.z = 0.05 * Math.sin(4 * Math.PI * stride);   // a nod at each step
+  r.tail.forEach((j, k) => j.rotation.set(0, 0.3 * Math.sin((2 * Math.PI * stride) / 3 - 0.8 * k), k ? -0.3 : -0.7));   // held up, curling, swaying
+}
 
 /** The cat on the zebra crossing while it crosses; nothing otherwise. */
 export function ZebraCat({ eggs }: { eggs: () => Eggs | null }) {
-  const group = useRef<THREE.Group>(null);
-  const legs = useRef<(THREE.Mesh | null)[]>([]);
-  useFrame(({ clock }) => placeCat(group.current, legs.current, eggs(), clock.elapsedTime));
-  return (
-    <group ref={group} visible={false}>
-      <mesh position={[0, 0.2, 0]} castShadow><boxGeometry args={[0.42, 0.18, 0.17]} /><meshStandardMaterial color={ORANGE} /></mesh>
-      <mesh position={[0.25, 0.3, 0]} castShadow><boxGeometry args={[0.16, 0.15, 0.15]} /><meshStandardMaterial color={ORANGE} /></mesh>
-      {[-0.045, 0.045].map((z) => (
-        <mesh key={z} position={[0.25, 0.4, z]}><coneGeometry args={[0.035, 0.07, 4]} /><meshStandardMaterial color={ORANGE} /></mesh>
-      ))}
-      {[-0.035, 0.035].map((z) => (
-        <mesh key={z} position={[0.335, 0.32, z]}><sphereGeometry args={[0.014, 6, 6]} /><meshStandardMaterial color="#1d2a10" /></mesh>
-      ))}
-      <mesh position={[-0.27, 0.33, 0]} rotation={[0, 0, 0.9]}><cylinderGeometry args={[0.018, 0.022, 0.3, 6]} /><meshStandardMaterial color={ORANGE} /></mesh>
-      {LEGS.map(([x, z], i) => (
-        <mesh key={i} ref={(m) => { legs.current[i] = m; }} position={[x, 0.07, z]}><boxGeometry args={[0.045, 0.14, 0.045]} /><meshStandardMaterial color={ORANGE} /></mesh>
-      ))}
-    </group>
-  );
+  const rig = useMemo(() => catRig(), []);
+  useEffect(() => () => rig.root.traverse((o) => {
+    if (o instanceof THREE.Mesh) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); }
+  }), [rig]);
+  useFrame(() => placeCat(rig, eggs()));
+  return <primitive object={rig.root} />;
 }
 
-/** Where the cat is this frame (outside the component: hooks keep their values immutable). */
-function placeCat(g: THREE.Group | null, legs: (THREE.Mesh | null)[], eggs: Eggs | null, t: number) {
-  if (!g) return;
+/** Where the cat is this frame, and its pose. */
+function placeCat(r: CatRig, eggs: Eggs | null) {
   const c = eggs?.cat;
-  g.visible = !!c?.on && !!ZEBRA;
+  r.root.visible = !!c?.on && !!ZEBRA;
   if (!c?.on || !ZEBRA) return;
   const [ux, uy] = dir(rad(ZEBRA.heading_deg));
   const off = c.from * (ZEBRA.width / 2 - c.u);   // across the road, from its side to the other
-  const leap = c.leap >= 0 ? Math.sin(Math.min(1, c.leap / CAT.leapS) * Math.PI) * 0.6 : 0;
-  g.position.set(ZEBRA.centre[0] - uy * off, 0.02 + leap, -(ZEBRA.centre[1] + ux * off));   // the spine road is flat
-  g.rotation.y = Math.atan2(-ux * c.from, uy * c.from);   // facing the way it walks
-  const stride = Math.sin(t * (c.leap >= 0 ? 30 : 12)) * 0.5;
-  legs.forEach((m, i) => { if (m) m.rotation.z = (i === 0 || i === 3 ? 1 : -1) * stride; });
+  const leap = c.leap >= 0 ? Math.min(1, c.leap / CAT.leapS) : -1;
+  const up = leap >= 0 ? Math.sin(leap * Math.PI) * 0.6 : 0;
+  r.root.position.set(ZEBRA.centre[0] - uy * off, 0.02 + up, -(ZEBRA.centre[1] + ux * off));   // the spine road is flat
+  r.root.rotation.y = Math.atan2(-ux * c.from, uy * c.from);   // facing the way it walks
+  poseCat(r, c.u, leap);
 }
 
 // ---------------------------------------------------------------- the roof note
