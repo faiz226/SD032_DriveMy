@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}', 'api/**/*.test.ts'],
+    // Placeholder Supabase settings: src/lib/supabase.ts throws at import without them, CI sets none, and unit
+    // tests must never reach a real project, whatever a developer's .env.local says (.invalid never resolves).
+    env: { VITE_SUPABASE_URL: 'https://supabase.invalid', VITE_SUPABASE_ANON_KEY: 'test-anon-key' },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
