@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { ShieldWarning, BookmarkSimple } from "phosphor-react";
+import { ShieldWarning, BookmarkSimple } from "@/components/ui/icons";
 import type { TranslationKey } from "@/lib/translations";
 
 const SCENARIOS: Scenario[] = [

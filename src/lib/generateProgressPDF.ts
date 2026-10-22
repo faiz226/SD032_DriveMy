@@ -57,13 +57,13 @@ interface PDFProgressData {
   };
 }
 
-// Jalan's asphalt ramp, as RGB for jsPDF (see DESIGN.md colour tokens).
-const INK: [number, number, number] = [35, 33, 30];          // --asphalt
-const INK_SECONDARY: [number, number, number] = [94, 92, 89]; // --grade-3
-const INK_MUTED: [number, number, number] = [124, 122, 118];  // --grade-4
-const RULE: [number, number, number] = [222, 220, 215];       // --grade-8
-const CONCRETE: [number, number, number] = [228, 227, 222];   // --concrete
-const PAINT: [number, number, number] = [247, 245, 240];      // --paint
+// The app's neutral ramp, as RGB for jsPDF (see the tokens in src/index.css).
+const INK: [number, number, number] = [14, 17, 22];            // --foreground
+const INK_SECONDARY: [number, number, number] = [92, 99, 112]; // --muted-foreground
+const INK_MUTED: [number, number, number] = [139, 146, 158];   // --input
+const RULE: [number, number, number] = [226, 228, 233];        // --border
+const CONCRETE: [number, number, number] = [243, 244, 247];    // --background
+const PAINT: [number, number, number] = [255, 255, 255];       // --card
 
 export async function generateProgressPDF(data: PDFProgressData): Promise<void> {
   const doc = new jsPDF();

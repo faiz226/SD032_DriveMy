@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { SpeakerHigh, Stop, Pause, Play } from "phosphor-react";
+import { SpeakerHigh, Stop, Pause, Play } from "@/components/ui/icons";
 import { requestSpeech, SpeechUnavailableError } from "@/services/speech.service";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";

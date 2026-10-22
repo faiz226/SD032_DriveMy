@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   ArrowCircleLeft, ArrowCircleRight, Eye, Warning, Gauge
-} from "phosphor-react";
+} from "@/components/ui/icons";
 
 interface SimulationHUDProps {
   leftSignal: boolean;

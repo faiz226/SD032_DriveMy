@@ -17,17 +17,17 @@ const DrawerPopup = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Vaul.Content> & { showBar?: boolean }
 >(({ className, children, showBar, ...props }, ref) => (
   <Vaul.Portal>
-    <Vaul.Overlay className="fixed inset-0 z-50 bg-black/80" />
+    <Vaul.Overlay className="fixed inset-0 z-50 bg-overlay/50" />
     <Vaul.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-3xl border bg-card",
         className
       )}
       {...props}
     >
       {showBar && (
-        <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+        <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/25" />
       )}
       <div className="pb-8">{children}</div>
     </Vaul.Content>

@@ -1,5 +1,12 @@
 # Generating assets for DriveMy
 
+> **Status, 2026-10-22.** The Jalan system these briefs were written for is
+> retired, and `DESIGN_SYSTEM.md` with it; the live spec is `DESIGN.md`
+> ("Susur keluar"). Interface icons now come from Hugeicons through
+> `src/components/ui/icons.tsx`, so do not draw new icons to the stroke rules
+> below. The road-sign sourcing rules still apply in full, and the maneuver
+> brief stays as the record of how the existing maneuver icons were drawn.
+
 Briefs for producing icons and motion that belong to the Jalan system instead
 of looking machine-made. Read `DESIGN_SYSTEM.md` first — these prompts assume
 its vocabulary.

@@ -9,37 +9,39 @@ const model = dashboardModel({
   mock: { count: 2, history: [{ score: 38, total_questions: 50 }, { score: 40, total_questions: 50 }] },
   theory: { completedModules: 1, totalModules: 3, percentage: 33, byModule: [{ module_id: "rpk-exterior", completed: true }] },
 });
-const view = () => render(<MemoryRouter><DashboardView score={68} model={model} activity={[]}/></MemoryRouter>);
+const view = () => render(<MemoryRouter><DashboardView name="Nur" score={68} parts={{ theory: 59, practical: 9 }} model={model} activity={[]} /></MemoryRouter>);
 
 describe("DashboardView", () => {
-  it("leads with the readiness road, its score and one next step", () => {
+  it("leads with the distance left on the gantry and the road", () => {
     view();
-    expect(screen.getByRole("heading", { level: 1, name: "Jarak ke Lulus" })).toBeInTheDocument();
-    expect(screen.getByRole("progressbar", { name: "Learning score" })).toHaveAttribute("aria-valuenow", "68");
-    expect(screen.getByText("32 points to the end of the road")).toBeInTheDocument();
-    const next = screen.getByRole("heading", { level: 2, name: /Next.*Continue RPK \/ RSM/ });
-    expect(next).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Distance to your P licence" })).toBeInTheDocument();
+    expect(screen.getByText("32 points to go", { selector: ".sr-only" })).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: "Readiness score" })).toHaveAttribute("aria-valuenow", "68");
+    expect(screen.getByText("Theory: 59 of 85. Practical: 9 of 15.")).toBeInTheDocument();
+  });
+
+  it("never claims a licence: the theory plate says it is not a JPJ record or names the shortfall", () => {
+    view();
+    expect(screen.getByText("Best 40/50. The pass mark is 42.")).toBeInTheDocument();
+    expect(screen.getByText(/not an official JPJ result/)).toBeInTheDocument();
+  });
+
+  it("shows one next step on the VMS board", () => {
+    view();
+    expect(screen.getByRole("heading", { level: 2, name: "Continue RPK / RSM" })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /Continue/ }).some(link => link.getAttribute("href") === "/rpk-rsm")).toBe(true);
   });
 
-  it("never claims a licence: both plates stay unverified", () => {
+  it("offers all six modules as toll lanes, with the KPP 01 lane pointing at the 50-question mock", () => {
     view();
-    expect(screen.getAllByText("Not verified")).toHaveLength(2);
+    const lanes = within(screen.getByRole("region", { name: "Pick a lane" }));
+    expect(lanes.getAllByRole("link")).toHaveLength(6);
+    expect(lanes.getByRole("link", { name: /KPP 01 mock test/ })).toHaveAttribute("href", "/mock-test");
   });
 
-  it("states a mock below the pass mark as a shortfall, in numbers", () => {
+  it("states a mock below the pass mark as a shortfall, in words", () => {
     view();
-    const performance = screen.getByRole("heading", { name: "KPP performance" }).closest("div") as HTMLElement;
-    expect(within(performance).getByText("−2")).toBeInTheDocument();
-    expect(within(performance).getByText("marks short of the pass mark")).toBeInTheDocument();
-  });
-
-  it("offers all six bays as links, with the KPP 01 bay pointing at the 50-question mock", () => {
-    view();
-    const bays = within(screen.getByRole("region", { name: "Learning bays" }));
-    expect(bays.getAllByRole("link")).toHaveLength(6);
-    expect(bays.getByRole("link", { name: /KPP 01 mock test/ })).toHaveAttribute("href", "/mock-test");
-    expect(bays.getByRole("img", { name: "In progress: 1/5" })).toBeInTheDocument();
+    expect(screen.getByText("Short of the pass mark")).toBeInTheDocument();
   });
 
   it("has no axe violations that jsdom can detect", async () => {

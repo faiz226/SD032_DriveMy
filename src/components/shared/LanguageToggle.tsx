@@ -1,7 +1,7 @@
 import { useLanguage } from "@/hooks/useLanguage";
 import { cn } from "@/lib/utils";
 import type { Language } from "@/lib/constants";
-import { Translate } from "phosphor-react";
+import { Translate } from "@/components/ui/icons";
 
 interface LanguageToggleProps {
   variant?:  "pill" | "text" | "icon";
@@ -63,7 +63,7 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
       role="group"
       aria-label={t("a11y.toggleLanguage")}
       className={cn(
-        "language-toggle inline-flex rounded-full border border-border bg-muted p-0.5 gap-0.5",
+        "inline-flex gap-0.5 rounded-full bg-muted p-1",
         className
       )}
     >
@@ -77,10 +77,10 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
           aria-pressed={language === lang.code}
           lang={lang.code === "ms" ? "ms-MY" : "en-MY"}
           className={cn(
-            "touch-target rounded-full px-3 text-xs font-semibold tracking-wide uppercase",
-            "transition-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "inline-flex h-9 min-w-11 items-center justify-center rounded-full px-3 text-xs font-semibold tracking-wide",
+            "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             language === lang.code
-              ? "bg-background text-foreground shadow-sm"
+              ? "bg-card text-foreground shadow-sm dark:bg-secondary"
               : "text-muted-foreground hover:text-foreground"
           )}
         >

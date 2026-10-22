@@ -1,4 +1,4 @@
-import { Warning } from "phosphor-react";
+import { Warning } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 interface AuthFormAlertProps {

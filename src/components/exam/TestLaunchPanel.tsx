@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightning, Play } from "phosphor-react";
+import { CheckCircle, Lightning, Play } from "@/components/ui/icons";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
-import "@/styles/jalan-type.css";
 import type { TranslationKey } from "@/lib/translations";
 
 interface TestLaunchPanelProps {
@@ -69,42 +69,30 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   //
-  // Shared by the practice quiz and the KPP1 mock, which is the point: if the
-  // exam room's grammar only worked on the exam room it was fitted to one page,
-  // not a system. A set here is chosen with the same painted bay used to choose
-  // an answer there — square, kerb states selection, filled chip carries the
-  // identity — so a learner meets one pattern, not two.
-  //
-  // Gone from the previous version: a #1e293b header band that belonged to no
-  // palette, a 150px ghosted "?" behind it, three 10px uppercase eyebrows, and
-  // an uppercase font-black submit. The plate voice is for signage; a button is
-  // a control and gets .type-label-strong in sentence case.
-
-  const ink = { color: "rgb(var(--road-ink))" };
-  const muted = { color: "rgb(var(--road-muted))" };
+  // Shared by the practice quiz and the KPP mock. A set is chosen with the same
+  // tile used to choose an answer in the exam room, so a learner meets one
+  // pattern, not two.
 
   return (
-    <div className="type-body mx-auto w-full max-w-xl">
+    <div className="mx-auto w-full max-w-2xl">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
         <header>
-          <p className="type-label text-sm" style={muted}>
+          <p className="text-sm font-medium text-muted-foreground">
             {mode === "quiz" ? t("launch.quizMaster") : t("launch.mockExam")}
           </p>
-          <h1 className="type-display mt-1 text-3xl" style={ink}>
+          <h1 className="page-title mt-1.5">
             {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockExamDesc")}
           </h1>
-          {/* The concrete facts, which are what a returning learner actually
-              came for — not a headline they have read thirty times. */}
-          <p className="type-label mt-3 text-pretty text-[0.9375rem] leading-relaxed whitespace-pre-line" style={muted}>
+          <p className="mt-3 whitespace-pre-line text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
             {mode === "quiz" ? t("launch.quizInfo") : t("launch.mockInfo")}
           </p>
         </header>
 
         <fieldset className="min-w-0">
-          <legend className="type-label-strong mb-3 text-sm" style={ink}>
+          <legend className="mb-3 text-sm font-semibold">
             {mode === "quiz" ? t("launch.selectSection") : t("launch.chooseMock")}
           </legend>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {sections.map((sec) => {
               const isSelected = selectedSet === sec.id;
               return (
@@ -114,28 +102,24 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                   onClick={() => setValue("setId", sec.id)}
                   aria-pressed={isSelected}
                   className={cn(
-                    "bay focus-paint flex w-full min-w-0 items-center gap-3 p-3 text-left",
-                    "transition-[border-color] duration-150 active:translate-y-px",
-                    isSelected ? "bay-selected" : "bay-open"
+                    "tile flex w-full min-w-0 items-center gap-3 p-4 text-left sm:flex-col sm:items-start",
+                    isSelected ? "tile-selected" : "tile-open"
                   )}
                 >
                   <span
                     aria-hidden
-                    style={{
-                      borderRadius: "var(--r-plate)",
-                      ...(isSelected
-                        ? { backgroundColor: "rgb(var(--road-ink))", borderColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))" }
-                        : { borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-muted))" }),
-                    }}
-                    className="type-figure grid h-9 w-9 shrink-0 place-items-center border text-sm transition-colors duration-150"
+                    className={cn(
+                      "type-figure grid h-10 w-10 shrink-0 place-items-center rounded-xl text-base transition-colors duration-150",
+                      isSelected ? "bg-brand text-brand-foreground" : "bg-muted text-muted-foreground"
+                    )}
                   >
                     {sec.id.replace("mock-", "")}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="type-label-strong block truncate text-[0.9375rem]" style={ink}>
+                    <span className="block text-[0.9375rem] font-semibold leading-snug">
                       {t(sec.titleKey as TranslationKey)}
                     </span>
-                    <span className="type-label block truncate text-sm" style={muted}>
+                    <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
                       {t(sec.descKey as TranslationKey)}
                     </span>
                   </span>
@@ -146,26 +130,26 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
           <input type="hidden" {...register("setId")} />
         </fieldset>
 
-        {/* The rules gate the button, so they come BEFORE it. Previously they
-            sat underneath, which meant a learner read "Accept the rules to
-            start" on a disabled control and had to scroll past it to find the
-            checkbox that explained why. */}
+        {/* The rules gate the button, so they come before it. */}
         {mode === "mock" && (
-          <section className="plate p-4">
-            <h2 className="type-label-strong text-sm" style={ink}>{t("launch.examRules")}</h2>
-            <ul className="type-label mt-2 space-y-1.5 text-sm" style={muted}>
-              <li>{t("launch.rule1")}</li>
-              <li>{t("launch.rule2")}</li>
-              <li>{t("launch.rule3")}</li>
+          <section className="panel p-5">
+            <h2 className="text-base font-semibold">{t("launch.examRules")}</h2>
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+              {(["launch.rule1", "launch.rule2", "launch.rule3"] as const).map(rule => (
+                <li key={rule} className="flex gap-2.5">
+                  <CheckCircle size={18} weight="duotone" className="mt-px shrink-0 text-brand-ink" aria-hidden />
+                  <span>{t(rule)}</span>
+                </li>
+              ))}
             </ul>
-            <div className="mt-4 flex items-start gap-3 border-t pt-4" style={{ borderColor: "rgb(var(--road-edge))" }}>
+            <div className="mt-4 flex items-start gap-3 border-t border-border pt-4">
               <Checkbox
                 id="rulesAccepted"
                 checked={rulesAccepted}
                 onCheckedChange={(checked) => setValue("rulesAccepted", !!checked)}
-                className="mt-0.5 shrink-0"
+                className="mt-0.5 h-5 w-5 shrink-0"
               />
-              <label htmlFor="rulesAccepted" className="type-label cursor-pointer select-none text-sm leading-relaxed" style={ink}>
+              <label htmlFor="rulesAccepted" className="cursor-pointer select-none text-sm leading-relaxed">
                 {t("launch.acceptRules")}
               </label>
             </div>
@@ -173,34 +157,20 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
         )}
 
         <div>
-          <button
+          {/* A disabled start keeps a readable label (5.2:1), because the label
+              states the unmet condition a learner needs to see. */}
+          <Button
             type="submit"
+            size="lg"
             disabled={isSubmitDisabled}
-            className={cn(
-              "type-label-strong focus-paint tap flex w-full items-center justify-center gap-2 px-4 text-base",
-              "transition-[opacity,transform] duration-150",
-              isSubmitDisabled ? "cursor-not-allowed" : "active:translate-y-px"
-            )}
-            // A disabled control is exempt from WCAG 1.4.3, and that exemption
-            // is worth nothing to a learner in the sun trying to read why they
-            // cannot proceed — the label states the unmet condition. So it is
-            // held to the same 4.5:1 as live text: grade-2 on grade-7 is
-            // 6.16:1. The fill alone is 1.33:1 against the page, so the edge
-            // carries the shape at 3.33:1.
-            style={{
-              borderRadius: "var(--r-plate)",
-              backgroundColor: isSubmitDisabled ? "rgb(var(--grade-7))" : "rgb(var(--road-ink))",
-              color: isSubmitDisabled ? "rgb(var(--grade-2))" : "rgb(var(--road-raised))",
-              border: isSubmitDisabled ? "1px solid rgb(var(--road-edge))" : "1px solid rgb(var(--road-ink))",
-            }}
+            className={cn("w-full", isSubmitDisabled && "bg-muted text-muted-foreground shadow-none disabled:opacity-100")}
           >
-            {/* fill weight: this is the primary trigger — "this starts it". */}
-            {mode === "quiz" ? <Lightning className="h-5 w-5 shrink-0" weight="fill" aria-hidden /> : <Play className="h-5 w-5 shrink-0" weight="fill" aria-hidden />}
+            {mode === "quiz" ? <Lightning className="!size-5" weight="fill" aria-hidden /> : <Play className="!size-5" weight="fill" aria-hidden />}
             <span className="truncate">{buttonLabel}</span>
-          </button>
+          </Button>
 
           {mode === "quiz" && (
-            <p className="type-label mt-3 text-pretty text-sm leading-relaxed whitespace-pre-line" style={muted}>
+            <p className="mt-3 whitespace-pre-line text-pretty text-sm leading-relaxed text-muted-foreground">
               {t("launch.quizHint")}
             </p>
           )}

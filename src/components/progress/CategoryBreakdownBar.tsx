@@ -6,7 +6,7 @@ import { ChartTooltip } from "@/components/charts/tooltip";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
 import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS } from "@/lib/constants";
-import { ChartFigure } from "./ChartFigure";
+import { ChartFigure, labelColumn } from "./ChartFigure";
 
 interface CategoryBreakdownBarProps {
   data: { category: string; averageScore: number; attempts: number }[];
@@ -32,7 +32,7 @@ export function CategoryBreakdownBar({ data }: CategoryBreakdownBarProps) {
     score: Math.round(d.averageScore),
     attempts: d.attempts,
   }));
-  const list = (items: typeof rows) => items.map(row => row.name).join(", ") || "—";
+  const list = (items: typeof rows) => items.map(row => row.name).join(", ") || "-";
 
   return (
     <ChartFigure
@@ -47,7 +47,7 @@ export function CategoryBreakdownBar({ data }: CategoryBreakdownBarProps) {
         rows: rows.map(row => [row.name, `${row.score}%`, row.attempts]),
       }}
     >
-      <BarChart data={rows} xDataKey="name" orientation="horizontal" aspectRatio="5 / 2" margin={{ top: 8, right: 16, bottom: 8, left: 136 }}>
+      <BarChart data={rows} xDataKey="name" orientation="horizontal" aspectRatio="5 / 2" margin={{ top: 8, right: 16, bottom: 8, left: labelColumn(rows) }}>
         <Grid vertical strokeDasharray="2 6" />
         <Bar dataKey="score" fill="var(--chart-line-primary)" lineCap="butt" animate={false} />
         <BarYAxis showAllLabels />

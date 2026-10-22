@@ -1,20 +1,20 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowsLeftRight, Book, BookOpen, Car, Clipboard, ClipboardText, Mountains, Path, Wrench } from "phosphor-react";
+import NumberFlow from "@number-flow/react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { useOverallReadiness, useMockStats, useTheoryProgress } from "@/hooks/useProgressStats";
 import { getRecentActivity, type ActivityEvent } from "@/services/analytics.service";
-import { ReadinessRoad } from "@/components/dashboard/ReadinessRoad";
-import { NextStep } from "@/components/dashboard/NextStep";
-import { LearningBay } from "@/components/dashboard/LearningBay";
-import { Plate, Figure } from "@/components/ui/road";
+import { GantrySign } from "@/components/dashboard/GantrySign";
+import { JourneyRoad } from "@/components/dashboard/JourneyRoad";
+import { VmsBoard } from "@/components/dashboard/VmsBoard";
+import { TollPlaza, type Lane } from "@/components/dashboard/TollPlaza";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadError } from "@/components/shared/LoadError";
 import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, ROUTES } from "@/lib/constants";
 import { dashboardModel, type DashboardModel, type NextStep as NextStepKey } from "@/lib/dashboard/model";
+import { readinessContributions } from "@/lib/readiness";
 import { learnerKeys } from "@/lib/queryKeys";
-import { cn } from "@/lib/utils";
 
 const NEXT_ROUTE: Record<NextStepKey, string> = {
   theory: ROUTES.THEORY,
@@ -31,102 +31,173 @@ export function DashboardPage() {
   const theory = useTheoryProgress();
   const activity = useQuery({ queryKey: learnerKeys.activity(user?.id), queryFn: () => getRecentActivity(user!.id), enabled: !!user });
   const queries = [readiness, mock, theory, activity];
-  if (queries.some(q => q.isError)) return <div className="jalan-container"><LoadError onRetry={() => { queries.forEach(q => { void q.refetch(); }); }}/></div>;
-  if (queries.some(q => q.isPending)) return <div className="jalan-container space-y-4" aria-busy="true" aria-label={t("common.loading")}><Skeleton className="h-96 w-full"/><div className="learning-grid">{[1,2,3,4,5,6].map(i => <Skeleton key={i} className="h-48"/>)}</div></div>;
+  const fullName = typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : undefined;
+  const name = (fullName || user?.email?.split("@")[0] || t("header.learner")).trim().split(/\s+/).pop() ?? "";
+
+  if (queries.some(q => q.isError)) return <div className="app-container"><LoadError onRetry={() => { queries.forEach(q => { void q.refetch(); }); }} /></div>;
+  if (queries.some(q => q.isPending)) {
+    return (
+      <div className="app-container space-y-8 pt-14" aria-busy="true" aria-label={t("common.loading")}>
+        <Skeleton className="h-9 w-72" />
+        <Skeleton className="h-[22rem] w-full rounded-3xl" />
+        <Skeleton className="h-[140px] w-full rounded-3xl" />
+      </div>
+    );
+  }
+  const parts = readinessContributions({
+    mock: readiness.data?.mockPct ?? 0,
+    quiz: readiness.data?.quizPct ?? 0,
+    theory: readiness.data?.theoryPct ?? 0,
+    sim: readiness.data?.simPct ?? 0,
+  });
   return <DashboardView
+    name={name}
     score={readiness.data?.composite ?? 0}
+    parts={{ theory: parts.mock + parts.quiz + parts.theory, practical: parts.sim }}
     model={dashboardModel({ mock: mock.data, theory: theory.data })}
     activity={activity.data ?? []}
   />;
 }
 
 interface DashboardViewProps {
+  name: string;
   score: number;
+  /** Points earned on each side of the course: theory out of 85, practical out of 15. */
+  parts: { theory: number; practical: number };
   model: DashboardModel;
   activity: ActivityEvent[];
 }
 
+function helloKey(hour: number) {
+  if (hour < 12) return "dashboard.hello.morning" as const;
+  if (hour < 15) return "dashboard.hello.afternoon" as const;
+  if (hour < 19) return "dashboard.hello.evening" as const;
+  return "dashboard.hello.night" as const;
+}
+
+const SECTION_TITLE = "mt-16 text-[1.75rem] font-black tracking-[-0.02em]";
+
 /** The dashboard itself, from data already loaded. Rendered alone in tests and previews. */
-export function DashboardView({ score, model, activity }: DashboardViewProps) {
+export function DashboardView({ name, score, parts, model, activity }: DashboardViewProps) {
   const { t } = useLanguage();
-  const { next, bays, progressLabels, bestMock, headroom, rpkDone, rpkTotal } = model;
-  return <div className="jalan-container space-y-4">
-    <ReadinessRoad value={score}>
-      <NextStep
+  const { next, bays, bestMock, headroom, rpkDone, rpkTotal } = model;
+  const theoryLanes: Lane[] = [
+    {
+      sign: "KPP 01",
+      title: t("dashboard.bay.kpp.title"),
+      description: bestMock ? t("dashboard.bay.kpp.best", { score: bestMock.score, total: MOCK_TOTAL_QUESTIONS }) : t("dashboard.bay.kpp.fresh"),
+      to: ROUTES.MOCK_TEST,
+      state: bays.kpp,
+    },
+    { sign: "RPK / RSM", title: "RPK / RSM", description: t("rpk.topicsCompleted", { done: rpkDone, total: rpkTotal }), to: ROUTES.RPK_RSM, state: bays.rpk },
+    { sign: "R&R", title: t("dashboard.bay.rules.title"), description: t("dashboard.bay.rules.desc"), to: ROUTES.THEORY, state: bays.rules, info: true },
+  ];
+  const practicalLanes: Lane[] = [
+    { sign: t("dashboard.lane.hill"), title: t("dashboard.bay.hill.title"), description: t("dashboard.bay.hill.desc"), to: `${ROUTES.SIMULATIONS}/hill-start`, state: "open" },
+    { sign: t("dashboard.lane.circuit"), title: t("dashboard.bay.circuit.title"), description: t("dashboard.bay.circuit.desc"), to: ROUTES.SIMULATIONS, state: "open" },
+    { sign: t("dashboard.lane.parking"), title: t("dashboard.bay.parallel.title"), description: t("dashboard.bay.parallel.desc"), to: `${ROUTES.SIMULATIONS}/parallel-parking`, state: "open" },
+  ];
+
+  return (
+    <div className="app-container page-enter pb-16">
+      <p className="mt-6 text-[1.5rem] font-extrabold leading-tight tracking-[-0.01em] sm:mt-10 sm:text-[1.625rem]">
+        <span className="font-semibold text-muted-foreground">{t(helloKey(new Date().getHours()))}</span>, {name}.
+      </p>
+
+      <GantrySign score={score} theory={parts.theory} practical={parts.practical} bestMock={bestMock?.score} passMark={MOCK_PASS_MARK} />
+
+      {/* The next step sits right under the sign so a phone shows it without
+          scrolling past the road; the road then runs on into the toll plaza. */}
+      <VmsBoard
         label={t("dashboard.next.label")}
         title={t(`dashboard.next.${next}.title`)}
         detail={t(`dashboard.next.${next}.detail`, { done: rpkDone, total: rpkTotal })}
         action={t(`dashboard.next.${next}.action`)}
         to={NEXT_ROUTE[next]}
       />
-    </ReadinessRoad>
+      <JourneyRoad value={score} label={t("dashboard.hero.meter")} />
 
-    <section aria-labelledby="learning-title" className="pt-2">
-      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="learning-title" className="type-display text-xl">{t("dashboard.bays.title")}</h2>
-        <p className="text-sm text-muted-foreground">{t("dashboard.bays.lead")}</p>
-      </div>
-      <div className="learning-grid">
-        <LearningBay title={t("dashboard.bay.kpp.title")} to={ROUTES.MOCK_TEST} icon={ClipboardText} state={bays.kpp} progressLabel={progressLabels.kpp}
-          description={bestMock ? t("dashboard.bay.kpp.best", { score: bestMock.score, total: MOCK_TOTAL_QUESTIONS }) : t("dashboard.bay.kpp.fresh")}/>
-        <LearningBay title="RPK / RSM" to={ROUTES.RPK_RSM} icon={Wrench} state={bays.rpk} progressLabel={progressLabels.rpk}
-          description={t("rpk.topicsCompleted", { done: rpkDone, total: rpkTotal })}/>
-        <LearningBay title={t("dashboard.bay.circuit.title")} to={ROUTES.SIMULATIONS} icon={Path} description={t("dashboard.bay.circuit.desc")}/>
-        <LearningBay title={t("dashboard.bay.hill.title")} to={`${ROUTES.SIMULATIONS}/hill-start`} icon={Mountains} description={t("dashboard.bay.hill.desc")}/>
-        <LearningBay title={t("dashboard.bay.parallel.title")} to={`${ROUTES.SIMULATIONS}/parallel-parking`} icon={ArrowsLeftRight} description={t("dashboard.bay.parallel.desc")}/>
-        <LearningBay title={t("dashboard.bay.rules.title")} to={ROUTES.THEORY} icon={BookOpen} info state={bays.rules} progressLabel={progressLabels.rules} description={t("dashboard.bay.rules.desc")}/>
-      </div>
-    </section>
+      <section aria-labelledby="lanes-title">
+        <h2 id="lanes-title" className={SECTION_TITLE}>{t("dashboard.lanes.title")}</h2>
+        <p className="mb-6 mt-1 text-muted-foreground">{t("dashboard.lanes.lead")}</p>
+        <div className="space-y-8">
+          <TollPlaza name={t("dashboard.lanes.theory")} lanes={theoryLanes} firstLane={1} />
+          <TollPlaza name={t("dashboard.lanes.practical")} lanes={practicalLanes} firstLane={4} />
+        </div>
+      </section>
 
-    <div className="dashboard-deck pt-2">
-      <Plate className="p-5">
-        <h2 className="type-label-strong text-xl">{t("dashboard.perf.title")}</h2>
-        <dl className="mt-5 grid grid-cols-3 gap-3">
-          <PerformanceFigure label={t("dashboard.perf.passMark")} value={MOCK_PASS_MARK} caption={`/ ${MOCK_TOTAL_QUESTIONS}`}/>
-          <PerformanceFigure label={t("dashboard.perf.best")} value={bestMock?.score ?? "—"} caption={bestMock ? `/ ${bestMock.total_questions}` : ""}/>
-          <PerformanceFigure
-            label={t("dashboard.perf.headroom")}
-            value={headroom === undefined ? "—" : headroom > 0 ? `+${headroom}` : headroom < 0 ? `−${-headroom}` : "0"}
-            caption={headroom === undefined ? "" : `${t("dashboard.perf.marks")} ${t(headroom < 0 ? "dashboard.perf.short" : "dashboard.perf.above")}`}
-            tone={headroom === undefined || headroom === 0 ? undefined : headroom < 0 ? "fail" : "pass"}
-          />
-        </dl>
-        <p className="mt-5 text-xs text-muted-foreground">{t("dashboard.perf.note")}</p>
-      </Plate>
-      <Plate className="p-5">
-        <h2 className="type-label-strong text-xl">{t("dashboard.activity.title")}</h2>
-        {!activity.length
-          ? <p className="mt-3 text-sm text-muted-foreground">{t("dashboard.noActivityDesc")}</p>
-          : <ul className="mt-2 divide-y divide-border">{activity.slice(0, 3).map(event => <ActivityRow key={`${event.type}-${event.id}`} event={event}/>)}</ul>}
-        <Link to={ROUTES.PROGRESS} className="mt-2 inline-flex min-h-12 items-center gap-2 text-sm font-semibold">{t("dashboard.activity.all")}<ArrowRight size={16} weight="bold" aria-hidden="true"/></Link>
-      </Plate>
+      <section aria-labelledby="score-title">
+        <h2 id="score-title" className={SECTION_TITLE}>{t("dashboard.score.title")}</h2>
+        <p className="mb-6 mt-1 text-muted-foreground">{t("dashboard.score.lead")}</p>
+        <div className="grid grid-cols-2 items-center gap-6 lg:grid-cols-4">
+          <dl className="contents">
+            <RoundSign value={MOCK_PASS_MARK} caption={t("dashboard.score.passMark")} />
+            <RoundSign value={bestMock?.score} caption={bestMock ? t("dashboard.score.best") : t("dashboard.score.none")} />
+            <RoundSign
+              value={headroom}
+              signed
+              caption={headroom === undefined ? t("dashboard.score.none") : t(headroom < 0 ? "dashboard.score.short" : "dashboard.score.above")}
+            />
+          </dl>
+          <RoadTip />
+        </div>
+      </section>
+
+      <section aria-labelledby="log-title">
+        <h2 id="log-title" className={`${SECTION_TITLE} mb-6`}>{t("dashboard.log.title")}</h2>
+        {activity.length
+          ? <ul className="panel divide-y divide-border">{activity.slice(0, 5).map(event => <LogRow key={`${event.type}-${event.id}`} event={event} />)}</ul>
+          : <p className="panel px-6 py-5 text-muted-foreground">{t("dashboard.noActivityDesc")}</p>}
+      </section>
+
+      <p className="mt-8 rounded-2xl bg-info/20 px-5 py-4 text-[0.9375rem]">{t("dashboard.note")}</p>
     </div>
-  </div>;
+  );
 }
 
-function PerformanceFigure({ label, value, caption, tone }: { label: string; value: string | number; caption: string; tone?: "pass" | "fail" }) {
-  return <div className="min-w-0">
-    <dt className="text-xs text-muted-foreground">{label}</dt>
-    <dd className="mt-2">
-      <Figure className={cn("block text-[clamp(2rem,3vw,3rem)] leading-none", tone === "pass" && "text-success", tone === "fail" && "text-destructive")}>{value}</Figure>
-      <span className="mt-1 block text-sm text-muted-foreground">{caption}</span>
-    </dd>
-  </div>;
+/** A stat on a round sign: white disc, dark ring, like a speed-limit plate. */
+function RoundSign({ value, caption, signed }: { value: number | undefined; caption: string; signed?: boolean }) {
+  return (
+    <div className="grid justify-items-center gap-3 text-center">
+      <dt className="order-2 max-w-[18ch] text-sm text-muted-foreground">{caption}</dt>
+      <dd className="order-1 grid aspect-square w-[min(100%,10rem)] place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_12px_30px_-10px_#000] sm:text-5xl">
+        {value === undefined ? "-" : <NumberFlow value={value} format={{ signDisplay: signed ? "exceptZero" : "auto" }} />}
+      </dd>
+    </div>
+  );
 }
 
-function ActivityRow({ event }: { event: ActivityEvent }) {
+/** The brown tourist-sign tip card, with a button for another tip. */
+function RoadTip() {
+  const { t } = useLanguage();
+  const tips = [t("dashboard.tip.1"), t("dashboard.tip.2"), t("dashboard.tip.3")];
+  const [index, setIndex] = useState(0);
+  return (
+    <div className="col-span-2 grid min-h-[11.25rem] content-center gap-2.5 rounded-[0.875rem] bg-[#6A4220] p-[1.375rem] text-white shadow-[inset_0_0_0_3px_#6A4220,inset_0_0_0_5px_#fff] lg:col-span-1">
+      <p className="text-lg font-extrabold">{t("dashboard.tip.title")}</p>
+      <p aria-live="polite">{tips[index % tips.length]}</p>
+      <button
+        type="button"
+        onClick={() => setIndex(i => i + 1)}
+        className="min-h-11 justify-self-start rounded-lg border-2 border-white px-3.5 text-sm font-extrabold transition-colors hover:bg-white/10"
+      >
+        {t("dashboard.tip.next")}
+      </button>
+    </div>
+  );
+}
+
+function LogRow({ event }: { event: ActivityEvent }) {
   const { language, t } = useLanguage();
-  const Icon = event.type === "sim" ? Car : event.type === "mock" ? Clipboard : Book;
   const date = event.date ? new Date(event.date) : null;
   const valid = date !== null && !Number.isNaN(+date);
-  return <li className="flex gap-3 py-3">
-    <Icon size={20} aria-hidden="true" className="mt-0.5 shrink-0"/>
-    <div className="min-w-0 flex-1">
-      <p className="text-sm font-medium">{t(event.type === "sim" ? "nav.simulator" : event.type === "mock" ? "nav.mockTest" : "nav.quiz")}</p>
-      <p className="text-xs text-muted-foreground">{event.score}{event.type === "sim" ? ` ${t("common.points")}` : "%"}</p>
-    </div>
-    <time className="shrink-0 text-right text-xs text-muted-foreground" dateTime={valid ? date.toISOString() : undefined}>
-      {valid ? date.toLocaleDateString(language === "ms" ? "ms-MY" : "en-MY", { day: "numeric", month: "short" }) : t("dashboard.activity.noDate")}
-    </time>
-  </li>;
+  const label = t(event.type === "sim" ? "nav.simulator" : event.type === "mock" ? "nav.mockTest" : "nav.quiz");
+  return (
+    <li className="flex justify-between gap-3 px-6 py-4">
+      <p className="min-w-0 font-semibold">{label}, <span className="tabular-nums">{event.score}{event.type === "sim" ? ` ${t("common.points")}` : "%"}</span></p>
+      <time className="shrink-0 whitespace-nowrap text-muted-foreground" dateTime={valid ? date.toISOString() : undefined}>
+        {valid ? date.toLocaleDateString(language === "ms" ? "ms-MY" : "en-MY", { day: "numeric", month: "short", year: "numeric" }) : t("dashboard.activity.noDate")}
+      </time>
+    </li>
+  );
 }

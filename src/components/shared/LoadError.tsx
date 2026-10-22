@@ -1,4 +1,4 @@
-import { Warning, ArrowClockwise } from "phosphor-react";
+import { Warning, ArrowClockwise } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 

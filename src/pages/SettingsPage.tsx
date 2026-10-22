@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Bell, Sun, Moon, Monitor, Envelope, Calendar, CheckCircle, Clock, Circle } from "phosphor-react";
+import { Bell, Sun, Moon, Monitor, Envelope, Calendar, CheckCircle, Clock, Circle } from "@/components/ui/icons";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { ROUTES } from "@/lib/constants";

@@ -1,9 +1,9 @@
 import { SpeechControl } from "@/components/shared/SpeechControl";
-import "@/styles/jalan-type.css";
 
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { XCircle, CheckCircle, CaretDown, CaretUp, ArrowCounterClockwise, Download, House, FunnelSimple } from "phosphor-react";
+import { XCircle, CheckCircle, CaretDown, ArrowCounterClockwise, Download, House, FunnelSimple, Clock } from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -113,122 +113,93 @@ export function TestResultsView({
   };
 
   return (
-    <div className="type-body max-w-3xl mx-auto space-y-6">
-      <div className="plate p-6 sm:p-8">
-        {/* The mark is the headline, and it is stated in marks against the
-            line rather than as a percentage in a gauge. A gauge cannot show a
-            threshold, and the threshold is the entire shape of this
-            qualification: 42 of 50 either happened or it did not. */}
-        <p className="type-label text-sm" style={{ color: "rgb(var(--road-muted))" }}>
-          {t("results.score")}
-        </p>
-        <p className="type-figure mt-1 text-5xl" style={{ color: "rgb(var(--road-ink))" }}>
-          {result.score.toLocaleString(language === "ms" ? "ms-MY" : "en-MY")}
-          <span style={{ color: "rgb(var(--road-muted))" }}>/{result.total}</span>
-        </p>
+    <div className="mx-auto max-w-3xl space-y-[var(--panel-gap)]">
+      <div className="panel overflow-hidden">
+        {/* The mark is the headline, stated in marks against the line: 42 of
+            50 either happened or it did not. */}
+        <div className="p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">{t("results.score")}</p>
+              <p className="type-display mt-2 text-[3.5rem] sm:text-[4.25rem]">
+                {result.score.toLocaleString(language === "ms" ? "ms-MY" : "en-MY")}
+                <span className="text-[0.45em] font-semibold text-muted-foreground"> / {result.total}</span>
+              </p>
+            </div>
+            <span className={cn("pill px-3.5 py-1.5 text-sm", passed ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground")}>
+              {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
+              {passed ? t("results.passed") : t("results.failed")}
+            </span>
+          </div>
 
-        {/* Pass and fail are plates, not tinted pills: a 15% wash measures
-            close to the surface it sits on and does not survive daylight. */}
-        <p
-          className="type-label-strong mt-4 inline-flex items-center gap-2 px-3 py-1.5 text-sm"
-          style={{
-            borderRadius: "var(--r-plate)",
-            backgroundColor: passed ? "rgb(var(--lulus))" : "rgb(var(--berhenti))",
-            color: "rgb(var(--paint))",
-          }}
-        >
-          {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
-          {passed ? t("results.passed") : t("results.failed")}
-        </p>
+          {/* Factual, in marks, never consoling. */}
+          {mode === "mock" && (
+            <p className="mt-4 text-[0.9375rem]">
+              {t("results.passMark", { mark: passMark, total: result.total })}{" "}
+              <span className={cn("font-semibold", passed ? "text-success" : "text-destructive")}>
+                {passed
+                  ? t("results.headroom", { count: result.score - passMark })
+                  : t("results.short", { count: passMark - result.score })}
+              </span>
+            </p>
+          )}
 
-        {/* Signage register: factual, in marks, never consoling. The old copy
-            here was "Keep practising. You can do it!". */}
-        {mode === "mock" && (
-          <p className="type-label mt-3 text-[0.9375rem]" style={{ color: "rgb(var(--road-ink))" }}>
-            {t("results.passMark", { mark: passMark, total: result.total })}{" "}
-            {passed
-              ? t("results.headroom", { count: result.score - passMark })
-              : t("results.short", { count: passMark - result.score })}
+          {result.autoSubmitted && (
+            <p className="mt-2 text-sm font-medium text-destructive">{t("exam.autoSubmitted")}</p>
+          )}
+
+          <p className="mt-4 inline-flex items-center gap-1.5 text-sm tabular-nums text-muted-foreground">
+            <Clock className="h-4 w-4" aria-hidden />
+            {t("results.timeTaken")}: {formatDuration(result.durationSeconds)}
           </p>
-        )}
+        </div>
 
-        {result.autoSubmitted && (
-          <p className="type-label mt-2 text-sm" style={{ color: "rgb(var(--berhenti))" }}>
-            {t("exam.autoSubmitted")}
-          </p>
-        )}
-
-        <p className="type-label mt-4 text-sm tabular-nums" style={{ color: "rgb(var(--road-muted))" }}>
-          {t("results.timeTaken")}: {formatDuration(result.durationSeconds)}
-        </p>
-
-        {/* Action buttons */}
-        <div className="mt-6 flex flex-wrap items-center gap-2">
-          <button
-            onClick={onRetry}
-            className="type-label-strong focus-paint tap flex items-center gap-2 px-4 text-sm"
-            style={{ borderRadius: "var(--r-plate)", backgroundColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))" }}
-          >
-            <ArrowCounterClockwise className="w-4 h-4" />
+        <div className="flex flex-wrap items-center gap-2 border-t border-border bg-muted/40 px-6 py-4 sm:px-8">
+          <Button onClick={onRetry}>
+            <ArrowCounterClockwise aria-hidden />
             {t("results.tryAgain")}
-          </button>
-
+          </Button>
           {mode === "quiz" && wrongIds.length > 0 && onRetryWrong && (
-            <button
-              onClick={() => onRetryWrong(wrongIds)}
-              className="type-label focus-paint tap flex items-center gap-2 border px-4 text-sm"
-              style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
-            >
-              <ArrowCounterClockwise className="w-4 h-4" />
+            <Button variant="outline" onClick={() => onRetryWrong(wrongIds)}>
+              <ArrowCounterClockwise aria-hidden />
               {t("exam.retryWrong")}
-            </button>
+            </Button>
           )}
-
           {mode === "mock" && reviewAvailable && (
-            <button
-              onClick={handlePDF}
-              className="type-label focus-paint tap flex items-center gap-2 border px-4 text-sm"
-              style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
-            >
-              <Download className="w-4 h-4" />
+            <Button variant="outline" onClick={handlePDF}>
+              <Download aria-hidden />
               {t("exam.pdfExport")}
-            </button>
+            </Button>
           )}
-
-          <button
-            onClick={() => navigate(ROUTES.DASHBOARD)}
-            className="type-label focus-paint tap flex items-center gap-2 border px-4 text-sm"
-            style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
-          >
-            <House className="w-4 h-4" />
+          <Button variant="ghost" onClick={() => navigate(ROUTES.DASHBOARD)}>
+            <House aria-hidden />
             {t("results.backToDashboard")}
-          </button>
+          </Button>
         </div>
       </div>
 
       {!reviewAvailable && <p role="status">{t("exam.reviewUnavailable")}</p>}
       {reviewAvailable && <>
-      {/* ── Category breakdown ───────────────────────────────────────── */}
-      <div className="plate p-6 space-y-4">
-        <h3 className="type-label-strong text-base" style={{ color: "rgb(var(--road-ink))" }}>{t("results.categoryBreakdown")}</h3>
-        <div className="space-y-3">
+      {/* Category breakdown: cobalt below the 84% line, green at or above it.
+          The hairline marks the line itself. */}
+      <div className="panel space-y-5 p-6 sm:p-7">
+        <h3 className="text-base font-semibold">{t("results.categoryBreakdown")}</h3>
+        <div className="space-y-4">
           {categories.map((cat) => {
             const { correct, total } = categoryBreakdown[cat];
             const pct = Math.round((correct / total) * 100);
             return (
-              <div key={cat} className="space-y-1">
-                <div className="flex justify-between text-sm">
+              <div key={cat} className="space-y-2">
+                <div className="flex justify-between gap-3 text-sm">
                   <span className="font-medium capitalize">{cat.replace(/-/g, " ")}</span>
-                  <span className="text-muted-foreground font-tabular-nums">{correct}/{total} ({pct}%)</span>
+                  <span className="font-tabular-nums text-muted-foreground">{correct}/{total} ({pct}%)</span>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className="relative h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-500",
-                      pct >= 84 ? "bg-success" : pct >= 50 ? "bg-warning" : "bg-destructive"
-                    )}
+                    className={cn("h-full rounded-full transition-[width] duration-700 ease-out", pct >= 84 ? "bg-success" : "bg-brand")}
                     style={{ width: `${pct}%` }}
                   />
+                  <span aria-hidden className="absolute inset-y-0 w-px bg-foreground/40" style={{ left: "84%" }} />
                 </div>
               </div>
             );
@@ -236,35 +207,27 @@ export function TestResultsView({
         </div>
       </div>
 
-      {/* ── Question review ──────────────────────────────────────────── */}
-      <div className="plate p-6 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <h3 className="type-label-strong text-base" style={{ color: "rgb(var(--road-ink))" }}>{t("results.reviewAnswers")}</h3>
-          <div className="flex items-center gap-4">
+      {/* Question review */}
+      <div className="panel space-y-5 p-6 sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-base font-semibold">{t("results.reviewAnswers")}</h3>
+          <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="show-wrong-only"
                 checked={showWrongOnly}
                 onCheckedChange={(checked) => setShowWrongOnly(!!checked)}
               />
-              <label
-                htmlFor="show-wrong-only"
-                className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
+              <label htmlFor="show-wrong-only" className="cursor-pointer text-sm font-medium leading-none">
                 {t("exam.showWrongOnly")}
               </label>
             </div>
-            <div className="flex items-center gap-1 text-xs">
-              <FunnelSimple className="w-3.5 h-3.5 text-muted-foreground mr-1" />
+            <div className="flex items-center gap-1.5">
+              <FunnelSimple className="h-4 w-4 text-muted-foreground" aria-hidden />
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                {/* Radix renders the trigger as a combobox button whose visible value is
-                    not exposed as its accessible name, so axe reported it as a
-                    button with no discernible text. The key already existed. */}
-                <SelectTrigger
-                  aria-label={t("exam.filterByCategory")}
-                  className="type-label focus-paint tap-sm w-[150px] border px-3 text-sm"
-                  style={{ borderRadius: "var(--r-plate)", borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-ink))" }}
-                >
+                {/* Radix does not expose the trigger's visible value as its
+                    accessible name, so it carries its own label. */}
+                <SelectTrigger aria-label={t("exam.filterByCategory")} className="h-10 w-[170px] text-sm">
                   <SelectValue placeholder={t("exam.allCategories")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,7 +244,7 @@ export function TestResultsView({
         </div>
 
         {filteredQuestions.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
+          <p className="py-4 text-center text-sm text-muted-foreground">
             {showWrongOnly ? t("results.allCorrect") : t("results.noFilterMatch")}
           </p>
         ) : (
@@ -293,53 +256,50 @@ export function TestResultsView({
               const opts = language === "en" ? q.options_en : q.options_ms;
               const qText = language === "en" ? q.question_en : q.question_ms;
               const explanation = language === "en" ? q.explanation_en : q.explanation_ms;
-
               const originalIndex = result.questions.findIndex(orig => orig.id === q.id);
 
               return (
-                <div key={q.id} className="border overflow-hidden" style={{ borderColor: "rgb(var(--road-edge))", borderRadius: "var(--r-plate)" }}>
+                <div key={q.id} className="overflow-hidden rounded-xl border border-border bg-card">
                   <button
                     type="button"
                     onClick={() => toggleExpanded(q.id)}
-                    className={cn(
-                      "w-full flex items-center justify-between p-3 text-left text-sm transition-colors",
-                      isCorrect ? "bg-success/5" : "bg-destructive/5"
-                    )}
+                    aria-expanded={isExpanded}
+                    className="flex w-full items-center justify-between gap-3 p-3.5 text-left text-sm transition-colors hover:bg-accent"
                   >
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex min-w-0 items-center gap-2.5">
                       {isCorrect ? (
-                        <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                        <CheckCircle className="h-5 w-5 shrink-0 text-success" weight="fill" aria-hidden />
                       ) : (
-                        <XCircle className="w-4 h-4 text-destructive shrink-0" />
+                        <XCircle className="h-5 w-5 shrink-0 text-destructive" weight="fill" aria-hidden />
                       )}
                       <span className="truncate font-medium">Q{originalIndex + 1}: {qText}</span>
                     </div>
-                    {isExpanded ? <CaretUp className="w-4 h-4 shrink-0" /> : <CaretDown className="w-4 h-4 shrink-0" />}
+                    <CaretDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200", isExpanded && "rotate-180")} aria-hidden />
                   </button>
 
                   {isExpanded && (
-                    <div className="p-4 border-t border-border space-y-3">
+                    <div className="space-y-3 border-t border-border p-4">
                       <p className="text-sm">{qText}</p>
                       <div className="space-y-1.5">
                         {opts.map((opt, oi) => (
                           <div
                             key={oi}
                             className={cn(
-                              "text-xs px-3 py-2 rounded-md flex items-center gap-2",
-                              oi === q.correct_index && "bg-success/10 font-medium",
-                              oi === userAnswer && oi !== q.correct_index && "bg-destructive/10 line-through"
+                              "flex items-center gap-2 rounded-lg px-3 py-2 text-sm",
+                              oi === q.correct_index && "bg-success/15 font-medium text-success",
+                              oi === userAnswer && oi !== q.correct_index && "bg-destructive/15 text-destructive line-through"
                             )}
                           >
-                            <span className="font-bold">{String.fromCharCode(65 + oi)}.</span>
+                            <span className="font-semibold">{String.fromCharCode(65 + oi)}.</span>
                             {opt}
-                            {oi === q.correct_index && <CheckCircle className="w-3 h-3 text-success ml-auto" />}
-                            {oi === userAnswer && oi !== q.correct_index && <XCircle className="w-3 h-3 text-destructive ml-auto" />}
+                            {oi === q.correct_index && <CheckCircle className="ml-auto h-4 w-4 shrink-0" weight="fill" aria-hidden />}
+                            {oi === userAnswer && oi !== q.correct_index && <XCircle className="ml-auto h-4 w-4 shrink-0" weight="fill" aria-hidden />}
                           </div>
                         ))}
                       </div>
                       {explanation && (
-                        <div className="p-3 rounded-md bg-accent border border-border text-xs text-muted-foreground">
-                          <span className="font-medium text-foreground">{t("quiz.explanation")}:</span> {explanation}
+                        <div className="rounded-xl border border-brand-ink/20 bg-brand/15 p-3 text-sm">
+                          <span className="font-semibold text-brand-ink">{t("quiz.explanation")}:</span> {explanation}
                           <SpeechControl kind="explanation" text={explanation} />
                         </div>
                       )}

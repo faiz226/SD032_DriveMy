@@ -31,7 +31,7 @@ export function ProtectedRoute({
   if (isLoading) {
     return (
       <div
-        className="flex h-screen w-full items-center justify-center bg-background"
+        className="flex min-h-[100dvh] w-full items-center justify-center bg-background"
         role="status"
         aria-label={t("a11y.loading")}
         aria-live="polite"

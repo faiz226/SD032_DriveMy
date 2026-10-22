@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Lock, Eye, EyeSlash, CheckCircle, Warning } from "phosphor-react";
+import { Lock, Eye, EyeSlash, CheckCircle, Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";

@@ -6,7 +6,7 @@ import { useSaveColorblindResult } from "@/hooks/useResults";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Eye, Warning, Play } from 'phosphor-react';
+import { Eye, Warning, Play } from '@/components/ui/icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from "@/lib/utils";
 import {
@@ -308,21 +308,21 @@ export function ColorVisionPage() {
 
     return (
       <div className="max-w-xl mx-auto page-enter mt-10">
-        <div className="bg-card border rounded-3xl shadow-lg overflow-hidden flex flex-col">
+        <div className="panel overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="bg-[#1e293b] text-white p-8 relative overflow-hidden">
-            <div className="absolute -right-4 top-1/2 -translate-y-1/2 text-white/5 select-none pointer-events-none">
-              <Eye className="w-[160px] h-[160px]" weight="fill" />
+          <div className="hero-panel !rounded-none !border-0 !shadow-none p-8">
+            <div aria-hidden="true" className="absolute -right-6 top-1/2 -translate-y-1/2 text-white/[0.06] select-none pointer-events-none">
+              <Eye className="w-[168px] h-[168px]" weight="thin" />
             </div>
 
             <div className="relative z-10">
-              <div className="text-[10px] font-bold tracking-wider uppercase text-white/70 mb-2">
-                ISHIHARA COLOR TEST
+              <div className="mb-2 text-xs font-semibold text-white/75">
+                Ishihara
               </div>
-              <h2 className="font-heading font-bold text-3xl mb-1 leading-tight text-white">
+              <h2 className="type-display mb-1 text-[2rem] text-white">
                 {language === 'en' ? "Test your color vision" : "Uji penglihatan warna anda"}
               </h2>
-              <p className="text-sm text-white/60 italic font-medium">
+              <p className="text-sm text-white/75">
                 {language === 'en' ? "Ujian Penglihatan Warna Ishihara" : "Ishihara Color Vision Test"}
               </p>
             </div>

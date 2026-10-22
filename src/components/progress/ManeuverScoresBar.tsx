@@ -5,7 +5,7 @@ import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
-import { ChartFigure } from "./ChartFigure";
+import { ChartFigure, labelColumn } from "./ChartFigure";
 
 interface ManeuverScoresBarProps {
   data: { maneuver: string; bestScore: number; attempts: number }[];
@@ -44,7 +44,7 @@ export function ManeuverScoresBar({ data }: ManeuverScoresBarProps) {
         rows: rows.map(row => [row.name, `${row.score}%`, row.attempts]),
       }}
     >
-      <BarChart data={rows} xDataKey="name" orientation="horizontal" aspectRatio={rows.length > 4 ? "5 / 3" : "5 / 2"} margin={{ top: 8, right: 16, bottom: 8, left: 136 }}>
+      <BarChart data={rows} xDataKey="name" orientation="horizontal" aspectRatio={rows.length > 4 ? "5 / 3" : "5 / 2"} margin={{ top: 8, right: 16, bottom: 8, left: labelColumn(rows) }}>
         <Grid vertical strokeDasharray="2 6" />
         <Bar dataKey="score" fill="var(--chart-line-primary)" lineCap="butt" animate={false} />
         <BarYAxis showAllLabels />

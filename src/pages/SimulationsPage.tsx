@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Car, Mountains, Square, ArrowsLeftRight,
   Waves, Lightning, Warning, GitMerge, Trophy, ArrowRight
-} from "phosphor-react";
+} from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { cn } from "@/lib/utils";

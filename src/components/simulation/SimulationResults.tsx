@@ -1,7 +1,7 @@
 import {
   Trophy, XCircle, ArrowCounterClockwise, ArrowLeft,
   Warning, Gauge
-} from "phosphor-react";
+} from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { MAX_DEMERIT } from "@/stores/carStore";

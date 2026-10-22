@@ -45,12 +45,12 @@ Road sign images are reproduced from the **Malaysian Highway Code (Kod Jalan Ray
 
 ## Fonts
 
-**Provider:** Google Fonts CDN (`fonts.googleapis.com`)
+**Provider:** self-hosted from npm through Fontsource (`@fontsource-variable/*`, `@fontsource/*`) and bundled with the app; no font CDN is contacted.
 
 | Font | License |
 |------|---------|
-| Inter | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
-| Cal Sans | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
+| Overpass | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
+| DotGothic16 | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | JetBrains Mono | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 
 ---
@@ -68,6 +68,7 @@ Key dependency licenses:
 - Supabase JS — MIT  
 - Phaser 3 — MIT
 - Radix UI — MIT
+- Hugeicons (free icon set and React component) — MIT
 - Tailwind CSS — MIT
 - Zustand — MIT
 - Zod — MIT

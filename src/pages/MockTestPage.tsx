@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Warning } from "phosphor-react";
+import { Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
@@ -213,7 +213,7 @@ export function MockTestPage() {
       )}
 
       {phase === "results" && result && submissionStatus && (
-        <div className="plate p-6 space-y-4" role="status">
+        <div className="panel p-6 space-y-4" role="status">
           <p>{t(submissionStatus === "queued" ? "exam.queuedUngraded" : "exam.saveFailedUngraded")}</p>
           {submissionStatus === "failed" && (
             <Button onClick={() => handleComplete(result)}>{t("exam.retrySave")}</Button>

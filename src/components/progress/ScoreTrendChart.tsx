@@ -40,12 +40,14 @@ export function ScoreTrendChart({ data, label, limit, passMark }: ScoreTrendChar
         rows: points.map(point => [point.title ? `${dateLabel(point.date)} · ${point.title}` : dateLabel(point.date), `${point.score}%`]),
       }}
     >
-      <LineChart data={points} aspectRatio="5 / 2" margin={{ top: 16, right: 16, bottom: 32, left: 40 }}>
+      {/* A fixed height, not bklit's aspectRatio: at 5 / 2 a phone-width panel
+          left 73px for six 0–100% ticks. "" drops bklit's inline ratio. */}
+      <LineChart data={points} aspectRatio="" className="h-56" margin={{ top: 16, right: 16, bottom: 32, left: 40 }}>
         <Grid
           horizontal
           strokeDasharray="2 6"
           highlightRowValues={passMark === undefined ? undefined : [passMark]}
-          highlightRowStroke="rgb(var(--road-ink))"
+          highlightRowStroke="rgb(var(--foreground))"
           highlightRowStrokeDasharray="8 6"
           highlightRowStrokeOpacity={0.8}
         />

@@ -20,7 +20,7 @@ export function EthicsSlider({ value, onChange, disabled }: EthicsSliderProps) {
         onChange={event => onChange(Number(event.target.value))}
         disabled={disabled}
         aria-label={`${t("safety.slider.self")}  -  ${t("safety.slider.community")}`}
-        className="w-full min-h-12 accent-[rgb(var(--asphalt))]"
+        className="w-full min-h-12 accent-[rgb(var(--brand))]"
       />
       
       <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mt-8 px-2">

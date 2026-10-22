@@ -5,7 +5,7 @@ import { ROUTES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { toast } from "sonner";
-import { ShieldCheck, QrCode } from "phosphor-react";
+import { ShieldCheck, QrCode } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 
 export function MfaEnrollmentPage() {
@@ -102,7 +102,7 @@ export function MfaEnrollmentPage() {
 
       {isEnrolled ? (
         <div className="space-y-4">
-          <div className="p-4 bg-green-500/10 text-green-600 dark:text-green-400 rounded-md border border-green-500/20 text-center">
+          <div className="rounded-xl border border-success/25 bg-success/15 p-4 text-center text-success">
             {t("settings.mfaEnabled")}
           </div>
           <Button 
@@ -123,7 +123,7 @@ export function MfaEnrollmentPage() {
         </Button>
       ) : (
         <form onSubmit={handleVerify} className="space-y-4">
-          <div className="p-4 bg-white rounded-md flex justify-center">
+          <div className="flex justify-center rounded-xl bg-white p-4 ring-1 ring-border">
             <img src={qrCode} alt={t("settings.mfaQrAlt")} className="w-48 h-48" />
           </div>
           <p className="text-sm text-center text-muted-foreground">

@@ -5,7 +5,7 @@ import { MaqasidBadge, type MaqasidPrinciple } from "./MaqasidBadge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle } from "phosphor-react";
+import { CheckCircle, XCircle } from "@/components/ui/icons";
 import { Card } from "@/components/ui/card";
 
 export interface ScenarioOption {

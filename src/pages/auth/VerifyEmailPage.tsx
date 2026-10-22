@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Envelope, ArrowLeft, CheckCircle } from "phosphor-react";
+import { Envelope, ArrowLeft, CheckCircle } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCaptcha } from "@/hooks/useCaptcha";

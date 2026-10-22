@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Shell
-import { JalanLayout }    from "@/app/layouts/JalanLayout";
+import { AppLayout }      from "@/app/layouts/AppLayout";
 import { AuthLayout }     from "@/app/layouts/AuthLayout";
 import { ProtectedRoute } from "@/app/ProtectedRoute";
 import { AuthProvider }   from "@/app/providers/AuthProvider";
@@ -25,7 +25,7 @@ const LazyTheoryPage      = lazy(() => import("@/pages/TheoryPage").then(m => ({
 const LazyQuizPage        = lazy(() => import("@/pages/QuizPage").then(m => ({ default: m.QuizPage })));
 const LazyMockTestPage    = lazy(() => import("@/pages/MockTestPage").then(m => ({ default: m.MockTestPage })));
 const LazyColorVisionPage = lazy(() => import("@/pages/ColorVisionPage").then(m => ({ default: m.ColorVisionPage })));
-// The simulator keeps the pre-Jalan shell; it loads only with these routes.
+// The simulator keeps its own shell; it loads only with these routes.
 const LazySimulatorLayout = lazy(() => import("@/app/layouts/SimulatorLayout").then(m => ({ default: m.SimulatorLayout })));
 const LazySimulationsPage = lazy(() => import("@/pages/SimulationsPage").then(m => ({ default: m.SimulationsPage })));
 const LazySimulation3DView = lazy(() => import("@/pages/Simulation3DView").then(m => ({ default: m.Simulation3DView })));
@@ -98,11 +98,11 @@ function App() {
                     <Route path={ROUTES.VERIFY_EMAIL}     element={<VerifyEmailPage />} />
                   </Route>
 
-                  {/* ── Protected app routes — Jalan shell (header) ──────── */}
+                  {/* ── Protected app routes — app shell (header + tab bar) ── */}
                   <Route
                     element={
                       <ProtectedRoute>
-                        <JalanLayout />
+                        <AppLayout />
                       </ProtectedRoute>
                     }
                   >

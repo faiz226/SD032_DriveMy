@@ -34,19 +34,21 @@ function BarYAxisLabel({
         height: bandHeight,
       }}
     >
+      {/* DriveMy patch: full opacity and a resolvable hover colour so 12px
+          labels keep 4.5:1, and no 70px cap - the label column is sized to
+          the longest label instead. Re-apply after updating bklit. */}
       <motion.span
         animate={{
-          opacity: isHovered ? 1 : 0.7,
+          opacity: 1,
           color: isHovered
-            ? "var(--foreground)"
+            ? "var(--chart-foreground)"
             : "var(--chart-label, var(--color-zinc-500))",
         }}
         className={cn("truncate whitespace-nowrap text-right text-xs")}
         initial={{
-          opacity: 0.7,
+          opacity: 1,
           color: "var(--chart-label, var(--color-zinc-500))",
         }}
-        style={{ maxWidth: 70 }}
         transition={{ duration: 0.15 }}
       >
         {label}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "phosphor-react";
+import { X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
@@ -35,7 +35,7 @@ const DialogContent = React.forwardRef<
       className={cn(
         "fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%]",
         "w-full max-w-lg",
-        "bg-background border border-border rounded-md shadow-lg",
+        "bg-card border border-border rounded-2xl shadow-xl",
         "p-6",
         "data-[state=open]:animate-scale-in data-[state=closed]:animate-fade-out",
         "focus:outline-none",

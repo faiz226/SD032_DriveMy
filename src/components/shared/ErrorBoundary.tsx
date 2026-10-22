@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Warning, ArrowClockwise } from "phosphor-react";
+import { Warning, ArrowClockwise } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import * as Sentry from "@sentry/react";
 import { isTelemetryActive } from "@/lib/telemetry";

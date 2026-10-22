@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "phosphor-react";
+import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "@/components/ui/icons";
 import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";

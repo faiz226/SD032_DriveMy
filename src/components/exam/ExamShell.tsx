@@ -1,7 +1,4 @@
 import { SpeechControl } from "@/components/shared/SpeechControl";
-// The exam room is a Jalan surface, so it brings Jalan's type with it. Routes
-// that have not converted do not import this and pay nothing for it.
-import "@/styles/jalan-type.css";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
@@ -14,7 +11,7 @@ import {
   X,
   ArrowLeft,
   ArrowRight,
-} from "phosphor-react";
+} from "@/components/ui/icons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -29,7 +26,8 @@ import { toast } from "sonner";
 import { useExamTimer } from "@/hooks/useExamTimer";
 import { saveProgress, loadProgress, clearProgress } from "@/lib/testProgress";
 import { useActivityStore } from "@/stores/activityStore";
-import { SectionHead } from "@/components/ui/road";
+import { SectionTitle } from "@/components/ui/surface";
+import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/stores/uiStore";
 import { ROUTES } from "@/lib/constants";
 import type { ExamQuestion } from "@/services/questions.service";
@@ -378,43 +376,23 @@ export function ExamShell({
 
   // ── Render ──────────────────────────────────────────────────────────────────
   //
-  // The exam room, cut onto Jalan (see DESIGN_SYSTEM.md). AppLayout drops its
-  // sidebar, header and bottom nav while examMode is set, so there is exactly
-  // one thing on screen and no way to wander into the simulator with thirty
-  // minutes on the clock.
-  //
-  // It previously tried to achieve that from *inside* the app shell, with
-  // `w-[100vw] left-1/2 -ml-[50vw]` and a hardcoded 240px sidebar offset — a
-  // full-bleed escape hack that was also wrong, since the sidebar is 256px
-  // expanded and 72px collapsed. Owning the shell removes the fight.
-  //
-  // This is an Operate surface: the learner is in a task and the interface
-  // should disappear. The question is the only thing set large, and the clock
-  // is the only thing allowed to shout.
+  // The exam room. AppLayout drops its header and tab bar while examMode is
+  // set, so there is exactly one thing on screen and no way to wander into the
+  // simulator with thirty minutes on the clock. This is a task surface: the
+  // question is the only thing set large, and the clock is the only thing
+  // allowed to raise its voice.
 
   const timeIsShort = Boolean(timeLimit) && timer.secondsRemaining <= 300;
-  const ink = { color: "rgb(var(--road-ink))" };
-  const muted = { color: "rgb(var(--road-muted))" };
-  const edge = { borderColor: "rgb(var(--road-edge))" };
 
   const navigator = (
     <>
-      <div className="grid grid-cols-5 gap-1.5 sm:grid-cols-6">
+      <div className="grid grid-cols-5 gap-2 sm:grid-cols-6">
         {shuffledQuestions.map((q, i) => {
           const isAnswered = answers[q.id] !== undefined;
           const isCurrent = i === currentIndex;
           const isFlag = flagged.has(q.id);
-
-          // Answered is a filled ink bay; flagged is an awas plate — dark on
-          // yellow, because awas cannot carry text on a pale surface (1.67:1).
-          // Current is an awas outline. Three states, none relying on hue
-          // alone, all readable in greyscale.
-          const style: React.CSSProperties = isFlag
-            ? {}
-            : isAnswered
-              ? { backgroundColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))", borderColor: "rgb(var(--road-ink))" }
-              : { borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-muted))" };
-
+          // Answered is filled, flagged is amber, current carries a ring:
+          // three states that stay distinct in greyscale too.
           return (
             <button
               key={q.id}
@@ -429,12 +407,14 @@ export function ExamShell({
                 flagged: isFlag ? t("exam.questionAriaFlagged") : "",
               })}
               aria-current={isCurrent ? "true" : undefined}
-              style={style}
               className={cn(
-                "type-label-strong focus-paint grid aspect-square min-h-0 min-w-0 place-items-center",
-                "border text-sm tabular-nums transition-colors duration-150",
-                isFlag && "plate-awas",
-                isCurrent && "outline outline-2 outline-offset-2"
+                "type-figure grid aspect-square min-h-0 min-w-0 place-items-center rounded-lg border text-sm transition-colors duration-150",
+                isFlag
+                  ? "pill-flag"
+                  : isAnswered
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border bg-card text-muted-foreground hover:border-foreground/30 hover:text-foreground",
+                isCurrent && "ring-2 ring-brand-ink ring-offset-2 ring-offset-background"
               )}
             >
               {i + 1}
@@ -443,18 +423,18 @@ export function ExamShell({
         })}
       </div>
 
-      <ul className="type-label mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm" style={muted}>
+      <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
         <li className="flex items-center gap-2">
-          <span aria-hidden className="h-3.5 w-3.5 border" style={{ backgroundColor: "rgb(var(--road-ink))", borderColor: "rgb(var(--road-ink))" }} />
+          <span aria-hidden className="h-3.5 w-3.5 rounded bg-foreground" />
           {t("exam.legend.answered")}
         </li>
         <li className="flex items-center gap-2">
-          <span aria-hidden className="h-3.5 w-3.5 border" style={edge} />
+          <span aria-hidden className="h-3.5 w-3.5 rounded border border-border bg-card" />
           {t("exam.legend.unanswered")}
         </li>
         {mode === "mock" && (
           <li className="flex items-center gap-2">
-            <span aria-hidden className="plate-awas h-3.5 w-3.5" />
+            <span aria-hidden className="pill-flag h-3.5 w-3.5 rounded" />
             {t("exam.legend.flagged")}
           </li>
         )}
@@ -462,31 +442,20 @@ export function ExamShell({
     </>
   );
 
-  // Rendered through a portal, not in place. `.page-shell` carries the
-  // `page-enter` keyframe, whose `transform` makes it the containing block for
-  // any `position: fixed` descendant — so a full-viewport exam laid out inside
-  // it collapsed to nothing. Escaping to <body> also means no page wrapper's
-  // padding or max-width can reach the exam.
+  // Rendered through a portal, not in place: `.page-enter` animates
+  // `transform`, which would make a page wrapper the containing block for this
+  // full-viewport `position: fixed` room and collapse it.
   return createPortal(
-    <div
-      className="type-body fixed inset-0 z-40 flex flex-col"
-      style={{ backgroundColor: "rgb(var(--road-page))", color: "rgb(var(--road-ink))" }}
-    >
-      {/* ── Rail ─────────────────────────────────────────────────────────────
-          Exit, position, clock. The clock is the only thing here that has to be
-          readable at a glance, so it is the only thing set large. */}
-      <header
-        className="flex h-14 shrink-0 items-center gap-2 border-b px-2 sm:px-4"
-        style={{ ...edge, backgroundColor: "rgb(var(--road-raised))" }}
-      >
+    <div className="fixed inset-0 z-40 flex flex-col bg-background text-foreground">
+      {/* ── Rail: exit, position, clock ─────────────────────────────────────── */}
+      <header className="glass flex h-16 shrink-0 items-center gap-2 border-b border-border/70 px-2 sm:px-4">
         <button
           type="button"
           onClick={handleRequestExit}
           // The visible label is hidden below 640px, so the icon-only button
           // needs its own name or it reaches a screen reader as "button".
           aria-label={t("exam.exit")}
-          className="type-label focus-paint tap-sm flex items-center gap-1.5 px-2.5 text-sm transition-colors"
-          style={muted}
+          className="tap-sm flex items-center gap-1.5 rounded-full px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           <X className="h-5 w-5 shrink-0" aria-hidden />
           <span className="hidden sm:inline">{t("exam.exit")}</span>
@@ -498,22 +467,16 @@ export function ExamShell({
           type="button"
           onClick={() => setShowNavigator(true)}
           aria-label={t("exam.openNavigator")}
-          className="focus-paint tap-sm mx-auto flex flex-col justify-center gap-1 px-3"
+          className="tap-sm mx-auto flex flex-col items-center justify-center gap-1.5 rounded-xl px-3"
         >
-          <span className="type-figure text-sm" style={ink}>
+          <span className="type-figure text-sm">
             {currentIndex + 1}
-            <span style={muted}> / {shuffledQuestions.length}</span>
+            <span className="text-muted-foreground"> / {shuffledQuestions.length}</span>
           </span>
-          {/* Solid behind is answered, broken ahead is what is still open —
-              the road-marking grammar, at rail scale. */}
-          <span
-            aria-hidden
-            className="block h-1 w-24 overflow-hidden sm:w-36"
-            style={{ backgroundColor: "rgb(var(--grade-7))" }}
-          >
+          <span aria-hidden className="block h-1.5 w-24 overflow-hidden rounded-full bg-muted sm:w-40">
             <span
-              className="block h-full transition-[width] duration-300 ease-out-quart"
-              style={{ width: `${progressPercentage}%`, backgroundColor: "rgb(var(--road-ink))" }}
+              className="block h-full rounded-full bg-brand transition-[width] duration-500 ease-out"
+              style={{ width: `${progressPercentage}%` }}
             />
           </span>
         </button>
@@ -523,15 +486,12 @@ export function ExamShell({
             role="timer"
             aria-live="off"
             aria-label={t("quiz.timeRemaining")}
-            className="type-figure tap-sm flex items-center gap-1.5 px-2.5 text-lg sm:px-3"
-            // Under five minutes the clock stops being text and becomes a
-            // berhenti plate. Colour alone is not enough on a cheap panel in
-            // daylight, and not enough for a colour-blind learner.
-            style={
-              timeIsShort
-                ? { backgroundColor: "rgb(var(--berhenti))", color: "rgb(var(--paint))", borderRadius: "var(--r-plate)" }
-                : ink
-            }
+            // Under five minutes the clock becomes a red pill with a filled
+            // icon: colour plus shape, so it reads for a colour-blind learner.
+            className={cn(
+              "type-figure tap-sm flex items-center gap-1.5 rounded-full px-3 text-lg transition-colors",
+              timeIsShort ? "bg-destructive text-destructive-foreground" : "bg-muted text-foreground"
+            )}
           >
             <Clock className="h-4 w-4 shrink-0" aria-hidden weight={timeIsShort ? "fill" : "regular"} />
             {timer.formattedTime}
@@ -542,11 +502,11 @@ export function ExamShell({
       </header>
 
       {/* ── Question ─────────────────────────────────────────────────────────
-          One question, one screen. Measure is capped so a line of Malay — which
-          runs about a third longer than the same line of English — still breaks
-          somewhere comfortable instead of running the width of a tablet. */}
+          One question, one screen. Measure is capped so a line of Malay, which
+          runs about a third longer than the same line of English, still breaks
+          somewhere comfortable. */}
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:max-w-5xl lg:flex-row lg:gap-10 lg:py-10">
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:max-w-5xl lg:flex-row lg:gap-12 lg:py-12">
           <div className="min-w-0 flex-1">
             {mode === "mock" && (
               <button
@@ -554,40 +514,35 @@ export function ExamShell({
                 onClick={toggleFlag}
                 aria-pressed={flagged.has(question.id)}
                 className={cn(
-                  "type-label focus-paint tap-sm mb-5 inline-flex items-center gap-2 px-3 text-sm transition-colors",
-                  flagged.has(question.id) ? "plate-awas" : "border"
+                  "tap-sm mb-5 inline-flex items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors",
+                  flagged.has(question.id) ? "pill-flag" : "border-border bg-card text-muted-foreground hover:text-foreground"
                 )}
-                style={flagged.has(question.id) ? undefined : { ...edge, ...muted, borderRadius: "var(--r-plate)" }}
               >
                 <Flag className="h-4 w-4 shrink-0" weight={flagged.has(question.id) ? "fill" : "regular"} aria-hidden />
                 {flagged.has(question.id) ? t("exam.unflagQuestion") : t("exam.flagQuestion")}
               </button>
             )}
 
-            {/* Body family rather than display: this is prose a learner reads
-                carefully, fifty times, often in Malay. Barlow's brief is
-                highway signage and it holds long BM strings without collapsing;
-                Archivo's expanded display weight would shout at every question. */}
-            <h1 className="type-label-strong text-pretty text-xl leading-snug sm:text-2xl" style={ink}>
+            <h1 className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.625rem]">
               {language === "en"
                 ? question.question_en || question.question_ms
                 : question.question_ms || question.question_en}
             </h1>
             <SpeechControl key={`${question.id}-${language}`} text={[(language === "en" ? question.question_en || question.question_ms : question.question_ms || question.question_en), ...optionsEn.map((option, index) => `${String.fromCharCode(65 + index)}. ${language === "ms" ? optionsMs[index] || option : option || optionsMs[index]}`)].filter(Boolean).join(". ")} />
             {language === "en" && !question.question_en && (
-              <p className="type-label mt-2 text-sm italic" style={muted}>(English translation unavailable)</p>
+              <p className="mt-2 text-sm italic text-muted-foreground">(English translation unavailable)</p>
             )}
             {language === "ms" && !question.question_ms && (
-              <p className="type-label mt-2 text-sm italic" style={muted}>(Terjemahan BM tidak tersedia)</p>
+              <p className="mt-2 text-sm italic text-muted-foreground">(Terjemahan BM tidak tersedia)</p>
             )}
 
             {question.image_url && (
-              <div className="plate mt-5 overflow-hidden">
-                <img src={question.image_url} alt="" className="mx-auto max-h-56 w-auto object-contain p-3" />
+              <div className="panel mt-5 overflow-hidden">
+                <img src={question.image_url} alt="" className="mx-auto max-h-56 w-auto object-contain p-4" />
               </div>
             )}
 
-            <div className="mt-6 space-y-2.5" ref={optionsRef} role="radiogroup">
+            <div className="mt-7 space-y-3" ref={optionsRef} role="radiogroup">
               {optionsEn.map((optEn, i) => {
                 const optMs = optionsMs[i] || "";
                 const isSelected = selectedOption === i;
@@ -595,24 +550,21 @@ export function ExamShell({
                 const optionIsCorrect = isCorrect(i);
                 const userChoseThis = isSelected && isRevealed;
 
-                // Every state is carried by the kerb edge and a filled letter
-                // chip, never by a wash of tinted background. A 5% tint measures
-                // about 1.1:1 against the page — it does not survive noon
-                // sunlight on a 500-nit phone, which is where this is used.
-                let bayKerb = "bay-open";
-                let chip: React.CSSProperties = { borderColor: "rgb(var(--road-edge))", color: "rgb(var(--road-muted))" };
-
+                // State is an edge, a tint and a filled letter chip together,
+                // so it never rests on colour alone.
+                let tileState = "tile-open";
+                let chip = "border-border bg-muted text-muted-foreground";
                 if (isSelected && !isRevealed) {
-                  bayKerb = "bay-selected";
-                  chip = { backgroundColor: "rgb(var(--road-ink))", borderColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))" };
+                  tileState = "tile-selected";
+                  chip = "border-brand-ink bg-brand text-brand-foreground";
                 }
                 if (isRevealed && optionIsCorrect) {
-                  bayKerb = "bay-done";
-                  chip = { backgroundColor: "rgb(var(--lulus))", borderColor: "rgb(var(--lulus))", color: "rgb(var(--paint))" };
+                  tileState = "tile-done";
+                  chip = "border-success bg-success text-success-foreground";
                 }
                 if (isRevealed && userChoseThis && !optionIsCorrect) {
-                  bayKerb = "bay-fail";
-                  chip = { backgroundColor: "rgb(var(--berhenti))", borderColor: "rgb(var(--berhenti))", color: "rgb(var(--paint))" };
+                  tileState = "tile-fail";
+                  chip = "border-destructive bg-destructive text-destructive-foreground";
                 }
 
                 return (
@@ -622,19 +574,15 @@ export function ExamShell({
                     aria-checked={isSelected}
                     onClick={() => handleSelectOption(i)}
                     disabled={isRevealed}
-                    // The option IS the bay — a painted rectangle whose kerb
-                    // colour is its state. Wrapping a button in a bay div would
-                    // put the tap target inside the paint instead of on it.
                     className={cn(
-                      "bay focus-paint flex w-full min-w-0 items-center gap-3 p-3 text-left",
-                      bayKerb,
-                      isRevealed ? "cursor-default" : "active:translate-y-px"
+                      "tile flex w-full min-w-0 items-center gap-3.5 p-3.5 text-left",
+                      tileState,
+                      isRevealed && "cursor-default"
                     )}
                   >
                     <span
                       aria-hidden
-                      style={{ ...chip, borderRadius: "var(--r-plate)" }}
-                      className="type-label-strong grid h-9 w-9 shrink-0 place-items-center border text-sm transition-colors duration-150"
+                      className={cn("type-figure grid h-9 w-9 shrink-0 place-items-center rounded-[0.625rem] border text-sm transition-colors duration-150", chip)}
                     >
                       {isRevealed && optionIsCorrect ? (
                         <CheckCircle className="h-5 w-5" weight="fill" />
@@ -644,7 +592,7 @@ export function ExamShell({
                         String.fromCharCode(65 + i)
                       )}
                     </span>
-                    <span className="type-label min-w-0 flex-1 text-pretty text-[0.9375rem] leading-snug" style={ink}>
+                    <span className="min-w-0 flex-1 text-pretty text-[0.9375rem] font-medium leading-snug">
                       {language === "en" ? optEn || optMs : optMs || optEn}
                     </span>
                   </button>
@@ -653,9 +601,9 @@ export function ExamShell({
             </div>
 
             {mode === "quiz" && quizPhase === "revealed" && (question.explanation_en || question.explanation_ms) && (
-              <div className="plate mt-6 p-4" style={{ borderLeft: "4px solid rgb(var(--sign-info))" }}>
-                <p className="type-label-strong text-sm" style={ink}>{t("quiz.explanation")}</p>
-                <p className="type-label mt-1.5 text-pretty text-[0.9375rem] leading-relaxed" style={ink}>
+              <div className="mt-6 rounded-2xl border border-brand-ink/25 bg-brand/15 p-4 sm:p-5">
+                <p className="text-sm font-semibold text-brand-ink">{t("quiz.explanation")}</p>
+                <p className="mt-1.5 text-pretty text-[0.9375rem] leading-relaxed">
                   {language === "en"
                     ? question.explanation_en || question.explanation_ms
                     : question.explanation_ms || question.explanation_en}
@@ -666,14 +614,16 @@ export function ExamShell({
           </div>
 
           {/* On a wide screen the navigator is simply always open. On a phone it
-              is the sheet below — same markup, no second implementation. */}
-          <aside className="hidden w-64 shrink-0 lg:block">
-            <SectionHead className="mb-4">{t("exam.navigator")}</SectionHead>
-            {navigator}
+              is the sheet below: same markup, no second implementation. */}
+          <aside className="hidden w-72 shrink-0 lg:block">
+            <div className="panel p-5">
+              <SectionTitle className="mb-4 text-base md:text-base">{t("exam.navigator")}</SectionTitle>
+              {navigator}
+            </div>
             {mode === "quiz" && (
-              <div className="plate mt-6 p-4">
-                <p className="type-label-strong text-sm" style={ink}>{t("exam.practiceTip")}</p>
-                <p className="type-label mt-1.5 text-pretty text-sm leading-relaxed" style={muted}>
+              <div className="mt-4 rounded-2xl bg-muted p-4">
+                <p className="text-sm font-semibold">{t("exam.practiceTip")}</p>
+                <p className="mt-1.5 text-pretty text-sm leading-relaxed text-muted-foreground">
                   {t("exam.practiceTipBody")}
                 </p>
               </div>
@@ -683,56 +633,44 @@ export function ExamShell({
       </div>
 
       {/* ── Action bar ───────────────────────────────────────────────────────
-          Fixed in the thumb zone and padded past the home indicator. The primary
-          action takes the remaining width, so "Seterusnya" has room to breathe
-          without the bar reflowing between languages. */}
-      <div
-        className="shrink-0 border-t pb-[env(safe-area-inset-bottom)]"
-        style={{ ...edge, backgroundColor: "rgb(var(--road-raised))" }}
-      >
+          In the thumb zone and padded past the home indicator. The primary
+          action takes the remaining width, so "Seterusnya" has room without
+          the bar reflowing between languages. */}
+      <div className="glass shrink-0 border-t border-border/70 pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto flex w-full max-w-2xl items-center gap-2 px-4 py-3 sm:px-6 lg:max-w-5xl">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="icon"
             onClick={handlePrev}
             disabled={currentIndex === 0}
             aria-label={t("quiz.previous")}
-            className="focus-paint tap flex shrink-0 items-center justify-center border transition-colors disabled:pointer-events-none disabled:opacity-30"
-            style={{ ...edge, ...ink, borderRadius: "var(--r-plate)" }}
+            className="h-12 w-12 shrink-0"
           >
-            <ArrowLeft className="h-5 w-5" aria-hidden />
-          </button>
+            <ArrowLeft className="!size-5" aria-hidden />
+          </Button>
 
           {mode === "quiz" && quizPhase === "answering" ? (
-            <button
-              type="button"
+            <Button
               onClick={handleConfirmQuiz}
               disabled={selectedOption === null}
-              className="type-label-strong focus-paint tap flex flex-1 items-center justify-center gap-2 px-4 text-[0.9375rem] transition-opacity disabled:pointer-events-none disabled:opacity-40"
-              style={{ backgroundColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))", borderRadius: "var(--r-plate)" }}
+              className="h-12 flex-1 text-[0.9375rem]"
             >
               {t("exam.confirmAnswer")}
-            </button>
+            </Button>
           ) : (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="type-label-strong focus-paint tap flex flex-1 items-center justify-center gap-2 px-4 text-[0.9375rem] active:translate-y-px"
-              style={{ backgroundColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))", borderRadius: "var(--r-plate)" }}
-            >
+            <Button onClick={handleNext} className="h-12 flex-1 text-[0.9375rem]">
               <span className="truncate">{isLastQuestion ? t("quiz.submit") : t("quiz.next")}</span>
-              {!isLastQuestion && <ArrowRight className="h-5 w-5 shrink-0" aria-hidden weight="bold" />}
-            </button>
+              {!isLastQuestion && <ArrowRight className="!size-5 shrink-0" aria-hidden weight="bold" />}
+            </Button>
           )}
         </div>
       </div>
 
-      {/* ── Question navigator (phone) ───────────────────────────────────────
-          Was a sidebar rendered below fifty questions' worth of options, so on a
-          phone it was effectively unreachable. */}
+      {/* ── Question navigator (phone) ─────────────────────────────────────── */}
       <Drawer open={showNavigator} onOpenChange={setShowNavigator}>
-        <DrawerPopup className="lg:hidden">
+        <DrawerPopup className="lg:hidden" showBar>
           <DrawerPanel>
-            <DrawerHeader>
+            <DrawerHeader className="text-left">
               <DrawerTitle>{t("exam.navigator")}</DrawerTitle>
               <DrawerDescription>
                 {t("quiz.answered", { count: answeredCount, total: shuffledQuestions.length })}
@@ -743,7 +681,7 @@ export function ExamShell({
         </DrawerPopup>
       </Drawer>
 
-      {/* ── Submit confirmation ──────────────────────────────────────────────*/}
+      {/* ── Submit confirmation ─────────────────────────────────────────────── */}
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
         <DialogContent>
           <DialogHeader>
@@ -753,29 +691,15 @@ export function ExamShell({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <button
-              type="button"
-              onClick={handleCancelSubmit}
-              className="type-label focus-paint tap-sm px-4 text-sm"
-              style={muted}
-            >
-              {t("common.cancel")}
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirmSubmit}
-              className="type-label-strong focus-paint tap-sm px-4 text-sm"
-              style={{ backgroundColor: "rgb(var(--road-ink))", color: "rgb(var(--road-raised))", borderRadius: "var(--r-plate)" }}
-            >
-              {t("quiz.submit")}
-            </button>
+            <Button variant="ghost" onClick={handleCancelSubmit}>{t("common.cancel")}</Button>
+            <Button onClick={handleConfirmSubmit}>{t("quiz.submit")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* ── Exit confirmation ────────────────────────────────────────────────
-          Exiting is the only way out now, so it has to be honest about what it
-          costs: the work is kept, but on a mock the clock does not stop. */}
+      {/* ── Exit confirmation ───────────────────────────────────────────────
+          Exiting is the only way out, so it is honest about the cost: the work
+          is kept, but on a mock the clock does not stop. */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
         <DialogContent>
           <DialogHeader>
@@ -783,22 +707,8 @@ export function ExamShell({
             <DialogDescription>{t("exam.exitConfirmDesc")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <button
-              type="button"
-              onClick={() => setShowExitModal(false)}
-              className="type-label focus-paint tap-sm px-4 text-sm"
-              style={muted}
-            >
-              {t("exam.stay")}
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirmExit}
-              className="type-label-strong focus-paint tap-sm px-4 text-sm"
-              style={{ backgroundColor: "rgb(var(--berhenti))", color: "rgb(var(--paint))", borderRadius: "var(--r-plate)" }}
-            >
-              {t("exam.exitConfirmAction")}
-            </button>
+            <Button variant="ghost" onClick={() => setShowExitModal(false)}>{t("exam.stay")}</Button>
+            <Button variant="destructive" onClick={handleConfirmExit}>{t("exam.exitConfirmAction")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

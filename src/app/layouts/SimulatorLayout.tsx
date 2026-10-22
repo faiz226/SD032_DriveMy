@@ -1,5 +1,4 @@
-import "@/styles/simulator-compat.css";
-import { useState, useId, useLayoutEffect } from "react";
+import { useState, useId } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   GridFour,
@@ -21,7 +20,7 @@ import {
   Moon,
   Translate,
   Wrench
-} from "phosphor-react";
+} from "@/components/ui/icons";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { OfflineBanner } from "@/components/shared/OfflineBanner";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
@@ -59,7 +58,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   [ROUTES.PROGRESS]:     <TrendUp weight="fill" className="h-5 w-5" />,
 };
 
-// Same destinations as the Jalan header, so the two menus cannot drift apart.
+// Same destinations as the app header, so the two menus cannot drift apart.
 const NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.map(item => ({
   ...item,
   icon: NAV_ICONS[item.href],
@@ -470,7 +469,7 @@ interface AppLayoutProps {
 }
 
 /**
- * The pre-Jalan shell, kept for the simulator routes while the simulator is
+ * The simulator shell, kept for the simulator routes while the simulator is
  * rebuilt separately (feat/sim-v2). It is loaded lazily with those routes, so
  * its dock, theme toggler and compatibility stylesheet stay out of everyone
  * else's bundle. Delete it once the new simulator owns its page.
@@ -481,19 +480,13 @@ export function SimulatorLayout({ showSidebar: showSidebarProp = true }: AppLayo
   const mobileMenuId = useId();
   const { sidebarCollapsed, toggleSidebar, examMode } = useUIStore();
 
-  // simulator-compat.css restores the old palette under this class.
-  useLayoutEffect(() => {
-    document.documentElement.classList.add("simulator-surface");
-    return () => document.documentElement.classList.remove("simulator-surface");
-  }, []);
-
   // An exam in progress gets the screen to itself. The nav is removed rather
   // than hidden, so it is also out of the tab order and the accessibility tree
   // — a learner tabbing through a timed test cannot land on "Simulator".
   const showSidebar = showSidebarProp && !examMode;
 
   return (
-    <div className="flex h-[100dvh] w-full overflow-hidden bg-background">
+    <div className="flex h-[100dvh] w-full overflow-hidden">
       <a
         href="#main-content"
         className={cn(

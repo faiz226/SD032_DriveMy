@@ -19,8 +19,8 @@ function Skeleton({ className, circle = false, ...props }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse bg-muted",
-        circle ? "rounded-full" : "rounded-md",
+        "animate-shimmer bg-[linear-gradient(90deg,rgb(var(--muted))_0%,rgb(var(--muted)/0.45)_50%,rgb(var(--muted))_100%)] bg-[length:200%_100%]",
+        circle ? "rounded-full" : "rounded-xl",
         className
       )}
       aria-hidden="true"

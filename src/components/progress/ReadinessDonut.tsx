@@ -1,7 +1,7 @@
 import { PieChart } from "@/components/charts/pie-chart";
 import { PieSlice } from "@/components/charts/pie-slice";
 import { PieCenter } from "@/components/charts/pie-center";
-import { Figure } from "@/components/ui/road";
+import { Figure } from "@/components/ui/surface";
 import { READINESS_WEIGHTS, readinessContributions } from "@/lib/readiness";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
@@ -43,6 +43,17 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite 
       <ChartFigure
         label={t("progress.readinessChartAria")}
         className="w-full"
+        note={
+          <ul className="mx-auto grid max-w-xs gap-y-2">
+            {PARTS.map(part => (
+              <li key={part.key} className="flex items-center gap-2">
+                <span aria-hidden="true" className="h-3 w-3 shrink-0" style={{ background: part.color }} />
+                <span className="min-w-0 flex-1 text-foreground">{t(part.labelKey)}</span>
+                <span className="type-figure whitespace-nowrap">{ofMax(contributions[part.key], READINESS_WEIGHTS[part.key])}</span>
+              </li>
+            ))}
+          </ul>
+        }
         table={{
           columns: [t("progress.chart.part"), t("progress.chart.contribution")],
           rows: [...PARTS.map(part => [t(part.labelKey), ofMax(contributions[part.key], READINESS_WEIGHTS[part.key])]), [t("readiness.learningProgress"), `${score} / 100`]],
@@ -57,15 +68,6 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite 
           </PieChart>
         </div>
       </ChartFigure>
-      <ul className="mt-4 grid w-full grid-cols-2 gap-x-4 gap-y-2 text-sm">
-        {PARTS.map(part => (
-          <li key={part.key} className="flex items-center gap-2">
-            <span aria-hidden="true" className="h-3 w-3 shrink-0" style={{ background: part.color }} />
-            <span className="min-w-0 flex-1 truncate">{t(part.labelKey)}</span>
-            <span className="type-figure text-muted-foreground">{ofMax(contributions[part.key], READINESS_WEIGHTS[part.key])}</span>
-          </li>
-        ))}
-      </ul>
       {composite < 50 && (
         <p className="mt-4 max-w-[16rem] text-center text-xs text-muted-foreground">
           {t("progress.readinessIncomplete")}

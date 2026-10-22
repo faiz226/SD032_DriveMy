@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Envelope, Lock, Eye, EyeSlash } from "phosphor-react";
+import { Envelope, Lock, Eye, EyeSlash } from "@/components/ui/icons";
 import { useCaptcha } from "@/hooks/useCaptcha";
 import { GoogleLogo } from "@/components/shared/GoogleLogo";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -379,7 +379,7 @@ function RegisterForm() {
 // ─── AuthPage ─────────────────────────────────────────────────────────────────
 export function AuthPage() {
   const { t } = useLanguage();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, setDevBypass } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -422,10 +422,16 @@ export function AuthPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Local development only: Vite replaces import.meta.env.DEV with false
+          in a production build, so this button and setDevBypass's mock user
+          never ship. */}
       {import.meta.env.DEV && (
-        <p className="text-center text-xs text-muted-foreground">
-          {t("auth.devBypassHint")}
-        </p>
+        <div className="space-y-2 rounded-xl border border-dashed border-brand-ink/50 bg-brand/10 p-3 text-center">
+          <Button type="button" variant="outline" className="w-full" onClick={() => { setDevBypass(true); navigate(from, { replace: true }); }}>
+            {t("auth.devSignIn")}
+          </Button>
+          <p className="text-xs text-muted-foreground">{t("auth.devBypassHint")}</p>
+        </div>
       )}
     </div>
   );

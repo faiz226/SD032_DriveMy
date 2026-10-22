@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { useAuthStore } from "@/stores/authStore";
 import { getSession, onAuthStateChange } from "@/services/auth.service";
 import { syncOfflineResults } from "@/services/results.service";
@@ -17,9 +18,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useSessionTimeout();
 
   useEffect(() => {
+    // In local development the dev sign-in keeps a mock learner that Supabase
+    // knows nothing about; an empty session must not sign that learner out.
+    const keepDevLearner = (session: Session | null) =>
+      import.meta.env.DEV && !session && useAuthStore.getState().isDevBypass;
+
     getSession().then((session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+      if (!keepDevLearner(session)) {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
       setLoading(false);
     }).catch(() => {
       // Prevent infinite spinner on boot-time network failures
@@ -27,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return onAuthStateChange((_event, session) => {
+      if (keepDevLearner(session)) { setLoading(false); return; }
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);

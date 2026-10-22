@@ -1,68 +1,119 @@
-import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import * as Dialog from "@radix-ui/react-dialog";
 import * as Menu from "@radix-ui/react-dropdown-menu";
-import { CaretDown, List, X, UserCircle } from "phosphor-react";
+import { motion } from "motion/react";
+import { CaretDown, ChartLineUp, Gear, SignOut } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
-import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/shared/BrandMark";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/constants";
-import { NAV_GROUPS } from "@/app/navigation";
+import { NAV_GROUPS, isGroupActive, type NavGroup } from "@/app/navigation";
+
+const SPRING = { type: "spring", stiffness: 520, damping: 42, mass: 0.9 } as const;
+
+export const menuContent = "z-[70] min-w-56 rounded-2xl border border-border bg-popover p-1.5 text-popover-foreground shadow-lg data-[state=open]:animate-scale-in";
+export const menuItem = "flex min-h-10 cursor-pointer items-center gap-3 rounded-xl px-3 text-sm font-medium text-foreground no-underline outline-none transition-colors data-[highlighted]:bg-accent";
 
 /**
- * The Jalan header. The full grouped navigation shows from 768px (DESIGN.md
- * §11); below that it moves into a sheet. Between 768 and 1199px the wordmark
- * and language switch compact so the five groups still fit on one row in
- * either language. There is no notification bell: the app has no
- * notifications, and a bell that opened the progress page promised one.
+ * The signed-in header, over the night sky: the mark, the five destinations as
+ * pills (the current one in ink), and the learner in road yellow. Below 1024px
+ * the tab bar carries navigation and the header keeps the mark and account.
  */
 export function AppHeader() {
   const { t } = useLanguage();
   const { user, signOut } = useAuthStore();
   const { pathname } = useLocation();
-  const [open, setOpen] = useState(false);
-  const groups = NAV_GROUPS.map(group => ({ label: t(group.labelKey), items: group.items.map(item => ({ label: t(item.labelKey), href: item.href })) }));
-  const name = typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : user?.email?.split("@")[0];
-  const navStyle = "inline-flex min-h-12 items-center gap-1.5 rounded px-2 text-sm font-medium no-underline hover:no-underline lg:px-3";
-  const menuStyle = "plate z-[70] min-w-48 p-1 shadow-sm";
-  const itemStyle = "flex min-h-12 items-center rounded px-3 text-sm text-foreground no-underline outline-none data-[highlighted]:bg-muted";
-  // Ink on the page colour: asphalt by day, paint by night, so the current
-  // page reads in both themes without spending a signal colour.
-  const activeStyle = "bg-[rgb(var(--road-ink))] text-[rgb(var(--background))]";
-  return <header className="border-b border-border bg-card">
-    <div className="jalan-container flex items-center justify-between gap-3 !py-2">
-      <Link to={ROUTES.DASHBOARD} aria-label="DriveMy" className="inline-flex shrink-0 items-center gap-2 no-underline hover:no-underline">
-        <svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><path d="M10 2h7L7 28H0Z" fill="rgb(var(--awas))"/><path d="M19 2h7L16 28H9Z" fill="currentColor"/></svg>
-        <span className="type-display text-xl md:max-lg:hidden">DriveMy</span>
-      </Link>
-      <nav aria-label={t("header.mainNav")} className="hidden items-center gap-1 md:flex">
-        {groups.map(group => group.items.length === 1
-          ? <NavLink key={group.label} end={group.items[0].href === ROUTES.DASHBOARD} to={group.items[0].href} className={({ isActive }) => cn(navStyle, isActive && activeStyle)}>{group.label}</NavLink>
-          : <Menu.Root key={group.label}><Menu.Trigger className={cn(navStyle, group.items.some(item => pathname === item.href) && activeStyle)}>{group.label}<CaretDown aria-hidden="true"/></Menu.Trigger>
-            <Menu.Portal><Menu.Content className={menuStyle} sideOffset={8}>{group.items.map(item => <Menu.Item asChild key={item.href}><Link className={itemStyle} to={item.href} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link></Menu.Item>)}</Menu.Content></Menu.Portal>
-          </Menu.Root>)}
-      </nav>
-      <div className="flex items-center gap-1">
-        <span className="hidden min-[1200px]:block"><LanguageToggle /></span>
-        <span className="hidden md:block min-[1200px]:hidden"><LanguageToggle variant="icon" /></span>
-        <Menu.Root><Menu.Trigger className="inline-flex min-h-12 items-center gap-2 rounded px-2 text-left" aria-label={t("header.account")}>
-          <UserCircle size={30} aria-hidden="true"/><span className="hidden max-w-32 truncate text-sm min-[1200px]:block">{name || t("header.learner")}</span><CaretDown aria-hidden="true"/>
-        </Menu.Trigger><Menu.Portal><Menu.Content align="end" className={menuStyle} sideOffset={8}>
-          <Menu.Item asChild><Link to={ROUTES.SETTINGS} className={itemStyle}>{t("nav.settings")}</Link></Menu.Item>
-          <Menu.Item asChild><Link to={ROUTES.PROGRESS} className={itemStyle}>{t("nav.progress")}</Link></Menu.Item>
-          <Menu.Item className={itemStyle} onSelect={() => { void signOut(); }}>{t("nav.signOut")}</Menu.Item>
-        </Menu.Content></Menu.Portal></Menu.Root>
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-          <Dialog.Trigger asChild><Button variant="ghost" size="icon" className="md:hidden" aria-label={t("a11y.openMenu")}><List aria-hidden="true"/></Button></Dialog.Trigger>
-          <Dialog.Portal><Dialog.Overlay className="fixed inset-0 z-[60] bg-overlay/50"/><Dialog.Content aria-describedby={undefined} className="fixed inset-y-0 right-0 z-[70] w-full max-w-sm overflow-y-auto border-l bg-card p-5">
-            <div className="flex items-center justify-between"><Dialog.Title className="type-display text-xl">DriveMy</Dialog.Title><Dialog.Close asChild><Button variant="ghost" size="icon" aria-label={t("a11y.closeMenu")}><X aria-hidden="true"/></Button></Dialog.Close></div>
-            <nav aria-label={t("header.mainNav")} className="mt-4 space-y-4">{groups.map(group => <div key={group.label}><p className="mb-1 text-sm text-muted-foreground">{group.label}</p>{group.items.map(item => <NavLink key={item.href} end={item.href === ROUTES.DASHBOARD} to={item.href} onClick={() => setOpen(false)} className={({ isActive }) => cn(navStyle, "flex", isActive && activeStyle)}>{item.label}</NavLink>)}</div>)}</nav>
-            <div className="mt-5 border-t pt-4"><LanguageToggle /></div>
-          </Dialog.Content></Dialog.Portal>
-        </Dialog.Root>
+  const fullName = typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : undefined;
+  const name = fullName || user?.email?.split("@")[0] || t("header.learner");
+  const initials = name.split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase();
+
+  return (
+    <header className="glass sticky top-0 z-40 border-b border-border/50">
+      <div className="app-container flex h-[4.5rem] items-center gap-6 !py-0">
+        <Link to={ROUTES.DASHBOARD} aria-label="DriveMy" className="shrink-0 rounded-xl text-foreground no-underline">
+          <BrandMark />
+        </Link>
+
+        <nav aria-label={t("header.mainNav")} className="hidden flex-1 items-center gap-1 lg:flex">
+          {NAV_GROUPS.map(group => <NavCapsuleItem key={group.labelKey} group={group} active={isGroupActive(group, pathname)} />)}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-1.5 lg:ml-0">
+          <LanguageToggle className="hidden sm:inline-flex" />
+          <AnimatedThemeToggler
+            aria-label={t("header.theme")}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          />
+          <Menu.Root>
+            <Menu.Trigger className="group inline-flex h-11 items-center gap-3 rounded-full pl-0.5 pr-0.5 text-left transition-colors hover:bg-accent xl:pr-3" aria-label={t("header.account")}>
+              <span aria-hidden="true" className="grid h-10 w-10 place-items-center rounded-full bg-brand text-sm font-extrabold text-[#111]">{initials}</span>
+              <span className="hidden max-w-40 truncate font-semibold xl:block">{name}</span>
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Content align="end" sideOffset={10} className={menuContent}>
+                <div className="px-3 pb-2 pt-1.5">
+                  <p className="truncate text-sm font-semibold">{name}</p>
+                  {user?.email && <p className="truncate text-xs text-muted-foreground">{user.email}</p>}
+                </div>
+                <Menu.Separator className="my-1 h-px bg-border" />
+                <Menu.Item asChild><Link to={ROUTES.PROGRESS} className={menuItem}><ChartLineUp size={18} aria-hidden="true" />{t("nav.progress")}</Link></Menu.Item>
+                <Menu.Item asChild><Link to={ROUTES.SETTINGS} className={menuItem}><Gear size={18} aria-hidden="true" />{t("nav.settings")}</Link></Menu.Item>
+                <Menu.Separator className="my-1 h-px bg-border" />
+                <Menu.Item className={cn(menuItem, "text-destructive")} onSelect={() => { void signOut(); }}><SignOut size={18} aria-hidden="true" />{t("nav.signOut")}</Menu.Item>
+              </Menu.Content>
+            </Menu.Portal>
+          </Menu.Root>
+        </div>
       </div>
-    </div>
-  </header>;
+    </header>
+  );
+}
+
+const capsuleItem = "relative inline-flex min-h-11 items-center gap-1 rounded-full px-4 font-semibold no-underline transition-colors";
+
+function ActivePill() {
+  return <motion.span layoutId="header-active" transition={SPRING} className="absolute inset-0 rounded-full bg-foreground" aria-hidden="true" />;
+}
+
+function NavCapsuleItem({ group, active }: { group: NavGroup; active: boolean }) {
+  const { t } = useLanguage();
+  const { pathname } = useLocation();
+  const tone = active ? "text-background" : "text-muted-foreground hover:text-foreground";
+
+  if (group.items.length === 1) {
+    const [only] = group.items;
+    return (
+      <NavLink to={only.href} end={only.href === ROUTES.DASHBOARD} className={cn(capsuleItem, tone)}>
+        {active && <ActivePill />}
+        <span className="relative">{t(group.tabKey)}</span>
+      </NavLink>
+    );
+  }
+
+  return (
+    <Menu.Root>
+      <Menu.Trigger className={cn(capsuleItem, tone, "data-[state=open]:text-foreground")}>
+        {active && <ActivePill />}
+        <span className="relative">{t(group.tabKey)}</span>
+        <CaretDown size={12} weight="bold" className="relative opacity-60" aria-hidden="true" />
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Content className={menuContent} sideOffset={10} align="center">
+          {group.items.map(item => {
+            const current = pathname === item.href;
+            return (
+              <Menu.Item asChild key={item.href}>
+                <Link to={item.href} aria-current={current ? "page" : undefined} className={cn(menuItem, "justify-between", current && "text-brand-ink")}>
+                  {t(item.labelKey)}
+                  {current && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-brand" />}
+                </Link>
+              </Menu.Item>
+            );
+          })}
+        </Menu.Content>
+      </Menu.Portal>
+    </Menu.Root>
+  );
 }

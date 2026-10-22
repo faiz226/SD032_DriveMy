@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react"
-import { Moon, Sun } from "phosphor-react"
+import { Moon, Sun } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 

@@ -6,7 +6,7 @@ import { useGLTF, PerspectiveCamera, useFBO, Environment, Sky } from "@react-thr
 import { EffectComposer, Bloom, SMAA } from "@react-three/postprocessing";
 import { Physics, RigidBody, RapierRigidBody, CuboidCollider } from "@react-three/rapier";
 import * as THREE from "three";
-import { ArrowLeft, Play, Lightbulb, Gear, Disc, CheckCircle } from "phosphor-react";
+import { ArrowLeft, Play, Lightbulb, Gear, Disc, CheckCircle } from "@/components/ui/icons";
 import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";

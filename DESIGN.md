@@ -1,312 +1,266 @@
-# DriveMy Dashboard | DESIGN.md
-
-> **Design system:** Jalan  
-> **Product:** DriveMy, Malaysian driving-learning platform  
-> **Surface:** Authenticated learner dashboard (Operate mode)  
-> **Reference render:** `drivemy_dashboard.png`, 1448 × 1086 px  
-> **Status:** Visual specification of the generated product image, with guardrails from the supplied Jalan design system.
-
-![DriveMy dashboard reference](drivemy_dashboard.png)
-
-## 1. Concept
-
-**The interface is the road surface. The content is the signage.**
-
-The screen depicts a learner travelling from the beginning of training toward a P licence. Progress is not an abstract gauge: it is a **road** with lane markings, a car, and two licence checkpoints. Learning modules are **bays** along that journey.
-
-- **Road / chrome:** restrained asphalt, concrete, paint, thin borders, and crisp geometry.
-- **Signage / meaning:** real road-sign colors and status hues are the only saturated elements.
-- **Tone:** operational, direct, competent, and distinctly Malaysian. Avoid gamification clutter or generic SaaS gradients.
-- **Mode:** this is **Operate**, not a marketing landing page. Usability beats decoration.
-
-## 2. Visual structure
-
-### Reference composition
-
-The generated visual is a wide desktop dashboard shown inside a softly shadowed application frame on a warm, light-gray presentation background. It is a **reference image**, not a pixel-perfect responsive wireframe. The placement estimates below describe its composition rather than immutable CSS coordinates.
-
-| Region | Position and behavior | Key content |
-|---|---|---|
-| Application shell | Centered, generous outer margin, pale raised surface | Header plus stacked content |
-| Header | Single full-width horizontal row | DriveMy, navigation, notifications, learner identity |
-| Readiness carriageway | Dominant dark panel, full-width below header | `Jarak ke Lulus`, 68/100, 0 → L → P progress road |
-| Learning bays | 3 columns × 2 rows at desktop width | Six curriculum cards with semantic road-rule bottoms |
-| Information deck | 3 adjacent blocks, first noticeably wider | Performance, recent activity, next action |
-
-Use a centered container around **1280–1320 px** at large desktop sizes, roughly **16–20 px** interior gutters, and **12–16 px** inter-panel spacing. The reference shows a desktop width of **1448 px**; these are implementation targets, not exact measurements of every edge.
-
-### Reading order
-
-1. Global navigation and identity.
-2. Readiness score and licence road.
-3. Learning modules and their availability.
-4. Performance facts, recent activity, and next action.
-
-The viewer should first notice **68/100**, then understand the road toward **P**, then see what can be continued.
-
-## 3. Color tokens
-
-Canonical Jalan colors from the supplied design specification:
-
-| Token | Hex | Meaning / usage |
-|---|---|---|
-| `--asphalt` | `#23211E` | Dark carriageway and primary ink |
-| `--concrete` | `#E4E3DE` | Page canvas, neutral surfaces |
-| `--paint` | `#F7F5F0` | Markings, light plates and raised surfaces |
-| `--awas` | `#F2B705` | In-progress / warning ONLY |
-| `--berhenti` | `#C8102E` | Failure, blocked, below pass mark ONLY |
-| `--lulus` | `#00703C` | Passed / completed ONLY |
-| `--sign-info` | `#0057A8` | Information signs / licence plates |
-
-A neutral ink/gray ramp (`--grade-1` through `--grade-9`) should derive from `--asphalt`, rather than neutral pure grays. The image adds subtle soft shadows to distinguish raised white cards from concrete. Those shadows must remain secondary to road markings.
-
-### Color rules
-
-- **Signal color carries information.** Yellow indicates progress, green success, red failure, blue informational signage.
-- Never use these colors as random decorative borders or alternating card themes.
-- Do not render red, yellow and green as adjacent status badges mimicking a traffic light.
-- Yellow cannot serve as small text on white: use **dark ink on a yellow plate**.
-- Active primary navigation is asphalt/dark, not a bright brand-color gradient.
-- The hero road is visually dark, with white/yellow painted markings; content outside it is light and calm.
-
-## 4. Typography
-
-| Role | Typeface | Weight | Appearance |
-|---|---|---|---|
-| Display | **Archivo** (expanded width 112–118%) | 800 | Readiness headline, large scores, featured numeric figures |
-| Body | **Barlow** | 400 / 500 / 600 | Navigation, labels, descriptions, data, buttons |
-| Genuine road plate | **Barlow Condensed** | 600 / 700 | Uppercase lettering on L/P road signs and painted road labels |
-
-### Suggested scale
-
-| Usage | Desktop target |
-|---|---|
-| Hero title `Jarak ke Lulus` | 38–44 px, Archivo 800 |
-| Hero score `68 / 100` | 54–68 px, Archivo 800, tabular numerals |
-| Section headings | 19–22 px, Archivo 800 or Barlow 600 |
-| Module titles | 20–24 px, Archivo 800 |
-| Major data figures | 44–58 px, Archivo 800, tabular numerals |
-| Body / controls | 14–16 px, Barlow 400–600 |
-| Metadata / supporting labels | 12–13 px, Barlow 500 |
-| Sign plates | Sized to the physical plate, Barlow Condensed uppercase |
-
-**Important correction when implementing the image:** the AI render exaggerates all-capital headings and labels. The supplied Jalan rule is **sentence case for normal interface copy**. Reserve highly tracked condensed caps for actual road signage. This improves readability and avoids making the entire dashboard look like a road sign.
-
-## 5. Geometry and surfaces
-
-Jalan has intentionally hard road geometry:
-
-| Component | Corner rule | Interpretation |
-|---|---|---|
-| Learning bay | **0 px** | Painted rectangular parking bay |
-| Information plate / ordinary control | **4 px** | Slightly eased sign plate |
-| Avatar, roundel, circular progress | **Circle** | Only genuinely circular components |
-| Road markings | **0 px** | Crisp road paint |
-
-Use these primitives:
-
-- **`Carriageway`**: asphalt surface, internal on-road text palette, primary readiness visualization.
-- **`Bay`**: learning module, rectangular, status kerb/edge, road-rule strip.
-- **`Plate`**: informational panel, hairline border, maximum 4 px radius.
-- **`RoadRule`**: semantic lane-marking component, not a generic divider.
-- **`LPlate`**: licence checkpoint plate using proper blue / white sign language.
-- **`Figure`**: large, concrete tabular numerals.
-
-The illustration has more rounded outer cards than canonical Jalan. Favor the **0/4 px geometry** in the final implementation, even if that makes the coded UI a touch sharper than the image.
-
-## 6. Road-marking semantics
-
-Line style is functional information, not decoration.
-
-| Name | Visual | State |
-|---|---|---|
-| `.mark-locked` | Double solid paint line | Prerequisite unmet |
-| `.mark-closed` | Single solid paint line | Completed / closed |
-| `.mark-open` | White broken line | Available to start or resume |
-| `.mark-progress` | Yellow broken line | In progress |
-
-Use `RoadRule` for horizontal or vertical road markings. Do not mix styles merely to make bays look different.
-
-### Road visualization: `Jarak ke Lulus`
-
-This is the product's signature component, shown as the image's top dark panel.
-
-**Example reference state:**
-
-```text
-Readiness: 68 / 100
-Remaining: 32 marks to P
-Start: 0
-L checkpoint: 60  | achieved
-P checkpoint: 100 | not achieved
-```
-
-Structure:
-
-- Upper left: small readiness label, title **Jarak ke Lulus**, one short supporting sentence.
-- Upper right: oversize score `68 / 100`, label `32 marks to P`, and brief guidance.
-- Bottom: a left-to-right carriageway from **0** to **100**, with a car positioned at the numeric score.
-- **Behind the car:** earned progress, represented by a continuous painted section / paired solid road lines.
-- **Ahead of the car:** open road, represented by dashed markings.
-- **L checkpoint at 60:** square blue `L` licence plate, active only when the actual L gate is satisfied.
-- **P checkpoint at 100:** dashed / muted plate until the actual P gate is satisfied.
-- On narrow screens, retain the 0 / 60 / 100 logic and legibility rather than compressing labels until unreadable.
-
-**Honesty rule:** a learner's position on the readiness road and whether they qualify for an L/P checkpoint are **distinct**. Do not infer licence achievement purely from the displayed composite score. Use the authoritative licence model (`src/lib/licence.ts` in the supplied codebase) for gate status.
-
-The tiny yellow car is a helpful visual locator in the reference, but it must not obscure the road, numbers, or licence signage.
-
-## 7. Navigation
-
-The screenshot's top bar contains:
-
-- **Logo:** `DriveMy` in bold dark lettering, with a small yellow/black road-stripe mark.
-- **Navigation:** `Dashboard` (active), `Kurikulum`, `Ujian`, `Litar & Praktikal`, `Sumber`.
-- **Utilities:** notification bell, learner avatar, learner name, small role label, account menu chevron.
-
-Inactive navigation is quiet Barlow text with regular-weight icons. The current page uses a restrained asphalt-filled state with paint-white text. Avoid bright saturated color for the selected item unless the item itself is an authentic sign or state.
-
-## 8. Learning bays
-
-The image shows six cards, grouped as a 3-column desktop grid. Each card includes a title, one actionable affordance, compact supporting detail and an **edge/bottom road marking that encodes its state**.
-
-| Bay | Example content from image | State | Treatment |
-|---|---|---|---|
-| **KPP 01 quiz** | `46 / 50`, `Selesai` | Done | Green check icon, completed state, closed road line |
-| **RPK / RSM** | `3 / 5 topik`, `60%`, `Dalam proses` | Progress | Yellow progress ring/plate, yellow broken road line |
-| **Litar maneuvers** | `Sedia untuk dimulakan`, `Buka` | Open | Neutral car icon, white broken line |
-| **Bukit** | `Lengkapkan RPK / RSM dahulu`, `Terkunci` | Locked | Muted card, lock icon, double solid marking |
-| **Parallel parking** | `Sedia untuk dimulakan`, `Buka` | Open | Neutral parking sign and broken line |
-| **Road rules** | `Nota, tanda jalan dan panduan ringkas`, `Lihat` | Informational / open | Blue book/info symbol, clearly actionable |
-
-Avoid bold green accent lines plus separate yellow lines on a completed card if the combination obscures what the status means. Status marking should communicate **one** unambiguous state.
-
-### Bay interactions
-
-- Entire unlocked bay can be a navigation target where appropriate.
-- The card's CTA must identify an action (`Buka`, `Lihat`, `Sambung`, `Start quiz`), not a vague aspiration.
-- Locked bays explain the actual prerequisite and do not look tappable.
-- Hover adds restrained elevation or ink contrast; keyboard focus must be obvious.
-
-## 9. Lower information deck
-
-### Performance and readiness
-
-A wide three-column summary of factual training metrics:
-
-| Metric | Example |
-|---|---|
-| Pass mark (KPP) | `42 / 50` |
-| Best score | `46 / 50` |
-| Headroom | `4 marks` |
-
-Use large Archivo figures and short explanatory captions. Headroom is explicitly the difference between the best score and pass mark; it is **not** a probabilistic exam prediction.
-
-### Recent activity
-
-A compact feed with small resolved-state icons, activity names, status/subtitles, and right-aligned dates. The screenshot shows illustrative dates from April 2024; replace these with actual recorded dates in a real product.
-
-### Next action
-
-The image's right-hand panel shows a next quiz suggestion, such as:
-
-- Context: `KPP 01`
-- Task: `Topik 5: Keutamaan di Persimpangan`
-- Detail: `15 soalan · ± 10 minit`
-- CTA: **Start quiz** with a filled play icon.
-
-The reference uses a blue filled button. Under canonical Jalan, reserve sign-info blue for informational sign treatment. A neutral asphalt primary button is preferable unless there is a deliberate documented exception for the CTA.
-
-## 10. Iconography
-
-Use **`phosphor-react`** with only these weights:
-
-- `regular`: default navigation and supporting icons.
-- `fill`: completed/failed results and primary triggers such as `CheckCircle`, `XCircle`, `Play`, `Warning`.
-- `bold`: small optical adjustments only, such as tiny checkmarks and 16 px arrows.
-
-Custom litar/maneuver illustrations should look like **overhead painted paths** on a road, with purposeful curves and smooth path joins. Avoid random multi-color illustration packs, emojis as icons, and overly detailed skeuomorphic cars.
-
-## 11. Responsive behavior
-
-The image is desktop-only, so the following is implementation guidance rather than an observed mobile design.
-
-| Viewport | Adaptation |
-|---|---|
-| ≥ 1200 px | Three learning columns; bottom data panels arranged horizontally |
-| 768–1199 px | Two learning columns; performance can span full row; feed and next action below |
-| < 768 px | One learning column; header collapses to compact menu; bottom panels stack |
-
-For the readiness road on mobile, prefer an internally scrollable or specially reflowed road visualization with persistent 0/L/P anchors. Do not destroy checkpoint semantics to make everything fit one tiny row. Preserve appropriately sized tap targets and practical reading order.
-
-## 12. Motion and accessibility
-
-- **No staged page-load animations.** Learners arrive to complete a task.
-- Animate the road **only when its actual numeric/state values change**.
-- For motion, use `transform` and `opacity`; support `prefers-reduced-motion` fully.
-- Maintain at least WCAG AA text contrast, including subdued metadata.
-- Keyboard focus is a visible **painted yellow indicator**, not a barely visible soft ring.
-- All icons need labels or nearby text conveying the same meaning.
-- Do not rely on color alone: completed/in-progress/locked must also differ by line shape, icon, and words.
-- Use actual text and HTML controls for any implementation; do not use the generated screenshot as a single-page interactive substitute.
-
-## 13. Copy conventions
-
-- Prefer **sentence case**: `Jarak ke Lulus`, `Bay pembelajaran`, `Aktiviti terkini`.
-- Use authentic Malaysian learning vocabulary: `KPP`, `JPJ`, `RPK/RSM`, `litar`, `bukit`, `markah lulus`.
-- Keep Bahasa Melayu and English capable of standing independently; don't make Malay an ornamental translation.
-- Be concise and concrete: `32 marks to P`, `46/50`, `4 marks above pass mark`.
-- Report failures factually without empty motivational filler.
-- Label actions with verbs: `Start quiz`, `Sambung latihan`, `Lihat nota`.
-- Do not treat readiness as a forecast of final exam performance.
-
-## 14. Implementation mapping
-
-The supplied Jalan source identifies these existing locations, which a code implementation can use rather than duplicating the design logic:
-
-```text
-src/index.css                             Design tokens / surface classes
-tailwind.config.js                        Theme mapping
-src/components/ui/road.tsx                RoadRule, Bay, Plate, Carriageway, LPlate, Figure, SectionHead
-src/components/dashboard/ReadinessRoad.tsx  Main road progress component
-src/lib/licence.ts                        Source of truth for qualification gates
-docs/asset-generation.md                  Maneuver icon generation spec
-```
-
-A practical dashboard component hierarchy:
-
-```text
-DashboardPage
-├── AppHeader
-│   ├── DriveMyLogo
-│   ├── PrimaryNavigation
-│   └── LearnerMenu
-├── ReadinessRoad
-│   ├── ReadinessSummary
-│   ├── RoadTrack
-│   ├── LCheckpoint
-│   └── PCheckpoint
-├── LearningSection
-│   └── LearningBay × 6
-└── DashboardSummary
-    ├── PerformanceMetrics
-    ├── RecentActivity
-    └── NextAction
-```
-
-## 15. Differences between the image and canonical Jalan
-
-The generated image is a **concept render**, not a fully audited representation of the design rules. Fix these when building the production UI:
-
-1. **Too much uppercase:** many interface headings/buttons use signage voice; the design system reserves it for real road signs.
-2. **Too much rounding:** panel corners, badges and buttons are visibly rounder than the prescribed 0/4 px geometry.
-3. **Potential color-semantic drift:** some blue/green/yellow borders and CTA fills read as accents instead of states.
-4. **Road-marking inconsistencies:** confirm progress uses the documented yellow broken line and completed/open/locked markings use their exact meaning.
-5. **Illustrative rather than sourced data:** 68/100, 46/50, 2024 activity dates, learner name and module completion shown in the image are mock content.
-6. **No interaction or responsive proof:** the screenshot depicts one wide viewport and cannot establish how focus, motion, keyboard navigation, or mobile layouts work.
-
-The strongest parts to retain are the **readiness carriageway**, **L/P licence checkpoints**, **road-marked learning bays**, and **clear numerically grounded next steps**.
-
+---
+name: DriveMy
+description: A JPJ licence trainer drawn as a Malaysian expressway at night, where the learner drives toward their P licence.
+colors:
+  road-yellow: "#F2B705"
+  road-yellow-ink: "#8F6500"
+  sign-ink: "#111111"
+  expressway-green: "#0A7A45"
+  expressway-green-deep: "#08683C"
+  information-blue: "#0A5FBF"
+  plate-red: "#C8102E"
+  vms-amber: "#FFB000"
+  asphalt: "#050F1A"
+  marking-white: "#F7F5F0"
+  night-sky: "#051627"
+  night-card: "#0C2236"
+  night-ink: "#F3F8FC"
+  night-muted: "#9DB6C9"
+  night-line: "#22405D"
+  day-sky: "#E8F0F7"
+  day-card: "#FFFFFF"
+  day-ink: "#0B1A2A"
+  day-muted: "#455F77"
+  day-line: "#D3DEE8"
+  pass-green: "#0F7344"
+  fail-red: "#C42634"
+typography:
+  display:
+    fontFamily: "Overpass Variable, system-ui, sans-serif"
+    fontSize: "clamp(6.5rem, 19vw, 13.75rem)"
+    fontWeight: 900
+    lineHeight: 0.8
+    letterSpacing: "-0.05em"
+  headline:
+    fontFamily: "Overpass Variable, system-ui, sans-serif"
+    fontSize: "2.25rem"
+    fontWeight: 800
+    lineHeight: 1.2
+    letterSpacing: "-0.02em"
+  title:
+    fontFamily: "Overpass Variable, system-ui, sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 800
+    lineHeight: 1.2
+    letterSpacing: "-0.02em"
+  body:
+    fontFamily: "Overpass Variable, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  label:
+    fontFamily: "Overpass Variable, system-ui, sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 800
+    lineHeight: 1.4
+  vms:
+    fontFamily: "DotGothic16, monospace"
+    fontSize: "clamp(1.625rem, 4vw, 2.625rem)"
+    fontWeight: 400
+    lineHeight: 1.2
+rounded:
+  plate: "9px"
+  control: "12px"
+  tile: "16px"
+  vms: "18px"
+  panel: "20px"
+  hero: "24px"
+  pill: "9999px"
+spacing:
+  gutter: "16px"
+  gutter-wide: "24px"
+  panel-gap: "24px"
+  layout-width: "1120px"
+components:
+  button-primary:
+    backgroundColor: "{colors.night-ink}"
+    textColor: "{colors.night-sky}"
+    rounded: "{rounded.control}"
+    height: "44px"
+    padding: "0 20px"
+  button-brand:
+    backgroundColor: "{colors.road-yellow}"
+    textColor: "{colors.sign-ink}"
+    rounded: "{rounded.control}"
+    height: "44px"
+    padding: "0 20px"
+  button-outline:
+    backgroundColor: "{colors.night-card}"
+    textColor: "{colors.night-ink}"
+    rounded: "{rounded.control}"
+    height: "44px"
+  vms-action:
+    backgroundColor: "{colors.day-card}"
+    textColor: "{colors.sign-ink}"
+    rounded: "{rounded.control}"
+    height: "56px"
+    padding: "0 32px"
+  panel:
+    backgroundColor: "{colors.night-card}"
+    textColor: "{colors.night-ink}"
+    rounded: "{rounded.panel}"
+  gantry-sign:
+    backgroundColor: "{colors.expressway-green}"
+    textColor: "{colors.day-card}"
+    rounded: "{rounded.hero}"
+  vms-board:
+    backgroundColor: "#050504"
+    textColor: "{colors.vms-amber}"
+    rounded: "{rounded.vms}"
+    padding: "28px 40px"
+  pill:
+    textColor: "{colors.night-ink}"
+    rounded: "{rounded.pill}"
+    padding: "4px 12px"
 ---
 
-**Design acceptance criteria:** An implementation should look unmistakably like a Malaysian driving-learning product, read quickly as an operational dashboard, reserve saturated colors for meaningful signage/status, keep checkpoint status truthful to the licence model, and follow the road-marking grammar consistently across modules.
+# Design System: DriveMy
+
+## Overview
+
+**Creative North Star: "Susur keluar"**
+
+A susur keluar is the slip road off a Malaysian expressway. DriveMy is drawn as that expressway at night: the learner is on the road, the interface is the dark carriageway and sky, and everything worth reading is signage. The overhead gantry tells them how far they are from their P licence, the variable message sign tells them what to do next, a yellow hatchback drives along a road of lit cat's eyes to their score, and the modules are lanes at a toll plaza they drive through. Night is the signature theme and the default; day is a clear sunrise version of the same road, one tap away in the header.
+
+The look is premium because it is specific. Every saturated colour on screen is a real road object: expressway green for the gantry, road-marking yellow for progress and action, VMS amber for the next step, L-plate red for the plates. The chrome around them stays quiet navy or pale sky so the signs carry the meaning. Motion belongs to the road: the car drives to the score and idles with its engine on, the studs light up one after another, the barrier lifts as you drive into a lane. All of it settles to its final state instantly under reduced motion.
+
+The learner is busy, often on a phone, and preparing for a government test. Copy is plain and honest ("Not a JPJ record"), numbers are concrete, and the whole app works in English and Bahasa Malaysia as equals.
+
+**Key Characteristics:**
+- Night expressway by default, sunrise day theme with the same objects.
+- Signage carries content; chrome stays neutral and recedes.
+- One road yellow for progress and action, always with dark ink on it.
+- Real Malaysian road furniture: gantry sign, VMS, cat's eyes, toll plaza, L and P plates.
+- Overpass throughout, a dot-matrix face only on the VMS.
+- Motion with a physical cause, nothing animated for show, nothing left running except the idling car.
+
+## Colors
+
+A deep navy night with three road colours doing all the talking, and a pale sky by day.
+
+### Primary
+- **Road Yellow** (#F2B705): progress and action. The lit cat's eyes, the car, active tab, primary brand buttons, selected answers, progress fills below the pass line. Always paired with Sign Ink text when it is a fill.
+- **Road Yellow Ink** (#8F6500 by day; Road Yellow itself at night): the same yellow when it has to be text or an edge on a light surface, at 5.2:1 on white.
+
+### Secondary
+- **Expressway Green** (#0A7A45, deepening to #08683C): the gantry sign and nothing else structural. The sign is lit from the front, so its gradient starts at #0A8049 to keep white text at 5:1 or better.
+
+### Tertiary
+- **Information Blue** (#0A5FBF): JKR information signs, the honesty note, info chips and the blue lane board.
+
+### Neutral
+- **Night Sky** (#051627): the page at night, behind a fixed sky layer with stars, a green glow overhead and the last orange of sunset low on the right.
+- **Night Card** (#0C2236): panels and tiles at night, with a faint blue street-light sheen across the top.
+- **Night Ink** (#F3F8FC) and **Night Muted** (#9DB6C9): text at night; muted holds 8.4:1 on a card.
+- **Night Line** (#22405D): borders and dividers at night.
+- **Day Sky** (#E8F0F7), **Day Card** (#FFFFFF), **Day Ink** (#0B1A2A), **Day Muted** (#455F77, 6.6:1 on white), **Day Line** (#D3DEE8): the same roles by day.
+- **Asphalt** (#050F1A) and **Marking White** (#F7F5F0): the road itself and its paint.
+
+### Signal
+- **Pass Green** (#0F7344 by day, #3DD68C at night): passed, done, target reached.
+- **Fail Red** (#C42634 by day, #FF6B6B at night): failed, below the pass mark, destructive actions.
+- **Plate Red** (#C8102E): the L on the L-plate, class signs, the height-limit bar and barrier stripes.
+- **VMS Amber** (#FFB000): the variable message sign's dot matrix and the in-progress lane light, nowhere else.
+
+### Named Rules
+**The Signage Rule.** Saturated colour appears only as a road object or a state. If it is neither signage nor status, it is navy, sky or white.
+
+**The Ink-on-Yellow Rule.** Yellow never carries light text. A yellow fill gets Sign Ink (#111111); yellow text on a light surface uses Road Yellow Ink.
+
+## Typography
+
+**Display Font:** Overpass Variable (with system-ui)
+**Body Font:** Overpass Variable (with system-ui)
+**Label/Mono Font:** DotGothic16 for the VMS only; JetBrains Mono Variable for code
+
+**Character:** Overpass is an open interpretation of the highway sign alphabet, so the whole app speaks in road-sign letterforms, from the gantry's giant figure to a chip label. DotGothic16 is the dot-matrix voice of a variable message sign and is kept for exactly that.
+
+### Hierarchy
+- **Display** (900, clamp(6.5rem, 19vw, 13.75rem), 0.8, -0.05em, tabular): the points-to-go figure on the gantry. One per screen.
+- **Headline** (800, 1.875rem rising to 2.25rem at 768px, 1.2, -0.02em): page titles, balanced wrapping.
+- **Title** (800, 1.5rem rising to 1.75rem, 1.2): section titles such as "Pick a lane" and "Scoreboard".
+- **Body** (400, 1rem, 1.5 for UI and 1.625 for running text): descriptions and notes, pretty wrapping, around 65ch at most.
+- **Label** (600 to 800, 0.8125rem): chips, metadata, axis numbers. Sentence case; no tracked uppercase eyebrows.
+- **VMS** (DotGothic16 400, clamp(1.625rem, 4vw, 2.625rem)): the next step's title on the message sign.
+
+### Named Rules
+**The One Matrix Rule.** DotGothic16 appears only inside the VMS board. Anywhere else it is a costume.
+
+**The Sentence Case Rule.** Headings, buttons and labels are sentence case in both languages; real JPJ terms (KPP, RPK, RSM, litar) stay as they are.
+
+## Layout
+
+Content sits in a centred column 1120px wide with a 16px gutter, 24px from 768px up. The sticky glass header is 72px tall. From 1024px it carries a one-line pill navigation with five groups; below 1024px a glass tab bar fixed to the bottom carries the same five groups, and groups with several pages open a bottom sheet. The main area pads its bottom so the tab bar never covers content. A timed exam removes both header and tab bar.
+
+The dashboard reads top to bottom like a drive: greeting, the gantry sign, the VMS with the next step (right under the sign, so a phone shows it after one short scroll and a 1440x900 screen shows it without scrolling), the road with the car, the toll plazas, the scoreboard, the travel log, and the honesty note. Under 768px each toll plaza keeps its full width and slides sideways, with the plaza name riding along at the left edge.
+
+## Elevation & Depth
+
+At night depth comes from light, not shadow: small shadows switch off and only lifted surfaces (popovers, dialogs, hovered tiles) get a deep black drop. Glow is reserved for things that emit light in a real road scene. By day, surfaces use soft navy-tinted shadows, while the road objects keep their own lights.
+
+### Shadow Vocabulary
+- **Resting** (`0 1px 2px rgb(11 26 42 / 0.05), 0 4px 12px -4px rgb(11 26 42 / 0.1)` by day, none at night): panels at rest.
+- **Lifted** (`0 2px 4px rgb(11 26 42 / 0.05), 0 18px 30px -14px rgb(11 26 42 / 0.28)` by day, `0 18px 30px -14px rgb(0 0 0 / 0.7)` at night): hovered tiles, menus.
+- **Sign illumination** (`0 0 90px rgb(18 170 100 / 0.45)`): the gantry sign's floodlight.
+
+### Named Rules
+**The Light-Source Rule.** A glow needs a lamp: sign illumination, the VMS, cat's eyes, lane lights, the car's headlight. Buttons and cards never glow.
+
+## Shapes
+
+Controls are 12px, tiles 16px, panels 20px, and the big road objects (gantry sign, road, toll plaza) 24px. The VMS frame is 18px. Chips are full pills. Real-world objects keep their real geometry: L and P plates are 9px-cornered squares, the class sign is a 4px-cornered plate, studs are circles, and the hatchback is drawn from the side.
+
+## Components
+
+### Buttons
+- **Shape:** gently rounded (12px), 44px tall by default, 36px small, 52px large.
+- **Primary:** ink, like a car's start button: Day Ink with white text by day, Night Ink with Night Sky text at night.
+- **Brand:** Road Yellow with Sign Ink, for the one forward action in a view.
+- **Outline / Ghost / Link:** card-coloured with a line, transparent, or Road Yellow Ink underlined text.
+- **Hover / Focus / Press:** colour shifts in 200ms; press scales to 0.97; focus draws a 2px ring in Road Yellow (Road Yellow Ink by day), offset 2px from the button.
+- **Everything else focusable:** a 2px Road Yellow outline outside a 2px ink ring, so it reads on the sky, a white card and the green sign.
+
+### Chips
+- **Style:** a tinted lozenge (muted, yellow, green, red or blue at about a quarter strength) with ink text at weight 800, so every tone keeps full contrast in both themes. An optional 14px icon leads the label.
+
+### Cards / Containers
+- **Panel:** 20px corners, Night Card or Day Card with the street-light sheen, a 1px line, resting shadow.
+- **Tile:** 16px corners; lifts 2px on hover and presses to 0.985. States: selected (yellow tint with an ink edge), progress, done (green tint), fail (red tint), locked (transparent, muted).
+
+### Inputs / Fields
+- **Style:** 44px tall, 12px corners, a line border, label above, error text below.
+- **Focus:** the border turns Road Yellow Ink with a soft ring of the same colour at 20%.
+
+### Navigation
+- **Header (1024px and up):** pill group; the active pill is solid ink with inverted text and slides between items. Language toggle, theme toggle and a yellow initials avatar with the account menu sit at the right.
+- **Tab bar (below 1024px):** five icon-and-label tabs on glass; the active tab is Road Yellow Ink with a soft yellow lozenge behind the icon.
+
+### Gantry Sign
+The expressway green panel with a 5px green outer rim and a 4px white line inside it, on two grey posts. It holds the page title, the points-to-go display figure, the theory and practical split, and two plate rows: the L-plate for the KPP theory test and a dashed P-plate until the licence target is reached.
+
+### VMS Board
+A black board in an 18px bronze-brown frame with a dot-matrix mask: "Up next" label, the step title in DotGothic16 amber, one line of detail, and a white 56px action button ringed in amber.
+
+### Journey Road
+A 140px stretch of night road between two painted edge lines. Fifty cat's eyes light up to the score one after another; the yellow hatchback drives there in 1.1s with its nose lifting as it pulls away and exhaust puffs behind, then idles with a small engine shake. Tapping the car sounds the horn with a short road-safety line. The road is a labelled meter for assistive technology, and its P marker sits over 100.
+
+### Toll Plaza
+One plaza per group of three modules: a green tiled roof, a white gable with a fan window, and a dark fascia with the plaza name. Each lane has a white pipe frame with a red class sign, a numbered lane light (green when open or done, amber in progress), a blue, yellow or white lane board in the style of payment lanes but with no payment brands, the red and white 2.1 m height bar that never moves, a white notice board with the module's title, detail and status chip, and a barrier arm by the booth that swings upright on hover, focus or tap. A perspective approach road with lane arrows runs toward the viewer.
+
+## Do's and Don'ts
+
+### Do:
+- **Do** take every colour, radius and shadow from the tokens in `src/index.css` and `tailwind.config.js`.
+- **Do** import icons only from `src/components/ui/icons.tsx` (Hugeicons free set, stroke weight from the adapter).
+- **Do** put Sign Ink (#111111) on every yellow fill.
+- **Do** give every animated element a physical cause and a final state that reads the same with reduced motion.
+- **Do** keep the honesty copy: readiness is practice, "Not a JPJ record".
+- **Do** check both themes and the 375px, 768px, 1024px and 1440px widths before shipping a screen.
+
+### Don't:
+- **Don't** use the old Jalan system, its docs or its skill on this app.
+- **Don't** put payment brand names or logos on the toll lane boards.
+- **Don't** glow anything that is not a light source.
+- **Don't** use DotGothic16 outside the VMS board.
+- **Don't** use em dashes in interface copy.
+- **Don't** add tracked uppercase eyebrows above section titles.
