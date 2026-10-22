@@ -27,7 +27,7 @@ colors:
 typography:
   display:
     fontFamily: "Overpass Variable, system-ui, sans-serif"
-    fontSize: "clamp(6.5rem, 19vw, 13.75rem)"
+    fontSize: "clamp(4.25rem, 12vw, 7.5rem)"
     fontWeight: 900
     lineHeight: 0.8
     letterSpacing: "-0.05em"
@@ -55,11 +55,11 @@ typography:
     lineHeight: 1.4
   vms:
     fontFamily: "DotGothic16, monospace"
-    fontSize: "clamp(1.625rem, 4vw, 2.625rem)"
+    fontSize: "clamp(1.375rem, 3vw, 2rem)"
     fontWeight: 400
     lineHeight: 1.2
 rounded:
-  plate: "9px"
+  plate: "8px"
   control: "12px"
   tile: "16px"
   vms: "18px"
@@ -93,8 +93,8 @@ components:
     backgroundColor: "{colors.day-card}"
     textColor: "{colors.sign-ink}"
     rounded: "{rounded.control}"
-    height: "56px"
-    padding: "0 32px"
+    height: "48px"
+    padding: "0 24px"
   panel:
     backgroundColor: "{colors.night-card}"
     textColor: "{colors.night-ink}"
@@ -107,7 +107,7 @@ components:
     backgroundColor: "#050504"
     textColor: "{colors.vms-amber}"
     rounded: "{rounded.vms}"
-    padding: "28px 40px"
+    padding: "16px 32px"
   pill:
     textColor: "{colors.night-ink}"
     rounded: "{rounded.pill}"
@@ -120,7 +120,7 @@ components:
 
 **Creative North Star: "Susur keluar"**
 
-A susur keluar is the slip road off a Malaysian expressway. DriveMy is drawn as that expressway at night: the learner is on the road, the interface is the dark carriageway and sky, and everything worth reading is signage. The overhead gantry tells them how far they are from their P licence, the variable message sign tells them what to do next, a yellow hatchback drives along a road of lit cat's eyes to their score, and the modules are lanes at a toll plaza they drive through. Night is the signature theme and the default; day is a clear sunrise version of the same road, one tap away in the header.
+A susur keluar is the slip road off a Malaysian expressway. DriveMy is drawn as that expressway at night: the learner is on the road, the interface is the dark carriageway and sky, and everything worth reading is signage. The overhead gantry tells them how far they are from their P licence, the variable message sign tells them what to do next, a yellow hatchback drives along a road of lit cat's eyes to their score, and the modules are lanes at a toll plaza they drive through. Night is the signature theme and the default; day is a clear sunrise version of the same road, one tap away in the sidebar.
 
 The look is premium because it is specific. Every saturated colour on screen is a real road object: expressway green for the gantry, road-marking yellow for progress and action, VMS amber for the next step, L-plate red for the plates. The chrome around them stays quiet navy or pale sky so the signs carry the meaning. Motion belongs to the road: the car drives to the score and idles with its engine on, the studs light up one after another, the barrier lifts as you drive into a lane. All of it settles to its final state instantly under reduced motion.
 
@@ -176,12 +176,12 @@ A deep navy night with three road colours doing all the talking, and a pale sky 
 **Character:** Overpass is an open interpretation of the highway sign alphabet, so the whole app speaks in road-sign letterforms, from the gantry's giant figure to a chip label. DotGothic16 is the dot-matrix voice of a variable message sign and is kept for exactly that.
 
 ### Hierarchy
-- **Display** (900, clamp(6.5rem, 19vw, 13.75rem), 0.8, -0.05em, tabular): the points-to-go figure on the gantry. One per screen.
+- **Display** (900, clamp(4.25rem, 12vw, 7.5rem), 0.8, -0.05em, tabular): the points-to-go figure on the gantry. One per screen.
 - **Headline** (800, 1.875rem rising to 2.25rem at 768px, 1.2, -0.02em): page titles, balanced wrapping.
 - **Title** (800, 1.5rem rising to 1.75rem, 1.2): section titles such as "Pick a lane" and "Scoreboard".
 - **Body** (400, 1rem, 1.5 for UI and 1.625 for running text): descriptions and notes, pretty wrapping, around 65ch at most.
 - **Label** (600 to 800, 0.8125rem): chips, metadata, axis numbers. Sentence case; no tracked uppercase eyebrows.
-- **VMS** (DotGothic16 400, clamp(1.625rem, 4vw, 2.625rem)): the next step's title on the message sign.
+- **VMS** (DotGothic16 400, clamp(1.375rem, 3vw, 2rem)): the next step's title on the message sign.
 
 ### Named Rules
 **The One Matrix Rule.** DotGothic16 appears only inside the VMS board. Anywhere else it is a costume.
@@ -190,9 +190,9 @@ A deep navy night with three road colours doing all the talking, and a pale sky 
 
 ## Layout
 
-Content sits in a centred column 1120px wide with a 16px gutter, 24px from 768px up. The sticky glass header is 72px tall. From 1024px it carries a one-line pill navigation with five groups; below 1024px a glass tab bar fixed to the bottom carries the same five groups, and groups with several pages open a bottom sheet. The main area pads its bottom so the tab bar never covers content. A timed exam removes both header and tab bar.
+The menu lives on the left on every page. From 768px a 256px sidebar lists every destination and folds to a 72px icon dock; below 768px a frosted top bar opens the same sidebar as a drawer from the left, and a frosted bottom bar keeps six main destinations a thumb away. Pages scroll inside the main area beside the sidebar, in a centred column up to 1120px wide with a 16px gutter (24px from 768px up). A timed exam removes the navigation, and the simulator draws full screen over everything.
 
-The dashboard reads top to bottom like a drive: greeting, the gantry sign, the VMS with the next step (right under the sign, so a phone shows it after one short scroll and a 1440x900 screen shows it without scrolling), the road with the car, the toll plazas, the scoreboard, the travel log, and the honesty note. Under 768px each toll plaza keeps its full width and slides sideways, with the plaza name riding along at the left edge.
+The dashboard reads top to bottom like a drive: greeting, the gantry sign, the road with the car, the VMS with the next step, the toll plazas, the scoreboard, the travel log, and the honesty note. Under 768px each toll plaza keeps its full width and slides sideways, with the plaza name riding along at the left edge.
 
 ## Elevation & Depth
 
@@ -208,7 +208,7 @@ At night depth comes from light, not shadow: small shadows switch off and only l
 
 ## Shapes
 
-Controls are 12px, tiles 16px, panels 20px, and the big road objects (gantry sign, road, toll plaza) 24px. The VMS frame is 18px. Chips are full pills. Real-world objects keep their real geometry: L and P plates are 9px-cornered squares, the class sign is a 4px-cornered plate, studs are circles, and the hatchback is drawn from the side.
+Controls are 12px, tiles 16px, panels 20px, and the big road objects (gantry sign, road, toll plaza) 24px. The VMS frame is 18px. Chips are full pills. Real-world objects keep their real geometry: L and P plates are 8px-cornered squares, the class sign is a 4px-cornered plate, studs are circles, and the hatchback is drawn from the side.
 
 ## Components
 
@@ -232,17 +232,17 @@ Controls are 12px, tiles 16px, panels 20px, and the big road objects (gantry sig
 - **Focus:** the border turns Road Yellow Ink with a soft ring of the same colour at 20%.
 
 ### Navigation
-- **Header (1024px and up):** pill group; the active pill is solid ink with inverted text and slides between items. Language toggle, theme toggle and a yellow initials avatar with the account menu sit at the right.
-- **Tab bar (below 1024px):** five icon-and-label tabs on glass; the active tab is Road Yellow Ink with a soft yellow lozenge behind the icon.
+- **Sidebar (768px and up):** the BrandMark, then every destination as an icon-and-label row; the current page gets a soft lozenge and a 3px Road Yellow marker at its left edge. Settings, theme and sign-out sit below a divider, and the learner's yellow avatar with the EN/BM switch closes the column. Folded, it becomes an icon dock that magnifies under the pointer.
+- **Phone (below 768px):** a frosted top bar with the menu button, the BrandMark and the language switch; the menu slides the sidebar in from the left. A frosted bottom bar carries six main destinations, the current one in Road Yellow Ink on a soft yellow lozenge.
 
 ### Gantry Sign
 The expressway green panel with a 5px green outer rim and a 4px white line inside it, on two grey posts. It holds the page title, the points-to-go display figure, the theory and practical split, and two plate rows: the L-plate for the KPP theory test and a dashed P-plate until the licence target is reached.
 
 ### VMS Board
-A black board in an 18px bronze-brown frame with a dot-matrix mask: "Up next" label, the step title in DotGothic16 amber, one line of detail, and a white 56px action button ringed in amber.
+A black board in an 18px bronze-brown frame with a dot-matrix mask: "Up next" label, the step title in DotGothic16 amber, one line of detail, and a white 48px action button ringed in amber.
 
 ### Journey Road
-A 140px stretch of night road between two painted edge lines. Fifty cat's eyes light up to the score one after another; a yellow Perodua Myvi, traced from a side-on photo into SVG (body and wheel in `src/assets/car`), drives there in 1.1s with its nose lifting as it pulls away and exhaust puffs behind, then idles with a small engine shake. Tapping the car sounds the horn with a short road-safety line. The road is a labelled meter for assistive technology, and its P marker sits over 100.
+A 104px stretch of night road between two painted edge lines. Fifty cat's eyes light up to the score one after another; a yellow Perodua Myvi, traced from a side-on photo into SVG (body and wheel in `src/assets/car`), drives there in 1.1s with its nose lifting as it pulls away and exhaust puffs behind, then idles with a small engine shake. Tapping the car sounds the horn with a short road-safety line. The road is a labelled meter for assistive technology. An L plate stands over 60 and lights on the gantry's rule (a full mock at the pass mark); the P plate stands over 100 and lights at full readiness.
 
 ### Toll Plaza
 One plaza per group of three modules: a green tiled roof, a white gable with a fan window, and a dark fascia with the plaza name. Each lane has a white pipe frame with a red class sign, a numbered lane light (green when open or done, amber in progress), a blue, yellow or white lane board in the style of payment lanes but with no payment brands, the red and white 2.1 m height bar that never moves, a white notice board with the module's title, detail and status chip, and a barrier arm by the booth that swings upright on hover, focus or tap. A perspective approach road with lane arrows runs toward the viewer.

@@ -25,18 +25,24 @@ const LazyTheoryPage      = lazy(() => import("@/pages/TheoryPage").then(m => ({
 const LazyQuizPage        = lazy(() => import("@/pages/QuizPage").then(m => ({ default: m.QuizPage })));
 const LazyMockTestPage    = lazy(() => import("@/pages/MockTestPage").then(m => ({ default: m.MockTestPage })));
 const LazyColorVisionPage = lazy(() => import("@/pages/ColorVisionPage").then(m => ({ default: m.ColorVisionPage })));
-// The simulator keeps its own shell; it loads only with these routes.
-const LazySimulatorLayout = lazy(() => import("@/app/layouts/SimulatorLayout").then(m => ({ default: m.SimulatorLayout })));
 const LazySimulationsPage = lazy(() => import("@/pages/SimulationsPage").then(m => ({ default: m.SimulationsPage })));
-const LazySimulation3DView = lazy(() => import("@/pages/Simulation3DView").then(m => ({ default: m.Simulation3DView })));
+// The simulator: its car and textures start downloading the moment the route opens, alongside its code.
+const LazySimulation3DView = lazy(() => { preloadSimAssets(currentTier()); return import("@/pages/Simulation3DView").then(m => ({ default: m.Simulation3DView })); });
 const LazyProgressPage    = lazy(() => import("@/pages/ProgressPage").then(m => ({ default: m.ProgressPage })));
 const LazySafetyPage      = lazy(() => import("@/pages/SafetyPage").then(m => ({ default: m.SafetyPage })));
 const LazySettingsPage    = lazy(() => import("@/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const LazyNotFoundPage    = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const LazyPrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
+// Development only: the simulator's world on its own (/dev/sim), and the simulator page without signing in
+// (/dev/sim/:id, nothing saved; also in performance builds, VITE_SIM_PERF=1, for scripts/sim-perf.mjs).
+// Absent from production builds.
+const LazySimPreview = import.meta.env.DEV ? lazy(() => import("@/sim/dev/SimPreview").then(m => ({ default: m.SimPreview }))) : null;
+const LazySimPageDev = import.meta.env.DEV || import.meta.env.VITE_SIM_PERF === "1" ? lazy(() => { preloadSimAssets(currentTier()); return import("@/sim/ui/SimulatorPage").then(m => ({ default: m.SimulatorPage })); }) : null;
 
 
 // Stores & services
+import { preloadSimAssets } from "@/sim/assets";
+import { currentTier } from "@/sim/quality";
 import { ROUTES }        from "@/lib/constants";
 import { useTheme }      from "@/hooks/useTheme";
 import { useLanguage }   from "@/hooks/useLanguage";
@@ -116,16 +122,7 @@ function App() {
                     <Route path={ROUTES.SAFETY}               element={routed(<LazySafetyPage />)} />
                     <Route path={ROUTES.SETTINGS}             element={routed(<LazySettingsPage />)} />
                     <Route path={ROUTES.MFA}                  element={routed(<MfaEnrollmentPage />)} />
-                  </Route>
-
-                  {/* ── Simulator routes — legacy shell until sim-v2 lands ── */}
-                  <Route
-                    element={
-                      <ProtectedRoute>
-                        <LazySimulatorLayout />
-                      </ProtectedRoute>
-                    }
-                  >
+                    {/* The simulator draws full screen over the shell. */}
                     <Route path={ROUTES.SIMULATIONS}          element={routed(<LazySimulationsPage />)} />
                     <Route path={`${ROUTES.SIMULATIONS}/:id`} element={routed(<LazySimulation3DView />)} />
                   </Route>
@@ -135,6 +132,8 @@ function App() {
                       up — a notice nobody can read is legally equivalent to
                       not having one (PDPA 2010 §7, Notice & Choice). */}
                   <Route path={ROUTES.PRIVACY} element={<LazyPrivacyPolicyPage />} />
+                  {LazySimPreview && <Route path="/dev/sim" element={routed(<LazySimPreview />)} />}
+                  {LazySimPageDev && <Route path="/dev/sim/:id" element={routed(<LazySimPageDev />)} />}
 
                   {/* ── Fallbacks ─────────────────────────────────────────── */}
                   <Route path="/auth/callback" element={<AuthCallbackPage />} />

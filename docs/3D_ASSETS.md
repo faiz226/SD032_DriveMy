@@ -1,5 +1,9 @@
 # 3D assets — a deployment trap and a bandwidth problem
 
+> **Update, 19 Oct 2026 (simulator v2):** the v2 car (`public/sim/cars/swift-2022/`) took option 1.
+> Built by `scripts/swift_web.py`, it is 4.1 MB for the Low tier and 5.2 MB for Medium, and both tiers
+> are committed through a `.gitignore` negation. The models listed below belong to the old simulator.
+
 > Status: **needs a decision.** The driving simulator will not work on a fresh
 > deployment as things stand.
 

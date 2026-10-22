@@ -105,9 +105,8 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
       </p>
 
       <GantrySign score={score} theory={parts.theory} practical={parts.practical} bestMock={bestMock?.score} passMark={MOCK_PASS_MARK} />
+      <JourneyRoad value={score} label={t("dashboard.hero.meter")} lReached={(bestMock?.score ?? -1) >= MOCK_PASS_MARK} />
 
-      {/* The next step sits right under the sign so a phone shows it without
-          scrolling past the road; the road then runs on into the toll plaza. */}
       <VmsBoard
         label={t("dashboard.next.label")}
         title={t(`dashboard.next.${next}.title`)}
@@ -115,7 +114,6 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
         action={t(`dashboard.next.${next}.action`)}
         to={NEXT_ROUTE[next]}
       />
-      <JourneyRoad value={score} label={t("dashboard.hero.meter")} />
 
       <section aria-labelledby="lanes-title">
         <h2 id="lanes-title" className={SECTION_TITLE}>{t("dashboard.lanes.title")}</h2>

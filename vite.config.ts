@@ -161,12 +161,43 @@ export default defineConfig({
         globIgnores: [
           "**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2",
           "**/{archivo,barlow}-*.woff2",
+          // The simulator's code is runtime-cached, never precached (see "Simulator" below).
+          "**/vendor-3d-*.js",
+          "**/Simulation3DView-*.js",
         ],
 
         // Runtime caching strategies
         runtimeCaching: [
           // No Google Fonts rules: the fonts are self-hosted now, so they are
           // covered by the precache above like any other same-origin asset.
+
+          // ─── Simulator ─────────────────────────────────────────────────
+          //
+          // Never precached: about 8 MB a learner may never use. Fetched the
+          // first time the simulator opens, then kept, so it also runs offline.
+          // Its code is content-hashed, so CacheFirst. The car and textures
+          // keep their URLs between builds, so StaleWhileRevalidate: the cached
+          // copy now, a fresh one for next time. Workbox's runtime cache sets
+          // no size cap, so the largest file (the Medium-tier body, 4.3 MB)
+          // caches like any other.
+          {
+            urlPattern: /\/assets\/(vendor-3d|Simulation3DView)-[\w-]+\.js$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "sim-code",
+              expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+          {
+            urlPattern: /\/sim\/.+\.(?:glb|webp|json|mp3|wav)$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "sim-assets",
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
 
           // ─── Jalan type ────────────────────────────────────────────────
           //
@@ -257,10 +288,9 @@ export default defineConfig({
         skipWaiting: false,
         clientsClaim: false,
 
-        // The 3D simulation vendor chunk (Three.js + Rapier physics) exceeds
-        // the default 2 MiB precache limit. Raise it to 6 MiB so the build
-        // succeeds. The large chunk is loaded lazily via dynamic import so
-        // it does NOT block the initial page paint.
+        // The precache limit. The 3D vendor chunk that once needed it is now
+        // runtime-cached instead (see "Simulator" above); the limit stays as
+        // headroom for the largest precached chunk.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
       },
 
@@ -373,6 +403,12 @@ export default defineConfig({
           // TanStack Query
           if (id.includes('@tanstack')) {
             return 'vendor-query';
+          }
+          // The simulator's 3D stack: three.js, React Three Fiber, drei and Rapier (its wasm is inlined,
+          // which makes it large). Only the simulator route uses it, so it loads with that route. Under the
+          // catch-all below it sat in the chunk index.html loads, costing every page about 3 MB.
+          if (/\/node_modules\/(three|three-stdlib|three-mesh-bvh|@react-three|@dimforge|react-reconciler|its-fine|suspend-react|troika-[\w-]+|webgl-sdf-generator|bidi-js|camera-controls|maath|meshline|stats-gl|stats\.js|detect-gpu|tunnel-rat|hls\.js|postprocessing|n8ao|potpack|meshoptimizer|draco3d|@monogrid|glsl-noise)\//.test(id)) {
+            return 'vendor-3d';
           }
           // Other node_modules
           if (id.includes('node_modules')) {

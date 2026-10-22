@@ -11,11 +11,15 @@
  *
  * A hash pins the exact bytes: change so much as one space in that script and
  * the browser will refuse to run it. When that happens, run this script and
- * paste the new value into the `script-src` directive in vercel.json.
+ * paste the new value into the `script-src` directive in vercel.json and in
+ * public/_headers (the same policy, for hosts that read that file instead).
+ *
+ * The simulator's physics (Rapier) compiles WebAssembly, so script-src must
+ * also carry 'wasm-unsafe-eval'; this script checks that too.
  *
  *   npm run csp:hash
  *
- * Exit codes: 0 = the hashes in vercel.json match index.html
+ * Exit codes: 0 = both policies match index.html and allow WebAssembly
  *             1 = drift detected (or the files could not be parsed)
  */
 
@@ -26,9 +30,11 @@ import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const htmlPath = path.join(root, "index.html");
-const vercelPath = path.join(root, "vercel.json");
+const policyFiles = ["vercel.json", path.join("public", "_headers")];
 
-const html = readFileSync(htmlPath, "utf8");
+// Git serves index.html with LF line endings; a Windows checkout may hold CRLF,
+// which would change the hash. Hash what is deployed.
+const html = readFileSync(htmlPath, "utf8").replace(/\r\n/g, "\n");
 
 // Match <script> elements that have no src attribute — those are the inline
 // ones the CSP must account for.
@@ -48,16 +54,19 @@ const hashes = inlineScripts.map(
 console.log(`Found ${inlineScripts.length} inline script(s) in index.html:\n`);
 for (const h of hashes) console.log(`  '${h}'`);
 
-// Verify vercel.json is in sync.
-const vercel = readFileSync(vercelPath, "utf8");
-const missing = hashes.filter((h) => !vercel.includes(h));
-
-if (missing.length > 0) {
-  console.error(
-    `\n✖ vercel.json is out of date. Add the following to the script-src directive:\n` +
-      missing.map((h) => `    '${h}'`).join("\n")
-  );
-  process.exit(1);
+// Verify each policy file is in sync, and allows the simulator's WebAssembly (Rapier).
+let drift = false;
+for (const file of policyFiles) {
+  const policy = readFileSync(path.join(root, file), "utf8");
+  const missing = [...hashes, "wasm-unsafe-eval"].filter((h) => !policy.includes(`'${h}'`));
+  if (missing.length > 0) {
+    drift = true;
+    console.error(
+      `\n✖ ${file} is out of date. Add the following to the script-src directive:\n` +
+        missing.map((h) => `    '${h}'`).join("\n")
+    );
+  }
 }
+if (drift) process.exit(1);
 
-console.log("\n✔ vercel.json script-src is in sync with index.html.");
+console.log(`\n✔ script-src in ${policyFiles.join(" and ")} is in sync with index.html.`);

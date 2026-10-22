@@ -1,0 +1,126 @@
+// A part of the car's own surface, copied out as its own mesh so an image can be laid square on it: the
+// needles on the dials (Cluster.tsx) and the mirror images on the mirror glass (MirrorView.tsx). The same
+// technique the Godot build used (godot/scripts/car.gd, _glass_mesh): an image drawn on the part the car
+// already models reads as part of the car, where one drawn beside it reads as a sticker in the cabin.
+import * as THREE from 'three';
+
+export interface SurfacePick {
+  /** The material the part carries in the car's file. */
+  material: string;
+  /** The part's centre, car frame; triangles of that material further than `radius` are someone else's. */
+  at: readonly number[];
+  radius: number;
+}
+
+const LIFT_M = 0.002;   // in front of the original: enough to win the depth test, too little to see
+
+const v3 = (a: readonly number[]) => new THREE.Vector3(a[0], a[1], a[2]);
+
+/**
+ * The picked part as its own mesh, in the car frame, lifted 2 mm toward the eye, with a planar unwrap: u runs
+ * left to right as the driver sees it, v bottom to top. The source UVs address the car's shared texture
+ * atlas, so they are no use for this. `width` and `height` are the part's extents in metres. Null if the
+ * model has no such part.
+ */
+export function flatFace(body: THREE.Object3D, pick: SurfacePick, eye: readonly number[]) {
+  const centre = v3(pick.at);
+  body.updateMatrixWorld(true);
+  const toBody = body.matrixWorld.clone().invert();
+  const pts: THREE.Vector3[] = [];
+  const srcUv: number[] = [];   // each point's own texture coordinates, into the material's map
+  let map: THREE.Texture | null = null;
+  const tri = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  const mid = new THREE.Vector3();
+  body.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    const material = mesh.material as THREE.MeshStandardMaterial;
+    if (!mesh.isMesh || material.name !== pick.material) return;
+    map ??= material.map ?? null;
+    const m = toBody.clone().multiply(mesh.matrixWorld);
+    const pos = mesh.geometry.attributes.position;
+    const uvs = mesh.geometry.attributes.uv;
+    const index = mesh.geometry.index;
+    const count = index ? index.count : pos.count;
+    for (let t = 0; t < count; t += 3) {
+      const at = [0, 1, 2].map((k) => (index ? index.getX(t + k) : t + k));
+      for (let k = 0; k < 3; k++) tri[k].fromBufferAttribute(pos, at[k]).applyMatrix4(m);
+      mid.copy(tri[0]).add(tri[1]).add(tri[2]).divideScalar(3);
+      if (mid.distanceTo(centre) > pick.radius) continue;
+      pts.push(...tri.map((p) => p.clone()));
+      for (const i of at) srcUv.push(uvs ? uvs.getX(i) : 0, uvs ? uvs.getY(i) : 0);
+    }
+  });
+  if (pts.length < 3) return null;
+
+  const ctr = pts.reduce((s, p) => s.add(p), new THREE.Vector3()).divideScalar(pts.length);
+  // the normal of the largest triangle, a better estimate on a shallow curve than an average
+  const normal = new THREE.Vector3();
+  const e1 = new THREE.Vector3();
+  const e2 = new THREE.Vector3();
+  let best = 0;
+  for (let t = 0; t < pts.length; t += 3) {
+    const cr = e1.subVectors(pts[t + 1], pts[t]).cross(e2.subVectors(pts[t + 2], pts[t]));
+    if (cr.length() > best) { best = cr.length(); normal.copy(cr).normalize(); }
+  }
+  // Turned to face the driver before anything is derived from it: a cross product's sign is arbitrary, and a
+  // flipped normal would mirror the unwrap left to right.
+  const toEye = v3(eye).sub(ctr);
+  if (normal.dot(toEye) < 0) normal.negate();
+  const right = new THREE.Vector3(0, 1, 0).cross(normal).normalize();
+  const up = normal.clone().cross(right).normalize();
+
+  const d = new THREE.Vector3();
+  const flat = pts.map((p) => { d.subVectors(p, ctr); return [d.dot(right), d.dot(up)]; });
+  const lo = [Math.min(...flat.map((f) => f[0])), Math.min(...flat.map((f) => f[1]))];
+  const span = [Math.max(...flat.map((f) => f[0])) - lo[0], Math.max(...flat.map((f) => f[1])) - lo[1]];
+  const lift = toEye.normalize().multiplyScalar(LIFT_M);
+  const position = new Float32Array(pts.length * 3);
+  const uv = new Float32Array(pts.length * 2);
+  pts.forEach((p, i) => {
+    p.clone().add(lift).toArray(position, i * 3);
+    uv[i * 2] = (flat[i][0] - lo[0]) / span[0];
+    uv[i * 2 + 1] = (flat[i][1] - lo[1]) / span[1];
+  });
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(position, 3));
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+
+  /** The point on the part itself (not lifted) at a place in the unwrap: u left to right, v bottom to top. */
+  const pointAt = (u: number, v: number): THREE.Vector3 => {
+    const at = new THREE.Vector2(u, v);
+    const tri = new THREE.Triangle();
+    const bary = new THREE.Vector3();
+    const flatTri = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+    for (let t = 0; t < pts.length; t += 3) {
+      for (let k = 0; k < 3; k++) flatTri[k].set(uv[(t + k) * 2], uv[(t + k) * 2 + 1], 0);
+      tri.set(flatTri[0], flatTri[1], flatTri[2]);
+      if (!tri.containsPoint(new THREE.Vector3(at.x, at.y, 0))) continue;
+      tri.getBarycoord(new THREE.Vector3(at.x, at.y, 0), bary);
+      return pts[t].clone().multiplyScalar(bary.x).addScaledVector(pts[t + 1], bary.y).addScaledVector(pts[t + 2], bary.z);
+    }
+    // between triangles: on the fitted plane
+    return ctr.clone().addScaledVector(right, lo[0] + u * span[0]).addScaledVector(up, lo[1] + v * span[1]);
+  };
+
+  /** The point at unwrap (u, v) on the part's fitted plane, moved `depth` metres along its normal, toward the eye. */
+  const planePoint = (u: number, v: number, depth = 0) =>
+    ctr.clone().addScaledVector(right, lo[0] + u * span[0]).addScaledVector(up, lo[1] + v * span[1]).addScaledVector(normal, depth);
+
+  /** A place in the plane of the part (car frame) as unwrap coordinates: u left to right, v bottom to top. */
+  const toUnwrap = (p: THREE.Vector3): [number, number] => {
+    d.subVectors(p, ctr);
+    return [(d.dot(right) - lo[0]) / span[0], (d.dot(up) - lo[1]) / span[1]];
+  };
+
+  return {
+    geometry, width: span[0], height: span[1], right, up, normal, centre: ctr, pointAt, planePoint, toUnwrap,
+    /** The part laid flat: positions are unwrap coordinates (z = 0), uvs its own, for re-drawing its texture flat. */
+    flat: () => {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts.flatMap((_, i) => [uv[i * 2], uv[i * 2 + 1], 0])), 3));
+      g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(srcUv), 2));
+      return g;
+    },
+    map: map as THREE.Texture | null,
+  };
+}

@@ -33,20 +33,20 @@ export function GantrySign({ score, theory, practical, bestMock, passMark }: Gan
       : t("dashboard.gantry.lFresh");
 
   return (
-    <section aria-labelledby="gantry-title" className="relative mt-4 pb-8">
+    <section aria-labelledby="gantry-title" className="relative mt-4 pb-6">
       <span aria-hidden="true" className={cn(POST, "left-[9%]")} />
       <span aria-hidden="true" className={cn(POST, "right-[9%]")} />
-      <div className="hero-panel grid gap-8 px-6 py-8 sm:px-10 sm:py-10 md:grid-cols-[1.15fr_1fr] md:gap-10 lg:px-12">
+      <div className="hero-panel grid gap-4 px-5 py-5 sm:px-8 sm:py-6 md:grid-cols-[1.15fr_1fr] md:gap-8 lg:px-10">
         <div className="min-w-0">
-          <h1 id="gantry-title" className="text-[1.25rem] font-extrabold text-white sm:text-[1.375rem]">{t("dashboard.gantry.title")}</h1>
+          <h1 id="gantry-title" className="text-[1.0625rem] font-extrabold text-white sm:text-[1.125rem]">{t("dashboard.gantry.title")}</h1>
           <p className="sr-only">{left} {t("dashboard.gantry.marksLeft")}</p>
-          <div aria-hidden="true" className="mt-2 flex items-end gap-4">
-            <span className="text-[clamp(6.5rem,19vw,13.75rem)] font-black leading-[0.8] tracking-[-0.05em] tabular-nums [text-shadow:0_0_30px_rgb(255_255_255/0.35)]">
+          <div aria-hidden="true" className="mt-1 flex items-end gap-3">
+            <span className="text-[clamp(4.25rem,12vw,7.5rem)] font-black leading-[0.8] tracking-[-0.05em] tabular-nums [text-shadow:0_0_30px_rgb(255_255_255/0.35)]">
               <NumberFlow value={left} />
             </span>
-            <span className="max-w-[6ch] pb-2 text-[1.5rem] font-extrabold leading-[1.1] sm:text-[1.625rem]">{t("dashboard.gantry.marksLeft")}</span>
+            <span className="max-w-[6ch] pb-1 text-[1.125rem] font-extrabold leading-[1.1] sm:text-[1.25rem]">{t("dashboard.gantry.marksLeft")}</span>
           </div>
-          <p className="mt-6 max-w-[36ch] text-[1.0625rem] sm:text-lg">
+          <p className="mt-3 max-w-[36ch] text-[0.9375rem] sm:text-base">
             {t("dashboard.gantry.split", { theory: Math.round(theory), practical: Math.round(practical) })}
           </p>
         </div>
@@ -62,11 +62,11 @@ export function GantrySign({ score, theory, practical, bestMock, passMark }: Gan
 
 function PlateRow({ letter, reached, title, detail }: { letter: "L" | "P"; reached: boolean; title: string; detail: string }) {
   return (
-    <div className="flex items-center gap-5 border-t-[3px] border-white/45 py-5 first:border-0">
+    <div className="flex items-center gap-4 border-t-2 border-white/45 py-3 first:border-0">
       <span aria-hidden="true" className={cn("plate-sign", !reached && "plate-sign-ahead")}>{letter}</span>
       <div className="min-w-0">
-        <p className="text-[1.375rem] font-extrabold leading-tight sm:text-2xl">{title}</p>
-        <p className="mt-0.5 text-[0.9375rem] leading-snug sm:text-base">{detail}</p>
+        <p className="text-[1.125rem] font-extrabold leading-tight sm:text-xl">{title}</p>
+        <p className="mt-0.5 text-[0.875rem] leading-snug sm:text-[0.9375rem]">{detail}</p>
       </div>
     </div>
   );

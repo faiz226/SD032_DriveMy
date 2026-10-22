@@ -6,15 +6,19 @@ import { cn } from "@/lib/utils";
 
 const STUDS = 50;
 const AXIS = [0, 50, 100];
+/** Where the L plate stands on the road; P stands at the finish. */
+const L_MARK = 60;
 const clamp = (value: number) => Math.min(100, Math.max(0, Math.round(Number.isFinite(value) ? value : 0)));
 
 /**
  * Readiness as a stretch of road at night. The cat's eyes light up to the
  * score one after another, and the car drives up to it when the page opens or
- * the score moves; with reduced motion both simply appear in place. Tapping
- * the car sounds the horn, a small reward for the curious.
+ * the score moves; with reduced motion both simply appear in place. The L
+ * plate stands at 60 and lights on the gantry's rule (a full mock at the pass
+ * mark), the P plate at 100 lights at full readiness. Tapping the car sounds
+ * the horn, a small reward for the curious.
  */
-export function JourneyRoad({ value, label, horn = true }: { value: number; label: string; horn?: boolean }) {
+export function JourneyRoad({ value, label, horn = true, lReached = false }: { value: number; label: string; horn?: boolean; lReached?: boolean }) {
   const { t } = useLanguage();
   const score = clamp(value);
   const [shown, setShown] = useState(0);
@@ -47,15 +51,34 @@ export function JourneyRoad({ value, label, horn = true }: { value: number; labe
   };
 
   return (
-    <section className="relative pt-16">
-      <div aria-hidden="true" className="absolute right-16 top-0 flex translate-x-1/2 flex-col items-center">
-        <span className={cn("plate-sign h-[46px] w-[46px] rounded-[7px] text-[2rem]", score < 100 && "plate-sign-ahead !border-muted-foreground !text-muted-foreground")}>P</span>
-        <i className="h-4 w-[3px] bg-muted-foreground" />
+    <section className="relative pt-12">
+      <div aria-hidden="true" className="absolute inset-x-16 top-0">
+        {[{ letter: "L", at: L_MARK, reached: lReached }, { letter: "P", at: 100, reached: score >= 100 }].map(plate => (
+          <span key={plate.letter} className="absolute top-0 flex -translate-x-1/2 flex-col items-center" style={{ left: `${plate.at}%` }}>
+            <span className={cn("plate-sign h-9 w-9 rounded-[6px] text-[1.5rem]", !plate.reached && "plate-sign-ahead !border-muted-foreground !text-muted-foreground")}>{plate.letter}</span>
+            <i className="h-3 w-[3px] bg-muted-foreground" />
+          </span>
+        ))}
       </div>
 
-      <div className="relative h-[140px] overflow-hidden rounded-3xl bg-[linear-gradient(180deg,#10304A,rgb(var(--road)))] px-16 ring-1 ring-border">
-        <span aria-hidden="true" className="absolute inset-x-0 top-4 h-[3px] bg-white/75" />
-        <span aria-hidden="true" className="absolute inset-x-0 bottom-4 h-[3px] bg-white/75" />
+      {/* The horn's line floats over the car, outside the road's clip and in
+          front of the plates, so neither can hide it. */}
+      <div className="pointer-events-none absolute inset-x-16 top-0 z-10 h-[4.5rem]">
+        <span
+          aria-live="polite"
+          className={cn(
+            "absolute bottom-0 whitespace-nowrap rounded-xl bg-white px-3 py-1.5 text-[0.9375rem] font-extrabold text-[#111] shadow-lg transition-[opacity,transform] duration-200",
+            bubble ? "-translate-x-1/2 -translate-y-1 opacity-100" : "-translate-x-1/2 translate-y-1.5 opacity-0",
+          )}
+          style={{ left: `${shown}%` }}
+        >
+          {bubble}
+        </span>
+      </div>
+
+      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-[linear-gradient(180deg,#10304A,rgb(var(--road)))] px-16 ring-1 ring-border">
+        <span aria-hidden="true" className="absolute inset-x-0 top-3 h-[3px] bg-white/75" />
+        <span aria-hidden="true" className="absolute inset-x-0 bottom-3 h-[3px] bg-white/75" />
         <div
           role="meter"
           aria-label={label}
@@ -92,16 +115,7 @@ export function JourneyRoad({ value, label, horn = true }: { value: number; labe
             // Inline, because an arbitrary Tailwind duration class is ambiguous with the animate plugin and gets dropped.
             style={{ left: `${shown}%`, transitionDuration: "1100ms" }}
           >
-            <span
-              aria-live="polite"
-              className={cn(
-                "pointer-events-none absolute bottom-full left-1/2 whitespace-nowrap rounded-xl bg-white px-3 py-1.5 text-[0.9375rem] font-extrabold text-[#111] transition-[opacity,transform] duration-200",
-                bubble ? "-translate-x-1/2 -translate-y-1 opacity-100" : "-translate-x-1/2 translate-y-1.5 opacity-0",
-              )}
-            >
-              {bubble}
-            </span>
-            <span aria-hidden="true" className="pointer-events-none absolute left-[90%] top-[48%] h-[110px] w-[150px] -translate-y-1/2 bg-[linear-gradient(90deg,rgb(255_240_170/0.6),transparent)] [clip-path:polygon(0_44%,100%_0,100%_100%,0_58%)] sm:w-[280px]" />
+            <span aria-hidden="true" className="pointer-events-none absolute left-[90%] top-[48%] h-[80px] w-[150px] -translate-y-1/2 bg-[linear-gradient(90deg,rgb(255_240_170/0.6),transparent)] [clip-path:polygon(0_44%,100%_0,100%_100%,0_58%)] sm:w-[280px]" />
             {driving && [0, 1, 2, 3, 4].map(i => (
               <span key={i} aria-hidden="true" className="exhaust-puff left-0 top-[37px]" style={{ animationDelay: `${i * 0.15}s` }} />
             ))}

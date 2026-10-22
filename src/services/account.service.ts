@@ -49,6 +49,13 @@ export async function exportUserData(userId: string): Promise<Blob> {
   return new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
 }
 
+export class AccountCleanupError extends Error {
+  constructor(message: string, public readonly cause?: unknown) {
+    super(message);
+    this.name = "AccountCleanupError";
+  }
+}
+
 /**
  * Erase the learner's results and theory progress but keep the account.
  *
@@ -63,13 +70,6 @@ export async function resetProgress(userId: string): Promise<void> {
   const results = await Promise.all(USER_DATA_TABLES.map(table => supabase.from(table).delete().eq("user_id", userId)));
   const failed = results.find(result => result.error);
   if (failed?.error) throw failed.error;
-}
-
-export class AccountCleanupError extends Error {
-  constructor(message: string, public readonly cause?: unknown) {
-    super(message);
-    this.name = "AccountCleanupError";
-  }
 }
 
 /**

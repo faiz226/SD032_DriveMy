@@ -1,0 +1,35 @@
+{
+  "when": "2026-10-19T09:54:22.798Z",
+  "conditions": {
+    "emulated": true,
+    "viewport": "851x393 @2.75",
+    "cpuThrottle": 4,
+    "network": "9/3 Mbps, 80 ms",
+    "cache": "cold (fresh profile)",
+    "userAgent": "Android (Redmi 9T)",
+    "tier": "low (Android user agent)",
+    "gpu": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x000046A6) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "chrome": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+  },
+  "firstDriveS": 9.46,
+  "marksMs": {
+    "sim:ready": 8644,
+    "sim:start": 9074,
+    "sim:drive": 9463
+  },
+  "bytesBeforeDrive": 5833828,
+  "requestsBeforeDrive": 71,
+  "minutes": 10,
+  "frames": {
+    "count": 11629,
+    "p50Ms": 49.9,
+    "p95Ms": 96.7,
+    "p99Ms": 122.4,
+    "fpsAtP50": 20,
+    "fpsAtP95": 10.3
+  },
+  "memory": {
+    "jsHeapUsedMB": 23.8,
+    "jsHeapTotalMB": 59.2
+  }
+}

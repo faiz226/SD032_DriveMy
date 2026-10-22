@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from "react"
+import { flushSync } from "react-dom"
 import { Moon, Sun } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
@@ -131,7 +132,7 @@ export function useThemeAnimation(options: {
   fromCenter?: boolean;
 } = {}) {
   const { duration = 400, variant = "circle", fromCenter = false } = options;
-  const { theme, setTheme, isDark } = useTheme();
+  const { setTheme, isDark } = useTheme();
 
   const toggleTheme = useCallback((element?: HTMLElement | null) => {
     if (!element && !fromCenter) return;
@@ -155,20 +156,32 @@ export function useThemeAnimation(options: {
       Math.max(y, viewportHeight - y)
     );
 
-    const getNextTheme = () => {
-      return isDark ? "light" : "dark";
-    };
-    const nextTheme = getNextTheme();
-    const nextIsDark = nextTheme === "dark";
+    const nextTheme = isDark ? "light" : "dark";
+    const root = document.documentElement;
 
-    const applyThemeDOM = () => {
-      document.documentElement.classList.remove("light", "dark");
-      document.documentElement.classList.add(nextIsDark ? "dark" : "light");
+    // The page's colours and React's theme state change in the same step, so
+    // the reveal shows the finished page and nothing changes again after it.
+    const applyTheme = () => {
+      root.classList.remove("light", "dark");
+      root.classList.add(nextTheme);
+      flushSync(() => setTheme(nextTheme));
     };
 
-    if (typeof document.startViewTransition !== "function") {
-      applyThemeDOM();
-      setTheme(nextTheme);
+    // While this attribute is set, index.css switches every CSS transition
+    // off: otherwise each element fades its own colours over its own timing
+    // inside the reveal, which is what made the switch look uneven.
+    root.dataset.magicuiThemeVt = "active";
+    const cleanup = () => {
+      delete root.dataset.magicuiThemeVt;
+      root.style.removeProperty("--magicui-theme-toggle-vt-duration");
+      root.style.removeProperty("--magicui-theme-vt-clip-from");
+    };
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (typeof document.startViewTransition !== "function" || reduceMotion) {
+      applyTheme();
+      // Two frames: the new colours paint before transitions come back.
+      requestAnimationFrame(() => requestAnimationFrame(cleanup));
       return;
     }
 
@@ -180,51 +193,24 @@ export function useThemeAnimation(options: {
       viewportWidth,
       viewportHeight
     );
-
-    const root = document.documentElement;
-    root.dataset.magicuiThemeVt = "active";
-    root.style.setProperty(
-      "--magicui-theme-toggle-vt-duration",
-      `${duration}ms`
-    );
+    root.style.setProperty("--magicui-theme-toggle-vt-duration", `${duration}ms`);
     root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0]);
-    const cleanup = () => {
-      delete root.dataset.magicuiThemeVt;
-      root.style.removeProperty("--magicui-theme-toggle-vt-duration");
-      root.style.removeProperty("--magicui-theme-vt-clip-from");
-    };
 
-    const transition = document.startViewTransition(() => {
-      applyThemeDOM();
+    const transition = document.startViewTransition(applyTheme);
+    transition.finished.finally(cleanup);
+    transition.ready.then(() => {
+      root.animate(
+        { clipPath },
+        {
+          duration,
+          // The app's ease-out: quick to open, settling softly at the edges.
+          easing: variant === "star" ? "linear" : "cubic-bezier(0.22, 1, 0.36, 1)",
+          fill: "forwards",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
     });
-    
-    if (typeof transition?.finished?.finally === "function") {
-      transition.finished.finally(() => {
-        cleanup();
-        setTheme(nextTheme);
-      });
-    } else {
-      cleanup();
-      setTheme(nextTheme);
-    }
-
-    const ready = transition?.ready;
-    if (ready && typeof ready.then === "function") {
-      ready.then(() => {
-        document.documentElement.animate(
-          {
-            clipPath,
-          },
-          {
-            duration,
-            easing: variant === "star" ? "linear" : "ease-in-out",
-            fill: "forwards",
-            pseudoElement: "::view-transition-new(root)",
-          }
-        );
-      });
-    }
-  }, [variant, fromCenter, duration, isDark, setTheme, theme]);
+  }, [variant, fromCenter, duration, isDark, setTheme]);
 
   return toggleTheme;
 }

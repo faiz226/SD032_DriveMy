@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { QuizResult, MockTestResult, SimulationResult } from "@/types/database";
+import { expandSimRuns } from "@/sim/record";
 
 export async function getBestQuizScore(userId: string): Promise<number> {
   const { data, error } = await supabase
@@ -40,12 +41,13 @@ export async function getBestColorVisionScore(userId: string): Promise<number | 
 export async function getSimulationsDone(userId: string): Promise<number> {
   const { data, error } = await supabase
     .from("simulation_results")
-    .select("maneuver_id")
+    .select("maneuver_id, score, attempt_data")
     .eq("user_id", userId);
   if (error) throw error;
   if (!data) return 0;
 
-  const rows = data as { maneuver_id: string }[];
+  // a v2 assessment run is one row covering every station it reached
+  const rows = expandSimRuns(data as { maneuver_id: string; score: number; attempt_data?: unknown }[]);
   const uniqueManeuvers = new Set(rows.map((r) => r.maneuver_id));
   return uniqueManeuvers.size;
 }
@@ -210,7 +212,7 @@ export async function getSimStats(userId: string, dateRange?: number) {
   if (error) throw error;
   if (!data || data.length === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
 
-  const rows = data as SimulationResult[];
+  const rows = expandSimRuns(data as SimulationResult[]);
   const validRows = rows.filter(d => typeof d.score === 'number' && !isNaN(d.score));
   const count = validRows.length;
   if (count === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
