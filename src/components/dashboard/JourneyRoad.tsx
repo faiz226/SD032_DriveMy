@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import myviBody from "@/assets/car/myvi-body.svg";
+import myviWheel from "@/assets/car/myvi-wheel.svg";
 import { useLanguage } from "@/hooks/useLanguage";
 import { cn } from "@/lib/utils";
 
@@ -87,7 +89,7 @@ export function JourneyRoad({ value, label, horn = true }: { value: number; labe
             aria-hidden={horn ? undefined : true}
             aria-label={horn ? t("dashboard.road.car") : undefined}
             className="absolute top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-[left] ease-out"
-            // Inline: Tailwind drops `duration-[1100ms]` as ambiguous with the animate plugin.
+            // Inline, because an arbitrary Tailwind duration class is ambiguous with the animate plugin and gets dropped.
             style={{ left: `${shown}%`, transitionDuration: "1100ms" }}
           >
             <span
@@ -115,56 +117,28 @@ export function JourneyRoad({ value, label, horn = true }: { value: number; labe
   );
 }
 
+/** Where the two wheels sit on the body, as a share of the car's box. */
+const WHEELS = [
+  { left: "5.44%", top: "63.89%", width: "16.3%" },
+  { left: "75.31%", top: "63.6%", width: "16.3%" },
+];
+
 /**
- * A yellow Malaysian hatchback, side on. It idles with a small engine shake,
- * run on the svg element itself so the compositor animates it without
- * repainting the glow every frame; while driving the car pitches nose-up as it
- * pulls away and dips as it stops, and the wheels turn.
+ * A yellow Perodua Myvi, traced from a side-on photo: the body and one wheel
+ * are SVGs in src/assets/car, and the wheel is placed twice so both can turn.
+ * It idles with a small engine shake; while driving it pitches nose-up as it
+ * pulls away and dips as it stops, and the wheels spin. Every moving part is
+ * an HTML box, so the compositor moves it without redrawing the traced paths.
  */
 function Hatchback({ driving }: { driving: boolean }) {
   return (
-    <svg width="116" height="56" viewBox="0 0 120 58" overflow="visible" aria-hidden="true" className="car-idle relative block drop-shadow-[0_0_14px_rgb(var(--brand)/0.45)]">
-      <g className={cn(driving && "car-launch")}>
-        <g>
-          <line x1="15" y1="10" x2="10" y2="2" stroke="#2a2a2a" strokeWidth="1.2" strokeLinecap="round" />
-          <path d="M6 46 L5 34 Q5 22 9 16 Q12 10 20 9 L66 8 Q72 8 76 12 L86 22 Q101 24 108 27 Q115 30 115 37 L114 46 L104 46 A12 12 0 0 0 80 46 L42 46 A12 12 0 0 0 18 46 Z" fill="#F2B705" />
-          <path d="M8 40 L42 41 L80 41 L113 40 L114 46 L104 46 A12 12 0 0 0 80 46 L42 46 A12 12 0 0 0 18 46 L6 46 Z" fill="#d49b00" />
-          <path d="M12 17 Q13 12.5 18 12 L66 10.5 Q70 10.5 73 13.5 L82 23 Q82 26 79 26 L11 26 Z" fill="#1c2632" />
-          <rect x="34.5" y="11" width="2.6" height="15" fill="#0b0f14" />
-          <rect x="56" y="10.4" width="2.6" height="15.6" fill="#0b0f14" />
-          <path d="M40 24 L50 12 L54 12 L44 24 Z M63 24 L70 13.5 L72 14.5 L66 24 Z" fill="#fff" opacity="0.16" />
-          <path d="M37 26 L37 44 M58 26 L58 44 M83 24 Q85 34 81 44" stroke="#c99200" strokeWidth="0.9" fill="none" />
-          <rect x="40" y="29" width="5" height="1.6" rx="0.8" fill="#c99200" />
-          <rect x="61" y="29" width="5" height="1.6" rx="0.8" fill="#c99200" />
-          <path d="M79 21.5 Q83 19.5 85.5 21.5 L84.5 24.5 L80 24.5 Z" fill="#F2B705" stroke="#c99200" strokeWidth="0.7" />
-          <path d="M5.6 20 Q6.2 17 9.5 16 L10.5 27 L6.4 29 Z" fill="#C8102E" />
-          <path d="M6.4 21 L8.6 20 L8.9 24 L6.8 25 Z" fill="#fff" opacity="0.35" />
-          <path d="M103.5 26.2 Q110 27 113.6 30.2 L110.8 32.4 Q106 30.8 102.6 29.6 Z" fill="#eef2f5" />
-          <rect x="111" y="38" width="4" height="3" rx="1" fill="#2a2a2a" />
-        </g>
-        <Wheel cx={30} driving={driving} />
-        <Wheel cx={92} driving={driving} />
-      </g>
-    </svg>
-  );
-}
-
-function Wheel({ cx, driving }: { cx: number; driving: boolean }) {
-  return (
-    <g>
-      <circle cx={cx} cy={46} r={10.5} fill="#151515" />
-      <g className={cn("car-wheel", driving && "car-wheel-spin")}>
-        <circle cx={cx} cy={46} r={7} fill="#c9cfd5" />
-        {[0, 45, 90, 135].map(angle => (
-          <line
-            key={angle}
-            x1={cx - 6.5 * Math.cos((angle * Math.PI) / 180)} y1={46 - 6.5 * Math.sin((angle * Math.PI) / 180)}
-            x2={cx + 6.5 * Math.cos((angle * Math.PI) / 180)} y2={46 + 6.5 * Math.sin((angle * Math.PI) / 180)}
-            stroke="#3a4048" strokeWidth="1.3"
-          />
+    <span aria-hidden="true" className="car-idle relative block aspect-[480/217] w-[116px] drop-shadow-[0_0_14px_rgb(var(--brand)/0.45)]">
+      <span className={cn("absolute inset-0", driving && "car-launch")}>
+        <img src={myviBody} alt="" draggable={false} className="absolute inset-0 h-full w-full" />
+        {WHEELS.map(place => (
+          <img key={place.left} src={myviWheel} alt="" draggable={false} className={cn("car-wheel absolute", driving && "car-wheel-spin")} style={place} />
         ))}
-        <circle cx={cx} cy={46} r={1.8} fill="#2a2a2a" />
-      </g>
-    </g>
+      </span>
+    </span>
   );
 }

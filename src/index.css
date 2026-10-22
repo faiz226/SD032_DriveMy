@@ -477,18 +477,18 @@
   .transition-slow { transition: all var(--motion-slow) var(--ease-out); }
   .ease-out-quart  { transition-timing-function: var(--ease-out); }
 
-  /* The hatchback on the readiness road. Engine idle: a small, fast shake of
-     the body only. Launch: the whole car pitches nose-up around the rear
-     wheel as it pulls away, then dips as it stops. Wheels turn while it moves,
-     and exhaust puffs drift back from the tailpipe. Reduced motion stops all
-     of it (see the base layer). */
+  /* The traced Myvi on the readiness road. Engine idle: a small, fast shake
+     of the whole car. Launch: it pitches nose-up around the rear tyre's
+     contact patch as it pulls away, then dips as it stops. Wheels turn while
+     it moves, and exhaust puffs drift back from the tailpipe. Reduced motion
+     stops all of it (see the base layer). */
   .car-idle { animation: car-idle 0.16s linear infinite; transform-box: fill-box; transform-origin: 50% 100%; }
   @keyframes car-idle {
     0%, 100% { transform: translateY(0); }
     30% { transform: translateY(-0.5px) rotate(-0.25deg); }
     65% { transform: translateY(0.35px) rotate(0.15deg); }
   }
-  .car-launch { animation: car-launch 1.1s var(--ease-out) both; transform-box: fill-box; transform-origin: 25% 96%; }
+  .car-launch { animation: car-launch 1.1s var(--ease-out) both; transform-box: fill-box; transform-origin: 13.6% 100%; }
   @keyframes car-launch {
     0% { transform: rotate(0deg); }
     16% { transform: rotate(-9deg); }
