@@ -12,7 +12,7 @@ const SENTRY_PROJECT = process.env["SENTRY_PROJECT"];
 const SENTRY_AUTH_TOKEN = process.env["SENTRY_AUTH_TOKEN"];
 const sentryUploadEnabled = Boolean(SENTRY_ORG && SENTRY_PROJECT && SENTRY_AUTH_TOKEN);
 
-/** Which vendor chunk a module belongs to (React and the router have their own group, ahead of these). */
+/** Which named chunk a module the first page does not need belongs to (what it needs is grouped ahead of these). */
 function vendorChunk(id: string): string | undefined {
   // Phaser game engine — large, isolated
   if (id.includes("node_modules/phaser")) {
@@ -57,15 +57,14 @@ function vendorChunk(id: string): string | undefined {
     return 'vendor-query';
   }
   // The simulator's 3D stack: three.js, React Three Fiber, drei and Rapier (its wasm is inlined,
-  // which makes it large). Only the simulator route uses it, so it loads with that route. Under the
-  // catch-all below it sat in the chunk index.html loads, costing every page about 3 MB.
+  // which makes it large). Only the simulator route uses it, so it loads with that route, and the
+  // service worker's rules below find it by this chunk's name.
   if (/\/node_modules\/(three|three-stdlib|three-mesh-bvh|@react-three|@dimforge|react-reconciler|its-fine|suspend-react|troika-[\w-]+|webgl-sdf-generator|bidi-js|camera-controls|maath|meshline|stats-gl|stats\.js|detect-gpu|tunnel-rat|hls\.js|postprocessing|n8ao|potpack|meshoptimizer|draco3d|@monogrid|glsl-noise)\//.test(id)) {
     return 'vendor-3d';
   }
-  // Other node_modules
-  if (id.includes('node_modules')) {
-    return 'vendor';
-  }
+  // Every other package is left to the default splitting, which puts it with the routes that import it.
+  // A catch-all here once put every package in the chunk index.html loads, so the sign-in page also
+  // downloaded the PDF, date and drawer libraries that only other pages use.
   return undefined;
 }
 
@@ -414,13 +413,14 @@ export default defineConfig({
     sourcemap: sentryUploadEnabled ? "hidden" : false,
     rollupOptions: {
       output: {
-        // Rolldown's groups also take in what their modules import, so whichever group reaches a shared module
-        // first keeps it. React, the router and Vite's helper for lazy routes go first, since every page loads
-        // them: under the rules alone the helper fell to vendor-3d (the 3D stack's own lazy imports use it), and
-        // index.html preloaded the whole 3D stack, about 3 MB, on every page.
+        // Every package the first page needs ($initial: imported statically from the entry), with Vite's helper
+        // for lazy routes, goes in one "vendor" chunk, and this group runs first. Rolldown's groups also take in
+        // what their modules import, so a later group could otherwise carry off a module every page needs: the
+        // 3D stack took the helper that way, then zustand, and each time index.html preloaded the whole stack,
+        // about 3 MB, on every page. The named stacks below get what only other routes use.
         codeSplitting: {
           groups: [
-            { name: "vendor-react", test: /vite\/preload-helper|react-dom|react-router|@remix-run\/router/, priority: 2 },
+            { name: "vendor", test: /node_modules|vite\/preload-helper/, tags: ["$initial"], priority: 2 },
             { name: vendorChunk, priority: 1 },
           ],
         },

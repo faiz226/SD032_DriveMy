@@ -10,10 +10,9 @@ import { AuthProvider }   from "@/app/providers/AuthProvider";
 import { ErrorBoundary }  from "@/components/shared/ErrorBoundary";
 import { ConsentBanner }  from "@/components/shared/ConsentBanner";
 
-// Auth pages — kept as direct imports (small, needed immediately)
+// Auth pages — kept as direct imports (small, needed immediately). The two password pages are lazy below:
+// their forms bring zod and react-hook-form, about 80 KB the sign-in page never uses.
 import { AuthPage }           from "@/pages/auth/AuthPage";
-import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
-import { ResetPasswordPage }  from "@/pages/auth/ResetPasswordPage";
 import { VerifyEmailPage }    from "@/pages/auth/VerifyEmailPage";
 import { AuthCallbackPage }   from "@/pages/auth/AuthCallbackPage";
 import { MfaEnrollmentPage }  from "@/pages/auth/MfaEnrollmentPage";
@@ -33,6 +32,8 @@ const LazySafetyPage      = lazy(() => import("@/pages/SafetyPage").then(m => ({
 const LazySettingsPage    = lazy(() => import("@/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const LazyNotFoundPage    = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const LazyPrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
+const LazyForgotPasswordPage = lazy(() => import("@/pages/auth/ForgotPasswordPage").then(m => ({ default: m.ForgotPasswordPage })));
+const LazyResetPasswordPage  = lazy(() => import("@/pages/auth/ResetPasswordPage").then(m => ({ default: m.ResetPasswordPage })));
 // Development only: the simulator's world on its own (/dev/sim), and the simulator page without signing in
 // (/dev/sim/:id, nothing saved; also in performance builds, VITE_SIM_PERF=1, for scripts/sim-perf.mjs).
 // Absent from production builds.
@@ -99,8 +100,8 @@ function App() {
                   {/* ── Auth routes — AuthLayout (no sidebar, no bottom nav) ── */}
                   <Route element={<AuthLayout />}>
                     <Route path={ROUTES.AUTH}             element={<AuthPage />} />
-                    <Route path={ROUTES.FORGOT_PASSWORD}  element={<ForgotPasswordPage />} />
-                    <Route path={ROUTES.RESET_PASSWORD}   element={<ResetPasswordPage />} />
+                    <Route path={ROUTES.FORGOT_PASSWORD}  element={<LazyForgotPasswordPage />} />
+                    <Route path={ROUTES.RESET_PASSWORD}   element={<LazyResetPasswordPage />} />
                     <Route path={ROUTES.VERIFY_EMAIL}     element={<VerifyEmailPage />} />
                   </Route>
 
