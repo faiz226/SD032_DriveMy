@@ -6,36 +6,5 @@
     "whose reviewBy date has passed. Adding an entry requires a real applicability",
     "argument, not just 'it is noisy'."
   ],
-  "allow": [
-    {
-      "ghsa": "GHSA-vfj7-8cjw-p6xm",
-      "package": "braces (via tailwindcss 3 -> chokidar, micromatch)",
-      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
-      "severity": "high",
-      "reviewBy": "2026-12-31",
-      "justification": [
-        "NOT REACHABLE IN THIS APPLICATION. The attack is a brace pattern nested deep",
-        "enough to exhaust the stack, and it needs an attacker to choose the pattern.",
-        "Here braces runs only at build time, inside Tailwind CSS 3: its content",
-        "scanner (micromatch) and file watcher (chokidar) expand the two globs in",
-        "tailwind.config.js, './index.html' and './src/**/*.{ts,tsx,js,jsx}'. Both are",
-        "written in the repository, with one level of braces. No app code or script",
-        "imports braces, micromatch, chokidar or fast-glob, and none of them is in the",
-        "built bundle (Tailwind ships static CSS), so no user input ever reaches it.",
-        "",
-        "NO FORWARD FIX EXISTS. The advisory covers braces <=3.0.3 and 3.0.3 is the",
-        "latest release (checked 2026-10-23); micromatch 4.0.8, its latest, still",
-        "requires braces ^3.0.3, so an npm override cannot help. npm's remediation",
-        "is tailwindcss 4, a semver-major migration of the whole design system",
-        "(config, PostCSS setup, tailwindcss-animate and renamed utilities), which",
-        "is a project of its own, not a dependency bump.",
-        "",
-        "ACTION ON EXPIRY: check for a patched braces (or a micromatch and chokidar",
-        "that drop it) and update if one exists; otherwise plan the Tailwind 4",
-        "migration. Delete this entry as soon as braces leaves the dependency tree.",
-        "If anything ever passes user-supplied globs or patterns to these packages,",
-        "delete this entry immediately: the argument above no longer holds."
-      ]
-    }
-  ]
+  "allow": []
 }
