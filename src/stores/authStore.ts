@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, Session } from "@supabase/supabase-js";
-import { signOut as signOutService } from "@/services/auth.service";
+import { signOut as signOutService, LocalSessionTerminationError } from "@/services/auth.service";
+import { clearUserScopedCaches } from "@/lib/cache";
+import { clearAllProgress } from "@/lib/testProgress";
 
 interface AuthState {
   user: User | null;
@@ -55,12 +57,59 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       signOut: async () => {
+        const initialState = useAuthStore.getState();
+        const outgoingUserId = initialState.user?.id;
+        // Capture the session generation/ownership token at signOut start.
+        // Using access_token rather than user ID means a fresh login to the SAME
+        // account during a pending logout produces a different token and is preserved.
+        const outgoingToken = initialState.session?.access_token;
+
         try {
-          await signOutService();
+          await signOutService({ userId: outgoingUserId, token: outgoingToken });
         } catch (error) {
+          if (
+            error instanceof LocalSessionTerminationError ||
+            (error as { name?: string })?.name === "LocalSessionTerminationError"
+          ) {
+            console.error("[auth] Incomplete local session cleanup:", error);
+            throw error;
+          }
           console.warn("Failed to sign out on server, clearing locally", error);
         } finally {
-          set({ user: null, session: null, isAuthenticated: false });
+          const currentState = useAuthStore.getState();
+          // A session is genuinely newer when:
+          // 1. A new access_token exists and differs from outgoing token (handles same-account & new-account logins with tokens)
+          // 2. OR a new user ID exists and differs from outgoing user ID (handles different account logins even without tokens)
+          const currentToken = currentState.session?.access_token;
+          const currentUserId = currentState.user?.id;
+          const hasNewToken = Boolean(currentToken) && currentToken !== outgoingToken;
+          const hasNewUser = Boolean(currentUserId) && currentUserId !== outgoingUserId;
+          const isGenuinelyNewSession = hasNewToken || hasNewUser;
+
+          if (!isGenuinelyNewSession) {
+            if (outgoingUserId) clearAllProgress(outgoingUserId);
+            await clearUserScopedCaches();
+
+            // Re-verify after asynchronous cache-clear boundary
+            const postClearState = useAuthStore.getState();
+            const postClearToken = postClearState.session?.access_token;
+            const postClearUserId = postClearState.user?.id;
+            const isStillOriginalOrCleared =
+              !postClearUserId ||
+              (postClearUserId === outgoingUserId && (!postClearToken || postClearToken === outgoingToken));
+
+            if (isStillOriginalOrCleared) {
+              set({ user: null, session: null, isAuthenticated: false });
+            } else {
+              console.warn(
+                `[auth] Account change race during cache clear (outgoing=${outgoingUserId}, current=${postClearUserId}); preserving new session.`
+              );
+            }
+          } else {
+            console.warn(
+              `[auth] Account change race during signout (outgoing=${outgoingUserId}, current=${currentState.user?.id}); preserving new session.`
+            );
+          }
         }
       },
     }),

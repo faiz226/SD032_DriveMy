@@ -24,15 +24,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             ref={ref}
             className={cn(
-              "flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm",
+              "flex h-11 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-[0.9375rem] shadow-xs",
               "ring-offset-background",
               "placeholder:text-muted-foreground",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              "focus-visible:outline-none focus-visible:border-brand-ink focus-visible:ring-4 focus-visible:ring-brand-ink/20",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "transition-base",
               leftIcon && "pl-10",
               rightIcon && "pr-10",
-              error && "border-destructive focus-visible:ring-destructive",
+              error && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
               className
             )}
             aria-invalid={error}
@@ -52,13 +52,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         type={type}
         ref={ref}
         className={cn(
-          "flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm",
+          "flex h-11 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-[0.9375rem] shadow-xs",
           "ring-offset-background",
           "placeholder:text-muted-foreground",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:border-brand-ink focus-visible:ring-4 focus-visible:ring-brand-ink/20",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "transition-base",
-          error && "border-destructive focus-visible:ring-destructive",
+          error && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
           className
         )}
         aria-invalid={error}

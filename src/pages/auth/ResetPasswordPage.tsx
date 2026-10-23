@@ -1,15 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Lock, Eye, EyeSlash, CheckCircle, Warning } from "phosphor-react";
+import { Lock, Eye, EyeSlash, CheckCircle, Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
 import { useLanguage } from "@/hooks/useLanguage";
-import { updatePassword } from "@/services/auth.service";
-import { supabase } from "@/lib/supabase";
+import { updatePassword, onAuthStateChange, getSession } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -32,13 +31,18 @@ export function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
-  const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Redirect to the dashboard shortly after a successful reset.
+  //
+  // This was previously a setTimeout stored in a ref and started inside the
+  // submit handler, with a separate mount effect for cleanup. Owning the timer
+  // in an effect keyed on `success` keeps start and cleanup in one place, and
+  // avoids closing over a ref in a function that React calls during render.
   useEffect(() => {
-    return () => {
-      if (navTimerRef.current) clearTimeout(navTimerRef.current);
-    };
-  }, []);
+    if (!success) return;
+    const timer = setTimeout(() => navigate(ROUTES.DASHBOARD, { replace: true }), 2000);
+    return () => clearTimeout(timer);
+  }, [success, navigate]);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -53,22 +57,20 @@ export function ResetPasswordPage() {
       return;
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const unsubscribe = onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setTokenError(null);
       }
     });
 
-    supabase.auth.getSession().then(({ data }) => {
+    void getSession().catch(() => null).then((session) => {
       const hasAuthParams = hashStr.includes('access_token') || searchStr.includes('code');
-      if (!data.session && !hasAuthParams) {
+      if (!session && !hasAuthParams) {
         setTokenError(t("auth.resetLinkInvalid"));
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return unsubscribe;
   }, [t]);
 
   const onSubmit = async (values: FormValues) => {
@@ -77,7 +79,6 @@ export function ResetPasswordPage() {
     try {
       await updatePassword(values.password);
       setSuccess(true);
-      navTimerRef.current = setTimeout(() => navigate(ROUTES.DASHBOARD, { replace: true }), 2000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "";
       if (msg.toLowerCase().includes("rate limit") || msg.toLowerCase().includes("too many")) {

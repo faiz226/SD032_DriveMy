@@ -1,8 +1,13 @@
 # DriveMy — Disaster Recovery & Backup Runbook
 
-> **Last updated:** 2026-07-03
+> **Last updated:** 2026-08-04
 > **Owner:** Platform / DriveMy FYP Team
 > **Scope:** Supabase hosted database, Auth, and Storage for the DriveMy PWA
+>
+> ⚠️ **2026-08-04 — real incident, see §8.** The project ID below was wrong
+> for over a month: config and docs pointed at an empty duplicate project
+> while a second, real project sat unused. See the fire-drill log for details
+> before trusting any project-ID reference in older commits or docs.
 
 ---
 
@@ -10,7 +15,7 @@
 
 | Component | Provider | Details |
 |-----------|----------|---------|
-| Database | Supabase (PostgreSQL) | Project ID: `yvkzixbyxonvlicyrhpy` |
+| Database | Supabase (PostgreSQL) | Project ID: `dwtrtdwlsexcrjzroumo` ("DriveMy") |
 | Auth | Supabase Auth | Email + Google OAuth |
 | Storage | Supabase Storage | Bucket: `kpp-images` |
 | Frontend | Vercel | Auto-deployed from `main` branch |
@@ -83,7 +88,7 @@ Store the dump in a secure location (e.g., encrypted cloud storage, not in the G
 
 ```bash
 # 1. Connect to the Supabase database
-psql "postgresql://postgres:[DB_PASSWORD]@db.yvkzixbyxonvlicyrhpy.supabase.co:5432/postgres"
+psql "postgresql://postgres:[DB_PASSWORD]@db.dwtrtdwlsexcrjzroumo.supabase.co:5432/postgres"
 
 # 2. Restore
 psql "postgresql://..." -f backup_YYYYMMDD.sql
@@ -145,7 +150,7 @@ git push origin main
 
 | Resource | URL |
 |----------|-----|
-| Supabase Dashboard | https://app.supabase.com/project/yvkzixbyxonvlicyrhpy |
+| Supabase Dashboard | https://app.supabase.com/project/dwtrtdwlsexcrjzroumo |
 | Supabase Status | https://status.supabase.com |
 | Vercel Dashboard | https://vercel.com/dashboard |
 | Vercel Status | https://www.vercel-status.com |
@@ -157,4 +162,5 @@ git push origin main
 
 | Date | Type | RTO Achieved | Performed By | Notes |
 |------|------|-------------|--------------|-------|
-| _(first drill pending)_ | Schema restore | — | — | — |
+| 2026-08-04 | Real incident (not a drill) — wrong project reference | Same-session | Claude + owner | The account holds two Supabase projects, "DriveMy" (`dwtrtdwlsexcrjzroumo`) and "DriveMy2" (`yvkzixbyxonvlicyrhpy`). Every config file and doc in this repo had been pointing at "DriveMy2" — which turned out to be an empty shell with zero migrations ever applied — while "DriveMy" held the actual schema, unpatched with none of the 2026-08-03/04 security fixes. Confirmed via `supabase migration list` on both projects (not guessed). All 6 pending security migrations plus 1 follow-up were pushed to the real project and independently verified via a 12-check SQL suite and Supabase's own `db advisors` linter — both clean except one intentional, by-design item (`delete_user` is meant to be authenticated-callable). Zero real users existed in either project at the time (confirmed via `auth.users` count), so no personal data was ever actually exposed — this closed a gap, not a breach. Root cause not fully determined; worth checking whether "DriveMy2" was created by accident (e.g. mis-typed project name) or intentionally and then abandoned. |
+| _(first schema-restore drill still pending)_ | Schema restore | — | — | — |

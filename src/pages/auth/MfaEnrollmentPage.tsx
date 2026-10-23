@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { getMfaAssuranceLevel, enrollTotp, verifyTotp, unenrollTotp } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { toast } from "sonner";
-import { ShieldCheck, QrCode } from "phosphor-react";
+import { ShieldCheck, QrCode } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 
 export function MfaEnrollmentPage() {
@@ -18,30 +18,28 @@ export function MfaEnrollmentPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    checkMfaStatus();
+  // Declared before the effect that calls it — referencing it earlier is a
+  // use-before-declare that the React Hooks lint rules reject.
+  const checkMfaStatus = useCallback(async () => {
+    try {
+      const data = await getMfaAssuranceLevel();
+      if (data.currentLevel === "aal2") {
+        setIsEnrolled(true);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
   }, []);
 
-  const checkMfaStatus = async () => {
-    const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    if (data.currentLevel === "aal2") {
-      setIsEnrolled(true);
-    }
-  };
+  useEffect(() => {
+    void checkMfaStatus();
+  }, [checkMfaStatus]);
 
   const startEnrollment = async () => {
     setIsPending(true);
     setError(null);
     try {
-      const { data, error } = await supabase.auth.mfa.enroll({
-        factorType: "totp",
-      });
-      if (error) throw error;
-      
+      const data = await enrollTotp();
       setFactorId(data.id);
       setQrCode(data.totp.qr_code);
     } catch (err: any) {
@@ -58,17 +56,7 @@ export function MfaEnrollmentPage() {
     setIsPending(true);
     setError(null);
     try {
-      const challenge = await supabase.auth.mfa.challenge({ factorId });
-      if (challenge.error) throw challenge.error;
-
-      const verify = await supabase.auth.mfa.verify({
-        factorId,
-        challengeId: challenge.data.id,
-        code: verifyCode,
-      });
-      
-      if (verify.error) throw verify.error;
-
+      await verifyTotp(factorId, verifyCode);
       toast.success("MFA successfully enabled!");
       setIsEnrolled(true);
       navigate(ROUTES.DASHBOARD, { replace: true });
@@ -83,11 +71,7 @@ export function MfaEnrollmentPage() {
     if (!window.confirm("Are you sure you want to disable MFA?")) return;
     setIsPending(true);
     try {
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      if (factors && factors.totp.length > 0) {
-        const factor = factors.totp[0];
-        const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
-        if (error) throw error;
+      if (await unenrollTotp()) {
         toast.success("MFA disabled.");
         setIsEnrolled(false);
         setQrCode(null);
@@ -111,14 +95,14 @@ export function MfaEnrollmentPage() {
       </div>
 
       {error && (
-        <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 rounded-md">
+        <div role="alert" className="p-3 text-sm text-destructive bg-card border border-destructive rounded-md">
           {error}
         </div>
       )}
 
       {isEnrolled ? (
         <div className="space-y-4">
-          <div className="p-4 bg-green-500/10 text-green-600 dark:text-green-400 rounded-md border border-green-500/20 text-center">
+          <div className="rounded-xl border border-success/25 bg-success/15 p-4 text-center text-success">
             {t("settings.mfaEnabled")}
           </div>
           <Button 
@@ -139,7 +123,7 @@ export function MfaEnrollmentPage() {
         </Button>
       ) : (
         <form onSubmit={handleVerify} className="space-y-4">
-          <div className="p-4 bg-white rounded-md flex justify-center">
+          <div className="flex justify-center rounded-xl bg-white p-4 ring-1 ring-border">
             <img src={qrCode} alt={t("settings.mfaQrAlt")} className="w-48 h-48" />
           </div>
           <p className="text-sm text-center text-muted-foreground">

@@ -1,14 +1,34 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
+import { useActivityStore } from "@/stores/activityStore";
 import { useSaveColorblindResult } from "@/hooks/useResults";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Eye, Warning, Play } from 'phosphor-react';
+import { Eye, Warning, Play } from '@/components/ui/icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from "@/lib/utils";
+import {
+  saveProgress,
+  loadProgress,
+  clearProgress,
+  PROGRESS_SCOPES,
+} from "@/lib/testProgress";
 import type { TranslationKey } from "@/lib/translations/en";
+
+/** Snapshot of an in-progress colour vision test, for crash-safe resume. */
+interface PersistedColorVisionState {
+  answers: Record<number, string>;
+  currentPlateIndex: number;
+  testLimit: number;
+  /**
+   * The exact plate order shown. Plate shuffling is genuinely random, and
+   * currentPlateIndex is positional — without the order, a resume would drop
+   * the learner on a different plate than the one they left.
+   */
+  plateOrder: number[];
+}
 import confetti from "canvas-confetti";
 
 type PlateType = "control" | "screening" | "diagnostic" | "classification" | "tritan";
@@ -68,6 +88,19 @@ const COLOR_SETS = [
   { id: "screening", title: "Basic Check", titleMs: "Semakan Asas", desc: "First 9 screening plates", descMs: "9 plat saringan pertama", limit: 9 }
 ];
 
+/**
+ * Compare a typed answer against a plate's expected normal-vision answer.
+ *
+ * Module scope rather than component scope: it depends only on its arguments,
+ * and defining it inside the component put it textually after the effect at
+ * line ~94 that calls it (a use-before-declare that the React Hooks lint rules
+ * flag), besides reallocating it on every render.
+ */
+function checkAnswer(answer: string | undefined, p: (typeof PLATES)[0]): boolean {
+  if (!answer) return false;
+  return answer.toLowerCase().trim() === p.normalAnswer.toLowerCase().trim();
+}
+
 export function ColorVisionPage() {
   const { t, language } = useLanguage();
   const { user } = useAuthStore();
@@ -77,13 +110,29 @@ export function ColorVisionPage() {
   const plateAlt = (plateNum: number, type: PlateType) =>
     t("color.plateAlt", { num: plateNum, description: plateDescription(type) });
 
-  const [isStarted, setIsStarted] = useState(false);
-  const [selectedSet, setSelectedSet] = useState<string | undefined>(undefined);
-  const [rulesAccepted, setRulesAccepted] = useState(false);
-  const [testLimit, setTestLimit] = useState(25);
+  // ── Resume an interrupted test ────────────────────────────────────────────
+  // Read once, synchronously, before first paint so the plate order below can
+  // be restored rather than reshuffled.
+  const [restoredTest] = useState(() =>
+    user?.id
+      ? loadProgress<PersistedColorVisionState>(PROGRESS_SCOPES.colorVision, user.id)
+      : null
+  );
+  const [restoredOrder, setRestoredOrder] = useState<number[] | null>(
+    restoredTest?.data.plateOrder ?? null
+  );
 
-  const [currentPlateIndex, setCurrentPlateIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [isStarted, setIsStarted] = useState(Boolean(restoredTest));
+  const [selectedSet, setSelectedSet] = useState<string | undefined>(undefined);
+  const [rulesAccepted, setRulesAccepted] = useState(Boolean(restoredTest));
+  const [testLimit, setTestLimit] = useState(restoredTest?.data.testLimit ?? 25);
+
+  const [currentPlateIndex, setCurrentPlateIndex] = useState(
+    restoredTest?.data.currentPlateIndex ?? 0
+  );
+  const [answers, setAnswers] = useState<Record<number, string>>(
+    restoredTest?.data.answers ?? {}
+  );
   const [userAnswer, setUserAnswer] = useState("");
   const [isFinished, setIsFinished] = useState(false);
 
@@ -113,27 +162,78 @@ export function ColorVisionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFinished]);
 
-  // Shuffle plates on each test start: keep plate 1 (control) first, shuffle the rest
+  // Shuffle plates on each test start: keep plate 1 (control) first, shuffle the rest.
+  //
+  // A resumed test REUSES the saved plate order. The shuffle is genuinely
+  // random (shuffleKey only invalidates the memo, it is not a seed), so
+  // regenerating it on resume would leave `currentPlateIndex` pointing at a
+  // different plate than the one the learner was actually looking at.
   const activePlates = useMemo(() => {
+    if (restoredOrder) {
+      const byId = new Map(PLATES.map((p) => [p.id, p]));
+      const rebuilt = restoredOrder
+        .map((id) => byId.get(id))
+        .filter((p): p is (typeof PLATES)[0] => Boolean(p));
+      if (rebuilt.length > 0) return rebuilt;
+    }
+
     const pool = PLATES.slice(0, testLimit);
     const [control, ...rest] = pool;
-    // Fisher-Yates shuffle using shuffleKey as seed via Math.random() side effect
+    // Fisher-Yates
     for (let i = rest.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [rest[i], rest[j]] = [rest[j], rest[i]];
     }
     return [control, ...rest];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testLimit, shuffleKey]);
+  }, [testLimit, shuffleKey, restoredOrder]);
 
   const currentPlate = activePlates[currentPlateIndex];
 
-  const checkAnswer = (answer: string | undefined, p: typeof PLATES[0]) => {
-    if (!answer) return false;
-    const normalizedAnswer = answer.toLowerCase().trim();
-    const normalizedCorrect = p.normalAnswer.toLowerCase().trim();
-    return normalizedAnswer === normalizedCorrect;
-  };
+  // ── Crash-safe persistence ────────────────────────────────────────────────
+  // Losing a 25-plate test to one accidental tap on the bottom nav is the kind
+  // of thing that makes people give up on an app. Snapshot after every answer.
+  useEffect(() => {
+    if (!user?.id || !isStarted || isFinished) return;
+    saveProgress<PersistedColorVisionState>(
+      PROGRESS_SCOPES.colorVision,
+      user.id,
+      restoredTest?.startedAt ?? Date.now(),
+      {
+        answers,
+        currentPlateIndex,
+        testLimit,
+        // The exact order shown, so a resume lands on the same plate.
+        plateOrder: activePlates.map((p) => p.id),
+      }
+    );
+  }, [answers, currentPlateIndex, testLimit, activePlates, isStarted, isFinished, user?.id, restoredTest]);
+
+  // Suspend the inactivity sign-out while the test is running.
+  useEffect(() => {
+    if (!isStarted || isFinished) return;
+    const { beginTest, endTest } = useActivityStore.getState();
+    beginTest();
+    return endTest;
+  }, [isStarted, isFinished]);
+
+  // Let the learner know their progress came back.
+  useEffect(() => {
+    if (restoredTest) toast.success(t("color.resumed"));
+    // Once, on mount, only for a resumed test.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Leaving mid-test is now recoverable, but still worth confirming.
+  useEffect(() => {
+    if (!isStarted || isFinished || Object.keys(answers).length === 0) return;
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [isStarted, isFinished, answers]);
 
   const handleSubmit = () => {
     if (!userAnswer) {
@@ -154,6 +254,8 @@ export function ColorVisionPage() {
 
   const handleFinish = async (finalAnswers: Record<number, string>) => {
     setIsFinished(true);
+    // The attempt is complete — the resume snapshot has done its job.
+    if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
     let score = 0;
     activePlates.forEach((p) => {
       if (checkAnswer(finalAnswers[p.id], p)) score++;
@@ -183,6 +285,10 @@ export function ColorVisionPage() {
     setIsFinished(false);
     setUserAnswer("");
     setIsStarted(false);
+    // Drop the resumed order so the next test gets a genuinely fresh shuffle,
+    // and bin the saved snapshot — starting over must not resume the old one.
+    setRestoredOrder(null);
+    if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
     setShuffleKey(Math.random()); // trigger new shuffle on next test start
   };
 
@@ -202,21 +308,21 @@ export function ColorVisionPage() {
 
     return (
       <div className="max-w-xl mx-auto page-enter mt-10">
-        <div className="bg-card border rounded-3xl shadow-lg overflow-hidden flex flex-col">
+        <div className="panel overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="bg-[#1e293b] text-white p-8 relative overflow-hidden">
-            <div className="absolute -right-4 top-1/2 -translate-y-1/2 text-white/5 select-none pointer-events-none">
-              <Eye className="w-[160px] h-[160px]" weight="fill" />
+          <div className="hero-panel !rounded-none !border-0 !shadow-none p-8">
+            <div aria-hidden="true" className="absolute -right-6 top-1/2 -translate-y-1/2 text-white/[0.06] select-none pointer-events-none">
+              <Eye className="w-[168px] h-[168px]" weight="thin" />
             </div>
 
             <div className="relative z-10">
-              <div className="text-[10px] font-bold tracking-wider uppercase text-white/70 mb-2">
-                ISHIHARA COLOR TEST
+              <div className="mb-2 text-xs font-semibold text-white/75">
+                Ishihara
               </div>
-              <h2 className="font-heading font-bold text-3xl mb-1 leading-tight text-white">
+              <h2 className="type-display mb-1 text-[2rem] text-white">
                 {language === 'en' ? "Test your color vision" : "Uji penglihatan warna anda"}
               </h2>
-              <p className="text-sm text-white/60 italic font-medium">
+              <p className="text-sm text-white/75">
                 {language === 'en' ? "Ujian Penglihatan Warna Ishihara" : "Ishihara Color Vision Test"}
               </p>
             </div>

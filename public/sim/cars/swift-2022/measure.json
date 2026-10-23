@@ -1,0 +1,71 @@
+{
+  "frame": "three.js car frame: x forward, y up, z = -(driver's left); origin at the wheelbase centre, wheel-centre height",
+  "wheel_radius_m": 0.324,
+  "axle_front_left": [
+    1.2251,
+    0.0,
+    -0.7466
+  ],
+  "steering_hub": [
+    0.3549,
+    0.6352,
+    0.3295
+  ],
+  "column_tilt_deg": 23.53,
+  "mirror_left_glass": [
+    0.5349,
+    0.7607,
+    -0.839
+  ],
+  "mirror_right_glass": [
+    0.5349,
+    0.7607,
+    0.839
+  ],
+  "mirror_interior_glass": [
+    0.4747,
+    0.9705,
+    0.0002
+  ],
+  "body_extent": {
+    "length": 3.8423,
+    "width": 1.8466,
+    "top_above_wheel_centre": 1.2976,
+    "bottom_above_wheel_centre": -0.2078
+  },
+  "triangles": {
+    "body": 38252,
+    "wheel": 2600,
+    "steering": 3200,
+    "car_total": 51852
+  },
+  "materials": {
+    "body": 55,
+    "wheel": 6,
+    "steering": 7
+  },
+  "bytes_medium": {
+    "body.glb": 4275280,
+    "wheel.glb": 406680,
+    "steering.glb": 526164
+  },
+  "materials_low": {
+    "body": [
+      55,
+      47
+    ],
+    "wheel": [
+      6,
+      6
+    ],
+    "steering": [
+      7,
+      6
+    ]
+  },
+  "bytes_low": {
+    "body.glb": 3484952,
+    "wheel.glb": 262412,
+    "steering.glb": 347980
+  }
+}

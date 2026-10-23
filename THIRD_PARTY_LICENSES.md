@@ -45,13 +45,25 @@ Road sign images are reproduced from the **Malaysian Highway Code (Kod Jalan Ray
 
 ## Fonts
 
-**Provider:** Google Fonts CDN (`fonts.googleapis.com`)
+**Provider:** self-hosted from npm through Fontsource (`@fontsource-variable/*`, `@fontsource/*`) and bundled with the app; no font CDN is contacted.
 
 | Font | License |
 |------|---------|
-| Inter | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
-| Cal Sans | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
+| Overpass | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
+| DotGothic16 | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | JetBrains Mono | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
+
+---
+
+## Simulator Textures
+
+**Location:** `public/sim/textures/`
+**Used in:** the v2 driving simulator's yard
+
+| File | Source | License |
+|------|--------|---------|
+| `concrete-512.webp`, `concrete-1024.webp` | [ambientCG Concrete030](https://ambientcg.com/view?id=Concrete030), downscaled and lightened to match the yard's pale concrete | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `grass-512.webp`, `grass-1024.webp` | Generated for this project (a periodic noise field in grass colours) | MIT (this project) |
 
 ---
 
@@ -68,6 +80,7 @@ Key dependency licenses:
 - Supabase JS — MIT  
 - Phaser 3 — MIT
 - Radix UI — MIT
+- Hugeicons (free icon set and React component) — MIT
 - Tailwind CSS — MIT
 - Zustand — MIT
 - Zod — MIT

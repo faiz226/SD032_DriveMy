@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Warning } from "phosphor-react";
+import { CheckCircle, Warning } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 
 interface ResultsBadgeProps {

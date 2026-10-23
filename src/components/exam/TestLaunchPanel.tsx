@@ -1,9 +1,11 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lightning, Play, ClipboardText } from "phosphor-react";
+import { CheckCircle, Lightning, Play } from "@/components/ui/icons";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
 
 interface TestLaunchPanelProps {
@@ -31,6 +33,13 @@ const MOCK_SETS = [
 ];
 
 export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
+  // The exam is sat in the learner's language. This used to be hardcoded to
+  // "en" for everyone, on the stated grounds that both languages were shown —
+  // but ExamShell renders exactly one language from this prop, so the dual
+  // display never existed and the hardcode outlived the intent. The effect was
+  // that every Malay learner practised in English for an exam JPJ sets in
+  // Malay, while the screen above promised them both.
+  const { language } = useLanguage();
   const { register, handleSubmit, watch, setValue } = useForm<LaunchForm>({
     resolver: zodResolver(launchSchema),
     defaultValues: { setId: undefined, rulesAccepted: false },
@@ -40,8 +49,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
   const rulesAccepted = watch("rulesAccepted") || false;
 
   const onSubmit = (data: LaunchForm) => {
-    // Pass 'en' as default since we show dual languages now
-    onStart({ language: "en", setId: data.setId || (mode === "quiz" ? "A" : "mock-1") });
+    onStart({ language, setId: data.setId || (mode === "quiz" ? "A" : "mock-1") });
   };
 
   const sections = mode === "quiz" ? KPP_SECTIONS : MOCK_SETS;
@@ -59,115 +67,112 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
     }
   }
 
-  return (
-    <div className="max-w-xl mx-auto page-enter mt-10">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-card border rounded-3xl shadow-lg overflow-hidden flex flex-col"
-      >
-        {/* Header */}
-        <div className="bg-[#1e293b] text-white p-8 relative overflow-hidden">
-          {mode === "mock" ? (
-            <div className="absolute -right-4 top-1/2 -translate-y-1/2 text-white/5 select-none pointer-events-none">
-              <ClipboardText className="w-[160px] h-[160px]" weight="fill" />
-            </div>
-          ) : (
-            <div className="absolute -right-6 top-1/2 -translate-y-1/2 text-[150px] font-black text-white/5 select-none font-heading leading-none pointer-events-none">?</div>
-          )}
-          
-          <div className="relative z-10">
-            <div className="text-[10px] font-bold tracking-wider uppercase text-white/70 mb-2">
-              {mode === "quiz" ? t("launch.quizMaster") : t("launch.mockExam")}
-            </div>
-            <h2 className="font-heading font-bold text-3xl mb-1 leading-tight text-white">
-              {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockExamDesc")}
-            </h2>
-          </div>
-        </div>
+  // ── Render ──────────────────────────────────────────────────────────────────
+  //
+  // Shared by the practice quiz and the KPP mock. A set is chosen with the same
+  // tile used to choose an answer in the exam room, so a learner meets one
+  // pattern, not two.
 
-        {/* Content */}
-        <div className="p-6 md:p-8 space-y-6">
-          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+  return (
+    <div className="mx-auto w-full max-w-2xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
+        <header>
+          <p className="text-sm font-medium text-muted-foreground">
+            {mode === "quiz" ? t("launch.quizMaster") : t("launch.mockExam")}
+          </p>
+          <h1 className="page-title mt-1.5">
+            {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockExamDesc")}
+          </h1>
+          <p className="mt-3 whitespace-pre-line text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
             {mode === "quiz" ? t("launch.quizInfo") : t("launch.mockInfo")}
           </p>
+        </header>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
-              {mode === "quiz" ? t("launch.selectSection") : t("launch.chooseMock")}
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {sections.map((sec) => (
+        <fieldset className="min-w-0">
+          <legend className="mb-3 text-sm font-semibold">
+            {mode === "quiz" ? t("launch.selectSection") : t("launch.chooseMock")}
+          </legend>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {sections.map((sec) => {
+              const isSelected = selectedSet === sec.id;
+              return (
                 <button
                   key={sec.id}
                   type="button"
                   onClick={() => setValue("setId", sec.id)}
+                  aria-pressed={isSelected}
                   className={cn(
-                    "p-4 rounded-xl border-2 text-left transition-all active:scale-[0.98]",
-                    selectedSet === sec.id
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-card text-foreground hover:border-foreground/30 hover:bg-muted/30"
+                    "tile flex w-full min-w-0 items-center gap-3 p-4 text-left sm:flex-col sm:items-start",
+                    isSelected ? "tile-selected" : "tile-open"
                   )}
                 >
-                  <div className="text-[10px] font-bold tracking-wider uppercase opacity-60 mb-1">
-                    {mode === "quiz" ? t("launch.section") : t("launch.mock")}
-                  </div>
-                  <div className="font-heading font-black text-3xl leading-none mb-2">
-                    {sec.id.replace('mock-', '')}
-                  </div>
-                  <div className="font-bold text-sm">
-                    {t(sec.titleKey as TranslationKey)}
-                  </div>
-                  <div className="text-xs opacity-70 mt-0.5 font-medium">
-                    {t(sec.descKey as TranslationKey)}
-                  </div>
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "type-figure grid h-10 w-10 shrink-0 place-items-center rounded-xl text-base transition-colors duration-150",
+                      isSelected ? "bg-brand text-brand-foreground" : "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {sec.id.replace("mock-", "")}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[0.9375rem] font-semibold leading-snug">
+                      {t(sec.titleKey as TranslationKey)}
+                    </span>
+                    <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
+                      {t(sec.descKey as TranslationKey)}
+                    </span>
+                  </span>
                 </button>
-              ))}
-            </div>
-            <input type="hidden" {...register("setId")} />
+              );
+            })}
           </div>
+          <input type="hidden" {...register("setId")} />
+        </fieldset>
 
-          <button
+        {/* The rules gate the button, so they come before it. */}
+        {mode === "mock" && (
+          <section className="panel p-5">
+            <h2 className="text-base font-semibold">{t("launch.examRules")}</h2>
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+              {(["launch.rule1", "launch.rule2", "launch.rule3"] as const).map(rule => (
+                <li key={rule} className="flex gap-2.5">
+                  <CheckCircle size={18} weight="duotone" className="mt-px shrink-0 text-brand-ink" aria-hidden />
+                  <span>{t(rule)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex items-start gap-3 border-t border-border pt-4">
+              <Checkbox
+                id="rulesAccepted"
+                checked={rulesAccepted}
+                onCheckedChange={(checked) => setValue("rulesAccepted", !!checked)}
+                className="mt-0.5 h-5 w-5 shrink-0"
+              />
+              <label htmlFor="rulesAccepted" className="cursor-pointer select-none text-sm leading-relaxed">
+                {t("launch.acceptRules")}
+              </label>
+            </div>
+          </section>
+        )}
+
+        <div>
+          {/* A disabled start keeps a readable label (5.2:1), because the label
+              states the unmet condition a learner needs to see. */}
+          <Button
             type="submit"
+            size="lg"
             disabled={isSubmitDisabled}
-            className={cn(
-              "w-full flex items-center justify-center gap-2 min-h-[56px] py-4 rounded-xl font-black text-lg uppercase tracking-wider transition-all",
-              !isSubmitDisabled
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md active:scale-[0.99]"
-                : "bg-muted/40 text-muted-foreground/60 cursor-not-allowed"
-            )}
+            className={cn("w-full", isSubmitDisabled && "bg-muted text-muted-foreground shadow-none disabled:opacity-100")}
           >
-            {mode === "quiz" ? (
-              <Lightning className="w-5 h-5" weight="fill" />
-            ) : (
-              <Play className="w-5 h-5" weight="fill" />
-            )}
-            {buttonLabel}
-          </button>
+            {mode === "quiz" ? <Lightning className="!size-5" weight="fill" aria-hidden /> : <Play className="!size-5" weight="fill" aria-hidden />}
+            <span className="truncate">{buttonLabel}</span>
+          </Button>
 
-          {mode === "quiz" ? (
-            <p className="text-xs text-center text-muted-foreground italic max-w-sm mx-auto leading-relaxed whitespace-pre-line">
+          {mode === "quiz" && (
+            <p className="mt-3 whitespace-pre-line text-pretty text-sm leading-relaxed text-muted-foreground">
               {t("launch.quizHint")}
             </p>
-          ) : (
-            <div className="bg-card border rounded-2xl p-5 md:p-6 space-y-4">
-              <h3 className="font-heading font-bold text-sm text-foreground">{t("launch.examRules")}</h3>
-              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside pl-1">
-                <li>{t("launch.rule1")}</li>
-                <li>{t("launch.rule2")}</li>
-                <li>{t("launch.rule3")}</li>
-              </ul>
-              <div className="pt-3 border-t flex items-start gap-3">
-                <Checkbox
-                  id="rulesAccepted"
-                  checked={rulesAccepted}
-                  onCheckedChange={(checked) => setValue("rulesAccepted", !!checked)}
-                  className="mt-0.5"
-                />
-                <label htmlFor="rulesAccepted" className="text-xs text-muted-foreground font-medium leading-relaxed cursor-pointer select-none">
-                  {t("launch.acceptRules")}
-                </label>
-              </div>
-            </div>
           )}
         </div>
       </form>

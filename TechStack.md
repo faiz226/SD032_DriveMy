@@ -1,465 +1,292 @@
-# DriveMy — End-to-End Technical Audit
+# DriveMy — Infrastructure and release-readiness audit
 
-> **Audit scope:** `SD032_DriveMy` — Bilingual (EN/BM) PWA for Malaysian learner drivers (JPJ KPP1 theory + practical driving test prep).
-> **Audit date:** 2026-07-03
-> **Auditor:** Principal SRE / Security Architect (no-blindspot audit)
-> **Method:** Static review of source, config, schema, lockfile; `npm audit`; evidence cited as `file:line`. No runtime pentest performed.
-> **Honesty note:** Items are marked **CRITICAL** when missing/exploitable, **N/A — verified not applicable** when truly out of scope. Nothing is assumed.
+Date: 2026-10-07 (Asia/Kuala_Lumpur). Read-only assessment of current checkout. This replaces the historical TechStack report preserved at reports/TechStack.previous.md. All 15 sections and 140 checkboxes from docs/13-layer-audit.md are accounted for; reports/checklist-coverage.json verifies coverage. A source declaration proves only the declared control, never its deployed operation.
 
----
+## Executive Summary
 
-## 1. Executive Summary
+**NO-SHIP. Risk: 100/100 (higher is worse).** Across Phases 1–5, 36 distinct confirmed findings: 0 Critical, 9 High, 20 Medium, 7 Low. Weighted confirmed risk = 157; seven blocked/skipped security/testing areas add 35, then the requested 0–100 range caps the result at 100. Phase 6 adds no separate confirmed exploit finding; it records operational evidence gaps and cross-references existing roots.
 
-**Overall risk score: 6.5 / 10 (Elevated)** — a competent, well-structured client-side PWA with strong RLS foundations, undermined by a plaintext service-role key on disk, zero CI/test/observability, weak auth posture, and several high-impact dead-code/performance defects.
+The five most important **CRITICAL missing-evidence gaps** are below. CRITICAL here follows the supplied checklist's rule for missing evidence; it is not a claim of five demonstrated Critical vulnerabilities. Each detailed row records its own evidence, risk, action and priority. PARTIAL rows with missing operational proof also retain the CRITICAL gap flag.
 
-DriveMy is a **client-only React 19 + Vite 8 SPA** backed by **Supabase** (Postgres + Auth + Storage). There is no custom backend server — all data access goes from the browser to Supabase's auto-generated REST API, protected (correctly) by Row-Level Security. The schema is clean, RLS is enabled on every user-data table, and policies are properly `auth.uid()`-scoped. That is the good news, and it is genuinely good.
+| ID | File/Component | Category | What's wrong | Why it matters | Recommended fix | Severity | Confidence | Priority | Safe to auto-fix? | Found by |
+|---|---|---|---|---|---|---|---|---|---|---|
+| INF-001 | reports/phase-4-security.md; reports/phase-5-testing.md | Release validation evidence | Isolated database/Auth enforcement and complete browser journeys remain unverified; current advisory and dedicated scanner evidence is missing. | Static correctness and passing helper tests cannot establish the release's end-to-end safety. | Supply isolated staging/dummy accounts, restore a functioning browser and named scanners, resolve the credential egress gate, then run documented gates. | Critical (missing evidence; UNVERIFIED operation) | High that evidence is absent; not exploit confidence | P1 | N | Local attempts and coverage matrix |
+| INF-002 | docs/DISASTER_RECOVERY.md:27-68,157-166 | Recovery evidence | A runbook exists, but current backup entitlement, recoverable data/assets and a completed restore drill are unverified. | A documented RTO/RPO can be impossible to meet when a real restore is needed. | Verify actual backup configuration and encrypted artifacts; restore schema, data, Auth and storage into disposable staging and record measured recovery. | Critical (missing evidence; UNVERIFIED operation) | High that evidence is absent | P1 | N | Runbook and missing drill record |
+| INF-003 | vercel.json; supabase/config.toml; reports/phase-4-rls.md | Deployed security controls | Hosted auth settings, effective grants, headers/TLS, rate limits and origin-bypass resistance are unverified. | Repository policies do not prove production configuration or abuse resistance. | Export redacted settings/effective policies and validate the isolated equivalent; document deployment parity and control owners. | Critical (missing evidence; UNVERIFIED operation) | High that evidence is absent | P1 | N | Source/config comparison |
+| INF-004 | src/lib/telemetry.ts; docs/DISASTER_RECOVERY.md | Detection and operations | Working alert delivery, synthetic monitoring, capacity limits, budgets and operational ownership have no current execution evidence. | Outages, abuse or cost growth may not be noticed and handled within a defined target. | Define measurable SLIs/SLOs, owners and budget limits; test alerts and a dummy-user synthetic journey. | Critical (missing evidence; UNVERIFIED operation) | High that evidence is absent | P1 | N | Local operational inventory |
+| INF-005 | supabase/migrations/20260804000200_data_retention.sql; src/pages/PrivacyPolicyPage.tsx; reports/phase-4-rls.md | Data lifecycle/governance evidence | Retention execution, vendor agreements, residency and approved data-handling obligations are unverified. SEC-005 separately confirms the audit-log promise mismatch. | Data may outlive stated retention and owner obligations may be unclear. | Verify scheduler execution and retention outcomes; align notice/export/audit policy and record applicable obligations/vendor evidence. | Critical (missing evidence; UNVERIFIED operation) | High that evidence is absent | P1 | N | Migration/notice/document review |
 
-The bad news: the **Supabase service-role key sits in plaintext in `.env.local`** (a key that bypasses all RLS), admin accounts are created with the hardcoded password `password123`, email verification is disabled, the production build ships **full sourcemaps** and **caches Supabase API responses (including authed ones, with status `0`) in the service worker**, there is **no CI, no tests, no error tracking, no rate limiting**, and the offline-sync feature is fully implemented but **never wired up** (and would hit a table-name bug if it were).
-
-### Top 5 critical gaps
-
-1. **Plaintext Supabase service-role key in `.env.local`** (`scripts/create-admin.js:27`, `.env.local:3`). Bypasses all RLS. Not in the client bundle (verified), but one `VITE_` prefix or file-rename away from a catastrophic leak. Must be rotated and removed from disk.
-2. **Hardcoded admin credentials `admin@drivemy.com` / `password123`** (`scripts/create-admin.js:37-38`) — created with `email_confirm: true`. Trivially guessable full-account-access credential.
-3. **Zero CI/CD, zero automated tests, zero error tracking** — no `.github/`, no test files, no Sentry/Datadog, `ErrorBoundary` only `console.error`s. Deploys are manual `npm build` → Vercel with no gates, no rollback, no smoke tests.
-4. **Production sourcemaps + SW caching of authed Supabase responses** (`vite.config.ts:201` `sourcemap:true`; `vite.config.ts:139-153` caches `*.supabase.co` with `statuses:[0,200]`). Source leakage + cross-user stale-data risk on shared devices.
-5. **Weak auth posture**: email verification disabled (`supabase/config.toml:221`), 6-char minimum password with no complexity (`:177-180`), no MFA, no session timeout, no captcha, `site_url`/`additional_redirect_urls` still point at `127.0.0.1:3000` (`:154,158`).
-
----
-
-## 2. Architecture Overview
-
-### Current state
+## Architecture Overview
 
 ```mermaid
 flowchart LR
-    subgraph Client["Client (Browser / PWA)"]
-        UI[React 19 SPA<br/>Vite 8 build]
-        SW[Service Worker<br/>Workbox - precache + runtime]
-        IDB[(IndexedDB<br/>offline queue - DEAD)]
-        ZS[Zustand stores<br/>auth/theme/ui/quiz/lang]
-    end
-
-    UI -->|REST via supabase-js| SB[Supabase]
-    UI -->|OAuth| SB
-    SW -->|caches *.supabase.co| SB
-
-    subgraph SB["Supabase (managed)"]
-        AUTH[GoTrue Auth<br/>email + Google OAuth]
-        PG[(Postgres 17)]
-        RLS[RLS policies<br/>auth.uid-scoped]
-        ST[Storage bucket<br/>kpp-images - public read]
-    end
-
-    AUTH --> PG
-    UI -.->|onAuthStateChange| ZS
-
-    subgraph Scripts["Node scripts (local only)"]
-        SEED[ingest-questions.js]
-        ADM[create-admin.js<br/>uses SERVICE_ROLE key]
-        UP[upload-images.js]
-    end
-
-    ADM -.->|service role| AUTH
-    SEED -.->|anon/auth| PG
-    UP -.->|auth| ST
-
-    subgraph Host["Hosting"]
-        VC[Vercel - static + headers]
-    end
-
-    VC -->|serves| UI
+  Learner --> SPA[React SPA / PWA / Three.js]
+  SPA --> Local[Zustand / Query cache / IndexedDB]
+  SPA --> Auth[Supabase Auth: PKCE and password]
+  SPA --> API[Managed PostgREST]
+  API --> DB[PostgreSQL RLS / grading triggers]
+  SPA --> Assets[Public assets / Supabase Storage]
+  SPA --> Telemetry[Consent-gated Sentry]
+  CI[GitHub Actions] --> Checks[Build / tests / declared security gates]
+  CI --> DB
+  Hosting[Vercel declaration] --> SPA
 ```
 
-**Key properties:**
-- **No application server.** The browser talks directly to Supabase REST. All authorization is RLS-based (this is the correct pattern for Supabase and is implemented correctly).
-- **PWA** via `vite-plugin-pwa` (Workbox) — precaches all build assets, runtime-caches Google Fonts, images, and Supabase API calls.
-- **State:** Zustand (5 stores) for client state; TanStack Query for server cache; Supabase manages the session (supabase-js storage).
-- **Heavy vendor chunks** isolated: Phaser (driving simulations), jspdf/html2canvas (PDF reports), recharts (progress charts).
-- **Bilingual** EN/BM via a custom translations module (`src/lib/translations/`).
+This is a client SPA with a managed database/Auth backend, not an independently hosted API server. No native mobile runtime, payments, webhook handlers, application containers, cluster or LLM integration was found. Architecture-specific N/A decisions below do not excuse evidence for controls owned in the managed providers. Runtime versions are manifest/installed evidence, not hosted-version attestations.
 
-### Boundary of the audit
-- ✅ Source code in `src/`, `supabase/`, `scripts/`, root configs.
-- ✅ `npm audit` against `package-lock.json`.
-- ❌ No runtime/DAST scan, no Supabase dashboard inspection (config inferred from `config.toml` + `setup_schema.sql`), no Lighthouse run against a live deploy.
+## Detailed Findings by Category
 
----
+Status convention: VERIFIED means the cited local aspect is evidenced; PARTIAL identifies both evidence and remaining gaps; UNVERIFIED / CRITICAL marks missing required evidence; N/A — verified not applicable includes architectural reasoning. None of these labels silently converts missing evidence into a demonstrated exploit. Existing BUG/ARC/DES/SEC/TST IDs are counted once only.
 
-## 3. Detailed Findings by Category
+## 1. FRONTEND FOUNDATIONS
+| Exact checkbox | Status | Evidence reopened / prior test evidence | Current risk | Recommended fix | Priority |
+|---|---|---|---|---|---|
+| Framework & version (React, Vue, Svelte, Next.js, etc.) | EVIDENCED (repository scope) | package.json:69,73,110; reports/phase-0-recon.md | React 19 SPA; Router 7; Vite 8 declared. | Keep lockfile and supported runtime verified at release. | P3 |
+| State management (Redux, Zustand, Context, signals) | EVIDENCED (repository scope) | package.json:82; src/App.tsx:44–49; src/stores/authStore.ts | Zustand local state and TanStack Query remote state. ARC-001 covers fragmented ownership. | Apply ARC-001 shared keys/invalidation. | P2 |
+| Routing & SSR/SSG strategy | EVIDENCED (repository scope) | src/App.tsx:21–32,126; vercel.json:4–8 | BrowserRouter client SPA with lazy routes and index fallback; no SSR/SSG runtime found. | Retain SPA; test deep-link hosting rewrite. | P2 |
+| Component architecture & design system | CONFIRMED issue (prior ID) | reports/phase-2-architecture.md; DESIGN.md; src/components/exam/ExamShell.tsx:47 | Design tokens (src/index.css) and shared primitives (src/components/ui/surface.tsx) exist; ARC-002/003/004 identify inactive paths and misplaced responsibilities. | Follow existing ARC roadmap; avoid framework replacement. | P2 |
+| Accessibility (WCAG 2.1 AA compliance, axe-core, keyboard nav) | PARTIAL / CRITICAL missing evidence | src/components/safety/ElasticSlider.tsx:150–157; reports/phase-3-experience.md; reports/phase-5-testing.md | DES-001 and BUG-019 confirmed; full browser WCAG/contrast/reflow evidence blocked. | Fix keyboard controls; run axe and manual keyboard/screen-reader checks on working isolated browser. | P1 |
+| Performance (Core Web Vitals, bundle size, tree-shaking, lazy loading) | PARTIAL / CRITICAL missing evidence | src/App.tsx:21–32; vite.config.ts:256,322; reports/browser-build-native.log | Lazy routing and chunk splitting proven; no current field CWV or valid rendered performance measurement. | Measure mobile LCP/INP/CLS and bundle/network cost; set budgets from results. | P2 |
+| Mobile responsiveness & PWA capabilities | PARTIAL / CRITICAL missing evidence | vite.config.ts:29–31,159–259; reports/phase-3-experience.md | Manifest/service-worker configuration exists; responsive/PWA install/offline journeys not browser-verified. | Verify narrow screens, install/update/offline scenarios and simulator touch flow. | P1 |
+| Error boundaries & fallback UI | EVIDENCED (repository scope) | src/App.tsx:106,123; src/components/shared/ErrorBoundary.tsx:8–30,80–105 | Root and route error boundaries with localized reset fallback and event reference. | Retain and add critical route-failure smoke test. | P2 |
+| Dependency audit (outdated/vulnerable packages via npm audit / Snyk) | PARTIAL / CRITICAL missing evidence | reports/npm-audit-offline.json; reports/phase-4-security.md; .github/dependabot.yml:6–12 | Offline npm empty advisory result is not current vulnerability evidence; egress gate blocks fresh scan. | Satisfy clean isolated-copy secret gate, then run fresh native advisory scan. | P1 |
+| Build tooling (Vite, Webpack, Turbopack) and optimization | EVIDENCED (repository scope) | vite.config.ts:1–4,319–322; reports/phase-5-testing.md | Vite/SWC, manual chunks and conditional sourcemaps; production bundle/type checks passed locally. | Keep release build checks; asset deploy completeness remains BUG-014. | P1 |
+| Environment variable handling (leakage risks) | PARTIAL / CRITICAL missing evidence | src/lib/supabase.ts:4–8; vite.config.ts:9–20; reports/secret-scan-redacted.json | Public VITE config separated from build Sentry token. Private ignored env credentials prevent egress; deployed env inventory unavailable. | Keep secrets outside browser-prefixed env; prepare clean scan copy and verify hosted variable scopes. | P1 |
+| Analytics & monitoring integration (Datadog, Sentry, LogRocket) | PARTIAL / CRITICAL missing evidence | src/lib/telemetry.ts:15–35; src/components/shared/ErrorBoundary.tsx:80; reports/phase-4-security.md | Consent-gated Sentry wired; ingestion/alert delivery unverified; SEC-002 URL redaction defect. | Fix scrubber then verify synthetic event, release and alert delivery. | P1 |
 
-### Dimension 4 — Authentication & Permissions  *(pulled forward: highest impact)*
 
-| # | Finding | Severity | Priority |
+## 2. APIs & BACKEND LOGIC
+| Exact checkbox | Status | Evidence reopened / prior test evidence | Current risk | Recommended fix | Priority |
+|---|---|---|---|---|---|
+| API architecture (REST, GraphQL, gRPC, tRPC) | EVIDENCED (repository scope) | src/lib/supabase.ts:11; src/services/results.service.ts:63–68; src/services/questions.service.ts | Supabase managed PostgREST/Auth/Storage via typed SDK; no custom API server. | Document client/RPC contracts and final grants. | P2 |
+| Framework & runtime (Node.js/Express, Django, FastAPI, Go, Rust) | PARTIAL / CRITICAL missing evidence | package.json:55; src/lib/supabase.ts:11; reports/phase-0-recon.md | Managed backend; local Node v24.11.0 and CI Node22 identified. Hosted PostgREST/Auth runtime versions not evidenced. | Record managed platform/runtime versions and upgrade owner. | P2 |
+| Request validation & serialization (Zod, Joi, Pydantic) | CONFIRMED issue (prior ID) | src/pages/auth/AuthPage.tsx:22–39; supabase/migrations/20240101000000_initial_schema.sql:20; reports/phase-1-bugs.md BUG-004 | Zod form validation and DB checks exist; server scoring still trusts client denominator/question set. | Derive allowed questions/denominator server-side and reject invalid payloads. | P1 |
+| Input sanitization & injection prevention | PARTIAL / CRITICAL missing evidence | src/services/results.service.ts:63–68; reports/phase-4-security.md OWASP coverage | SDK structured queries and React escaping reviewed; no active raw HTML/injection sink confirmed. Dynamic input/RPC tests blocked. | Run isolated malformed-input and RLS boundary tests; keep trust-boundary validation. | P1 |
+| Business logic separation (controllers, services, repositories) | CONFIRMED issue (prior ID) | src/pages/SettingsPage.tsx:156–184; src/services/account.service.ts; reports/phase-2-architecture.md | Services generally own I/O; reset bypasses checked service boundary, ARC-003 mixes simulator roles. | Move reset into existing account service while fixing BUG-008; apply scoped ARC extractions. | P1 |
+| API versioning strategy | MISSING / CRITICAL evidence gap | reports/source-inventory.txt; src/services/questions.service.ts; supabase/migrations/ | Migrations version schema, but no documented app API compatibility/versioning policy. Provider /rest/v1 is not app schema versioning. | Define backwards-compatible column/RPC changes and deployment order; new HTTP framework unnecessary. | P2 |
+| Documentation (OpenAPI/Swagger, Postman collections) | PARTIAL / CRITICAL missing evidence | scripts/README.md; src/types/database.ts; reports/phase-4-rls.md | Types, maintenance docs and audit RLS matrix exist; no maintained OpenAPI/Postman contract or equivalent consumer API reference found. | Document active tables/RPCs, payloads, error contracts and auth requirements. | P2 |
+| Webhook handling (signature verification, idempotency, retries) | N/A — verified not applicable | src/App.tsx route tree; reports/source-inventory.txt; reports/phase-0-recon.md | No inbound webhook endpoint, payment integration or webhook consumer implemented. | Reassess when inbound webhooks are introduced. | — |
+| File upload handling (size limits, MIME validation, virus scanning) | PARTIAL / CRITICAL missing evidence | scripts/setup-storage.sql:7–18; scripts/upload-images.js:71–72,133–140 | Only privileged maintenance uploads found; size/MIME limits exist, BUG-022 disagrees on SVG. Hosted enforcement and malware policy unverified. | Align MIME contract; verify bucket settings and document trusted-maintainer upload threat model/scanning decision. | P2 |
+| Third-party API integrations (timeout handling, circuit breakers, fallback) | CONFIRMED issue (prior ID) | src/lib/supabase.ts:11–17; src/services/results.service.ts:63–78; vite.config.ts:200; reports/phase-1-bugs.md BUG-003 | Supabase/Auth/CAPTCHA/Sentry integrated; retry fallback misclassifies SDK network errors. Only question-cache timeout explicitly evidenced. | Fix SDK error normalization and define request deadlines/fallbacks; assess breakers only for actual need. | P1 |
+| Async job processing (queues, workers, dead letter queues) | CONFIRMED issue (prior ID) | src/services/results.service.ts:30–43,94–126; src/services/offlineQueue.ts:20–23 | Browser IndexedDB queue/dead letters exist; BUG-001/002/003 prove wrong-session, concurrency and retry loss. No backend worker requirement found. | Fix atomic/idempotent replay with user ownership and dead-letter recovery. | P1 |
+| Event-driven architecture (event bus, message brokers) | N/A — verified not applicable | src/App.tsx:86–91; reports/source-inventory.txt; reports/phase-0-recon.md | Browser online/auth events coordinate client work; no distributed event bus/broker or event-driven backend workload. | Do not add a broker solely for checklist compliance. | — |
+
+
+## 3. DATABASE & STORAGE
+
+| Exact checklist item | Status | Evidence | Current risk; recommended fix; priority |
 |---|---|---|---|
-| 4.1 | Email verification disabled | High | P0 |
-| 4.2 | Weak password policy (6 chars, no complexity) | High | P0 |
-| 4.3 | No MFA; no session timebox/inactivity timeout | Medium | P2 |
-| 4.4 | `site_url` / `additional_redirect_urls` point at localhost | High | P0 |
-| 4.5 | Hardcoded admin `password123` | Critical | P0 |
-| 4.6 | No captcha on auth; rate limits are Supabase defaults only | Medium | P2 |
-| 4.7 | Dual auth state (Zustand `authStore` + TanStack `useAuth`) — race | High | P1 |
-| 4.8 | `/auth/callback` is a blind `Navigate`, no error handling | Low | P2 |
+| Database type (PostgreSQL, MySQL, MongoDB, DynamoDB, etc.) | VERIFIED | supabase/migrations/20240101000000_initial_schema.sql:11-191 uses PostgreSQL tables, JSONB, UUIDs and RLS; src/lib/supabase.ts:1-16 creates the managed client. | PostgreSQL/Supabase architecture identified; no new gap. |
+| Schema design (normalization, indexing strategy, foreign keys) | PARTIAL — CRITICAL missing evidence | Initial schema:49,61-71,78,90-100,107,121-134,141-155,162-180 has ownership FKs/indexes; profiles migration:4,25-36; score migration:16-34. | Ownership/index foundations exist, but validated scoring and verified profile email ownership are flawed (BUG-004, SEC-004). Fix those contracts and verify plans/data volume on staging; P1. |
+| Migration strategy (Liquibase, Flyway, Prisma Migrate, Alembic) | PARTIAL — CRITICAL missing evidence | 13 ordered files in supabase/migrations; .github/workflows/ci.yml Supabase link/db push step; reports/staging-migration-checksums.json and staging-schema-rls.sql export. | Versioned SQL exists; applied hosted history, rollback rehearsal and backward-compatible rollout proof absent. Validate fresh/upgrade staging paths and capture migration history; P1. |
+| Connection pooling & management | UNVERIFIED — CRITICAL missing evidence | supabase/config.toml:38-46 declares local pooler disabled with dormant transaction configuration; src/lib/supabase.ts:11 is HTTP SDK, not a direct DB pool. | Hosted PostgREST/database pool capacity/timeouts are unverified. Record hosted pooling/connection limits and load evidence; P1. Browser does not need its own SQL pool. |
+| Backup strategy (frequency, retention, encryption, testing) | PARTIAL — CRITICAL missing evidence | docs/DISASTER_RECOVERY.md:24-60 describes backup claims/targets/manual export; final fire-drill row says first schema restore pending. | No current backup inventory, encryption evidence or successful restore proof. Do not accept historical provider-plan assertions as backup evidence. Capture actual backups and test isolated DB/Auth/object restoration; P1. |
+| Read replicas & read/write splitting | N/A — verified not applicable | src/services uses one Supabase HTTP client; schema/migration inventory defines one logical database; no replica or split-read connection exists. | No current replica architecture to validate. Reassess if measured load/availability goals require it; not a requirement to add replicas now. |
+| Data archival & purging (GDPR/CCPA compliance) | PARTIAL — CRITICAL missing evidence | 20260804000200_data_retention.sql:27-65 defines 730/365-day result purge but no scheduler; audit migration:82-91 retains email; account.service.ts:16-55 exports selected tables. | Execution evidence and audit retention policy absent; SEC-005 already covers inaccurate lifecycle promises. Schedule/verify justified retention and document audit exception; P1. No legal certification claimed. |
+| Object storage (S3, GCS, Azure Blob — bucket policies, encryption, versioning) | PARTIAL — CRITICAL missing evidence | scripts/setup-storage.sql:7-25 configures public image bucket, 2 MB and raster MIME restrictions; 20260803000100:39-40 drops learner write policies. | Declared policies exist; hosted effective policies, encryption, object backup/version recovery unverified. Capture settings and test non-production recovery/access; P1. Public non-personal images are intentional. |
+| CDN asset storage & cache headers | PARTIAL — CRITICAL missing evidence | vercel.json:10-18 declares immutable caching for /assets; scripts/upload-images.js:148-155 stores public object URLs. | Hosted cache delivery/purge and object-header evidence absent; overwritten object freshness untested. Verify immutable filenames and actual headers with approved staging; P2. |
+| Full-text search (Elasticsearch, Algolia, Meilisearch) | N/A — verified not applicable | src/pages/TheoryPage.tsx:168 and local search/filter implementation; dependencies/services inventory has no search service or indexed search backend. | Current small static theory filtering does not require a dedicated full-text engine. Reassess only with search scale/features. |
+| Time-series or specialized data stores if applicable | N/A — verified not applicable | Initial migration defines ordinary relational result/progress records with timestamps; no specialized store dependency/config/caller in inventory. | Timestamped attempts do not alone require a specialized time-series database. |
 
-**4.1 Email verification disabled — `supabase/config.toml:221` `enable_confirmations = false`.**
-*Current risk:* Any email address can sign up and immediately access authenticated data — including scraping the entire `kpp_questions` pool via the REST API. No proof of email ownership is required. Combined with open signup (`enable_signup = true`, `:171`), this enables mass fake-account creation.
-*Fix:* Set `[auth.email] enable_confirmations = true`. Verify the existing `VerifyEmailPage.tsx` flow handles the post-signup confirmation state correctly.
 
-**4.2 Weak password policy — `config.toml:177-180`: `minimum_password_length = 6`, `password_requirements = ""` (empty = no complexity rules).**
-*Current risk:* Six-character passwords with no mixed-case/digit/symbol requirement are brute-forceable in seconds. `create-admin.js:38` proves the pattern is culturally accepted (`password123`).
-*Fix:* `minimum_password_length = 10`, `password_requirements = "lower_upper_letters_digits_symbols"`. Enforce the same client-side in `AuthPage.tsx` via the existing `zod` dependency.
+## 4. AUTHENTICATION & PERMISSIONS
 
-**4.3 No MFA, no session timeout — `config.toml:266-271` (sessions section commented out), `:297-304` MFA TOTP disabled.**
-*Current risk:* A stolen session token (e.g., from the SW cache issue in §7.1, or a shared device) grants indefinite access. No idle timeout forces re-auth.
-*Fix:* Enable `[auth.sessions] inactivity_timeout = "8h"` (Pro-tier feature for MFA; sessions config is available). At minimum set `jwt_expiry` deliberately (currently 3600s — acceptable) and document refresh-token rotation (already enabled, `:166`).
-
-**4.4 Localhost redirect URLs in production config — `config.toml:154,158`.**
-*Current risk:* `site_url = "http://127.0.0.1:3000"` and `additional_redirect_urls = ["https://127.0.0.1:3000"]`. In production, password-reset and OAuth redirect emails will link to localhost, breaking the flow entirely (or, if an attacker runs a local server, intercepting the redirect). The app code uses `window.location.origin` (`auth.service.ts:18,38`) which is correct, but the Supabase-side allow-list will reject production origins.
-*Fix:* Set `site_url` and `additional_redirect_urls` to the production Vercel domain (e.g., `https://drivemy.vercel.app`), plus `http://localhost:5173` for dev. **This is a production-breaking config bug, not just a hardening issue.**
-
-**4.5 Hardcoded admin credentials — `scripts/create-admin.js:37-38`.**
-*Current risk:* `email = "admin@drivemy.com"`, `password = "password123"`, created with `email_confirm: true` via the service-role key. This account is a real, loginable, email-verified user in production. It is not marked as admin anywhere in the schema (there is no `role`/`is_admin` column, no `profiles` table) — so "admin" is a misnomer; it is just a regular authenticated user. But it still grants authenticated access to all user-scoped data.
-*Fix:* Delete this script. If an admin role is genuinely needed, add an `is_admin` column to a `profiles` table, gate it with an RLS policy `using (auth.uid() = id AND is_admin)`, and create the account interactively with a strong generated password. Never commit credentials.
-
-**4.7 Dual auth state race — `src/stores/authStore.ts` vs `src/hooks/useAuth.ts`.**
-*Current risk:* `ProtectedRoute` reads `isAuthenticated` from Zustand `authStore` (hydrated by `AuthInit` via `onAuthStateChange` in `App.tsx:53-77`). `AuthPage` uses TanStack `useSignIn` (`useAuth.ts:20`) which calls `signIn` then *manually* sets the Zustand store — while `onAuthStateChange` *also* fires for the same event. Two writers, potential divergence: on a flaky network the TanStack cache and Zustand store can disagree, causing `ProtectedRoute` to reject a logged-in user (or accept a logged-out one until the next event).
-*Fix:* Pick one source of truth. Recommended: drop the TanStack auth hooks, have `AuthPage` call `auth.service.ts` directly, and rely solely on `onAuthStateChange` → `authStore`. Keep TanStack Query for data only.
-
----
-
-### Dimension 8 — Security & Row-Level Security
-
-| # | Finding | Severity | Priority |
+| Exact checklist item | Status | Evidence | Current risk; recommended fix; priority |
 |---|---|---|---|
-| 8.1 | Service-role key in plaintext `.env.local` | Critical | P0 |
-| 8.2 | Storage bucket upload open to *any* authenticated user (SVG allowed) | High | P1 |
-| 8.3 | No CSP; HSTS missing; security headers minimal | High | P1 |
-| 8.4 | RLS: solid on data tables, but no `profiles`/admin RBAC exists | Medium | P2 |
-| 8.5 | `dompurify` vulnerability (transitive via jspdf) — moderate XSS bypass | Medium | P1 |
-| 8.6 | `react-router` open-redirect advisory (moderate) | Medium | P1 |
-| 8.7 | `supabase/.temp/` (CLI state incl. project-ref/pooler-url) committed | Low | P2 |
-| 8.8 | Scraped copyrighted Ishihara plates bundled in `public/color-plates` | Medium | P2 |
+| Auth method (OAuth 2.0 / OIDC, SAML, JWT, session-based, magic links) | VERIFIED | src/services/auth.service.ts:11-43 implements email/password and Google OAuth; src/lib/supabase.ts:11-16 enables PKCE; config.toml:183-192 declares JWT/refresh rotation. | Auth methods identified. Hosted acceptance/security tests are separately unverified below. |
+| Identity provider (Auth0, Cognito, Firebase Auth, Clerk, Keycloak, self-hosted) | VERIFIED | src/lib/supabase.ts:1-16; auth.service.ts imports that client's auth API. | Supabase Auth is the identity provider; no custom password store. |
+| Password policy (hashing algorithm — bcrypt/Argon2, min entropy) | PARTIAL — CRITICAL missing evidence | AuthPage.tsx:29-33 accepts minimum 8; config.toml:200-203 declares local minimum 10 and character requirements. | Client/local policy differs; hosted password policy and hashing configuration unverified. Align learner guidance with hosted enforcement and capture provider evidence; P1. No guessed hash algorithm. |
+| MFA / 2FA implementation (TOTP, WebAuthn/Passkeys, SMS fallback risks) | PARTIAL — CRITICAL missing evidence | MfaEnrollmentPage.tsx:24-29,42-72,84-91 has enroll/challenge/verify/unenroll; config.toml:320-327 disables local TOTP/phone enrollment/verification; 20260804000100:25-43 removes old aal2 policy. | UI exists without demonstrated enabled end-to-end MFA or sign-in step-up enforcement. Decide required roles, enable/test on isolated target, and align UI; P1. No current provider-plan assertion. |
+| Session management (timeout, rotation, secure flags, SameSite cookies) | PARTIAL — CRITICAL missing evidence | useSessionTimeout.ts:7,44-52 implements 30-minute activity timer with exam exception; authStore.ts:61-79 and installed SDK analysis in SEC-001; config.toml:292-294 has commented server session limits. | Failed remote logout may retain SDK credentials (SEC-001); client timeout is not server revocation. Fix local termination and verify hosted rotation/timeouts. SDK browser-token storage differs from cookie flags; P1. |
+| Token strategy (access vs refresh tokens, expiry, revocation list) | PARTIAL — CRITICAL missing evidence | config.toml:183-192: 3600-second JWT, refresh rotation, reuse interval 10; src/lib/supabase.ts:11-16 delegates session handling to SDK. | Hosted values/revocation behavior unverified and SEC-001 outstanding. Verify expired access/refresh reuse/logout/reload cases using dummy accounts; P1. No invented revocation-list requirement for this provider. |
+| RBAC / ABAC / Permission system (granularity, admin escalation prevention) | PARTIAL — CRITICAL missing evidence | Initial schema:66-71 and parallel own-user policies; 20260804000100:25-43 own-profile update with email-only column grant; final function revocations 20260804000600:28,35,42; phase-4-rls.md final matrix. | Source ownership and admin-write restriction exist; full two-user CRUD/RPC/storage runtime matrix absent. Address SEC-003/004 and BUG-004; run staging grant/policy tests; P1. |
+| API key management (scoped keys, rotation, storage) | PARTIAL — CRITICAL missing evidence | src/lib/supabase.ts:4-8 browser publishable/anon env lookup; phase-4-security.md masked secret scan found ignored private credentials, no values copied. | Scope/rotation inventory and clean scanner-egress prerequisite missing. Move/rotate as owner approves, use isolated sanitized scan copy, document privileged-key consumers; P1. Publishable key alone is not secret exposure. |
+| Social login security (state parameter, PKCE flow) | PARTIAL — CRITICAL missing evidence | auth.service.ts:31-37 delegates Google OAuth; supabase.ts:16 PKCE; AuthCallbackPage flow and BUG-013. | State/provider redirect allowlist and actual callback success unverified; dev StrictMode callback issue known. Verify provider settings and cross-origin/invalid-state/replay on dummy target; P1. |
+| Brute force protection (account lockout, CAPTCHA) | PARTIAL — CRITICAL missing evidence | useCaptcha.tsx token/reset widget; auth.service.ts:11-29,53-70 forwards token; config.toml:215-235 has local Auth rate/CAPTCHA settings. | Hosted activation, lockout/throttling and failed-token behavior unverified. Confirm settings and bounded negative tests on isolated Auth; P1. |
 
-**8.1 Service-role key on disk — `.env.local:3` (`SUPABASE_SERVICE_ROLE_KEY=eyJ...`), consumed at `scripts/create-admin.js:27`.**
-*Evidence:* `grep -rn "service_role\|SERVICE_ROLE" src/` → **zero hits**. The key is **not** in the client bundle and **not** in git history (`.env.local` is gitignored at `.gitignore:17`; `git ls-files` confirms untracked). So this is *not* an active leak — but it is a **landmine**: one misplaced `VITE_` prefix, one rename to `.env`, and the key that bypasses **all** RLS ships to every browser. The key's JWT `exp` is `2036` (10-year lifetime).
-*Fix:* (1) **Rotate the key** in Supabase dashboard → Settings → API → "Rotate service role key". (2) Remove it from `.env.local` entirely — the client app never needs it; it belongs only in Supabase Edge Functions / CI secrets. (3) Add a CI grep step asserting the built bundle contains no `service_role`. (4) Treat the local `.env.local` as already-compromised since it sat on a developer machine.
 
-**8.2 Storage upload policy too permissive — `scripts/setup-storage.sql:28-32`.**
-*Current risk:* The `kpp_images_authenticated_insert` policy allows **any authenticated user** to INSERT into the public-read `kpp-images` bucket. `allowed_mime_types` includes `image/svg+xml` (`setup-storage.sql:13`). SVG can carry `<script>`. Since the bucket is public-read (`:11` `public = true`), any logged-in user can upload an SVG payload and the URL is served to other users — a **stored-XSS vector** (browsers render SVG-served-as-image for `.svg` when navigated directly; `<img src=svg>` is safe, but direct navigation / `<object>` / `<iframe>` is not). There is no admin restriction on who can upload.
-*Fix:* (1) Restrict INSERT/UPDATE to an admin role: `TO authenticated WITH CHECK (bucket_id = 'kpp-images' AND auth.uid() IN (SELECT id FROM profiles WHERE is_admin))`. (2) Remove `image/svg+xml` from allowed MIME types (the app uses PNG/JPEG/WebP for plates). (3) Consider setting the bucket to **private** and serving reads through signed URLs or a public read policy only.
+## 5. HOSTING & DEPLOYMENT
 
-**8.3 Missing CSP and HSTS — `vercel.json:16-34` and `public/_headers`.**
-*Current risk:* Only three headers are set: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`. There is **no Content-Security-Policy** (the single most effective XSS mitigation) and **no Strict-Transport-Security** (HSTS). The Lighthouse report in-repo (`docs/reports/lighthouse.md`) explicitly flags CSP as missing. With Google Fonts, Supabase, and inline scripts (the theme script in `index.html:45-60`), a CSP must be carefully crafted but is very achievable.
-*Fix:* Add to `vercel.json` headers:
-- `Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; frame-ancestors 'none'` (the inline theme script can be hashed with `'sha256-...'` instead of `'unsafe-inline'` for script-src).
-- `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`.
-- `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
+| Exact checklist item | Status / severity flag | Reopened evidence | Current risk / scope | Recommendation | Priority |
+|---|---|---|---|---|---|
+| Hosting platform (Vercel, Netlify, AWS, GCP, Azure, self-hosted) | UNVERIFIED — CRITICAL evidence gap | vercel.json:1-9; docs/DISASTER_RECOVERY.md:18-22 | Vercel declaration and Supabase dependency identified; actual deployment/domain unverified. | Record owned deployment, project and release identifiers. | P1 |
+| Containerization (Docker, Dockerfile best practices, multi-stage builds) | N/A — verified not applicable | package.json:11-14; docs/RATE_LIMITING.md:24-29 | Static SPA plus managed backend; no application container/Dockerfile in scoped inventory. Local Supabase CI containers are tooling. | Keep provider build/runtime versions documented; no product Docker requirement. | — |
+| Orchestration (Kubernetes, ECS, Docker Swarm, Nomad) | N/A — verified not applicable | docs/RATE_LIMITING.md:24-29; .github/workflows/ci.yml:62-70 | No application cluster; managed services own orchestration. | No Kubernetes adoption needed for this architecture. | — |
+| Serverless vs serverful decisions (cold start impact, concurrency limits) | UNVERIFIED — CRITICAL evidence gap | docs/RATE_LIMITING.md:24-29; src/lib/supabase.ts:11-18 | No custom application function; managed API concurrency/cold-start and plan behavior not evidenced. | Document provider capacity and idle/pause behavior for selected plan. | P2 |
+| Environment parity (dev/staging/prod consistency) | UNVERIFIED — CRITICAL evidence gap | supabase/config.toml:173-181; .github/workflows/ci.yml:19,60 | Local settings do not push hosted Auth settings; staging parity unverified, CLI uses latest. | Pin tooling and compare masked dev/staging/prod settings before release. | P1 |
+| Domain & DNS management (registrar, DNSSEC, apex domain handling) | UNVERIFIED — CRITICAL evidence gap | supabase/config.toml:173-181; docs/DISASTER_RECOVERY.md:21-22 | Local comments say no production domain; registrar, DNSSEC and current ownership unavailable. | Supply verified domain ownership and DNS records; validate intended Auth callbacks. | P1 |
+| SSL/TLS configuration (certificate source, auto-renewal, HSTS, cipher suites) | UNVERIFIED — CRITICAL evidence gap | vercel.json:36-42; supabase/config.toml:20-25 | HSTS declared; local TLS disabled is not a production defect. Hosted certificates, renewal and ciphers unverified. | Check deployed HTTPS, certificate renewal and headers on owned staging/production. | P1 |
+| Blue/green or canary deployment strategy | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:114-127; .github/workflows/ci.yml:72-92 | Manual promote procedure exists; no demonstrated canary or coordinated app/database rollout. | Document controlled promotion and rollback rehearsal with schema compatibility. | P2 |
+| Feature flags system (LaunchDarkly, Unleash, Flagsmith) | UNVERIFIED — CRITICAL evidence gap | package.json:27-83; .github/workflows/ci.yml:72-92 | No release flag service/config or kill-switch evidence found; not proof one is required for every feature. | Document accepted all-at-once rollout or add a targeted disable switch for risky features. | P3 |
+| Infrastructure as Code (Terraform, Pulumi, CloudFormation, Ansible) | UNVERIFIED — CRITICAL evidence gap | vercel.json:1-51; supabase/config.toml:173-176 | Some configuration is versioned, but hosted settings/domain/account policies have no reconciled manifest. | Capture provider settings and drift checks; use IaC where supported. | P2 |
 
-**8.4 RLS assessment — mostly excellent, one gap.** RLS is `ENABLE`d on all six tables (`setup_schema.sql:36,64,93,127,148,173`). User-data tables use `FOR ALL … USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id)` — correctly scoped for both read and write. `kpp_questions` is `FOR SELECT TO authenticated USING (true)` — read-only for all authenticated users (correct for shared content). Grants are limited to `authenticated` (the `anon` role gets nothing — good). ✅ No `USING (true)` write bypasses. ✅ No `TO public` on data tables.
-*Gap:* There is **no `profiles` table and no role column**, so there is no server-side concept of "admin" — the storage upload policy (8.2) and any future admin feature have nothing to gate against. Add a `profiles(id uuid PK REFERENCES auth.users, is_admin bool default false, ...)` table with RLS `USING (auth.uid() = id OR (SELECT is_admin FROM profiles WHERE id = auth.uid()))`.
 
-**8.5 / 8.6 Dependency advisories — see Dimension 7 below.**
+## 6. CLOUD & COMPUTE
 
-**8.7 `supabase/.temp/` committed — `git ls-files supabase/` shows `.temp/cli-latest`, `linked-project.json`, `pooler-url`, `project-ref`, etc.**
-*Current risk:* These are Supabase CLI local-state files. `project-ref` (`yvkzixbyxonvlicyrhpy`) is already derivable from the anon URL, but `pooler-url` could contain a connection string with credentials if populated, and the files are clutter that cause merge conflicts.
-*Fix:* Add `supabase/.temp/` to `.gitignore` and `git rm --cached -r supabase/.temp`.
+| Exact checklist item | Status / severity flag | Reopened evidence | Current risk / scope | Recommendation | Priority |
+|---|---|---|---|---|---|
+| Compute instances (EC2, GCE, Azure VMs — sizing, reserved capacity) | N/A — verified not applicable | docs/DISASTER_RECOVERY.md:18-22; docs/RATE_LIMITING.md:24-29 | No customer-managed application VM; provider owns compute. | Review managed plan sizing under quotas instead. | — |
+| Serverless functions (Lambda, Cloud Functions, Azure Functions) | N/A — verified not applicable | docs/RATE_LIMITING.md:8-18,24-29; supabase file inventory | No application Edge Function remains; browser calls managed PostgREST. Local edge runtime enabled is not deployed function evidence. | Reassess if custom functions are introduced. | — |
+| Container registry security (scanning, immutable tags, access control) | N/A — verified not applicable | package.json:11-14; .github/workflows/ci.yml:43-44,62-70 | No product container image/registry publish path; Supabase local stack is CI tooling. | Track dependency supply chain and pin CLI separately. | — |
+| VPC / network segmentation (subnets, NAT, private endpoints) | UNVERIFIED — CRITICAL evidence gap | supabase/config.toml:67-79; src/lib/supabase.ts:11-18 | Local network settings do not prove hosted segmentation/database restrictions. | Record hosted network restrictions and permitted administrative connections. | P1 |
+| IAM & service accounts (principle of least privilege, no root keys) | UNVERIFIED — CRITICAL evidence gap | .github/workflows/ci.yml:87-92; .github/workflows/secret-scan.yml:17-18 | Secret references and scoped scan permissions present; actual token scopes, dashboard owners/MFA and service identities unavailable. | Inventory identities, restrict deploy token scopes and review access/rotation. | P1 |
+| Cost monitoring & alerts (budgets, anomaly detection, tagging strategy) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:26-39 | Billing plan explicitly requires verification; no budget alert configuration supplied. | Record plan, budget owner, spend thresholds and alert delivery test. | P2 |
+| Resource quotas & limits | UNVERIFIED — CRITICAL evidence gap | supabase/config.toml:18,38-48,109-112; docs/DISASTER_RECOVERY.md:29 | Local limits exist; hosted compute, egress, storage and connection quotas unknown. | Export nonsecret limits and define headroom/exhaustion alerts. | P1 |
+| Spot/preemptible instance usage if applicable | N/A — verified not applicable | docs/DISASTER_RECOVERY.md:18-22; docs/RATE_LIMITING.md:24-29 | No customer-managed interruptible worker/VM fleet. | No spot/preemptible policy needed. | — |
 
-**8.8 Scraped Ishihara plates — `scripts/fetch-color-plates.ts:35` scrapes `https://www.colorlitelens.com/ishihara-test.html` with Puppeteer and bundles the images into `public/color-plates`.**
-*Current risk:* The Ishihara test plates are copyrighted/clinically standardized material. Scraping and redistributing them (in a public PWA) is a likely copyright/license violation regardless of the source site's own terms — a compliance and IP liability for an educational product.
-*Fix:* Replace with properly licensed or public-domain color-vision test plates, or remove the ColorVision feature. Document the licensing provenance of any retained images.
 
----
+## 7. CI/CD & VERSION CONTROL
 
-### Dimension 3 — Database & Storage
+| Exact checklist item | Status / severity flag | Reopened evidence | Current risk / scope | Recommendation | Priority |
+|---|---|---|---|---|---|
+| Source control (Git provider, branch protection, signed commits) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:157; .github/workflows/ci.yml:3-7 | GitHub workflows present; branch protection, required checks and signed-commit policy not supplied. | Verify protected release branches and enforce relevant required checks. | P1 |
+| CI pipeline (GitHub Actions, GitLab CI, CircleCI, Jenkins) | PARTIAL | .github/workflows/ci.yml:10-44,51-92 | Build/tests and gated DB push declared; hosted execution history not inspected. | Retain configuration and archive successful release run evidence. | P2 |
+| Automated testing (unit, integration, e2e, contract, visual regression) | PARTIAL — TST-001 | .github/workflows/ci.yml:40-41,65-66; reports/phase-5-testing.md | 73 local tests pass; critical queue regressions absent, browser/database execution blocked. | Add focused persistence/security regressions and isolated full-journey tests. | P2 |
+| Code quality gates (linting, type checking, SonarQube, CodeQL) | PARTIAL | .github/workflows/ci.yml:28-38; .github/workflows/codeql.yml:30-39; reports/phase-5-testing.md | Lint/types/security gates declared; local scoped lint/types pass. Required-check enforcement unverified. | Require these checks on release branches and retain current scan evidence. | P2 |
+| Secret scanning (gitleaks, truffleHog, GitHub secret scanning) | PARTIAL — CRITICAL evidence gap | .github/workflows/secret-scan.yml:15-30; reports/phase-4-security.md | Gitleaks workflow exists; local tool unavailable and private credentials found in ignored env, not output here. No full clean history certification. | Rotate/review exposed operational credentials as applicable; complete redacted history/CI scan evidence. | P1 |
+| Artifact management & immutability | UNVERIFIED — CRITICAL evidence gap | .github/workflows/ci.yml:43-44; .github/workflows/lighthouse.yml:31-36 | Build runs; no product artifact digest/provenance/promotion record. Lighthouse uploads reports, not release attestations. | Link immutable deployment/artifact digest to commit, dependency lock and checks. | P2 |
+| Deployment pipeline (automated rollback, smoke tests, health checks) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:119-127,142; .github/workflows/ci.yml:72-92 | Manual promotion/smoke instructions exist; automated rollback/health gate not demonstrated. | Add isolated post-deploy smoke gate and documented rollback ownership. | P1 |
+| Database migration in CI/CD (pre-deploy vs post-deploy, backward compatibility) | PARTIAL — CRITICAL evidence gap | .github/workflows/ci.yml:72-92 | DB push waits for app and RLS jobs; no explicit protected environment, coordinated app release or schema rollback compatibility evidence. | Use expand/contract migrations; pin CLI and record target/promotion approval and recovery plan. | P1 |
+| GitOps workflow if applicable (ArgoCD, Flux) | N/A — verified not applicable | .github/workflows/ci.yml:72-92; docs/DISASTER_RECOVERY.md:18-22 | No Kubernetes/cluster reconciliation controller; hosted deployment pipeline is the chosen architecture. | Do not add ArgoCD/Flux solely to satisfy this checklist. | — |
 
-| # | Finding | Severity | Priority |
+
+## 8. SECURITY & ROW-LEVEL SECURITY
+| Exact checkbox | Status | Evidence reopened / prior test evidence | Current risk | Recommended fix | Priority |
+|---|---|---|---|---|---|
+| OWASP Top 10 mitigation (injection, XSS, CSRF, SSRF, insecure deserialization) | CONFIRMED issue (prior ID) | reports/phase-4-security.md; src/stores/authStore.ts:61–79; src/lib/telemetry.ts:34–53 | OWASP manual review complete for inspected surface; SEC-001–005 and BUG-004/015/018 remain. | Fix existing confirmed findings in priority order; verify dynamically in isolation. | P1 |
+| Dependency vulnerability scanning (Snyk, Dependabot, OWASP Dependency-Check) | PARTIAL / CRITICAL missing evidence | .github/dependabot.yml:6–12; .github/workflows/ci.yml:25–29; reports/phase-4-security.md | Weekly Dependabot and native audit gate declared; current successful hosted scan/advisory state unavailable. | Restore fresh scan and retain successful advisory evidence. | P1 |
+| Static Application Security Testing (SAST) | PARTIAL / CRITICAL missing evidence | .github/workflows/codeql.yml:12–15,29–39; reports/phase-0-tools.md | CodeQL workflow configured; local executable unavailable and no hosted run result supplied. Manual fallback is not a SAST run. | Obtain successful CodeQL analysis artifact and resolve relevant alerts. | P1 |
+| Dynamic Application Security Testing (DAST) | MISSING / CRITICAL evidence gap | reports/phase-4-security.md section 4c; reports/browser-review-software.log | DAST did not execute: Strix/ZAP unavailable, local Chromium failed, no isolated backend target. | Provide working isolated staging/browser and run authorized DAST. | P1 |
+| Software Composition Analysis (SCA) | PARTIAL / CRITICAL missing evidence | package-lock.json; reports/npm-audit-offline.json; reports/phase-4-security.md | Lockfile inventory exists; current SCA/advisory coverage missing and offline scan inconclusive. | Run fresh lockfile SCA after egress prerequisite; triage dependency paths. | P1 |
+| Row-Level Security (RLS) in database (PostgreSQL RLS policies, tenant isolation) | PARTIAL / CRITICAL missing evidence | supabase/migrations/20240101000000_initial_schema.sql:38,66,95,129,150,175; reports/phase-4-rls.md | Final migration-chain policies reviewed; no current cross-user row bypass confirmed. Property authorization defects SEC-003/004 exist; live two-user tests blocked. | Fix grants/property ownership, then run all-table two-user CRUD/RPC tests. | P1 |
+| Data encryption at rest (database, storage, backups) | MISSING / CRITICAL evidence gap | reports/phase-0-recon.md Safe targets; reports/phase-4-security.md OWASP coverage | Managed database/storage/backup encryption settings and key-management evidence were not supplied. | Obtain provider encryption and backup/key controls for actual project. | P1 |
+| Data encryption in transit (TLS 1.2+, mTLS for internal services) | PARTIAL / CRITICAL missing evidence | vercel.json:36–37; src/lib/supabase.ts:4; vite.config.ts:196,213 | HSTS and HTTPS service patterns declared; deployed TLS versions/cipher/certificate evidence unavailable. No internal microservice mTLS topology exists. | Verify TLS on actual staging/deployment endpoints and provider transport controls. | P1 |
+| Secret management (HashiCorp Vault, AWS Secrets Manager, sealed secrets — NO hardcoded secrets) | PARTIAL / CRITICAL missing evidence | vite.config.ts:9–12; .github/workflows/ci.yml:91–94; reports/secret-scan-redacted.json | CI secret references and non-public build token use exist; ignored private credentials present; hosted rotation/access evidence missing. | Remediate egress blocker without copying secrets; document rotation and least-privilege access. | P1 |
+| Network security (WAF, DDoS protection, IP allowlisting) | MISSING / CRITICAL evidence gap | vercel.json:1–50; docs/RATE_LIMITING.md; reports/phase-4-security.md | No verified deployed WAF/DDoS/IP allowlist configuration. Managed-provider assumptions are not evidence. | Record enabled managed protections and origin/administration restrictions. | P1 |
+| Penetration testing schedule | MISSING / CRITICAL evidence gap | reports/phase-4-security.md 4b/4c; reports/source-inventory.txt | No penetration-testing owner, schedule or completed assessment artifact supplied. | Schedule scoped staging assessment and retest after remediation. | P2 |
+| Security headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy) | PARTIAL / CRITICAL missing evidence | vercel.json:24–44; reports/csp-hash.log; reports/phase-1-bugs.md BUG-018 | CSP/frame/nosniff/referrer/HSTS declared; inline hash check passes. Hosted header delivery unverified; HDR asset conflicts with CSP. | Fix asset policy then verify deployed headers and critical asset loading. | P1 |
+| CORS configuration (whitelist, not wildcard in production) | MISSING / CRITICAL evidence gap | src/lib/supabase.ts:11; reports/phase-4-security.md; vercel.json | Cross-origin managed APIs used; no actual hosted CORS origin/method/credential policy evidence. Static SPA has no custom CORS server. | Inspect actual Auth/REST/Storage CORS behavior; constrain application-controlled origins where supported. | P2 |
+| Dependency pinning & lockfile integrity | EVIDENCED (repository scope) | package-lock.json; .github/workflows/ci.yml:23; package.json:69,110 | npm ci enforces package manifest/lock compatibility; package ranges resolve through lockfile. This does not prove dependencies are vulnerability-free. | Keep lockfile review and reproducible install; assess action pins separately in CI section. | P2 |
+
+
+## 9. RATE LIMITING
+
+| Exact checklist item | Status | Evidence | Current risk; recommended fix; priority |
 |---|---|---|---|
-| 3.1 | Schema applied manually via SQL Editor, not versioned migrations | High | P1 |
-| 3.2 | No `updated_at` triggers; no soft-delete; no audit columns | Medium | P2 |
-| 3.3 | `kpp_questions` has no FK to a categories/sets table (denormalized) | Low | P3 |
-| 3.4 | Storage bucket is public-read + unrestricted upload (see 8.2) | High | P1 |
-| 3.5 | No connection pooling config for production pooler | Medium | P2 |
+| API rate limiting (per user, per IP, per endpoint tier) | UNVERIFIED — CRITICAL missing evidence | docs/RATE_LIMITING.md:3 explicitly says not implemented; src/services/results.service.ts:63-67 calls PostgREST directly. | No demonstrated non-bypassable write/API quota. Define per-user/endpoint budgets and enforce at the actual request/DB boundary; verify direct-origin bypass; P1. |
+| Algorithm (token bucket, sliding window, fixed window, leaky bucket) | UNVERIFIED — CRITICAL missing evidence | docs/RATE_LIMITING.md contains proposed trigger sketch only; complete migration-chain review finds no throttle installation. | No active application algorithm or concurrency guarantee. Choose simple atomic enforcement after workload limits are defined, not a client-only counter; P1. |
+| Distributed rate limiting (Redis, shared memory across instances) | UNVERIFIED — CRITICAL missing evidence | RATE_LIMITING.md removed unused limiter and proposes alternatives; no shared limiter dependency/call in source inventory. | Multi-request coordination is unproven. Use managed/database atomic counters if needed; a Redis service is not mandatory merely to satisfy the checkbox; P1. |
+| DDoS protection (Cloudflare, AWS Shield, rate-based WAF rules) | UNVERIFIED — CRITICAL missing evidence | RATE_LIMITING.md proposes Cloudflare; vercel.json provides headers/rewrites, not WAF-rule evidence. | Actual edge protection/rules/coverage for Supabase origin unverified. Obtain deployed provider/rule evidence and verify no alternate unprotected route; P1. |
+| Login attempt throttling | PARTIAL — CRITICAL missing evidence | config.toml:215-227 declares local sign_in_sign_ups=30 and token limits; RATE_LIMITING.md says hosted values require confirmation. | Local config does not prove hosted Auth limits. Capture staging/production control evidence separately, test bounded failures on staging only; P1. |
+| Cost-based rate limiting (expensive operations) | UNVERIFIED — CRITICAL missing evidence | JSON payload cap at 20260804000400:53-65 is per row; initial schema permits repeated own-row inserts. | Byte cap does not limit row count, aggregate write cost or expensive reads. Add measured quotas/alerts at authoritative boundary, not just UI; P1. |
+| Client communication (429 headers, Retry-After) | PARTIAL — CRITICAL missing evidence | offlineQueue.ts:54-66 recognizes status 429 but results.service.ts:63-68 discards response status; no Retry-After handling; BUG-003. | Rate response may be treated permanent; no scheduled retry/backoff based on server delay. Normalize response/status and bounded Retry-After-aware replay; P1, reuse BUG-003 root. |
 
-**3.1 No real migration strategy — `supabase/migrations/` contains only `001_add_unique_constraint.sql`; the full schema lives in `setup_schema.sql` ("Run once in Supabase SQL Editor").**
-*Current risk:* Schema changes are manual, unreviewed, and non-reproducible across dev/prod. There is no migration history, no `supabase db push` workflow in CI, and `setup_schema.sql` is only idempotent for `CREATE TABLE IF NOT EXISTS` — subsequent `ALTER`s are ad hoc. The Supabase CLI is clearly installed (`supabase/.temp/` exists) but not used for migrations.
-*Fix:* Convert `setup_schema.sql` into ordered migration files under `supabase/migrations/` (`0001_init.sql`, `0002_storage.sql`, …), adopt `supabase db push` for deploys, and run migrations in CI (pre-deploy) — see Dimension 7.
 
-**3.2 No audit/update columns.** Tables have `created_at` but no `updated_at`, no soft-delete (`deleted_at`), no `updated_by`. For a results-tracking app this is acceptable (results are append-only), but `theory_progress` (which has `completed`/`completed_at`) has no `updated_at` to track state changes. *Priority P2.*
+## 10. CACHING & CDN
+| Exact checkbox | Status | Evidence reopened / prior test evidence | Current risk | Recommended fix | Priority |
+|---|---|---|---|---|---|
+| Client-side caching (Cache-Control, ETag, Last-Modified) | PARTIAL / CRITICAL missing evidence | vercel.json:12–17; vite.config.ts:170–241 | Hashed assets have immutable Cache-Control; runtime caches have TTL/caps. Hosted ETag/Last-Modified/index freshness unverified. | Verify deployed asset and HTML response headers; avoid immutable mutable entrypoints. | P2 |
+| CDN (Cloudflare, CloudFront, Fastly — cache rules, purge strategy) | PARTIAL / CRITICAL missing evidence | vercel.json:1–17; reports/phase-0-recon.md | Vercel declaration/asset cache policy present; actual CDN project, purge/rollback operations not evidenced. | Verify active CDN configuration and document purge/rollback procedure. | P2 |
+| Edge caching & edge functions | PARTIAL / CRITICAL missing evidence | vercel.json:4–17; reports/source-inventory.txt | Static edge caching intended; no custom edge function implementation. Delivered edge-cache behavior unverified. | Verify cache hit/miss behavior; edge functions N/A unless a real workload is introduced. | P2 |
+| Server-side caching (Redis, Memcached — eviction policies, TTL) | N/A — verified not applicable | reports/source-inventory.txt; src/lib/supabase.ts:11; reports/phase-0-recon.md | No application server, Redis/Memcached integration or server-cache layer implemented; managed provider internals outside app scope. | Do not introduce a server cache without measured workload need. | — |
+| Application caching (ORM query cache, memoization) | EVIDENCED (repository scope) | src/App.tsx:44–49; src/components/exam/ExamShell.tsx:159–163; src/hooks/useProgressStats.ts | TanStack Query five-minute staleness and memoization exist; no ORM cache in this client. | Retain simple cache; address invalidation separately below. | P2 |
+| Cache invalidation strategy (event-based, time-based, manual) | CONFIRMED issue (prior ID) | src/hooks/useProgress.ts:19; src/pages/QuizPage.tsx:41–45; reports/phase-2-architecture.md ARC-001 | Different namespaces cause incomplete invalidation; updates can show old dashboard/settings scores. | Centralize user-scoped query keys and mutation/replay invalidation. | P2 |
+| Stale-while-revalidate patterns | EVIDENCED (repository scope) | src/App.tsx:44–49; vite.config.ts:196–205 | TanStack stale-query/background-refresh lifecycle plus Workbox NetworkFirst and CacheFirst. Explicit Workbox StaleWhileRevalidate handler absent by choice, not a required feature. | Document selected freshness behavior and verify offline transitions. | P2 |
+| Cache stampede / thundering herd protection | PARTIAL / CRITICAL missing evidence | src/App.tsx:44–49; src/pages/DashboardPage.tsx:45–89; reports/phase-5-testing.md | Query client shares same-key requests within one app; no cross-client load/stampede evidence or capacity exercise. | Measure concurrent cold loads; add provider-side protection only if justified. | P2 |
 
-**3.3 Denormalized category/set.** `kpp_questions.category` and `set_id` are free `text` with no reference table — typos in seed data create phantom categories. *Low; acceptable for a small fixed question pool.*
 
-**3.5 Pooler disabled locally — `config.toml:38-48` `[db.pooler] enabled = false`.** Production Supabase projects use a PgBouncer-based pooler; the local config disabling it is fine for dev, but there is no documentation that production uses the pooler, and the client never connects to Postgres directly (only via REST/GoTrue), so this is low-risk. *Medium only because connection management is unverified for any future server-side functions.*
+## 11. LOAD BALANCING & SCALING
 
----
+| Exact checklist item | Status / severity flag | Reopened evidence | Current risk / scope | Recommendation | Priority |
+|---|---|---|---|---|---|
+| Load balancer type (ALB, NLB, HAProxy, Nginx, cloud-native) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:18-22 | Managed edge/API serving declared; provider topology and service guarantees unavailable. | Document provider responsibility and availability commitments; no custom ALB required. | P2 |
+| Health check configuration (endpoint, interval, threshold) | UNVERIFIED — CRITICAL evidence gap | supabase/config.toml:32-33; docs/DISASTER_RECOVERY.md:142 | Local startup timeout and manual smoke instruction are not production health probes. | Monitor app availability and synthetic critical API journey with alert thresholds. | P1 |
+| Auto-scaling rules (CPU, memory, request count, custom metrics) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:26-39 | No hosted scale limits/triggers evidence; cannot assert provider has none. | Document plan scaling controls, thresholds and response procedure. | P2 |
+| Horizontal vs vertical scaling strategy | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:18-22,26-39 | Managed architecture identified; no workload-based scaling decision/capacity baseline. | Measure peak demand and record managed database sizing/headroom decision. | P2 |
+| Database scaling (read replicas, sharding, connection pooling) | UNVERIFIED — CRITICAL evidence gap | supabase/config.toml:38-48 | Local pooler disabled; cannot infer hosted pooling, replicas or required sharding. | Verify hosted connection capacity and slow-query/load baseline before scaling. | P2 |
+| Queue-based load leveling | PARTIAL — BUG-001/002/003 | src/services/results.service.ts:94-126; reports/phase-1-bugs.md | Browser offline queue is not server load leveling; replay lacks reliable concurrency/retry behavior. | Fix existing queue roots; assess bounded replay/backoff against provider capacity. | P1 |
+| Graceful shutdown & zero-downtime deployment | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:114-127; .github/workflows/ci.yml:72-92 | No custom process to shut down; app/database compatibility during promotion remains unverified. | Rehearse mixed old/new clients and migration-safe rollback on isolated target. | P1 |
+| Sticky sessions vs stateless architecture | PARTIAL | src/lib/supabase.ts:11-18; src/stores/authStore.ts:81-87; docs/DISASTER_RECOVERY.md:116 | Static frontend needs no sticky application server session; browser has auth, cache and unsynced state. DR claim all state in Supabase is incomplete. | Document client state explicitly and preserve compatible APIs for existing tabs/PWA clients. | P2 |
 
-### Dimension 1 — Frontend Foundations
 
-*(Full evidence in the per-finding table below; highlights summarized.)*
+## 12. ERROR TRACKING & LOGS
+| Exact checkbox | Status | Evidence reopened / prior test evidence | Current risk | Recommended fix | Priority |
+|---|---|---|---|---|---|
+| Centralized logging (ELK, Loki, Datadog, CloudWatch, Splunk) | PARTIAL / CRITICAL missing evidence | src/components/shared/ErrorBoundary.tsx:80; src/lib/telemetry.ts:19–35; reports/phase-4-security.md | Sentry error capture wired; general console/managed backend logs lack verified centralized collection. | Define log ownership and verify provider/client event collection. | P2 |
+| Log levels & structured logging (JSON format, correlation IDs) | PARTIAL / CRITICAL missing evidence | src/services/results.service.ts:72,77,115; src/components/shared/ErrorBoundary.tsx:28–30 | Console warn/error and Sentry event reference exist; consistent JSON events/request correlation across API/database absent. | Add minimal structured error context and stable correlation IDs without personal payloads. | P2 |
+| PII redaction in logs (masking, filtering) | CONFIRMED issue (prior ID) | src/lib/telemetry.ts:33–53; reports/phase-4-security.md SEC-002 | PII defaults disabled and request URL scrub exists, but navigation breadcrumb from/to URLs remain unsanitized. | Fix all URL-bearing fields; test synthetic token URLs and log payload minimization. | P1 |
+| Error tracking (Sentry, Rollbar, Bugsnag — source maps, release tracking) | PARTIAL / CRITICAL missing evidence | src/lib/telemetry.ts:19–35; vite.config.ts:275–289,319; reports/phase-4-security.md | Sentry release/source-map upload/delete wired conditionally. Actual project config, uploaded map and synthetic error delivery unverified. | Verify one symbolicated test error for the exact release after consent. | P1 |
+| Alerting rules (PagerDuty, Opsgenie, Slack — severity-based routing) | MISSING / CRITICAL evidence gap | reports/source-inventory.txt; docs/DISASTER_RECOVERY.md; reports/phase-4-security.md | No supplied severity-routing/notification/escalation rule or delivery drill for Sentry/backend alerts. | Assign owner, actionable thresholds and tested alert destination/escalation. | P1 |
+| Log retention & archival (compliance requirements) | MISSING / CRITICAL evidence gap | src/lib/telemetry.ts; reports/phase-4-security.md SEC-005; supabase/migrations/20260804000300_audit_log.sql | Results retention is separate; provider/client log retention and audit archival/purge policy not evidenced. | Set purpose-based log/audit retention, access and deletion/export exceptions. | P1 |
+| Distributed tracing (Jaeger, Zipkin, OpenTelemetry) | PARTIAL / CRITICAL missing evidence | src/lib/telemetry.ts:23; reports/source-inventory.txt | tracesSampleRate declared, but no evidenced end-to-end browser/API/DB tracing integration or sampled trace. | Either configure and verify minimal cross-boundary tracing or document justified scope; rate alone is not a working trace. | P2 |
+| Performance profiling (APM, flame graphs, memory leaks) | MISSING / CRITICAL evidence gap | reports/phase-5-testing.md; .github/workflows/lighthouse.yml; reports/browser-review-software.log | No usable production APM/profile/flame-graph or memory-leak evidence. Build success and blocked Lighthouse/browser do not establish runtime performance. | Profile critical mobile exam/simulator flows and establish baseline memory/frame/network budgets. | P2 |
 
-| # | Finding | Severity | Priority |
+
+## 13. AVAILABILITY & RECOVERY
+
+| Exact checklist item | Status / severity flag | Reopened evidence | Current risk / scope | Recommendation | Priority |
+|---|---|---|---|---|---|
+| Uptime SLA / SLO / SLI definitions | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:41-42,132-145 | Recovery targets exist; availability/error-rate/latency SLI and SLO/error budget absent from supplied evidence. | Define measured user-journey SLIs and realistic SLO with owner. | P1 |
+| Multi-region / multi-AZ deployment | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:18-22 | Provider names do not establish region/AZ redundancy. | Record actual regions, redundancy and accepted regional-outage risk. | P2 |
+| Disaster Recovery plan (RTO, RPO targets) | PARTIAL — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:41-42,69-110,166 | RTO/RPO and restore steps documented; current backup plan and achieved restoration unverified. | Verify backup eligibility/coverage; test isolated restoration and measure achieved RTO/RPO. | P1 |
+| Automated failover (database, load balancer, DNS) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:69-110,132-145 | Manual restore procedure supplied; no automatic failover configuration or test evidence. | Document provider failover guarantees and manual fallback trigger/owner. | P1 |
+| Chaos engineering (Gremlin, AWS Fault Injection Simulator) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:161-166 | Historical incident is not controlled fault-injection evidence. | Start safe staging outage/tabletop exercises before any production chaos testing. | P3 |
+| Runbooks for critical incidents | PARTIAL — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:69-145 | Restore/outage checklist exists, but credential incident, exhausted quotas and auth/vendor degradation procedures not evidenced. | Validate runbooks and add short decision trees for critical incident classes. | P1 |
+| On-call rotation & escalation policy | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:4,149-157 | Team owner and dashboard links are not an on-call rota or escalation contact policy. | Name primary/backup responders and test contact/escalation route. | P1 |
+| Post-mortem process & blameless culture | PARTIAL | docs/DISASTER_RECOVERY.md:144,161-166 | One incident narrative and documentation instruction exist; recurrence tracking and review cadence absent. | Use a blameless incident template with owners, due dates and follow-up verification. | P2 |
+| Data replication lag monitoring | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:18,26-42 | Hosted replication topology and lag monitoring unknown; do not claim replica implementation. | Ask provider for applicable lag/backup freshness metrics; record N/A only after topology verification. | P2 |
+| Backup restoration testing (fire drills, tabletop exercises) | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:166 | Document explicitly says first schema-restore drill pending; backup restore success not established. | Restore data, Auth and object references into isolated project, validate counts/flows and record recovery timings. | P1 |
+
+
+## 14. COMPLIANCE & GOVERNANCE
+
+| Exact checklist item | Status | Evidence | Current risk; recommended fix; priority |
 |---|---|---|---|
-| 1.1 | `muted-foreground` on `muted` fails WCAG AA contrast in light mode (3.92:1) | High | P0 |
-| 1.2 | Production `sourcemap: true` leaks TS source | High | P0 |
-| 1.3 | SW caches authed Supabase responses (`statuses:[0,200]`) — cross-user leak | High | P0 |
-| 1.4 | Dual auth state race (see 4.7) | High | P1 |
-| 1.5 | Quiz timer persists `timeRemainingSeconds` — exploitable pause | Medium | P1 |
-| 1.6 | Mobile menu dialog lacks focus trap + Escape | Medium | P1 |
-| 1.7 | Single root ErrorBoundary; reset doesn't remount; `console.error` only | Medium | P1 |
-| 1.8 | No error tracking / analytics — zero observability | High | P1 |
-| 1.9 | `useOfflineSync` never mounted; `enqueueWrite` never called — dead feature | High | P1 |
-| 1.10 | No per-route ErrorBoundaries for 12 lazy pages | Medium | P2 |
-| 1.11 | Phaser (~1.1MB) loaded eagerly on `/simulations/:id` route entry | Medium | P2 |
-| 1.12 | `modulePreload: false` disables resource hints | Medium | P2 |
-| 1.13 | Google Fonts render-blocking chain; Material Symbols loaded globally | Medium | P2 |
-| 1.14 | `skipWaiting:true` + `clientsClaim:true` — SW takeover mid-session | Medium | P2 |
-| 1.15 | Dual icon libraries (phosphor + lucide, lucide used in 2 files) | Medium | P2 |
-| 1.16 | `mock_results` table-name mismatch in dead offline queue | Low | P3 |
+| GDPR / CCPA / LGPD data handling | PARTIAL — CRITICAL missing evidence | account.service.ts:36-75 implements export/delete; privacy page:16-46 identifies data/retention; SEC-005 and BUG-005/007 document gaps. | Jurisdictional applicability and verified lifecycle absent; report makes no legal compliance verdict. Establish applicable obligations with owner, then validate complete export/deletion/retention using synthetic fixtures; P1. |
+| SOC 2 / ISO 27001 / HIPAA alignment if applicable | UNVERIFIED — CRITICAL missing evidence | Phase0 classifies learning SPA with color-vision screening; no certification, customer requirement or regulated-entity applicability evidence in reviewed docs. | Cannot claim alignment or automatically deem HIPAA applicable solely from screening. Owner must record applicability and required controls; P2. No certification project recommended without a requirement. |
+| Data residency requirements | UNVERIFIED — CRITICAL missing evidence | PrivacyPolicyPage.tsx:52-59 names Supabase/Sentry but supplies no region/transfer control; DR provider table names services, not evidence of residency guarantees. | Required and actual processing/backup regions unverified. Record data inventory, contractual requirements and vendor regions/subprocessors; P1. |
+| Audit logging (who accessed what, when, immutable logs) | PARTIAL — CRITICAL missing evidence | 20260804000300:15-42,50-64,77-101 logs profile insertion/deletion/admin changes and blocks row UPDATE/DELETE. | No read-access audit coverage, externally retained tamper evidence or alert proof. Define needed events/access retention; preserve legitimate administrative procedures; P2. SEC-005 already covers retention mismatch. |
+| Terms of Service / Privacy Policy currency | PARTIAL — CRITICAL missing evidence | PrivacyPolicyPage.tsx:7 shows [Insert Date], :45-46,66-69 overpromise deletion/export; constants.ts:33 uses privacy@drivemy.local. | Notice lacks a real effective date/contact; Terms currency/approval unavailable. Publish accurate owner-approved notice and working contact, including audit exceptions (SEC-005); P1. No new duplicate SEC finding. |
+| Cookie consent management | PARTIAL — CRITICAL missing evidence | consent.ts:29-65 stores versioned explicit decision; ConsentBanner.tsx:27-30 starts telemetry after grant; telemetry.ts:15-18 checks consent; Phase5 consent tests pass. | Basic optional-telemetry consent exists; deployed cookie/processor inventory and full withdrawal behavior unverified. Verify all optional processors respect decision/withdrawal and align notice; P2. |
+| Data processing agreements (DPA) with vendors | UNVERIFIED — CRITICAL missing evidence | Supabase/Sentry named in privacy page:52-59; no executed DPA or acceptance/coverage evidence in provided repository reports. | Contract, subprocessor and transfer terms unverified. Obtain owner/vendor agreement records for actual processors; P1. Absence from source is missing evidence, not proof no contract exists. |
 
-**1.1 Contrast failure — `src/index.css` light-mode tokens:** `--muted: 239 239 239` (#efefef), `--muted-foreground: 100 100 100` (#646464) → **3.92:1**, below WCAG 2.1 AA's 4.5:1 for normal text. This pair is used pervasively for secondary text/labels. (Dark mode passes at ~5.48:1.) The recent commit `525c4fa` "improve contrast of ethics scores" moved a hardcoded `#f5f5f5` to `bg-muted` but did not fix the underlying token. *Fix:* darken `--muted-foreground` to ~`#4b4b4b`.
 
-**1.2 Sourcemaps in prod — `vite.config.ts:201` `sourcemap: true`.** Generates `.js.map` files served alongside chunks, reconstructable to original TS (exposes Supabase table names, business logic). *Fix:* `sourcemap: 'hidden'` (or `false` + upload to Sentry).
+## 15. OBSERVABILITY & TESTING IN PRODUCTION
 
-**1.3 SW caching of authed responses — `vite.config.ts:139-153`.** `NetworkFirst` for `*.supabase.co` with `cacheableResponse.statuses: [0, 200]`. Status `0` = opaque responses (should never be cached here). All Supabase responses including authenticated REST are cached up to 24h. On a shared device, User A's cached `quiz_results` SELECT can be served to User B after logout. *Fix:* remove `0` from statuses; cap `maxAgeSeconds` to 300; split auth vs data caches; `caches.delete('supabase-api')` on signOut.
+| Exact checklist item | Status / severity flag | Reopened evidence | Current risk / scope | Recommendation | Priority |
+|---|---|---|---|---|---|
+| Synthetic monitoring (Pingdom, UptimeRobot, Grafana k6) | UNVERIFIED — CRITICAL evidence gap | .github/workflows/lighthouse.yml:3-7,31-36; docs/DISASTER_RECOVERY.md:142 | PR/push Lighthouse and manual smoke are not periodic production synthetic monitoring. | Schedule owned-target synthetic availability/auth/read/write checks with dummy accounts. | P1 |
+| Real User Monitoring (RUM) | PARTIAL — CRITICAL evidence gap | src/lib/telemetry.ts:15-24,35-59; reports/phase-4-security.md | Consent-gated Sentry declared; deployed DSN, collected RUM and alert routing unknown; SEC-002 redaction gap retained. | Fix redaction, verify consented browser telemetry and useful latency/error dashboards. | P2 |
+| Dark launches & shadow traffic | UNVERIFIED — CRITICAL evidence gap | .github/workflows/ci.yml:72-92; package.json:27-83 | No shadow/dark-launch implementation or accepted alternative documented. | Document risk-based staged testing alternative; avoid copying personal traffic without controls. | P3 |
+| Gradual rollout & automated rollback triggers | UNVERIFIED — CRITICAL evidence gap | docs/DISASTER_RECOVERY.md:119-127; .github/workflows/ci.yml:72-92 | Manual rollback guidance only; no gradual rollout or automatic trigger evidence. | Define failure thresholds, owner and reversible promotion procedure. | P2 |
+| Load testing & capacity planning (k6, Artillery, JMeter, Locust) | UNVERIFIED — CRITICAL evidence gap | reports/phase-5-testing.md; package.json:10-24 | Unit/build checks do not demonstrate concurrent production capacity; no load-test evidence supplied. | Run bounded synthetic load on isolated environment; measure API/DB limits and frontend performance. | P2 |
+| Penetration testing cadence | UNVERIFIED — CRITICAL evidence gap | reports/phase-4-security.md; reports/phase-5-testing.md | Static audit and local probes performed; live DAST blocked and no recurring assessment schedule supplied. | Schedule authorized isolated penetration testing after remediation and major auth/data changes. | P2 |
 
-**1.5 Exploitable quiz timer — `src/stores/quizStore.ts` persists `timeRemainingSeconds`.** A user can close the tab mid-mock-test (45-min limit, `constants.ts`) and reopen to resume with the persisted remaining time — effectively pausing a timed exam indefinitely. *Fix:* persist `startedAt` and recompute elapsed on hydration, or don't persist the timer.
+Coverage: 51 of 51 assigned exact checkbox items, across six sections. No new exploitable vulnerability IDs added. Operational evidence requests can share one provider settings export, release/CI history bundle, monitoring configuration and recorded restore exercise; each row is not a separate product defect.
 
-**1.7 ErrorBoundary — `src/components/shared/ErrorBoundary.tsx:31-37`.** `componentDidCatch` only `console.error`s; `handleReset` clears state but doesn't remount the subtree, so the same error re-throws. For chunk-load failures (lazy pages), reset does nothing. *Fix:* per-route boundaries; `window.location.reload()` for chunk failures; integrate Sentry in `componentDidCatch`.
+## Blind Spot Analysis
 
-**1.8 Zero observability.** `grep` for sentry/datadog/gtag/posthog → none. `analytics.service.ts` is a Supabase data-access layer, not an analytics SDK. Production errors are invisible to the team. *Fix:* `@sentry/react` init in `main.tsx`, capture in ErrorBoundary, `VITE_SENTRY_DSN` (safe to expose).
+The most dangerous blind spot is the difference between a checked-in declaration and a working deployed control. Prior project-reference drift is documented in the runbook, so old dashboard claims cannot substitute for current policy and deployment evidence. A successful schema export is not a successful migration or a data backup. Public GLB assets missing from version control can make a local simulator work while a clean deployment fails (BUG-014).
 
-**1.9 Dead offline-sync — `src/hooks/useOfflineSync.ts` is **never mounted** (grep returns only its definition); `enqueueWrite` is **never called** anywhere.** The entire IndexedDB write-queue (`offlineStorage.ts`) is dead code. If it were wired, it would also break on mock tests because `offlineStorage.ts:11` uses `"mock_results"` while the table is `mock_test_results`. *Fix:* either mount `useOfflineSync()` in `AuthInit` and call `enqueueWrite` in the result-submission flows (and fix the table name), or delete the dead files.
+The unit suite passes while result persistence probes fail. Full-app coverage is not represented by the imported-file percentage. Browser layout, screen-reader access, multi-tab queues, recovery from network failure and complete two-user database operations need focused verification. Consent does not make sensitive telemetry payloads safe; SEC-002 demonstrates incomplete redaction. Account deletion is not equivalent to every retained record being deleted; SEC-005 and BUG-007 cover separate server/local lifecycles.
 
-*Positive frontend observations:* skip-link, `aria-live` on spinners/banners, `prefers-reduced-motion` respected, `sr-only` active-page indicator, `<main tabIndex={-1}>` focus management, lazy-loaded routes with manual vendor chunking, PWA manifest with shortcuts/screenshots, theme-flash-prevention inline script.
+Managed services do not make backup entitlements, encryption settings, quotas, rate limits or incident ownership self-proving. No legal compliance conclusion, road-law accuracy certification, medical screening certification or complete penetration-test assurance is given.
 
----
+## Remediation Roadmap
 
-### Dimension 7 — CI/CD & Version Control
+**Days 0–30:** Keep release blocked. After GO, first fix logout termination and queued-result loss/duplication/retry handling, then reset/scoring integrity and truthful simulator completion. Add the corresponding regressions. Supply isolated staging using reports/staging-setup.md and the exact SQL exports. Resolve scanner egress prerequisites without sharing credentials. Verify all effective grants, two-user CRUD/RPC/storage isolation, dependency advisories, browser critical journeys and asset availability. Assign an owner to each INF evidence gap and verify backups with a restore drill.
 
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 7.1 | No CI/CD pipeline (no `.github/`, no `vercel/` config beyond headers) | High | P1 |
-| 7.2 | Zero automated tests (no test files, no vitest/jest/playwright config) | High | P1 |
-| 7.3 | No lint/type-check gate in CI; `lint` script exists but not enforced | Medium | P1 |
-| 7.4 | No secret scanning (gitleaks/Dependabot/CodeQL) | High | P1 |
-| 7.5 | No DB migration step in deploy pipeline | High | P1 |
-| 7.6 | `npm audit`: 5 vulns (1 high, 3 moderate, 1 low) — see below | Medium | P1 |
-| 7.7 | No husky/lint-staged pre-commit hooks | Low | P2 |
-| 7.8 | `package-lock.json` committed ✅; but `skills-lock.json`/`scripts-lock.json` purpose unclear | Low | P3 |
+**Days 31–60:** Fix remaining exam resume/time/grading and accessibility issues. Align profile email ownership, answer-key behavior, privacy/export/retention and telemetry redaction. Validate retention jobs, rate limits, deployment parity, alert delivery and budgets. Consolidate cache invalidation and remove proven dead code only after behavioral tests protect those paths. Establish redacted evidence for vendor, residency and operational obligations.
 
-**7.1 No CI.** `ls .github` → no such directory. Deploys are manual: `npm run build` → push to Vercel. No build validation, no preview-environment gating, no automated rollback, no smoke tests. *Fix:* add `.github/workflows/ci.yml` running `npm ci`, `npm run lint`, `npm run type-check`, `npm run build`, `npm audit --audit-level=high`, and (once added) `vitest run`. Add Vercel Preview deployments per PR.
+**Days 61–90:** Run measured load/capacity and failure-recovery exercises on staging; add synthetic monitoring, agreed SLOs and repeatable release smoke/rollback gates. Exercise mobile controls, keyboard/screen-reader flows and real-world performance. Reassess dependency exceptions and operational evidence. Split the simulator's existing responsibilities incrementally; no new architecture or library is required merely to satisfy a checklist.
 
-**7.2 No tests.** `find src -name "*.test.*" -o -name "*.spec.*"` → empty. No vitest/jest/playwright config. The RLS policies (the core security control) have **no automated verification** — a future schema change could silently break `auth.uid()` scoping with no test catching it. *Fix:* add `supabase db push` + pgTAP RLS policy tests (`supabase test db`) verifying a user cannot read another user's `quiz_results`. Add Vitest unit tests for `lib/` utils and the offline queue.
+## Appendix
 
-**7.4 No secret scanning.** Dependabot/gitleaks/CodeQL not configured. The `.env.local` is untracked (good) but there is no CI guard against a future `VITE_SUPABASE_SERVICE_ROLE_KEY` slipping in. *Fix:* enable GitHub Dependabot + secret scanning; add a CI step `grep -r "service_role\|SERVICE_ROLE" dist/ && exit 1`.
+- Primary specification: docs/13-layer-audit.md, all 140 items across 15 sections. Coverage validator: reports/checklist-coverage.json.
+- Audit evidence: reports/phase-0-recon.md through reports/phase-5-testing.md; complete inventories and supporting matrices remain in reports.
+- Tools run locally: static/manual source and installed-SDK review; masked heuristic secret scan; offline npm audit (not current advisory assurance); TypeScript; ESLint; Vitest/V8; jsdom/axe; Vite; CSP hash checker; synthetic actual-source probes. Chromium attempts failed before usable rendered testing. See Phase 5 for the exact egress ledger: no cloud scanner received repository code or app data.
+- Skills: production-audit for local readiness evidence; security-auditor/vulnerability-scanner for boundaries and triage; react-testing/accessibility and the four requested design skills for their relevant phases; Ponytail for minimal fixes; Caveman only for chat. User's risk formula replaces production-audit's inverse readiness score. User's disk checklist replaces attachment gating. No additional approval is required to report findings.
+- Compliance mapping is technical evidence only: identity/authorization maps to RLS and auth controls; minimization/retention/export to data lifecycle; accountability to audit events and vendor/owner records; resilience to backup/restore and incident evidence. Applicability and legal assurance require owner review; no unverified regulatory status is asserted.
+- Prior historical report preserved: reports/TechStack.previous.md. Source-integrity check: reports/source-integrity-final.json, 361 baseline tracked files unchanged (excluding permitted report/TechStack writes).
 
-**7.6 `npm audit` results (run 2026-07-03):**
-| Package | Severity | Advisory | Fix |
-|---|---|---|---|
-| `vite` | **High** | `server.fs.deny` bypass on Windows alternate paths (GHSA-fx2h-pf6j-xcff) | dev-only; update Vite |
-| `launch-editor` | **High** | NTLMv2 hash disclosure via UNC path on Windows (GHSA-v6wh-96g9-6wx3) | dev-only (transitive via Vite) |
-| `dompurify` ≤3.4.10 | Moderate | Multiple XSS sanitization bypasses (IN_PLACE mode, hook pollution, SAFE_FOR_TEMPLATES) | transitive via jspdf/html2canvas; update chain |
-| `react-router` 6.7.0–6.30.3 | Moderate | Open redirect via `//` protocol-relative URL (GHSA-2j2x-hqr9-3h42) | update react-router-dom |
-| (1 low) | Low | — | — |
-
-*Note:* the two `high` advisories are dev-tooling-only (Vite dev server / launch-editor) and do not ship in the production bundle. `dompurify` and `react-router` **do** ship to users. `dompurify` is reached via `jspdf`'s HTML→PDF path (`vite.config.ts:212-221` lists `dompurify` in the PDF chunk) — if any user-controlled HTML is rendered into a PDF, the sanitization bypass is exploitable. *Fix:* `npm audit fix` (updates patch versions), then verify `jspdf`/`html2canvas` still render correctly. Pin with `overrides` if upstream is slow.
-
----
-
-### Dimensions 5, 6 — Hosting, Deployment, Cloud & Compute
-
-DriveMy is a **static SPA on Vercel** + **managed Supabase**. Most of these dimensions are N/A or Supabase-managed.
-
-- **5.1 Hosting platform:** Vercel (static). `vercel.json` present. ✅
-- **5.2 Containerization:** **N/A — verified not applicable.** Static SPA, no server process to containerize.
-- **5.3 Orchestration (K8s/ECS):** **N/A — verified not applicable.**
-- **5.4 Serverless:** Supabase Edge Functions runtime is enabled in `config.toml:369-378` but **no Edge Functions are defined** in the repo — server-side logic (admin creation, any privileged op) is done via local Node scripts instead. This is a gap (see 8.1/4.5) — privileged operations should be Edge Functions, not local scripts with the service-role key.
-- **5.5 Environment parity:** ❌ Poor. `config.toml` is a local-dev config (`site_url=http://127.0.0.1:3000`) committed as the single source of truth; there is no documented prod config. **High, P0** (see 4.4).
-- **5.6 Domain/DNS:** Not visible in repo. *Cannot verify — requires dashboard access.*
-- **5.7 SSL/TLS:** Vercel provides auto-renewing TLS. HSTS missing (see 8.3). **Medium, P1.**
-- **5.8 Blue/green / canary:** ❌ None. Vercel supports immutable deploys + instant rollback but no canary/feature-flags are configured. **Medium, P2.**
-- **5.9 Feature flags:** ❌ None (no LaunchDarkly/Unleash). **Low, P3.**
-- **5.10 IaC:** ❌ No Terraform/Pulumi. Supabase config is a TOML file; Vercel config is JSON. Acceptable for the project's scale. **Low, P3.**
-- **6.1–6.7 Compute/IAM/VPC:** **N/A — verified not applicable.** No self-managed compute; Supabase is managed. Cost monitoring is Supabase/Vercel-side.
-
----
-
-### Dimension 9 — Rate Limiting
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 9.1 | No client-side or edge rate limiting on data API | Medium | P2 |
-| 9.2 | Auth rate limits are Supabase defaults only (`sign_in_sign_ups=30/5min`) | Medium | P2 |
-| 9.3 | No cost-based limiting on expensive ops (PDF gen, quiz fetch) | Low | P3 |
-
-**9.1 No API rate limiting.** Because the client calls Supabase REST directly, the only throttle is Supabase's platform-level limits (defaults in `config.toml:192-206`: `sign_in_sign_ups=30/5min`, `token_verifications=30/5min`). There is **no per-user limit on data reads/writes** — an authenticated user can hammer `kpp_questions` SELECT (capped at `max_rows=1000` per request, `config.toml:18`) or flood-insert `quiz_results`. RLS allows the insert (user-scoped) but nothing prevents volume abuse. *Fix:* add Supabase Edge Function middleware with a per-user token bucket (Redis/Upstash), or accept platform defaults and monitor. At minimum, enable captcha on auth (`config.toml:208-212`) to slow credential stuffing.
-
----
-
-### Dimension 10 — Caching & CDN
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 10.1 | SW caches authed Supabase responses unsafely (see 1.3) | High | P0 |
-| 10.2 | `/assets/*` immutable caching ✅ (`vercel.json:5-9`) | — | — |
-| 10.3 | Google Fonts caching ✅ (`vite.config.ts:111-137`) | — | — |
-| 10.4 | No server-side cache (N/A — no server) | N/A | — |
-| 10.5 | No cache invalidation on deploy beyond `skipWaiting` | Medium | P2 |
-
-**10.2/10.3 Positive.** Vercel `cache-control: public, max-age=31536000, immutable` on hashed assets is correct. Workbox fonts caching (CacheFirst for gstatic, StaleWhileRevalidate for googleapis) is textbook-correct. The **only** caching defect is 1.3/10.1 (the Supabase API cache).
-
----
-
-### Dimension 11 — Load Balancing & Scaling
-
-**N/A — verified not applicable** for a static SPA on Vercel (CDN-edge served) + managed Supabase (auto-scaled by Supabase). No LB, no auto-scaling groups, no graceful shutdown logic to write. The only scaling concern is Supabase plan limits (connection pooler, DB size) — managed by the platform. *No findings.*
-
----
-
-### Dimension 12 — Error Tracking & Logs
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 12.1 | No error tracking (Sentry/Rollbar) — errors only `console.error` | High | P1 |
-| 12.2 | No centralized/structured logging | Medium | P2 |
-| 12.3 | No PII redaction policy (N/A — no logging at all, but plan for it) | Low | P3 |
-
-**12.1** — see 1.8. `ErrorBoundary.componentDidCatch` (`ErrorBoundary.tsx:31`) does `console.error` only. In a production PWA used by learner drivers (possibly offline), crashes are silent. *Fix:* Sentry React SDK, `Sentry.init` in `main.tsx`, capture in boundary, release tracking via `VITE_SENTRY_DSN`. **P1.**
-
----
-
-### Dimension 13 — Availability & Recovery
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 13.1 | No SLO/SLA defined | Low | P3 |
-| 13.2 | DR plan = Supabase-managed backups (unverified) | Medium | P2 |
-| 13.3 | No runbook / on-call | Low | P3 |
-| 13.4 | Multi-region: N/A (Vercel CDN + Supabase single-region) | N/A | — |
-
-**13.2** Supabase provides automated daily backups on Pro plans. **Not verified** whether the project is on Pro or Free (Free has no PITR). The repo contains no backup-restore documentation or fire-drill record. *Fix:* confirm Supabase plan, document RTO/RPO (Supabase PITR is ~5min RPO on Pro), and record a restore runbook. **Medium, P2.**
-
----
-
-### Dimension 14 — Compliance & Governance
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 14.1 | No Privacy Policy / ToS / cookie consent in-app | Medium | P2 |
-| 14.2 | PII: email + quiz/sim results stored; no data-export/delete (GDPR/CCPA) flow | Medium | P2 |
-| 14.3 | Scraped copyrighted Ishihara plates (see 8.8) | Medium | P2 |
-| 14.4 | No audit log of admin actions (no admin system exists yet) | Low | P3 |
-
-**14.2** The schema stores `user_id`-linked quiz/mock/simulation/colorblind results (behavioral data) and auth emails. There is **no user-facing data-export or account-deletion flow** — a GDPR/CCPA right-to-erasure requirement. Account deletion would cascade (FKs are `ON DELETE CASCADE`, `setup_schema.sql:49,78,107,141,162`) so the data layer supports it, but no UI/edge-function exposes it. *Fix:* add a "Delete my account" action calling a Supabase Edge Function that deletes the `auth.users` row (cascades) after reauth. **Medium, P2.**
-
----
-
-### Dimension 15 — Observability & Testing in Production
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 15.1 | No synthetic monitoring / uptime checks | Medium | P2 |
-| 15.2 | No RUM | Medium | P2 |
-| 15.3 | No load testing | Low | P3 |
-| 15.4 | Lighthouse report exists in-repo (`docs/reports/lighthouse.md`) but not wired to CI | Low | P3 |
-
-**15.4** The repo contains a Lighthouse report (referenced by the deps agent), indicating Lighthouse has been run manually. It is not in CI (no Lighthouse CI action). The report itself flags CSP and TTFB. *Fix:* add Lighthouse CI to GitHub Actions on PRs. **Low, P3.**
-
----
-
-### Dimension 2 — APIs & Backend Logic
-
-There is **no custom backend** — all "backend logic" is Supabase auto-generated REST + the client service layer in `src/services/`.
-
-| # | Finding | Severity | Priority |
-|---|---|---|---|
-| 2.1 | No request validation layer (zod present but unused for API I/O) | Medium | P2 |
-| 2.2 | Client-side `insert` of results bypasses server validation (relies on RLS CHECK) | Medium | P2 |
-| 2.3 | No API versioning (Supabase REST v1 only) | Low | P3 |
-| 2.4 | No webhook / async job processing | N/A | — |
-| 2.5 | File upload: MIME/size limited ✅, but upload policy open (see 8.2) | High | P1 |
-| 2.6 | No OpenAPI/Postman docs for the data model | Low | P3 |
-
-**2.1/2.2** `zod` is a dependency (`package.json:62`) but is only used for form validation, not for validating Supabase payloads. Results are inserted client-side (`useOfflineSync.ts:20`, the service layer) with the full payload — the only server-side guard is the RLS `WITH CHECK (auth.uid() = user_id)` and column CHECK constraints. A client could submit a `quiz_results` row with an inflated `score`/`percentage` (the app computes it, but nothing server-side recomputes/verifies it against `answers`). *Current risk:* a user can write any `percentage` they want to their own results — self-harm only, but it defeats progress analytics. *Fix:* add a Supabase Edge Function or DB trigger that recomputes `score`/`percentage` from `answers` + `question_ids` on INSERT, rejecting mismatches. **Medium, P2.**
-
----
-
-## 4. Blind Spot Analysis — what's completely missing that most teams forget
-
-1. **RLS policy tests.** Everyone enables RLS; almost no one *tests* that the policies actually deny cross-user access. A single `supabase test db` (pgTAP) suite asserting "user A cannot SELECT user B's quiz_results" would catch regressions. **Completely absent here.**
-2. **Service-role key hygiene.** The key is correctly kept out of the client bundle, but its mere presence in a plaintext dev `.env.local` for years (`exp: 2036`) is the classic Supabase footgun. The mitigation is process (rotate + remove + CI grep), not code.
-3. **The offline feature that doesn't exist.** `useOfflineSync` + `offlineStorage` + `enqueueWrite` are fully implemented and *zero-percent wired up*. This is the most dangerous kind of dead code: it reads like a working feature, so no one notices the offline writes are silently dropped (and the table name is wrong). Either ship it or delete it.
-4. **Server-side score verification.** Trusting the client's `percentage` is the kind of oversight that only matters when someone cares enough to cheat their own dashboard — but for an exam-prep product with a "readiness" score, it undermines the product's signal.
-5. **CSP.** The single most effective XSS control, and it is absent — despite the app having a clear stored-XSS vector (SVG uploads to a public bucket, §8.2) and a vulnerable `dompurify` in the PDF chain (§8.5).
-6. **Post-deploy verification.** No smoke test, no `npm run preview` check in CI, no synthetic ping. A broken deploy is discovered by a user.
-7. **Redirect-URL allow-list for production.** `config.toml` still names `127.0.0.1:3000`. This will break password-reset and Google-OAuth in production — the kind of bug that only surfaces after deploy, in front of users.
-8. **`profiles` table / RBAC foundation.** There is no place to put an `is_admin` flag, so every future admin feature will bolt on an insecure pattern (like the current storage upload policy, §8.2).
-
----
-
-## 5. Remediation Roadmap
-
-### 30-day plan (P0 — stop the bleeding)
-1. **Rotate the Supabase service-role key** and remove it from `.env.local`. It lives only in CI secrets / Edge Function env. (§8.1)
-2. **Delete `scripts/create-admin.js`** and any `admin@drivemy.com` / `password123` account in production. (§4.5)
-3. **Fix production auth config:** `site_url` + `additional_redirect_urls` → real Vercel domain; `enable_confirmations = true`; `minimum_password_length = 10` + complexity. (§4.1, 4.2, 4.4)
-4. **Production sourcemaps off:** `sourcemap: 'hidden'`. (§1.2)
-5. **Fix SW Supabase cache:** remove status `0`, cap TTL to 300s, clear cache on signOut. (§1.3/10.1)
-6. **Add CSP + HSTS** to `vercel.json` / `public/_headers`. (§8.3)
-7. **Lock down storage upload** to an admin role (or remove SVG from allowed MIME types immediately). (§8.2)
-8. **Fix light-mode contrast** (`--muted-foreground` token). (§1.1)
-
-### 60-day plan (P1 — close the gaps)
-9. **Add CI:** GitHub Actions — `npm ci`, lint, type-check, build, `npm audit --audit-level=high`, RLS policy tests. (§7.1, 7.3, 7.4)
-10. **Add tests:** pgTAP RLS policy tests (highest value) + Vitest unit tests for `lib/`. (§7.2)
-11. **Integrate Sentry** for error tracking; capture in ErrorBoundary. (§1.7, 1.8, 12.1)
-12. **Resolve dual auth state** — single source of truth via `onAuthStateChange` → `authStore`. (§4.7)
-13. **Add per-route ErrorBoundaries**; chunk-load retry fallback. (§1.7, 1.10)
-14. **Fix quiz-timer persistence** (store `startedAt`, recompute). (§1.5)
-15. **Fix mobile-menu focus trap** (use Radix Dialog). (§1.6)
-16. **`npm audit fix`** for `dompurify`/`react-router`; verify PDF render + routing. (§8.5, 8.6)
-17. **Wire up or delete offline-sync** (and fix the `mock_results` table name). (§1.9, 1.16)
-18. **Add `profiles` table with `is_admin`** + RLS, as the foundation for RBAC. (§8.4)
-19. **Convert `setup_schema.sql` → ordered migrations** + `supabase db push` in CI. (§3.1, 7.5)
-20. **Server-side score recomputation** (Edge Function or trigger). (§2.2)
-
-### 90-day plan (P2/P3 — hardening & polish)
-21. Per-route code-splitting refinements: dynamic Phaser import, `motion` chunk, self-host fonts, drop `lucide-react`, re-enable `modulePreload`. (§1.11–1.15)
-22. `skipWaiting: false` for safer SW updates. (§1.14)
-23. MFA for admin accounts; session inactivity timeout. (§4.3)
-24. Rate limiting via Edge Function + Upstash; captcha on auth. (§9.1, 9.2)
-25. GDPR data-export/delete flow. (§14.2)
-26. Privacy Policy + cookie consent (if any analytics added). (§14.1)
-27. Replace scraped Ishihara plates with licensed content. (§8.8, 14.3)
-28. Lighthouse CI + synthetic uptime monitoring. (§15.1, 15.4)
-29. Document Supabase plan / backup RPO; restore runbook. (§13.2)
-30. `git rm --cached supabase/.temp` + gitignore it. (§8.7)
-
----
-
-## 6. Appendix
-
-### A. Tooling references
-- **SAST/SCA:** GitHub Dependabot, `npm audit`, CodeQL, Snyk (pick one).
-- **RLS testing:** `supabase test db` (pgTAP) — `https://supabase.com/docs/guides/database/testing`.
-- **Error tracking:** `@sentry/react` — `https://docs.sentry.io/platforms/javascript/guides/react/`.
-- **CSP:** use a header generator + the inline theme-script SHA-256 (compute from `index.html:45-60`).
-- **Edge Functions:** `https://supabase.com/docs/guides/functions` — for score verification, admin ops, rate limiting.
-
-### B. Compliance mapping
-| Control area | Status | Note |
-|---|---|---|
-| OWASP A03 (Injection) | ✅ Low risk | Parameterized via Supabase REST; no raw SQL client-side. |
-| OWASP A07 (Auth) | ❌ Weak | Email verification off, weak passwords, no MFA (§4.1–4.3). |
-| OWASP A01 (Access Control) | ✅ Strong RLS | But untested (§7.2) and storage upload open (§8.2). |
-| OWASP A05 (Security Misconfig) | ❌ | No CSP/HSTS, sourcemaps, localhost redirect config (§8.3, 1.2, 4.4). |
-| OWASP A06 (Vuln Components) | ⚠️ | 4 ship-to-user advisories (§7.6). |
-| OWASP A09 (Logging/Monitoring) | ❌ | Zero observability (§12.1). |
-| GDPR/CCPA | ⚠️ | No export/delete flow (§14.2). |
-
-### C. Severity / priority legend
-- **Critical:** exploitable now or one-step-from-catastrophic (service key on disk, `password123` admin).
-- **High:** real security/correctness defect with a concrete failure scenario.
-- **Medium:** hardening or likely-broken-in-prod issue.
-- **Low:** polish, consistency, minor tech debt.
-- **P0** 30-day / **P1** 60-day / **P2** 90-day / **P3** backlog.
-
-### D. Files inspected (selection)
-`package.json`, `vite.config.ts`, `vercel.json`, `.env.local`, `.gitignore`, `index.html`, `eslint.config.js`, `tailwind.config.js`, `src/App.tsx`, `src/main.tsx`, `src/lib/supabase.ts`, `src/lib/offlineStorage.ts`, `src/hooks/useAuth.ts`, `src/hooks/useOfflineSync.ts`, `src/stores/authStore.ts`, `src/services/auth.service.ts`, `src/components/shared/{ErrorBoundary,ProtectedRoute,AppLayout}.tsx`, `src/components/shared/AuthLayout.tsx`, `src/pages/auth/AuthPage.tsx`, `supabase/config.toml`, `supabase/setup_schema.sql`, `supabase/migrations/001_add_unique_constraint.sql`, `scripts/setup-storage.sql`, `scripts/create-admin.js`, `scripts/fetch-color-plates.ts`, `public/_headers`, `public/_redirects`. `npm audit` executed 2026-07-03.
+Confirmed new Phase 6 findings: Critical 0, High 0, Medium 0, Low 0. The five INF groups are missing-evidence findings and are excluded from confirmed-vulnerability arithmetic. Their detailed checklist gaps remain release conditions.

@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { Envelope, ArrowLeft, CheckCircle } from "phosphor-react";
+import { Envelope, ArrowLeft, CheckCircle } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useCaptcha } from "@/hooks/useCaptcha";
 import { resendEmailConfirmation } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { useState } from "react";
@@ -18,15 +19,20 @@ export function VerifyEmailPage() {
   const email = (location.state as { email?: string } | null)?.email ?? "";
   const [resent, setResent] = useState(false);
   const [resending, setResending] = useState(false);
+  const { captcha, captchaToken, isCaptchaPending, resetCaptcha } = useCaptcha();
 
   const handleResend = async () => {
     if (!email || resending) return;
     setResending(true);
     try {
-      await resendEmailConfirmation(email);
+      await resendEmailConfirmation(email, captchaToken);
       setResent(true);
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to resend email. Please try again.");
+    } catch (err: unknown) {
+      // Turnstile tokens are single-use — without this the retry fails too.
+      resetCaptcha();
+      toast.error(
+        err instanceof Error ? err.message : "Failed to resend email. Please try again."
+      );
     } finally {
       setResending(false);
     }
@@ -60,16 +66,21 @@ export function VerifyEmailPage() {
               {t("auth.verifyEmailResent")}
             </div>
           ) : (
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11"
-              onClick={handleResend}
-              loading={resending}
-              loadingLabel={t("common.loading")}
-            >
-              {t("auth.resendEmail")}
-            </Button>
+            <>
+              {/* Supabase captcha protection covers the resend endpoint too. */}
+              {captcha}
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11"
+                onClick={handleResend}
+                loading={resending}
+                disabled={isCaptchaPending}
+                loadingLabel={t("common.loading")}
+              >
+                {t("auth.resendEmail")}
+              </Button>
+            </>
           )}
         </div>
       )}

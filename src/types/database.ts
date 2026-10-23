@@ -172,8 +172,26 @@ export interface Database {
       };
     };
 
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Views: {
+      kpp_practice_questions: {
+        Row: Database["public"]["Tables"]["kpp_questions"]["Row"];
+      };
+    };
+    Functions: {
+      get_mock_test_answer_key: {
+        Args: { p_test_result_id: string };
+        Returns: Array<{
+          id: string;
+          correct_index: number;
+          explanation_en: string | null;
+          explanation_ms: string | null;
+        }>;
+      };
+      delete_user: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
+    };
     Enums: Record<string, never>;
   };
 }

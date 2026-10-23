@@ -1,0 +1,108 @@
+{
+  "schema": "drivemy.rules/1",
+  "decided_on": "2026-10-14",
+  "label": "Practice rehearsal, not official marking",
+  "basis_legend": {
+    "rubric": "The app's original JPJ demerit rubric (the v1 simulator's score store, src/stores/carStore.ts, removed in WP6)",
+    "guides": "Unofficial Malaysian driving-school notes and learner accounts, listed in RULES.md. No official JPJ marking sheet was available.",
+    "prd": "The DriveMy v2 PRD",
+    "decided": "A simulator choice made on 14 Oct 2026 with no instructor available; the reason is in the note"
+  },
+  "verdict": {
+    "pass": "All eight stations cleared, in order, with fewer than 20 demerits",
+    "fail_at_demerits": 20,
+    "end_run_at_fail": false,
+    "basis": "rubric (MAX_DEMERIT 20) + decided (every station must be cleared) + decided 15 Oct (reaching 20 makes the verdict a fail, but the run carries on so the learner rehearses every station, as a failed station does)"
+  },
+  "demerits": {
+    "cone":       { "points": 5,  "clear_s": 0.5, "basis": "rubric" },
+    "pole":       { "points": 20, "clear_s": 0.5, "basis": "rubric; guides: touching a pole fails the element" },
+    "rollback":   { "points": 20, "limit_m": 0.30, "basis": "rubric (more than 30 cm)",
+                    "rule": "Backward travel along a slope of more than 0.30 m while not in reverse, measured from the furthest-forward point since the car last stopped" },
+    "not_in_bay": { "points": 10, "basis": "rubric" },
+    "kerb":       { "points": 5,  "clear_s": 0.5, "basis": "decided: guides list touching a kerb or line as a minor fault worth 2-5 points; 5 matches the rubric's minor weight",
+                    "rule": "A tyre's contact patch over a kerb. One contact counts once; it ends when no tyre has touched that kerb for 0.5 s. Body overhang over a kerb is not a fault" },
+    "stall":      { "points": 5,  "basis": "rubric; unreachable with the automatic gearbox" },
+    "centre_line": { "points": 20, "ends_run": true,
+                    "basis": "the owner, 20 Oct: crossing or touching a centre line is an automatic fail, and the test ends there",
+                    "rule": "A tyre's contact patch touching the white line between the two lanes of a two-way road (unbroken, JKR ATJ 2D/85 4.1.2.2). The test ends at once with a fail" },
+    "collision":  { "points": 20, "ends_run": true,
+                    "basis": "decided 20 Oct, with the owner's traffic: a real test stops at a collision; the same weight as a pole",
+                    "rule": "The car's body touching another car's. One contact counts once. The test ends at once with a fail" },
+    "red_light":  { "points": 20, "ends_run": true,
+                    "basis": "decided 20 Oct, with the owner's traffic lights: running a red light ends a real test",
+                    "rule": "The front bumper crossing a signal's stop line, in its direction, while its light is red (amber is not marked). The test ends at once with a fail" }
+  },
+  "station_outcomes": {
+    "cleared": "Did the thing the station is named after, within its rules",
+    "failed": "Any of: time limit passed; the car passed the station's end on the route without clearing it; a station-specific failure below. A failed station fails the run, and the run carries on to the next station so the learner rehearses the rest"
+  },
+  "motion": {
+    "stopped_kmh": 0.5,
+    "basis": "decided 15 Oct: the car counts as stopped below 0.5 km/h (0.14 m/s), well under the 5 km/h creep and above sensor noise"
+  },
+  "timing": {
+    "starts": "When the car reaches the station's s_from on the route",
+    "basis": "guides (lp-services KPP notes: hill 3 min, side parking 5 min, three-point turn 3 min, S 3 min, Z 3 min, ramp 5 min)"
+  },
+  "stations": {
+    "hill-start": {
+      "time_limit_s": 180,
+      "clear": "Stop with both front tyres' contact points inside the yellow stop band; hold with the handbrake on and the car moving no more than still_m for hold_s; then move off and cross the crest gate without a rollback",
+      "hold_s": 2.0, "still_m": 0.05, "handbrake_required": true,
+      "fail": ["crossed the crest gate without a valid stop (passed the band)", "rollback (also 20 demerits)"],
+      "basis": "guides (stop with the front tyre on the yellow line; handbrake on; 3 minutes) + rubric (rollback over 30 cm) + decided (2 s hold, 5 cm stillness)"
+    },
+    "side-parking": {
+      "time_limit_s": 300,
+      "commit": "The car is stopped with the handbrake on for commit_s anywhere in the station: that is the learner saying done",
+      "commit_s": 1.0,
+      "clear": "At commitment, the footprint including the mirrors (1.847 m wide for the Swift) is inside the painted bay and the heading error is within the bay's limit (L sin t + W cos t <= bay width). Then drive out past the station's end",
+      "outside_at_commit": "not_in_bay (10); the station still counts as done",
+      "fail": ["touched a pole (also 20 demerits)"],
+      "basis": "rubric (not in bay 10, pole 20) + guides (the right mirror must be inside the box; a pole touch fails) + decided (handbrake as the done signal)"
+    },
+    "parallel-parking": {
+      "time_limit_s": 300,
+      "commit": "As side parking",
+      "commit_s": 1.0,
+      "clear": "As side parking, in the painted 6.6 x 2.5 m box inside the kerbed recess",
+      "outside_at_commit": "not_in_bay (10); the station still counts as done",
+      "basis": "rubric + guides + decided (time limit as side parking)"
+    },
+    "s-curve": {
+      "time_limit_s": 180,
+      "clear": "Gates passed in order with the speed held between speed_band_kmh",
+      "speed_band_kmh": [1, 18], "grace_s": 1.2,
+      "fail": ["more than grace_s outside the speed band (assessment); practice mode voids and restarts instead"],
+      "basis": "prd"
+    },
+    "z-curve": {
+      "time_limit_s": 180,
+      "clear": "Gates passed in order; a corner gate only counts at or under corner_kmh (too fast does not fail: that gate waits until the car slows)",
+      "corner_kmh": 12,
+      "basis": "prd"
+    },
+    "ramp-test": {
+      "time_limit_s": 300,
+      "clear": "Drive up onto the platform and stop with the front bumper between stop_window_m short of the pole; hold still (still_m) for hold_s; then reverse down and out past the mouth gate without touching the pole",
+      "stop_window_m": [0.2, 1.0], "hold_s": 2.0, "still_m": 0.05, "handbrake_required": false,
+      "fail": ["touched the pole (also 20 demerits)",
+        "stopped only outside stop_window_m and drove on (ramp.window: the verdict shows the measured gap against the window)"],
+      "basis": "guides (a DA learner: climb onto the cement block, do not hit the pole in the middle; 5 minutes) + decided (stop window, hold, reverse out)"
+    },
+    "road-merging": {
+      "time_limit_s": null,
+      "clear": "Join the main road's traffic from the slip road, giving way to it, and cross the finish gate at min_kmh or faster",
+      "min_kmh": 15,
+      "fail": ["crossed the finish gate below min_kmh (assessment); practice mode lets the learner retry",
+               "crossed the give-way line with a main-road car less than the merge's gap_s (circuit.json traffic.merge, 3 s) from the conflict point, or in it (merge.noYield)"],
+      "basis": "prd + the owner, 20 Oct (a vehicle joins from a slip road into moving traffic and gives way to it) + decided (a 3 s gap)"
+    }
+  },
+  "modes": {
+    "assessment": { "mirrors": true, "top_down_view": true, "top_down_use_logged": true, "where_next_marker": true, "tips": "shown for 6 s when a station arms", "upload": true },
+    "practice":   { "mirrors": true, "top_down_view": true, "top_down_use_logged": false, "where_next_marker": true, "restart": "teleports to the station's start pose", "upload": false },
+    "basis": "decided: the car has an interior mirror and both door mirrors, as in the real test. On a phone they are small and the driver cannot move their head, and from the driver's eye the bay lines never enter the windscreen view (v1 measured it). So the top-down view stays available in both modes; in assessment the verdict reports how long it was used, with no penalty"
+  }
+}

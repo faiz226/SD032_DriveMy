@@ -12,6 +12,19 @@ export default defineConfig([
     'lighthouse-report.html',
     '**/*.report.html',
     '.agents/**',
+    '.claude/**',
+    'reports/coverage/**',
+    // Stray editor backups left at the repo root. Not imported by anything and
+    // not valid UTF-8, so ESLint reports a parse error and fails the build.
+    // These should be deleted outright — see the repo-hygiene item in TechStack.md.
+    'backup_layout.tsx',
+    'backup_layout*.txt',
+    'graphify-out/**',
+    // Vendored bklit chart source, installed and updated with
+    // `npx shadcn add @bklit/<chart>`. It is upstream code: patching it to
+    // satisfy the React Compiler hook rules would fork it. Our wrappers in
+    // src/components/progress are linted as usual, and tsc still checks it.
+    'src/components/charts/**',
   ]),
   {
     files: ['**/*.{ts,tsx}'],
@@ -26,6 +39,7 @@ export default defineConfig([
     },
     languageOptions: {
       globals: globals.browser,
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
     },
     rules: {
       // Keep the core hooks rules, but avoid React Compiler-specific constraints
@@ -49,6 +63,18 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+
+      // A debug `fetch('http://localhost:9999', ...)` once shipped to production
+      // inside the error boundary, POSTing stack traces to every user's own
+      // machine. Fail the build rather than rely on catching it in review.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "Literal[value=/^https?:\\u002F\\u002F(localhost|127\\.0\\.0\\.1)/]",
+          message:
+            'Hardcoded localhost URL. Debug endpoints must never ship to production — read it from import.meta.env or remove the call.',
+        },
       ],
     },
   },

@@ -1,0 +1,16 @@
+{
+  "name": "2022 Suzuki Swift 1.2 GLX",
+  "source": "PRD, Vehicle and driving model (measured off the model, 1:1 metres)",
+  "length_m": 3.842,
+  "width_body_m": 1.730,
+  "width_mirrors_m": 1.847,
+  "wheelbase_m": 2.450,
+  "track_m": 1.493,
+  "tyre_radius_m": 0.324,
+  "tyre_width_m": 0.185,
+  "tyre_width_source": "unverified: assumed 185 mm section; only affects kerb contact by a few millimetres",
+  "front_overhang_m": 0.696,
+  "front_overhang_source": "assumed equal overhangs, as v1 did: (length - wheelbase) / 2",
+  "steer_lock_rad": 0.62,
+  "steer_lock_source": "PRD: 0.62 rad at standstill"
+}

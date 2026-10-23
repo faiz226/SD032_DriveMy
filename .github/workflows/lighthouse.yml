@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
@@ -24,9 +24,11 @@ jobs:
 
       - name: Build Project
         run: npm run build
+        # Public values that ship in the bundle anyway. Without them src/lib/supabase.ts throws before the page
+        # paints (Lighthouse's NO_FCP), so placeholders stand in while the repo has no such secrets.
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://supabase.invalid' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'lighthouse-placeholder' }}
 
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v11

@@ -1,7 +1,12 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart } from "@/components/charts/bar-chart";
+import { Bar } from "@/components/charts/bar";
+import { BarYAxis } from "@/components/charts/bar-y-axis";
+import { Grid } from "@/components/charts/grid";
+import { ChartTooltip } from "@/components/charts/tooltip";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
-import { useChartColors } from "@/hooks/useChartColors";
+import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS } from "@/lib/constants";
+import { ChartFigure, labelColumn } from "./ChartFigure";
 
 interface CategoryBreakdownBarProps {
   data: { category: string; averageScore: number; attempts: number }[];
@@ -13,59 +18,44 @@ const CATEGORY_KEYS: Record<string, TranslationKey> = {
   "safety-principles": "progress.category.safety-principles",
 };
 
+const PASS_PERCENT = Math.round((MOCK_PASS_MARK / MOCK_TOTAL_QUESTIONS) * 100);
+
+/**
+ * Average quiz score per KPP category. Bars are one neutral ink: colouring
+ * each by threshold put red, yellow and green side by side, which reads as a
+ * traffic light. Which categories clear the pass mark is stated in words.
+ */
 export function CategoryBreakdownBar({ data }: CategoryBreakdownBarProps) {
   const { t } = useLanguage();
-  const colors = useChartColors();
-
-  const chartData = data.map(d => {
-    const labelKey = CATEGORY_KEYS[d.category];
-    let color = colors.destructive;
-    if (d.averageScore >= 84) color = colors.success;
-    else if (d.averageScore >= 60) color = colors.warning;
-
-    return {
-      name: labelKey ? t(labelKey) : d.category,
-      score: d.averageScore,
-      color,
-      attempts: d.attempts
-    };
-  });
+  const rows = data.map(d => ({
+    name: CATEGORY_KEYS[d.category] ? t(CATEGORY_KEYS[d.category]) : d.category,
+    score: Math.round(d.averageScore),
+    attempts: d.attempts,
+  }));
+  const list = (items: typeof rows) => items.map(row => row.name).join(", ") || "-";
 
   return (
-    <div className="h-[300px] w-full" aria-label={t("progress.categoryChartAria")}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={colors.border} />
-          <XAxis 
-            type="number"
-            domain={[0, 100]} 
-            tick={{ fill: colors.mutedForeground, fontSize: 12 }}
-            axisLine={{ stroke: colors.border }}
-            tickLine={false}
-          />
-          <YAxis 
-            dataKey="name" 
-            type="category"
-            width={120}
-            tick={{ fill: colors.mutedForeground, fontSize: 12 }} 
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip 
-            contentStyle={{ backgroundColor: colors.card, borderColor: colors.border, borderRadius: "8px" }}
-            itemStyle={{ color: colors.foreground }}
-            formatter={(value, _name, props) => [
-              `${Number(value ?? 0)}% (${props?.payload?.attempts ?? 0} attempts)`,
-              t("progress.chart.score")
-            ]}
-          />
-          <Bar dataKey="score" radius={[0, 4, 4, 0]} barSize={20}>
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <ChartFigure
+      label={t("progress.categoryChartAria")}
+      note={t("progress.chart.passMarkSplit", {
+        value: PASS_PERCENT,
+        above: list(rows.filter(row => row.score >= PASS_PERCENT)),
+        below: list(rows.filter(row => row.score < PASS_PERCENT)),
+      })}
+      table={{
+        columns: [t("progress.chart.category"), t("progress.averageScore"), t("progress.chart.attemptCount")],
+        rows: rows.map(row => [row.name, `${row.score}%`, row.attempts]),
+      }}
+    >
+      <BarChart data={rows} xDataKey="name" orientation="horizontal" aspectRatio="5 / 2" margin={{ top: 8, right: 16, bottom: 8, left: labelColumn(rows) }}>
+        <Grid vertical strokeDasharray="2 6" />
+        <Bar dataKey="score" fill="var(--chart-line-primary)" lineCap="butt" animate={false} />
+        <BarYAxis showAllLabels />
+        <ChartTooltip
+          showDatePill={false}
+          rows={point => [{ color: "var(--chart-line-primary)", label: t("progress.averageScore"), value: `${point.score as number}% · ${t("progress.attempts", { count: point.attempts as number })}` }]}
+        />
+      </BarChart>
+    </ChartFigure>
   );
 }

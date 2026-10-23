@@ -1,12 +1,13 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Warning, ArrowClockwise } from "phosphor-react";
+import { Warning, ArrowClockwise } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import * as Sentry from "@sentry/react";
+import { isTelemetryActive } from "@/lib/telemetry";
 import { useLanguageStore } from "@/stores/languageStore";
 
-function DefaultErrorFallback({ onReset, error }: { onReset: () => void, error: Error | null }) {
+function DefaultErrorFallback({ onReset, eventId }: { onReset: () => void, eventId: string | null }) {
   const t = useLanguageStore((s) => s.t);
-  
+
   return (
     <div
       role="alert"
@@ -18,7 +19,17 @@ function DefaultErrorFallback({ onReset, error }: { onReset: () => void, error: 
         <h2 className="font-heading text-xl font-semibold text-foreground">
           {t("common.error")}
         </h2>
-        {error && <p className="mt-2 text-sm text-red-500 font-mono">{error.message}</p>}
+        {/*
+          The raw error.message is deliberately NOT rendered: it leaks internal
+          identifiers, PostgREST error text and table/column names to end users,
+          and is never translated. The full detail goes to the console and to
+          Sentry; users get a reference code instead.
+        */}
+        {eventId && (
+          <p className="mt-2 text-xs text-muted-foreground font-mono">
+            {t("common.errorReference")}: {eventId}
+          </p>
+        )}
       </div>
       <Button
         variant="outline"
@@ -41,6 +52,8 @@ interface Props {
 interface State {
   hasError: boolean;
   error:    Error | null;
+  /** Sentry event id, shown to the user as a support reference. */
+  eventId:  string | null;
 }
 
 /**
@@ -51,19 +64,26 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, eventId: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("[ErrorBoundary]", error, info.componentStack);
-    if (import.meta.env.VITE_SENTRY_DSN) {
-      Sentry.captureException(error, { extra: { componentStack: info.componentStack } });
+    // Gate on isTelemetryActive(), not on the DSN: a DSN can be configured
+    // while the user has declined or not yet decided, and capturing then would
+    // route around their choice.
+    if (isTelemetryActive()) {
+      const eventId = Sentry.captureException(error, {
+        extra: { componentStack: info.componentStack },
+      });
+      // Surfaced to the user so support can correlate a report to an event
+      // without exposing the underlying error text.
+      this.setState({ eventId });
     }
-    fetch('http://localhost:9999', { method: 'POST', body: error.message + '\n' + info.componentStack }).catch(() => {});
   }
 
   handleReset = () => {
@@ -76,13 +96,13 @@ export class ErrorBoundary extends Component<Props, State> {
       window.location.reload();
       return;
     }
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, eventId: null });
   };
 
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
-      return <DefaultErrorFallback onReset={this.handleReset} error={this.state.error} />;
+      return <DefaultErrorFallback onReset={this.handleReset} eventId={this.state.eventId} />;
     }
 
     return this.props.children;

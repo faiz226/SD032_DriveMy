@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { QuizResult, MockTestResult, SimulationResult } from "@/types/database";
+import { expandSimRuns } from "@/sim/record";
 
 export async function getBestQuizScore(userId: string): Promise<number> {
   const { data, error } = await supabase
@@ -25,15 +26,28 @@ export async function getBestMockTestScore(userId: string): Promise<number> {
   return rows.length > 0 ? Number(rows[0].percentage) || 0 : 0;
 }
 
+/** Best colour-vision percentage, or null when the learner has not taken the test. */
+export async function getBestColorVisionScore(userId: string): Promise<number | null> {
+  const { data, error } = await supabase
+    .from("colorblind_results")
+    .select("percentage")
+    .eq("user_id", userId)
+    .order("percentage", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  return data && data.length > 0 ? (data[0] as { percentage: number }).percentage : null;
+}
+
 export async function getSimulationsDone(userId: string): Promise<number> {
   const { data, error } = await supabase
     .from("simulation_results")
-    .select("maneuver_id")
+    .select("maneuver_id, score, attempt_data")
     .eq("user_id", userId);
   if (error) throw error;
   if (!data) return 0;
 
-  const rows = data as { maneuver_id: string }[];
+  // a v2 assessment run is one row covering every station it reached
+  const rows = expandSimRuns(data as { maneuver_id: string; score: number; attempt_data?: unknown }[]);
   const uniqueManeuvers = new Set(rows.map((r) => r.maneuver_id));
   return uniqueManeuvers.size;
 }
@@ -68,6 +82,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
       .limit(5),
   ]);
 
+  if (quizzes.error || mocks.error || sims.error) throw quizzes.error || mocks.error || sims.error;
   const activities: ActivityEvent[] = [];
 
   if (quizzes.data) {
@@ -77,7 +92,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "quiz" as const,
         title: q.quiz_title,
         score: q.percentage,
-        date: q.completed_at || new Date(0).toISOString(),
+        date: q.completed_at || "",
       }))
     );
   }
@@ -89,7 +104,7 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "mock" as const,
         title: `Mock Test - ${m.set_id}`,
         score: m.percentage,
-        date: m.completed_at || new Date(0).toISOString(),
+        date: m.completed_at || "",
       }))
     );
   }
@@ -101,13 +116,13 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
         type: "sim" as const,
         title: `Simulation: ${s.maneuver_id}`,
         score: s.score,
-        date: s.completed_at || new Date(0).toISOString(),
+        date: s.completed_at || "",
       }))
     );
   }
 
   return activities
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
     .slice(0, 5);
 }
 
@@ -197,7 +212,7 @@ export async function getSimStats(userId: string, dateRange?: number) {
   if (error) throw error;
   if (!data || data.length === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
 
-  const rows = data as SimulationResult[];
+  const rows = expandSimRuns(data as SimulationResult[]);
   const validRows = rows.filter(d => typeof d.score === 'number' && !isNaN(d.score));
   const count = validRows.length;
   if (count === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
@@ -219,13 +234,33 @@ export async function getSimStats(userId: string, dateRange?: number) {
   return { completed, averageScore, byManeuver, totalDuration, history: rows };
 }
 
+/**
+ * The theory modules that count towards theory progress.
+ *
+ * This must be an explicit list. The previous version counted EVERY completed
+ * row in theory_progress and divided by 3 — but SafetyPage also writes a row
+ * ("safety_ethics"), so visiting the Safety page plus any two theory tabs
+ * reported "100% theory complete" without the third tab ever being opened.
+ */
+export const THEORY_MODULE_IDS = ["theory-signs", "theory-rules", "theory-safety"] as const;
+
 export async function getTheoryProgressStats(userId: string) {
-  const { data, error } = await supabase.from("theory_progress").select("*").eq("user_id", userId);
+  const { data, error } = await supabase
+    .from("theory_progress")
+    .select("*")
+    .eq("user_id", userId);
   if (error) throw error;
-  // One row per theory tab: theory-signs, theory-rules, theory-safety
-  const totalModules = 3;
-  const rows = (data ?? []) as { completed: boolean }[];
-  const completedModules = rows.filter((d) => d.completed).length;
-  const percentage = Math.min((completedModules / totalModules) * 100, 100);
+
+  const rows = (data ?? []) as { module_id: string; completed: boolean }[];
+
+  // Count distinct theory modules only — ignore unrelated rows, and do not let
+  // a duplicate row for the same module count twice.
+  const completedIds = new Set(
+    rows.filter((d) => d.completed).map((d) => d.module_id)
+  );
+  const completedModules = THEORY_MODULE_IDS.filter((id) => completedIds.has(id)).length;
+  const totalModules = THEORY_MODULE_IDS.length;
+  const percentage = (completedModules / totalModules) * 100;
+
   return { completedModules, totalModules, percentage, byModule: rows };
 }

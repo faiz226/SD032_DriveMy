@@ -16,14 +16,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
+      # Fails on any high+ advisory that is not documented in
+      # .audit-allowlist.json, and also fails when a documented exception
+      # passes its reviewBy date — so an accepted risk cannot go stale.
       - name: Security Audit
-        run: npm audit --audit-level=high
+        run: npm run audit:gate
+
+      - name: Verify CSP script hash matches index.html
+        run: npm run csp:hash
 
       - name: Run Linter
         run: npm run lint
@@ -37,9 +43,37 @@ jobs:
       - name: Build Project
         run: npm run build
 
+  # Applies every migration to a THROWAWAY local database and runs the pgTAP
+  # RLS suite against it. This is the gate that would have caught the
+  # `profiles` table being readable by anonymous users: the old test asserted
+  # `count(*) = 0` on an empty table, which passes just as happily against a
+  # wide-open policy as a locked-down one.
+  rls-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      - name: Run RLS policy tests
+        run: supabase test db
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: supabase stop
+
   supabase-db-push:
     runs-on: ubuntu-latest
-    needs: build-and-test
+    # Migrations reach production only if the app builds AND the RLS policies
+    # still isolate users correctly.
+    needs: [build-and-test, rls-tests]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout Code

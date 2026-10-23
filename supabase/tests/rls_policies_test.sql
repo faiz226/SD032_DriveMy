@@ -1,18 +1,99 @@
-begin;
-select plan(2);
+-- =============================================================================
+-- RLS policy tests (pgTAP)
+--
+-- Run with:  supabase db test
+--
+-- The previous version of this file asserted `select count(*) from profiles = 0`
+-- against an empty database. That assertion passes identically whether the
+-- table is correctly locked down or wide open to anonymous users — it provided
+-- false assurance about the most serious finding in the codebase. These tests
+-- assert isolation between two real users instead.
+-- =============================================================================
 
--- Test 1: Profiles table RLS (Anonymous users cannot insert)
-select throws_like(
-    $$ insert into public.profiles (id, email, is_admin) values ('00000000-0000-0000-0000-000000000000', 'test@test.com', false) $$,
-    '%new row violates row-level security policy%',
-    'Anonymous users should not be able to insert profiles'
+begin;
+select plan(6);
+
+-- ─── Fixtures: two distinct users ────────────────────────────────────────────
+
+insert into auth.users (id, email, aud, role)
+values
+  ('11111111-1111-1111-1111-111111111111', 'alice@example.test', 'authenticated', 'authenticated'),
+  ('22222222-2222-2222-2222-222222222222', 'bob@example.test',   'authenticated', 'authenticated');
+
+-- handle_new_user() creates the profile rows via trigger. Fall back to an
+-- explicit insert if the trigger is not installed in this test database.
+insert into public.profiles (id, email, is_admin)
+values
+  ('11111111-1111-1111-1111-111111111111', 'alice@example.test', false),
+  ('22222222-2222-2222-2222-222222222222', 'bob@example.test',   false)
+on conflict (id) do nothing;
+
+-- The grading trigger (20260804000700) recomputes every result from its answers
+-- and accepts only questions from the practice pool, and this database has no
+-- seed data: so one pool question, which each result answers.
+insert into public.kpp_questions
+  (id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, correct_index)
+values
+  ('33333333-3333-3333-3333-333333333301', 'rls-test', 'quiz-pool', 999001,
+   'RLS fixture question', 'Soalan ujian RLS', '["a","b","c","d"]', '["a","b","c","d"]', 0);
+
+insert into public.quiz_results
+  (user_id, quiz_title, score, total_questions, percentage, duration_seconds, language, question_ids, answers)
+values
+  ('11111111-1111-1111-1111-111111111111', 'alice-quiz', 0, 1, 0, 60, 'en',
+   array['33333333-3333-3333-3333-333333333301']::uuid[], '{"33333333-3333-3333-3333-333333333301": 0}'),
+  ('22222222-2222-2222-2222-222222222222', 'bob-quiz',   0, 1, 0, 60, 'en',
+   array['33333333-3333-3333-3333-333333333301']::uuid[], '{"33333333-3333-3333-3333-333333333301": 1}');
+
+-- ─── Anonymous access ────────────────────────────────────────────────────────
+
+set local role anon;
+set local request.jwt.claims to '{"role":"anon"}';
+
+select is(
+  (select count(*) from public.profiles)::bigint,
+  0::bigint,
+  'anon must not be able to read ANY profile row (regression guard for the public SELECT policy)'
 );
 
--- Test 2: Profiles table RLS (Viewable by everyone)
-select results_eq(
-    $$ select count(*) from public.profiles $$,
-    $$ values (0::bigint) $$,
-    'Profiles should be viewable, returning 0 rows initially'
+select is(
+  (select count(*) from public.quiz_results)::bigint,
+  0::bigint,
+  'anon must not be able to read quiz results'
+);
+
+select throws_ok(
+  $$ insert into public.profiles (id, email, is_admin)
+     values ('33333333-3333-3333-3333-333333333333', 'mallory@example.test', false) $$,
+  '42501',
+  null,
+  'anon must not be able to insert a profile'
+);
+
+-- ─── Authenticated as Alice ──────────────────────────────────────────────────
+
+set local role authenticated;
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+
+select is(
+  (select count(*) from public.profiles)::bigint,
+  1::bigint,
+  'alice sees exactly one profile row — her own, never bob''s'
+);
+
+select is(
+  (select count(*) from public.quiz_results)::bigint,
+  1::bigint,
+  'alice sees only her own quiz results'
+);
+
+-- Privilege escalation must stay blocked (guards 20240104000000_enforce_mfa_rls).
+select throws_ok(
+  $$ update public.profiles set is_admin = true
+     where id = '11111111-1111-1111-1111-111111111111' $$,
+  '42501',
+  null,
+  'a normal user must not be able to make themselves an admin'
 );
 
 select * from finish();

@@ -1,11 +1,91 @@
-import { defineConfig } from "vite";
+import { handleSpeech } from "./api/speech";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "path";
+
+// Sourcemap upload runs only when all three are present, so local and
+// fork builds are unaffected. Set these in the Vercel project settings.
+const SENTRY_ORG = process.env["SENTRY_ORG"];
+const SENTRY_PROJECT = process.env["SENTRY_PROJECT"];
+const SENTRY_AUTH_TOKEN = process.env["SENTRY_AUTH_TOKEN"];
+const sentryUploadEnabled = Boolean(SENTRY_ORG && SENTRY_PROJECT && SENTRY_AUTH_TOKEN);
+
+/** Which named chunk a module the first page does not need belongs to (what it needs is grouped ahead of these). */
+function vendorChunk(id: string): string | undefined {
+  // Phaser game engine — large, isolated
+  if (id.includes("node_modules/phaser")) {
+    return "vendor-phaser";
+  }
+  // Framer Motion chunk
+  if (id.includes("framer-motion") || id.includes("motion")) {
+    return "vendor-motion";
+  }
+  // PDF generation (only needed on specific pages)
+  if (
+    id.includes('jspdf') ||
+    id.includes('jspdf-autotable') ||
+    id.includes('html2canvas') ||
+    id.includes('canvg') ||
+    id.includes('dompurify') ||
+    id.includes('pako') ||
+    id.includes('fflate') ||
+    id.includes('fast-png') ||
+    id.includes('iobuffer')
+  ) {
+    return 'vendor-pdf';
+  }
+  // Charts (only needed on progress/analytics pages)
+  if (
+    id.includes('recharts') ||
+    id.includes('d3-') ||
+    id.includes('decimal.js')
+  ) {
+    return 'vendor-charts';
+  }
+  // Radix UI primitives (large, can be deferred)
+  if (id.includes('@radix-ui')) {
+    return 'radix';
+  }
+  // Supabase client (needed for auth but can be separate)
+  if (id.includes('@supabase') || id.includes('phoenix') || id.includes('realtime-js')) {
+    return 'supabase';
+  }
+  // TanStack Query
+  if (id.includes('@tanstack')) {
+    return 'vendor-query';
+  }
+  // The simulator's 3D stack: three.js, React Three Fiber, drei and Rapier (its wasm is inlined,
+  // which makes it large). Only the simulator route uses it, so it loads with that route, and the
+  // service worker's rules below find it by this chunk's name.
+  if (/\/node_modules\/(three|three-stdlib|three-mesh-bvh|@react-three|@dimforge|react-reconciler|its-fine|suspend-react|troika-[\w-]+|webgl-sdf-generator|bidi-js|camera-controls|maath|meshline|stats-gl|stats\.js|detect-gpu|tunnel-rat|hls\.js|postprocessing|n8ao|potpack|meshoptimizer|draco3d|@monogrid|glsl-noise)\//.test(id)) {
+    return 'vendor-3d';
+  }
+  // Every other package is left to the default splitting, which puts it with the routes that import it.
+  // A catch-all here once put every package in the chunk index.html loads, so the sign-in page also
+  // downloaded the PDF, date and drawer libraries that only other pages use.
+  return undefined;
+}
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Expose the build's release id to the client so Sentry.init() can tag
+  // events with the same release the sourcemaps were uploaded under.
+  define: {
+    "import.meta.env.VITE_RELEASE": JSON.stringify(
+      process.env["VERCEL_GIT_COMMIT_SHA"] ?? "dev"
+    ),
+  },
+
   plugins: [
+    {
+      name: "local-speech-api",
+      configureServer(server) {
+        const env = loadEnv(server.config.mode, server.config.root, "");
+        server.middlewares.use("/api/speech", (req, res) => { void handleSpeech(req, res, env); });
+      },
+    },
     // ─── React with SWC (fast refresh + transform) ───────────────────────
     react(),
 
@@ -83,19 +163,30 @@ export default defineConfig({
           },
         ],
         categories: ["education", "utilities"],
+        // These URLs MUST match real routes in src/App.tsx. Both previously
+        // 404'd from the installed app's home-screen menu: "/quiz" (the route
+        // is "/quizzes") and "/signs" (no such route — the road sign browser
+        // lives in the Theory page).
         shortcuts: [
           {
             name: "Theory Quiz",
             short_name: "Quiz",
             description: "Start a KPP1 theory practice quiz",
-            url: "/quiz",
+            url: "/quizzes",
+            icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
+          },
+          {
+            name: "Mock Test",
+            short_name: "Mock",
+            description: "Sit a full 50-question JPJ mock exam",
+            url: "/mock-test",
             icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
           },
           {
             name: "Road Signs",
             short_name: "Signs",
             description: "Browse Malaysian road signs",
-            url: "/signs",
+            url: "/theory",
             icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
           },
         ],
@@ -106,51 +197,131 @@ export default defineConfig({
         // Precache all JS, CSS, HTML, images, and fonts
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,eot}"],
 
+        // …except font subsets this app can never render. The UI is English
+        // and Bahasa Melayu, both pure latin, but fontsource ships cyrillic,
+        // greek and vietnamese cuts alongside. The browser already skips them
+        // at runtime via unicode-range; without this the service worker still
+        // downloads every one of them up front, on a learner's mobile data.
+        //
+        // Jalan's faces (Archivo, Barlow, Barlow Condensed) are excluded too,
+        // for a different reason: Jalan currently owns one surface, so
+        // precaching them would charge every learner ~332KB for type only the
+        // exam room uses. They are runtime-cached below instead — fetched when
+        // a Jalan route is first opened, then kept offline like any precached
+        // asset. The trade is that a learner who goes offline having never
+        // opened an exam sees the fallback stack until their first online
+        // visit; the text is fully legible, just not in Barlow.
+        //
+        // When the last route converts, delete this line and precache them:
+        // at that point they replace Inter/JetBrains rather than adding to it.
+        globIgnores: [
+          "**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2",
+          "**/{archivo,barlow}-*.woff2",
+          // The simulator's code is runtime-cached, never precached (see "Simulator" below).
+          "**/vendor-3d-*.js",
+          "**/Simulation3DView-*.js",
+        ],
+
         // Runtime caching strategies
         runtimeCaching: [
-          // Google Fonts stylesheets — StaleWhileRevalidate
+          // No Google Fonts rules: the fonts are self-hosted now, so they are
+          // covered by the precache above like any other same-origin asset.
+
+          // ─── Simulator ─────────────────────────────────────────────────
+          //
+          // Never precached: about 8 MB a learner may never use. Fetched the
+          // first time the simulator opens, then kept, so it also runs offline.
+          // Its code is content-hashed, so CacheFirst. The car and textures
+          // keep their URLs between builds, so StaleWhileRevalidate: the cached
+          // copy now, a fresh one for next time. Workbox's runtime cache sets
+          // no size cap, so the largest file (the Medium-tier body, 4.3 MB)
+          // caches like any other.
           {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "google-fonts-stylesheets",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-            },
-          },
-          // Google Fonts files — CacheFirst (immutable)
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            urlPattern: /\/assets\/(vendor-3d|Simulation3DView)-[\w-]+\.js$/,
             handler: "CacheFirst",
             options: {
-              cacheName: "google-fonts-webfonts",
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
+              cacheName: "sim-code",
+              expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [200] },
             },
           },
-          // Supabase API — NetworkFirst with fallback
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+            urlPattern: /\/sim\/.+\.(?:glb|webp|json|mp3|wav)$/,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "sim-assets",
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+
+          // ─── Jalan type ────────────────────────────────────────────────
+          //
+          // Deliberately not precached (see globIgnores). A font file is
+          // immutable and content-hashed, so CacheFirst is correct: fetch once
+          // on the first Jalan route a learner opens, then serve from cache
+          // forever, including offline.
+          {
+            urlPattern: /\/assets\/(archivo|barlow)[^/]*\.woff2$/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "jalan-type",
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+
+          // ─── Supabase ──────────────────────────────────────────────────
+          //
+          // This used to be a single catch-all rule matching every
+          // *.supabase.co request, which put AUTHENTICATED REST responses —
+          // one user's quiz results, mock scores and colour-vision results —
+          // into a shared, unpartitioned cache. signOut() never cleared it, so
+          // on a shared device (a driving school's tutorial PC, a family
+          // tablet) the next person to sign in could be served the previous
+          // user's data for the whole 5-minute TTL.
+          //
+          // Only two classes of Supabase response are cached now, and neither
+          // is user-scoped.
+
+          // 1. The question bank. Identical for every user, so a shared cache
+          //    cannot leak anything between accounts — and caching it is what
+          //    makes offline study actually work.
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/kpp_questions/i,
             handler: "NetworkFirst",
             options: {
-              cacheName: "supabase-api",
+              cacheName: "supabase-questions",
               networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 300, // 5 minutes
+                maxAgeSeconds: 60 * 60 * 24, // 1 day — question bank is static
               },
               cacheableResponse: {
                 statuses: [200],
               },
             },
           },
+
+          // 2. Public storage objects (road-sign and Ishihara plate images).
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\//i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage",
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [200],
+              },
+            },
+          },
+
+          // Everything else on supabase.co — user result tables, profiles and
+          // all of /auth/v1/ — is deliberately NOT cached. Do not add a
+          // catch-all rule back.
           // Static assets — CacheFirst
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/i,
@@ -173,10 +344,9 @@ export default defineConfig({
         skipWaiting: false,
         clientsClaim: false,
 
-        // The 3D simulation vendor chunk (Three.js + Rapier physics) exceeds
-        // the default 2 MiB precache limit. Raise it to 6 MiB so the build
-        // succeeds. The large chunk is loaded lazily via dynamic import so
-        // it does NOT block the initial page paint.
+        // The precache limit. The 3D vendor chunk that once needed it is now
+        // runtime-cached instead (see "Simulator" above); the limit stays as
+        // headroom for the largest precached chunk.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
       },
 
@@ -185,6 +355,33 @@ export default defineConfig({
         type: "module",
       },
     }),
+
+    // ─── Sentry sourcemap upload ─────────────────────────────────────────
+    //
+    // Without this, `sourcemap: "hidden"` below produced the worst of both
+    // worlds: .map files were written into dist/ and served publicly by
+    // Vercel (anyone guessing /assets/index-<hash>.js.map recovered the full
+    // commented TypeScript source), while Sentry had no maps at all, so every
+    // stack trace was unreadable minified noise.
+    //
+    // `filesToDeleteAfterUpload` removes the maps from the deployed output
+    // once Sentry has them — traces stay readable, source stops shipping.
+    ...(sentryUploadEnabled
+      ? [
+          sentryVitePlugin({
+            org: SENTRY_ORG,
+            project: SENTRY_PROJECT,
+            authToken: SENTRY_AUTH_TOKEN,
+            sourcemaps: {
+              filesToDeleteAfterUpload: ["dist/**/*.map"],
+            },
+            release: {
+              name: process.env["VERCEL_GIT_COMMIT_SHA"],
+            },
+            telemetry: false,
+          }),
+        ]
+      : []),
   ],
 
   // ─── Path aliases ─────────────────────────────────────────────────────
@@ -204,60 +401,28 @@ export default defineConfig({
   // ─── Build optimisation — manual chunk splitting ───────────────────────
   build: {
     target: "esnext",
-    sourcemap: "hidden",
+
+    // Only generate sourcemaps when Sentry is configured to consume them.
+    //
+    // "hidden" omits the //# sourceMappingURL comment but STILL writes .map
+    // files into dist/, which Vercel serves — anyone guessing
+    // /assets/index-<hash>.js.map recovered the full commented TypeScript
+    // source. When Sentry is configured the plugin uploads then deletes them
+    // (filesToDeleteAfterUpload above); when it is not, emitting them at all
+    // is pure downside, so don't.
+    sourcemap: sentryUploadEnabled ? "hidden" : false,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Phaser game engine — large, isolated
-          if (id.includes("node_modules/phaser")) {
-            return "vendor-phaser";
-          }
-          // Framer Motion chunk
-          if (id.includes("framer-motion") || id.includes("motion")) {
-            return "vendor-motion";
-          }
-          // PDF generation (only needed on specific pages)
-          if (
-            id.includes('jspdf') || 
-            id.includes('jspdf-autotable') || 
-            id.includes('html2canvas') || 
-            id.includes('canvg') || 
-            id.includes('dompurify') ||
-            id.includes('pako') || 
-            id.includes('fflate') || 
-            id.includes('fast-png') || 
-            id.includes('iobuffer')
-          ) {
-            return 'vendor-pdf';
-          }
-          // Charts (only needed on progress/analytics pages)
-          if (
-            id.includes('recharts') || 
-            id.includes('d3-') || 
-            id.includes('decimal.js')
-          ) {
-            return 'vendor-charts';
-          }
-          // Radix UI primitives (large, can be deferred)
-          if (id.includes('@radix-ui')) {
-            return 'radix';
-          }
-          // Supabase client (needed for auth but can be separate)
-          if (id.includes('@supabase') || id.includes('phoenix') || id.includes('realtime-js')) {
-            return 'supabase';
-          }
-          // React core (keep together, needed immediately)
-          if (id.includes('react-dom') || id.includes('react-router') || id.includes('@remix-run/router')) {
-            return 'vendor-react';
-          }
-          // TanStack Query
-          if (id.includes('@tanstack')) {
-            return 'vendor-query';
-          }
-          // Other node_modules
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        // Every package the first page needs ($initial: imported statically from the entry), with Vite's helper
+        // for lazy routes, goes in one "vendor" chunk, and this group runs first. Rolldown's groups also take in
+        // what their modules import, so a later group could otherwise carry off a module every page needs: the
+        // 3D stack took the helper that way, then zustand, and each time index.html preloaded the whole stack,
+        // about 3 MB, on every page. The named stacks below get what only other routes use.
+        codeSplitting: {
+          groups: [
+            { name: "vendor", test: /node_modules|vite\/preload-helper/, tags: ["$initial"], priority: 2 },
+            { name: vendorChunk, priority: 1 },
+          ],
         },
       },
     },

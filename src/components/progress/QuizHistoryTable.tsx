@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { enUS, ms } from "date-fns/locale";
-import { CaretUp, CaretDown, CaretLeft, CaretRight } from "phosphor-react";
+import { CaretUp, CaretDown, CaretLeft, CaretRight } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 

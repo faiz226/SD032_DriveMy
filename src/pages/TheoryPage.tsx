@@ -1,16 +1,17 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Star, ArrowsClockwise as Repeat, MagnifyingGlass as Search, CaretRight as ChevronRight } from 'phosphor-react';
+import { Star, ArrowsClockwise as Repeat, MagnifyingGlass as Search, CaretRight as ChevronRight } from '@/components/ui/icons';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuthStore } from '@/stores/authStore';
-import { useUpdateTheoryProgress } from '@/hooks/useProgress';
+import { useTheoryProgress, useUpdateTheoryProgress } from '@/hooks/useProgress';
 import { toast } from 'sonner';
 
-// ── Regulatory / Prohibitory – vector renders, confirmed correct by browser audit
+// ── Regulatory / Prohibitory - vector renders, confirmed correct by browser audit
 import imgStop        from '@/assets/signs/svg/stop.png';          
 import imgNoUTurnAsset from '@/assets/signs/svg/no-entry.png';       // Actually No U-Turn
 import imgHeightLimit  from '@/assets/signs/svg/no-uturn.png';       // Actually 5.0m Height Limit
@@ -21,10 +22,10 @@ import imgNoParkingAsset from '@/assets/signs/svg/no-stopping.png';  // Actually
 import imgNoHorn      from '@/assets/signs/svg/no-horn.png';        
 import imgSpeed60     from '@/assets/signs/svg/speed-60.png';
 
-// ── Warning Signs – confirmed correct by browser audit
-import imgSlippery   from '@/assets/signs/real/slippery.jpg';            // W512 – yellow diamond, skidding car
-import imgJunction   from '@/assets/signs/real/junction.jpg';            // W502 – yellow diamond, T-junction
-import imgSchool     from '@/assets/signs/real/school-zone.jpg';         // W523 – yellow diamond, schoolchildren
+// ── Warning Signs - confirmed correct by browser audit
+import imgSlippery   from '@/assets/signs/real/slippery.jpg';            // W512 - yellow diamond, skidding car
+import imgJunction   from '@/assets/signs/real/junction.jpg';            // W502 - yellow diamond, T-junction
+import imgSchool     from '@/assets/signs/real/school-zone.jpg';         // W523 - yellow diamond, schoolchildren
 
 // ── Informational (confirmed correct by browser)
 import imgInfo from '@/assets/signs/real/info.jpg';  // blue rectangular sign with 'H' (Hospital)
@@ -33,7 +34,7 @@ import imgInfo from '@/assets/signs/real/info.jpg';  // blue rectangular sign wi
 // ROAD SIGNS DATA  (every image verified against caption by browser audit)
 // ─────────────────────────────────────────────────────────────────────────────
 const roadSigns = [
-  // ── Regulatory (Prohibitory) – all use svg/ vector PNGs confirmed correct
+  // ── Regulatory (Prohibitory) - all use svg/ vector PNGs confirmed correct
   { id: 'stop',        name: 'Stop',               nameMs: 'Berhenti',                desc: 'Come to a complete stop before the stop line. Do not proceed until safe.',           descMs: 'Berhenti sepenuhnya sebelum garisan henti. Jangan maju sehingga selamat.',    type: 'Regulatory', img: imgStop },
   { id: 'no-uturn',    name: 'No U-Turn',           nameMs: 'Dilarang Pusingan U',     desc: 'Making a U-turn is strictly prohibited at this location.',                          descMs: 'Pusingan U dilarang di lokasi ini.',                                           type: 'Regulatory', img: imgNoUTurnAsset },
   { id: 'height-limit',name: 'Height Limit 5.0m',   nameMs: 'Had Ketinggian 5.0m',     desc: 'Vehicles exceeding 5.0 metres in height are prohibited from passing.',              descMs: 'Kenderaan yang melebihi ketinggian 5.0 meter dilarang lalu.',                  type: 'Regulatory', img: imgHeightLimit },
@@ -44,7 +45,7 @@ const roadSigns = [
   { id: 'no-horn',     name: 'No Sounding of Horn', nameMs: 'Dilarang Membunyikan Hon', desc: 'Sounding vehicle horn is prohibited. Common near hospitals and schools.',         descMs: 'Membunyikan hon kenderaan dilarang. Biasa di kawasan hospital dan sekolah.',   type: 'Regulatory', img: imgNoHorn },
   { id: 'speed-60',    name: 'Speed Limit 60',      nameMs: 'Had Laju 60',             desc: 'Maximum speed is 60 km/h. An offence under Section 59 of Road Transport Act 1987.', descMs: 'Laju maksimum ialah 60 km/j. Kesalahan di bawah Seksyen 59 Akta Pengangkutan Jalan 1987.', type: 'Regulatory', img: imgSpeed60 },
 
-  // ── Warning – yellow diamond signs (browser-confirmed correct assets only)
+  // ── Warning - yellow diamond signs (browser-confirmed correct assets only)
   { id: 'slippery',    name: 'Slippery Road',       nameMs: 'Jalan Licin',             desc: 'Road surface may be slippery. Reduce speed and increase following distance.',       descMs: 'Permukaan jalan mungkin licin. Kurangkan laju dan tingkatkan jarak ikutan.',   type: 'Warning',    img: imgSlippery },
   { id: 'junction',    name: 'T-Junction Ahead',    nameMs: 'Simpang T di Hadapan',    desc: 'T-junction ahead. Be ready to yield or stop for crossing traffic.',               descMs: 'Simpang T di hadapan. Sedia untuk beri laluan atau berhenti bagi trafik.',     type: 'Warning',    img: imgJunction },
   { id: 'school',      name: 'School Zone',         nameMs: 'Zon Sekolah',             desc: 'School zone. Limit 30 km/h during school hours. Watch for children crossing.',    descMs: 'Zon sekolah. Had laju 30 km/j semasa waktu sekolah. Awasi kanak-kanak.',       type: 'Warning',    img: imgSchool },
@@ -61,13 +62,13 @@ const roadSigns = [
 const trafficRules = [
   {
     id: 'speed-limits', title: 'Speed Limits', titleMs: 'Had Laju',
-    content: 'Expressway/Highway: 110 km/h max. Federal roads: 90 km/h. State roads: 80 km/h. Built-up areas: 50–60 km/h. School zones: 30 km/h. Exceeding limits is a compound offence under Section 59 of the Road Transport Act 1987.',
-    contentMs: 'Lebuh raya: 110 km/j. Jalan persekutuan: 90 km/j. Jalan negeri: 80 km/j. Kawasan bandar: 50–60 km/j. Zon sekolah: 30 km/j. Melebihi had laju adalah kesalahan kompaun di bawah Seksyen 59 Akta Pengangkutan Jalan 1987.',
+    content: 'Expressway/Highway: 110 km/h max. Federal roads: 90 km/h. State roads: 80 km/h. Built-up areas: 50-60 km/h. School zones: 30 km/h. Exceeding limits is a compound offence under Section 59 of the Road Transport Act 1987.',
+    contentMs: 'Lebuh raya: 110 km/j. Jalan persekutuan: 90 km/j. Jalan negeri: 80 km/j. Kawasan bandar: 50-60 km/j. Zon sekolah: 30 km/j. Melebihi had laju adalah kesalahan kompaun di bawah Seksyen 59 Akta Pengangkutan Jalan 1987.',
   },
   {
     id: 'right-of-way', title: 'Right of Way', titleMs: 'Hak Laluan',
-    content: 'Vehicles on the main road always have priority. Vehicles entering from a side road must yield. At a roundabout, vehicles already circulating have right of way. Emergency vehicles (ambulance, fire engine, police) always have priority — pull left and stop.',
-    contentMs: 'Kenderaan di jalan utama sentiasa mendapat keutamaan. Kenderaan masuk dari jalan sisi mesti beri laluan. Di bulatan, kenderaan yang sedang beredar mempunyai keutamaan. Kenderaan kecemasan (ambulans, bomba, polis) sentiasa mendapat keutamaan — ke kiri dan berhenti.',
+    content: 'Vehicles on the main road always have priority. Vehicles entering from a side road must yield. At a roundabout, vehicles already circulating have right of way. Emergency vehicles (ambulance, fire engine, police) always have priority: pull left and stop.',
+    contentMs: 'Kenderaan di jalan utama sentiasa mendapat keutamaan. Kenderaan masuk dari jalan sisi mesti beri laluan. Di bulatan, kenderaan yang sedang beredar mempunyai keutamaan. Kenderaan kecemasan (ambulans, bomba, polis) sentiasa mendapat keutamaan: ke kiri dan berhenti.',
   },
   {
     id: 'overtaking', title: 'Rules on Overtaking', titleMs: 'Peraturan Memotong',
@@ -81,18 +82,18 @@ const trafficRules = [
   },
   {
     id: 'traffic-lights', title: 'Traffic Light Rules', titleMs: 'Peraturan Lampu Isyarat',
-    content: 'RED: Stop completely behind the stop line. AMBER: Stop if safe; clear the junction only if already crossing. GREEN: Proceed if clear — always check for red-light runners. Flashing amber: proceed with caution. Flashing red: treat as a stop sign.',
+    content: 'RED: Stop completely behind the stop line. AMBER: Stop if safe; clear the junction only if already crossing. GREEN: Proceed if clear. Always check for red-light runners. Flashing amber: proceed with caution. Flashing red: treat as a stop sign.',
     contentMs: 'MERAH: Berhenti sepenuhnya di belakang garisan henti. AMBER: Berhenti jika selamat; lepasi persimpangan hanya jika sudah melintas. HIJAU: Maju jika laluan clear. Amber berkedip: maju dengan berhati-hati. Merah berkedip: anggap seperti papan tanda berhenti.',
   },
   {
     id: 'pedestrian-rules', title: 'Pedestrian & Crossing Rules', titleMs: 'Peraturan Pejalan Kaki & Lintasan',
-    content: 'You MUST give way to pedestrians at zebra crossings — failure is an offence (RM300 fine). At pelican/toucan crossings, stop on red. Do not park within 15 m of a pedestrian crossing. Reduce to 30 km/h near schools during school hours.',
-    contentMs: 'Anda WAJIB memberi laluan kepada pejalan kaki di lintasan zebra — kegagalan adalah kesalahan (denda RM300). Di lintasan pelikan/toucan, berhenti apabila merah. Jangan letak kereta dalam 15 m dari lintasan pejalan kaki.',
+    content: 'You MUST give way to pedestrians at zebra crossings; failure is an offence (RM300 fine). At pelican/toucan crossings, stop on red. Do not park within 15 m of a pedestrian crossing. Reduce to 30 km/h near schools during school hours.',
+    contentMs: 'Anda WAJIB memberi laluan kepada pejalan kaki di lintasan zebra; kegagalan adalah kesalahan (denda RM300). Di lintasan pelikan/toucan, berhenti apabila merah. Jangan letak kereta dalam 15 m dari lintasan pejalan kaki.',
   },
   {
     id: 'seat-belt', title: 'Seat Belt & Child Restraints', titleMs: 'Tali Pinggang & Tempat Duduk Kanak-kanak',
-    content: 'All occupants must wear seat belts. Children under 1 year OR below 9 kg must use a rear-facing child seat. Children 1–4 years (9–18 kg) use a forward-facing child seat. Children 4–11 years (18–36 kg) must use a booster seat. Fine: RM300–RM2,000.',
-    contentMs: 'Semua penumpang wajib memakai tali pinggang keselamatan. Kanak-kanak bawah 1 tahun atau bawah 9 kg mesti menggunakan tempat duduk bayi menghadap belakang. Denda: RM300–RM2,000.',
+    content: 'All occupants must wear seat belts. Children under 1 year OR below 9 kg must use a rear-facing child seat. Children 1-4 years (9-18 kg) use a forward-facing child seat. Children 4-11 years (18-36 kg) must use a booster seat. Fine: RM300-RM2,000.',
+    contentMs: 'Semua penumpang wajib memakai tali pinggang keselamatan. Kanak-kanak bawah 1 tahun atau bawah 9 kg mesti menggunakan tempat duduk bayi menghadap belakang. Denda: RM300-RM2,000.',
   },
   {
     id: 'roundabout-rules', title: 'Roundabout Rules', titleMs: 'Peraturan Bulatan',
@@ -101,13 +102,13 @@ const trafficRules = [
   },
   {
     id: 'mobile-phone', title: 'Mobile Phone Use', titleMs: 'Penggunaan Telefon Bimbit',
-    content: 'Using a handheld mobile phone while driving is illegal under Section 79B of Road Transport Act 1987. Fine: RM1,000–RM2,000 (1st offence) or up to 6 months imprisonment. Hands-free kits are permitted but still increase cognitive distraction.',
-    contentMs: 'Menggunakan telefon bimbit genggam semasa memandu adalah haram di bawah Seksyen 79B Akta Pengangkutan Jalan 1987. Denda: RM1,000–RM2,000 (kesalahan pertama) atau penjara sehingga 6 bulan.',
+    content: 'Using a handheld mobile phone while driving is illegal under Section 79B of Road Transport Act 1987. Fine: RM1,000-RM2,000 (1st offence) or up to 6 months imprisonment. Hands-free kits are permitted but still increase cognitive distraction.',
+    contentMs: 'Menggunakan telefon bimbit genggam semasa memandu adalah haram di bawah Seksyen 79B Akta Pengangkutan Jalan 1987. Denda: RM1,000-RM2,000 (kesalahan pertama) atau penjara sehingga 6 bulan.',
   },
   {
     id: 'drink-driving', title: 'Drink & Drug Driving', titleMs: 'Memandu Dalam Keadaan Mabuk',
-    content: 'Legal blood alcohol limit in Malaysia: 80 mg/100 mL (same as UK). Zero-tolerance for drug impairment. Penalty: RM1,000–RM6,000 fine AND/OR up to 12 months imprisonment. Licence suspension mandatory on conviction. Second offence: RM2,000–RM10,000 and/or 2 years jail.',
-    contentMs: 'Had alkohol dalam darah di Malaysia: 80 mg/100 mL. Tiada toleransi untuk penggunaan dadah. Hukuman: Denda RM1,000–RM6,000 DAN/ATAU penjara hingga 12 bulan. Lesen digantung secara mandatori.',
+    content: 'Legal blood alcohol limit in Malaysia: 80 mg/100 mL (same as UK). Zero-tolerance for drug impairment. Penalty: RM1,000-RM6,000 fine AND/OR up to 12 months imprisonment. Licence suspension mandatory on conviction. Second offence: RM2,000-RM10,000 and/or 2 years jail.',
+    contentMs: 'Had alkohol dalam darah di Malaysia: 80 mg/100 mL. Tiada toleransi untuk penggunaan dadah. Hukuman: Denda RM1,000-RM6,000 DAN/ATAU penjara hingga 12 bulan. Lesen digantung secara mandatori.',
   },
 ];
 
@@ -117,32 +118,32 @@ const trafficRules = [
 const safetyPrinciples = [
   {
     id: 'defensive', title: 'Defensive Driving', titleMs: 'Pemanduan Defensif',
-    content: 'Anticipate hazards before they happen. Scan 12–15 seconds ahead on highways, 4–6 seconds in town. Maintain a 2-second gap (3 seconds in rain). Never assume other drivers will act correctly.',
-    contentMs: 'Jangka bahaya sebelum berlaku. Imbas 12–15 saat ke hadapan di lebuh raya, 4–6 saat di bandar. Kekalkan jarak 2 saat (3 saat dalam hujan). Jangan anggap pemandu lain akan bertindak betul.',
+    content: 'Anticipate hazards before they happen. Scan 12-15 seconds ahead on highways, 4-6 seconds in town. Maintain a 2-second gap (3 seconds in rain). Never assume other drivers will act correctly.',
+    contentMs: 'Jangka bahaya sebelum berlaku. Imbas 12-15 saat ke hadapan di lebuh raya, 4-6 saat di bandar. Kekalkan jarak 2 saat (3 saat dalam hujan). Jangan anggap pemandu lain akan bertindak betul.',
   },
   {
     id: 'mirrors', title: 'Mirror & Blind Spot Checks', titleMs: 'Semakan Cermin & Titik Buta',
-    content: 'Check mirrors every 5–8 seconds. Before changing lanes: signal → check mirrors → check blind spot over shoulder → move. Adjust mirrors so you can see the rear quarters of your car. Convex mirrors show wider view but objects are closer than they appear.',
-    contentMs: 'Semak cermin setiap 5–8 saat. Sebelum tukar lorong: isyarat → semak cermin → semak titik buta → bergerak. Laraskan cermin supaya anda boleh melihat bahagian belakang sisi kereta anda.',
+    content: 'Check mirrors every 5-8 seconds. Before changing lanes: signal → check mirrors → check blind spot over shoulder → move. Adjust mirrors so you can see the rear quarters of your car. Convex mirrors show wider view but objects are closer than they appear.',
+    contentMs: 'Semak cermin setiap 5-8 saat. Sebelum tukar lorong: isyarat → semak cermin → semak titik buta → bergerak. Laraskan cermin supaya anda boleh melihat bahagian belakang sisi kereta anda.',
   },
   {
     id: 'fatigue', title: 'Fatigue & Drowsy Driving', titleMs: 'Keletihan & Mengantuk Semasa Memandu',
-    content: 'Drowsy driving kills. On long journeys, rest every 2 hours or 200 km (KPM guideline). Take a 15–20 minute nap at a Rest & Service Area if sleepy. Signs of fatigue: yawning, blurred vision, drifting lanes, missing exits. Never rely on coffee alone.',
-    contentMs: 'Mengantuk membunuh. Dalam perjalanan jauh, rehat setiap 2 jam atau 200 km (garis panduan KPM). Tidur 15–20 minit di Kawasan Rehat & Servis jika mengantuk. Tanda keletihan: menguap, penglihatan kabur, tersasar lorong.',
+    content: 'Drowsy driving kills. On long journeys, rest every 2 hours or 200 km (KPM guideline). Take a 15-20 minute nap at a Rest & Service Area if sleepy. Signs of fatigue: yawning, blurred vision, drifting lanes, missing exits. Never rely on coffee alone.',
+    contentMs: 'Mengantuk membunuh. Dalam perjalanan jauh, rehat setiap 2 jam atau 200 km (garis panduan KPM). Tidur 15-20 minit di Kawasan Rehat & Servis jika mengantuk. Tanda keletihan: menguap, penglihatan kabur, tersasar lorong.',
   },
   {
     id: 'night', title: 'Night Driving', titleMs: 'Pemanduan Malam',
-    content: 'Use headlights from sunset to sunrise (approximately 7 pm–7 am). Dip (low beam) for oncoming traffic within 150 m. Never flash high-beams as a weapon. Reduce speed by 20–30% at night. Keep windscreen clean to reduce glare.',
-    contentMs: 'Gunakan lampu utama dari matahari terbenam hingga matahari terbit (lebih kurang 7 malam–7 pagi). Rendahkan lampu untuk trafik bertentangan dalam 150 m. Kurangkan laju 20–30% pada waktu malam.',
+    content: 'Use headlights from sunset to sunrise (approximately 7 pm-7 am). Dip (low beam) for oncoming traffic within 150 m. Never flash high-beams as a weapon. Reduce speed by 20-30% at night. Keep windscreen clean to reduce glare.',
+    contentMs: 'Gunakan lampu utama dari matahari terbenam hingga matahari terbit (lebih kurang 7 malam-7 pagi). Rendahkan lampu untuk trafik bertentangan dalam 150 m. Kurangkan laju 20-30% pada waktu malam.',
   },
   {
     id: 'rain', title: 'Driving in Rain', titleMs: 'Memandu Dalam Hujan',
-    content: 'Reduce speed by at least 30% in heavy rain. Turn on headlights (not hazard lights). Increase following distance to 4 seconds. Avoid sudden braking — brake gently early. Watch for flash floods on low-lying roads. If aquaplaning: release accelerator gently, do NOT brake hard.',
+    content: 'Reduce speed by at least 30% in heavy rain. Turn on headlights (not hazard lights). Increase following distance to 4 seconds. Avoid sudden braking; brake gently and early. Watch for flash floods on low-lying roads. If aquaplaning: release accelerator gently, do NOT brake hard.',
     contentMs: 'Kurangkan laju sekurang-kurangnya 30% dalam hujan lebat. Hidupkan lampu utama (bukan lampu hazard). Tingkatkan jarak ikutan kepada 4 saat. Elakkan brek mengejut. Jika aquaplaning: lepaskan pemecut perlahan-lahan, JANGAN brek kuat.',
   },
   {
     id: 'breakdown', title: 'Breakdowns & Emergencies', titleMs: 'Kerosakan & Kecemasan',
-    content: 'If your vehicle breaks down: activate hazard lights immediately. Move off the road if possible. Place warning triangle 45 m behind the vehicle (highway: 100 m). Stay behind the barrier — never stand behind the car on a highway. Call PLUS/LLM/1800-88-0000 for highway assistance.',
+    content: 'If your vehicle breaks down: activate hazard lights immediately. Move off the road if possible. Place warning triangle 45 m behind the vehicle (highway: 100 m). Stay behind the barrier; never stand behind the car on a highway. Call PLUS/LLM/1800-88-0000 for highway assistance.',
     contentMs: 'Jika kenderaan rosak: hidupkan lampu hazard dengan segera. Pindahkan ke tepi jalan jika boleh. Letakkan segi tiga amaran 45 m di belakang (lebuh raya: 100 m). Hubungi PLUS/LLM/1800-88-0000 untuk bantuan lebuh raya.',
   },
   {
@@ -163,28 +164,18 @@ export function TheoryPage() {
   const { language } = useLanguage();
   const lang = language === 'en' ? 'en' : 'bm';
   const { user } = useAuthStore();
-  const { mutate: markCompleted } = useUpdateTheoryProgress();
+  const completion = useUpdateTheoryProgress();
+  const progress = useTheoryProgress(user?.id ?? "");
   const [learned, setLearned] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState('signs');
 
-  // Mark the visited tab as a completed theory module in Supabase
-  const handleTabChange = useCallback((tab: string) => {
+  const moduleCompleted = progress.data?.some(row => row.module_id === `theory-${activeTab}` && row.completed);
+  const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    if (!user?.id) return;
-    markCompleted({
-      user_id: user.id,
-      module_id: `theory-${tab}`,
-      completed: true,
-      completed_at: new Date().toISOString(),
-    });
-  }, [user?.id, markCompleted]);
-
-  // Mark the default tab ("signs") as completed when the page first mounts
-  // onValueChange only fires when switching tabs, so the initial tab needs this.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { handleTabChange('signs'); }, []);
+    completion.reset();
+  };
 
   // Toggle learned state for a sign (star button)
   const toggleLearned = (e: React.MouseEvent, id: string) => {
@@ -192,7 +183,7 @@ export function TheoryPage() {
     setLearned((prev) => {
       const nowLearned = !prev[id];
       if (nowLearned) {
-        toast.success(lang === 'en' ? 'Marked as learned! ⭐' : 'Ditandai sebagai dipelajari! ⭐', { duration: 1500 });
+        toast.success(lang === 'en' ? 'Marked as learned.' : 'Ditandai sebagai dipelajari.', { duration: 1500 });
       }
       return { ...prev, [id]: nowLearned };
     });
@@ -201,10 +192,6 @@ export function TheoryPage() {
   const toggleFlip = (id: string) => {
     setFlipped((prev) => {
       const nowFlipped = !prev[id];
-      // Auto-mark as learned on first flip to reveal the answer
-      if (nowFlipped && !learned[id]) {
-        setLearned((l) => ({ ...l, [id]: true }));
-      }
       return { ...prev, [id]: nowFlipped };
     });
   };
@@ -218,14 +205,12 @@ export function TheoryPage() {
 
   const categories = ['Regulatory', 'Warning', 'Informational'];
 
-  const getCategoryColor = (type: string) => {
-    switch (type) {
-      case 'Regulatory': return 'bg-destructive/10 text-destructive border-destructive/20';
-      case 'Warning': return 'bg-warning/10 border-warning/20 text-yellow-700';
-      case 'Informational': return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-      default: return 'bg-muted text-foreground border-border';
-    }
-  };
+  const categoryLabels: Record<string, string> = lang === "en"
+    ? { Regulatory: "Regulatory signs", Warning: "Warning signs", Informational: "Information signs" }
+    : { Regulatory: "Tanda peraturan", Warning: "Tanda amaran", Informational: "Tanda maklumat" };
+  const learnedLabel = (done: boolean) => lang === "en"
+    ? (done ? "Mark as not learned" : "Mark as learned")
+    : (done ? "Tandakan belum dipelajari" : "Tandakan sudah dipelajari");
 
   return (
     <div className="max-w-6xl mx-auto pb-24">
@@ -233,8 +218,8 @@ export function TheoryPage() {
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b shadow-sm pt-4 px-4 md:px-8 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold font-heading">Theory Learning</h1>
-            <p className="text-sm text-muted-foreground">Interactive road rules and signs guide.</p>
+            <h1 className="text-2xl font-bold font-heading">{lang === "en" ? "Theory learning" : "Pembelajaran teori"}</h1>
+            <p className="text-sm text-muted-foreground">{lang === "en" ? "Review road rules and signs." : "Ulang kaji peraturan dan tanda jalan."}</p>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -244,6 +229,7 @@ export function TheoryPage() {
                 type="text"
                 placeholder={lang === 'en' ? "Search topics..." : "Cari topik..."}
                 className="w-full h-10 pl-9 pr-4 rounded-xl border bg-muted/40 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label={lang === "en" ? "Search learning topics" : "Cari topik pembelajaran"}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -253,6 +239,7 @@ export function TheoryPage() {
       </div>
 
       <div className="px-4 md:px-8 mt-6">
+        {search && !(activeTab === "signs" ? filteredSigns.length : activeTab === "rules" ? trafficRules.filter(r => `${r.title} ${r.titleMs}`.toLowerCase().includes(search.toLowerCase())).length : safetyPrinciples.filter(p => `${p.title} ${p.titleMs}`.toLowerCase().includes(search.toLowerCase())).length) && <div role="status" className="panel p-4 mb-4"><p>{lang === "en" ? "No topics match your search." : "Tiada topik sepadan dengan carian anda."}</p><Button variant="outline" className="mt-3" onClick={() => setSearch("")}>{lang === "en" ? "Clear search" : "Kosongkan carian"}</Button></div>}
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <div className="sticky top-[73px] sm:top-[73px] z-10 bg-background/95 backdrop-blur py-2 -mx-4 px-4 md:mx-0 md:px-0">
             <TabsList className="w-full sm:w-auto overflow-x-auto justify-start inline-flex flex-nowrap hide-scrollbar">
@@ -273,8 +260,8 @@ export function TheoryPage() {
                 <div key={category} className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <h2 className="text-xl font-bold font-heading">{category} Signs</h2>
-                      <Badge className={getCategoryColor(category)} variant="outline">{categorySigns.length}</Badge>
+                      <h2 className="text-xl font-bold font-heading">{categoryLabels[category]}</h2>
+                      <Badge className="bg-muted text-foreground border-border" variant="outline">{categorySigns.length}</Badge>
                     </div>
                     {/* Progress Ring */}
                     <div className="flex items-center gap-2">
@@ -300,42 +287,46 @@ export function TheoryPage() {
                     {categorySigns.map((sign) => (
                       <div
                         key={sign.id}
+                        data-sign-card
                         className="relative min-w-[240px] w-[70vw] md:w-auto md:min-w-0 snap-center h-[280px] perspective-1000 cursor-pointer group"
-                        onClick={() => toggleFlip(sign.id)}
                       >
-                        <div className={`w-full h-full transition-transform duration-700 ease-out-quart transform-style-3d ${flipped[sign.id] ? 'rotate-y-180' : 'group-hover:-translate-y-2 group-hover:shadow-xl rounded-xl'}`}>
+                        <div className={`w-full h-full transition-transform [transition-duration:var(--motion)] [transition-timing-function:var(--ease-out)] motion-reduce:transition-none transform-style-3d ${flipped[sign.id] ? 'rotate-y-180' : ''}`}>
                           {/* Front */}
-                          <Card className="rounded-xl border-border/60 text-card-foreground duration-300 hover:shadow-lg absolute inset-0 backface-hidden flex flex-col items-center justify-center bg-card border hover:border-primary/50 transition-colors shadow-sm overflow-hidden">
+                          <Card inert={!!flipped[sign.id]} aria-hidden={!!flipped[sign.id]} className="rounded-xl border-border/60 text-card-foreground duration-300 hover:shadow-lg absolute inset-0 backface-hidden flex flex-col items-center justify-center bg-card border hover:border-primary/50 transition-colors shadow-sm overflow-hidden">
                             <button
                               onClick={(e) => toggleLearned(e, sign.id)}
                               className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center hover:bg-muted transition-colors hover:scale-110 active:scale-95 duration-200"
-                              aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
+                              aria-label={learnedLabel(!!learned[sign.id])}
                             >
-                              <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-muted-foreground hover:text-yellow-400'}`} aria-hidden="true" />
+                              <Star className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-brand text-brand-ink scale-110' : 'text-muted-foreground hover:text-brand-ink'}`} aria-hidden="true" />
                             </button>
                             <div className="w-full flex-1 flex items-center justify-center p-6 bg-muted/10 transition-colors duration-300 group-hover:bg-muted/30">
-                              <img src={sign.img} alt={sign.name} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-500 ease-out-back" loading="lazy" />
+                              <img src={sign.img} alt={lang === 'en' ? sign.name : sign.nameMs} className="max-w-[130px] max-h-[130px] object-contain drop-shadow-md transition-transform duration-500 ease-out-back" loading="lazy" />
                             </div>
-                            <div className="w-full p-4 border-t bg-background/95 backdrop-blur flex items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors duration-300">
+                            <button type="button" onClick={event => {
+                              const card = event.currentTarget.closest('[data-sign-card]');
+                              toggleFlip(sign.id);
+                              requestAnimationFrame(() => card?.querySelector<HTMLButtonElement>('button[data-flip]:not([inert] button)')?.focus());
+                            }} data-flip className="w-full p-4 border-t bg-background/95 backdrop-blur flex items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors duration-300">
                               <span className="text-sm font-semibold text-primary">{lang === 'en' ? 'Tap to reveal' : 'Ketik untuk jawapan'}</span>
-                              <Repeat className="w-4 h-4 text-primary group-hover:rotate-180 transition-transform duration-500" aria-hidden="true" />
-                            </div>
+                              <Repeat className="w-4 h-4 text-primary transition-transform duration-500" aria-hidden="true" />
+                            </button>
                           </Card>
 
                           {/* Back face — star marks as learned */}
-                          <Card className="rounded-xl border border-border/60 transition-all duration-300 hover:shadow-lg absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-primary text-primary-foreground border-none p-5 shadow-lg">
+                          <Card inert={!flipped[sign.id]} aria-hidden={!flipped[sign.id]} className="rounded-xl border border-border/60 transition-all duration-300 hover:shadow-lg absolute inset-0 backface-hidden rotate-y-180 flex flex-col bg-primary text-primary-foreground border-none p-5 shadow-lg">
                             <div className="flex items-center justify-between mb-4">
                               <Badge variant="secondary" className="bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-none transition-colors">
-                                {category}
+                                {categoryLabels[category]}
                               </Badge>
                               {/* Star on back face: tap to toggle learned */}
                               <button
                                 onClick={(e) => toggleLearned(e, sign.id)}
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
-                                aria-label={learned[sign.id] ? 'Mark as not learned' : 'Mark as learned'}
+                                aria-label={learnedLabel(!!learned[sign.id])}
                               >
                                 <Star
-                                  className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-yellow-300 text-yellow-300 scale-110' : 'text-primary-foreground/60 hover:text-yellow-300'}`}
+                                  className={`w-4 h-4 transition-all duration-300 ${learned[sign.id] ? 'fill-brand text-brand-ink scale-110' : 'text-primary-foreground/60 hover:text-brand-ink'}`}
                                   aria-hidden="true"
                                 />
                               </button>
@@ -344,9 +335,13 @@ export function TheoryPage() {
                             <p className="text-sm leading-relaxed text-primary-foreground/90 overflow-y-auto pr-1">
                               {lang === 'en' ? sign.desc : sign.descMs}
                             </p>
-                            <div className="mt-auto pt-4 flex items-center justify-center gap-2 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-200">
-                              <Repeat className="w-3 h-3 group-hover:-rotate-180 transition-transform duration-500" aria-hidden="true" /> {lang === 'en' ? 'Tap to flip back' : 'Ketik untuk pusing'}
-                            </div>
+                            <button type="button" onClick={event => {
+                              const card = event.currentTarget.closest('[data-sign-card]');
+                              toggleFlip(sign.id);
+                              requestAnimationFrame(() => card?.querySelector<HTMLButtonElement>('button[data-flip]:not([inert] button)')?.focus());
+                            }} data-flip className="mt-auto pt-4 flex items-center justify-center gap-2 text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground transition-colors duration-200">
+                              <Repeat className="w-3 h-3 transition-transform duration-500" aria-hidden="true" /> {lang === 'en' ? 'Tap to flip back' : 'Ketik untuk pusing'}
+                            </button>
                           </Card>
                         </div>
                       </div>
@@ -358,7 +353,7 @@ export function TheoryPage() {
                     <div>
                       <h4 className="font-heading font-bold text-base flex items-center gap-2">
                         <Star className="w-4 h-4 text-accent fill-accent" aria-hidden="true" />
-                        {lang === 'en' ? `Knowledge Check: ${category}` : `Uji Minda: ${category}`}
+                        {lang === 'en' ? `Knowledge check: ${categoryLabels[category]}` : `Uji minda: ${categoryLabels[category]}`}
                       </h4>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lang === 'en' ? 'Test your memory on these signs before moving on.' : 'Uji ingatan anda tentang papan tanda ini.'}
@@ -406,6 +401,14 @@ export function TheoryPage() {
             </div>
           </TabsContent>
         </Tabs>
+        <div className="panel mt-6 p-5 space-y-3">
+          <p>{lang === 'en' ? 'Finished reviewing this module? Save your completion when you are ready.' : 'Sudah mengulang kaji modul ini? Simpan penyiapan apabila anda bersedia.'}</p>
+          <Button disabled={!user || progress.isPending || progress.isError || moduleCompleted || completion.isPending} loading={completion.isPending} onClick={() => {
+            if (user) completion.mutate({ user_id: user.id, module_id: `theory-${activeTab}`, completed: true, completed_at: new Date().toISOString() });
+          }}>{moduleCompleted ? (lang === 'en' ? 'Module completed' : 'Modul selesai') : (lang === 'en' ? 'Mark module complete' : 'Tandakan modul selesai')}</Button>
+          {completion.isSuccess && <p role="status">{lang === 'en' ? 'Completion saved.' : 'Penyiapan disimpan.'}</p>}
+          {(progress.isError || completion.isError) && <p role="alert">{lang === 'en' ? 'Could not load or save completion. Please reload and try again.' : 'Tidak dapat memuatkan atau menyimpan penyiapan. Muat semula dan cuba lagi.'}</p>}
+        </div>
       </div>
     </div>
   );

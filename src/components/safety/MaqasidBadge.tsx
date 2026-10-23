@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/hooks/useLanguage";
-import { Shield, Users, Brain } from "phosphor-react";
+import { Shield, Users, Brain } from "@/components/ui/icons";
 
 export type MaqasidPrinciple = "nafs" | "nasl" | "aql";
 

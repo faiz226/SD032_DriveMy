@@ -45,10 +45,22 @@ graphify-out/
 supabase/.temp/
 
 # Temp files and models
+#
+# WARNING: the driving simulator loads a .glb at runtime, so this rule excludes
+# a RUNTIME DEPENDENCY from the repository — a fresh clone or a Vercel build
+# has no car model and the simulator 404s. See docs/3D_ASSETS.md before
+# changing how the model is shipped; once compressed, un-ignore it with a
+# negation such as `!public/car.glb`.
 *.glb
+# The v2 simulator's car, compressed to 4.1 MB (Low tier) and 5.2 MB (Medium): committed, as
+# docs/3D_ASSETS.md option 1 recommends.
+!public/sim/cars/**/*.glb
 mmm.md
 error_log.txt
 temp_interior.gltf
 .screenshots/
 
 
+
+# scripts/sim-perf.mjs: the performance build
+dist-perf/

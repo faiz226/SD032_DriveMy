@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "phosphor-react";
+import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "@/components/ui/icons";
 import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
@@ -16,12 +16,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ReadinessDonut } from "@/components/progress/ReadinessDonut";
 import { ManeuverScoresBar } from "@/components/progress/ManeuverScoresBar";
-import { QuizTrendLine } from "@/components/progress/QuizTrendLine";
-import { MockTrendLine } from "@/components/progress/MockTrendLine";
+import { ScoreTrendChart } from "@/components/progress/ScoreTrendChart";
 import { CategoryBreakdownBar } from "@/components/progress/CategoryBreakdownBar";
 import { QuizHistoryTable } from "@/components/progress/QuizHistoryTable";
 import { MockHistoryTable } from "@/components/progress/MockHistoryTable";
 import { SimHistoryTable } from "@/components/progress/SimHistoryTable";
+import { LoadError } from "@/components/shared/LoadError";
+import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS } from "@/lib/constants";
+
+// A trend needs two points; one attempt is listed in the history table below.
+const MIN_TREND_POINTS = 2;
 
 export function ProgressPage() {
   const { t, language } = useLanguage();
@@ -30,36 +34,50 @@ export function ProgressPage() {
   const [dateRange, setDateRange] = useState<number>(0);
   const [activeTab, setActiveTab] = useState("quizzes");
 
-  const { data: quiz, isPending: quizPending } = useQuizStats(dateRange || undefined);
-  const { data: mock, isPending: mockPending } = useMockStats(dateRange || undefined);
-  const { data: sim, isPending: simPending } = useSimStats(dateRange || undefined);
-  const { data: theory, isPending: theoryPending } = useTheoryProgress();
-  const { data: readiness, isPending: readinessPending } = useOverallReadiness();
+  const quizQ = useQuizStats(dateRange || undefined);
+  const mockQ = useMockStats(dateRange || undefined);
+  const simQ = useSimStats(dateRange || undefined);
+  const theoryQ = useTheoryProgress();
+  const readinessQ = useOverallReadiness();
+
+  const { data: quiz, isPending: quizPending } = quizQ;
+  const { data: mock, isPending: mockPending } = mockQ;
+  const { data: sim, isPending: simPending } = simQ;
+  const { data: theory, isPending: theoryPending } = theoryQ;
+  const { data: readiness, isPending: readinessPending } = readinessQ;
+
+  // Previously there was no error branch at all: a failed fetch left every
+  // skeleton shimmering indefinitely with no message and no way to retry.
+  const loadFailed =
+    quizQ.isError || mockQ.isError || simQ.isError || theoryQ.isError || readinessQ.isError;
+
+  const retryAll = () => {
+    void quizQ.refetch();
+    void mockQ.refetch();
+    void simQ.refetch();
+    void theoryQ.refetch();
+    void readinessQ.refetch();
+  };
 
   const handleExport = async () => {
     if (!hasData) return;
 
+    if (!user) {
+      toast.error(t("common.error"));
+      return;
+    }
     try {
-      const { exportProgressReportFromFrame } = await import("@/lib/exportProgressReport");
-      await exportProgressReportFromFrame("progress-report-print-frame");
+      const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
+      await generateProgressPDF({
+        language,
+        userName: user.email?.split("@")[0] || "Student",
+        theory: theory || { completedModules: 0, totalModules: 3, percentage: 0 },
+        quiz: quiz || { average: 0, totalDuration: 0, history: [], trend: [] },
+        mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
+        sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
+      });
     } catch {
-      if (!user) {
-        toast.error(t("common.error"));
-        return;
-      }
-      try {
-        const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
-        await generateProgressPDF({
-          language,
-          userName: user.email?.split("@")[0] || "Student",
-          theory: theory || { completedModules: 0, totalModules: 3, percentage: 0 },
-          quiz: quiz || { average: 0, totalDuration: 0, history: [], trend: [] },
-          mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
-          sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
-        });
-      } catch (fallbackErr) {
-        toast.error(t("common.error"));
-      }
+      toast.error(t("common.error"));
     }
   };
 
@@ -70,6 +88,17 @@ export function ProgressPage() {
     { category: "traffic-rules", averageScore: 0, attempts: 0 },
     { category: "safety-principles", averageScore: 0, attempts: 0 },
   ];
+
+  if (loadFailed) {
+    return (
+      <div className="page-shell max-w-7xl space-y-6">
+        <header className="page-header">
+          <h1 className="page-title">{t("progress.title")}</h1>
+        </header>
+        <LoadError onRetry={retryAll} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell max-w-7xl space-y-6">
@@ -103,7 +132,7 @@ export function ProgressPage() {
         </div>
       </div>
 
-      <div id="progress-report-print-frame" className="space-y-6">
+      <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card-premium p-6 flex flex-col md:col-span-1">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -134,7 +163,7 @@ export function ProgressPage() {
               </div>
             ) : (
               <>
-                <div className="text-3xl font-bold font-mono font-tabular-nums text-primary">
+                <div className="text-3xl font-bold type-figure text-primary">
                   {theory ? `${Math.round(theory.percentage)}%` : "0%"}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
@@ -154,7 +183,7 @@ export function ProgressPage() {
                 <Skeleton className="h-9 w-16" />
               </div>
             ) : (
-              <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
+              <div className="text-3xl font-bold type-figure text-foreground">
                 {(quiz?.count || 0) + (mock?.count || 0) + (sim?.completed || 0)}
               </div>
             )}
@@ -170,7 +199,7 @@ export function ProgressPage() {
                 <Skeleton className="h-9 w-16" />
               </div>
             ) : (
-              <div className={`text-3xl font-bold font-mono font-tabular-nums ${mock && mock.passRate >= 84 ? "text-success" : "text-warning"}`}>
+              <div className={`text-3xl font-bold type-figure ${mock && mock.passRate >= 84 ? "text-success" : "text-warning"}`}>
                 {mock ? `${Math.round(mock.passRate)}%` : "0%"}
               </div>
             )}
@@ -186,7 +215,7 @@ export function ProgressPage() {
                 <Skeleton className="h-9 w-24" />
               </div>
             ) : (
-              <div className="text-3xl font-bold font-mono font-tabular-nums text-foreground">
+              <div className="text-3xl font-bold type-figure text-foreground">
                 {(() => {
                   const total = (quiz?.totalDuration || 0) + (mock?.totalDuration || 0) + (sim?.totalDuration || 0);
                   return `${Math.floor(total / 3600)}h ${Math.floor((total / 60) % 60)}m`;
@@ -225,7 +254,7 @@ export function ProgressPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-4xl font-bold font-mono font-tabular-nums text-primary">{quiz ? Math.round(quiz.average) : 0}%</p>
+                  <p className="text-4xl font-bold type-figure text-primary">{quiz ? Math.round(quiz.average) : 0}%</p>
                   <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
                     {t("progress.bestScore")}: <span className="font-semibold text-foreground">{quiz?.best || 0}%</span>
                   </div>
@@ -236,8 +265,8 @@ export function ProgressPage() {
               <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
               {quizPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : quiz?.trend && quiz.trend.length > 0 ? (
-                <QuizTrendLine key={activeTab} data={quiz.trend} />
+              ) : quiz?.trend && quiz.trend.length >= MIN_TREND_POINTS ? (
+                <ScoreTrendChart key={activeTab} data={quiz.trend} label={t("progress.chart.quizTrend")} limit={20} />
               ) : (
                 <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
               )}
@@ -270,7 +299,7 @@ export function ProgressPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-4xl font-bold font-mono font-tabular-nums text-primary">{mock ? Math.round(mock.average) : 0}%</p>
+                  <p className="text-4xl font-bold type-figure text-primary">{mock ? Math.round(mock.average) : 0}%</p>
                   <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
                     {t("progress.bestScore")}: <span className="font-semibold text-foreground">{mock?.best || 0}%</span>
                   </div>
@@ -281,8 +310,8 @@ export function ProgressPage() {
               <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
               {mockPending ? (
                 <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : mock?.trend && mock.trend.length > 0 ? (
-                <MockTrendLine key={activeTab} data={mock.trend} />
+              ) : mock?.trend && mock.trend.length >= MIN_TREND_POINTS ? (
+                <ScoreTrendChart key={activeTab} data={mock.trend} label={t("progress.chart.mockTrend")} limit={10} passMark={Math.round((MOCK_PASS_MARK / MOCK_TOTAL_QUESTIONS) * 100)} />
               ) : (
                 <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
               )}
@@ -315,7 +344,7 @@ export function ProgressPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-4xl font-bold font-mono font-tabular-nums text-primary">{sim ? Math.round(sim.averageScore) : 0}%</p>
+                  <p className="text-4xl font-bold type-figure text-primary">{sim ? Math.round(sim.averageScore) : 0}%</p>
                   <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
                     {t("progress.maneuversAttempted")}: <span className="font-semibold text-foreground">{t("progress.maneuversCount", { completed: sim?.completed || 0, total: 8 })}</span>
                   </div>

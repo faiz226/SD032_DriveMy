@@ -1,11 +1,14 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Warning } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
 import { fetchQuizQuestions } from "@/services/questions.service";
 import { saveQuizResult } from "@/services/results.service";
+import { invalidateLearnerData } from "@/lib/queryKeys";
+import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
 import { TestResultsView } from "@/components/exam/TestResultsView";
@@ -36,12 +39,7 @@ export function QuizPage() {
     mutationFn: saveQuizResult,
     onSuccess: () => {
       toast.success(t("exam.saved"));
-      queryClient.invalidateQueries({ queryKey: ["quizBest"] });
-      queryClient.invalidateQueries({ queryKey: ["recentActivity"] });
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: ["progress", "quiz", user.id] });
-        queryClient.invalidateQueries({ queryKey: ["progress", "readiness", user.id] });
-      }
+      void invalidateLearnerData(queryClient);
     },
     onError: (error) => {
       console.error("Failed to save quiz result", error);
@@ -97,7 +95,9 @@ export function QuizPage() {
         duration_seconds: examResult.durationSeconds,
         language: examLang,
         question_ids: examResult.questions.map((q) => q.id),
-        answers: examResult.answers,
+        // Original-order indices — the server trigger regrades against the
+        // unshuffled kpp_questions.correct_index.
+        answers: examResult.answersForStorage,
       });
     }
   };
@@ -153,13 +153,15 @@ export function QuizPage() {
           language={examLang}
           t={t}
           onComplete={handleComplete}
+          persistScope={PROGRESS_SCOPES.quiz}
+          userId={user?.id}
         />
       )}
 
       {phase === "testing" && activeQuestions.length === 0 && (
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4 bg-card rounded-2xl border shadow-sm p-8 mt-8">
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-3xl text-muted-foreground">warning</span>
+            <Warning className="h-8 w-8 text-muted-foreground" aria-hidden />
           </div>
           <h2 className="text-xl font-bold font-heading">No Questions Available</h2>
           <p className="text-muted-foreground max-w-md">

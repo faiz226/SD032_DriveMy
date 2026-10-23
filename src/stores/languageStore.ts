@@ -17,7 +17,9 @@ const getInitialLanguage = (): Language => {
       const parsed = JSON.parse(stored);
       if (parsed.state?.language) return parsed.state.language;
     }
-  } catch (e) {}
+  } catch {
+    // Malformed persisted value — fall through to the browser locale below.
+  }
   const lang = navigator.language.toLowerCase();
   if (lang.startsWith("ms") || lang.startsWith("id")) return "ms";
   return "en";

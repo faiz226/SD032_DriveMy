@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { WifiSlash } from "phosphor-react";
+import { WifiSlash } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { cn } from "@/lib/utils";
 

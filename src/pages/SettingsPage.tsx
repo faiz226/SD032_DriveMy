@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Bell, Sun, Moon, Monitor, Envelope, Calendar, CheckCircle, Clock, Circle } from "phosphor-react";
+import { Bell, Sun, Moon, Monitor, Envelope, Calendar, CheckCircle, Clock, Circle } from "@/components/ui/icons";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { ROUTES } from "@/lib/constants";
@@ -10,12 +10,16 @@ import { useThemeStore } from "@/stores/themeStore";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { del } from "idb-keyval";
 import { format } from "date-fns";
 import { useTheoryProgress, useOverallReadiness } from "@/hooks/useProgressStats";
-import { getBestQuizScore, getBestMockTestScore, getSimulationsDone } from "@/services/analytics.service";
+import { getBestQuizScore, getBestMockTestScore, getSimulationsDone, getBestColorVisionScore } from "@/services/analytics.service";
+import { exportUserData, deleteAccount, resetProgress, AccountCleanupError } from "@/services/account.service";
+import { learnerKeys, invalidateLearnerData } from "@/lib/queryKeys";
+import { getUserPendingStatus, getUserDeadLetterItems, retryUserDeadLetterItem, syncOfflineResults } from "@/services/results.service";
+import { LocalSessionTerminationError } from "@/services/auth.service";
+import { hasTelemetryConsent, writeConsent } from "@/lib/consent";
+import { initTelemetry, shutdownTelemetry } from "@/lib/telemetry";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -79,7 +83,7 @@ function SettingsPanel({
     >
       <h2
         id={`settings-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
-        className="font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+        className="font-heading text-sm font-semibold text-muted-foreground"
       >
         {title}
       </h2>
@@ -117,6 +121,19 @@ export function SettingsPage() {
   const userId = user?.id;
   const [notifications, setNotifications] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [telemetryOn, setTelemetryOn] = useState(() => hasTelemetryConsent());
+
+  const handleTelemetryChange = (next: boolean) => {
+    writeConsent(next ? "granted" : "denied");
+    setTelemetryOn(next);
+    if (next) {
+      initTelemetry();
+    } else {
+      // Stop transmitting immediately rather than at the next reload.
+      shutdownTelemetry();
+    }
+  };
   const [isResetting, setIsResetting] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
@@ -125,12 +142,62 @@ export function SettingsPage() {
   const { theme, setTheme } = useThemeStore();
   const queryClient = useQueryClient();
 
+  const [queueStatus, setQueueStatus] = useState<{ pendingCount: number; deadLetterCount: number }>({
+    pendingCount: 0,
+    deadLetterCount: 0,
+  });
+  const [isRetryingQueue, setIsRetryingQueue] = useState(false);
+
   useEffect(() => {
     const stored = localStorage.getItem(NOTIFICATIONS_KEY);
     if (stored !== null) {
       setNotifications(stored === "true");
     }
   }, []);
+
+  useEffect(() => {
+    const currentUserId = user?.id;
+    if (currentUserId) {
+      getUserPendingStatus(currentUserId)
+        .then((status) => {
+          if (useAuthStore.getState().user?.id === currentUserId) {
+            setQueueStatus(status);
+          }
+        })
+        .catch(() => undefined);
+    } else {
+      setQueueStatus({ pendingCount: 0, deadLetterCount: 0 });
+    }
+  }, [user?.id]);
+
+  const handleRetryFailedQueue = async () => {
+    const actionUserId = user?.id;
+    if (!actionUserId) return;
+    setIsRetryingQueue(true);
+    try {
+      const deadItems = await getUserDeadLetterItems(actionUserId);
+      for (const item of deadItems) {
+        if (useAuthStore.getState().user?.id !== actionUserId) return;
+        await retryUserDeadLetterItem(item.table, item.id, actionUserId);
+      }
+      if (useAuthStore.getState().user?.id !== actionUserId) return;
+      await syncOfflineResults(actionUserId);
+      if (useAuthStore.getState().user?.id !== actionUserId) return;
+      const updated = await getUserPendingStatus(actionUserId);
+      if (useAuthStore.getState().user?.id === actionUserId) {
+        setQueueStatus(updated);
+        toast.success(
+          deadItems.length > 0
+            ? t("settings.retrySuccess")
+            : t("settings.syncSuccess")
+        );
+      }
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setIsRetryingQueue(false);
+    }
+  };
 
   const handleNotificationsChange = (checked: boolean) => {
     setNotifications(checked);
@@ -144,27 +211,8 @@ export function SettingsPage() {
     }
     setIsResetting(true);
     try {
-      // 1. Delete from Supabase
-      const tables = ['quiz_results', 'mock_test_results', 'simulation_results', 'colorblind_results', 'theory_progress'];
-      await Promise.all(
-        tables.map(tb => supabase.from(tb).delete().eq('user_id', user.id))
-      );
-
-      // 2. Clear offline queues in IndexedDB
-      const queues = ['quizQueue', 'mockQueue', 'simulationQueue', 'colorblindQueue'];
-      await Promise.all(queues.map(q => del(q)));
-
-      // 3. Invalidate TanStack Query cache to update UI immediately
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["theoryProgress"] }),
-        queryClient.invalidateQueries({ queryKey: ["quizBest"] }),
-        queryClient.invalidateQueries({ queryKey: ["mockBest"] }),
-        queryClient.invalidateQueries({ queryKey: ["simsDone"] }),
-        queryClient.invalidateQueries({ queryKey: ["recentActivity"] }),
-        queryClient.invalidateQueries({ queryKey: ["profile"] }),
-        queryClient.invalidateQueries({ queryKey: ["progress"] }),
-      ]);
-
+      await resetProgress(user.id);
+      await invalidateLearnerData(queryClient);
       toast.success(t("settings.progressResetSuccess"));
     } catch {
       toast.error(t("common.error"));
@@ -173,34 +221,114 @@ export function SettingsPage() {
     }
   };
 
+  const handleExportData = async () => {
+    if (!user?.id) {
+      toast.error(t("common.error"));
+      return;
+    }
+    setIsExporting(true);
+    try {
+      const blob = await exportUserData(user.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `drivemy-data-${user.id}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(t("settings.dataExported"));
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleDeleteAccount = async () => {
     if (!user?.id) {
       toast.error(t("common.error"));
       return;
     }
+    const initiatingToken = useAuthStore.getState().session?.access_token;
+    const initiatingUserId = user.id;
     setIsDeleting(true);
     try {
-      const tables = ['quiz_results', 'mock_test_results', 'simulation_results', 'colorblind_results', 'theory_progress'];
-      await Promise.all(
-        tables.map(tb => supabase.from(tb).delete().eq('user_id', user.id))
-      );
-      await supabase.from('profiles').delete().eq('id', user.id);
-      const { error } = await supabase.rpc('delete_user');
-      if (error) throw error;
-      await signOut();
-      navigate(ROUTES.AUTH);
-      toast.success(t("settings.accountDeleted"));
-    } catch {
-      toast.error(t("common.error"));
+      await deleteAccount();
+      try {
+        await signOut();
+      } catch (signOutErr) {
+        console.warn("[settings] Local cleanup during signout after deletion had error:", signOutErr);
+      }
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (isStillOutgoingOrCleared) {
+        navigate(ROUTES.AUTH);
+        toast.success(t("settings.accountDeleted"));
+      }
+    } catch (err) {
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (
+        err instanceof AccountCleanupError ||
+        (err as { name?: string })?.name === "AccountCleanupError"
+      ) {
+        try {
+          await signOut();
+        } catch {
+          // ignore
+        }
+        if (isStillOutgoingOrCleared) {
+          navigate(ROUTES.AUTH);
+          toast.warning(t("settings.accountDeletedPartialCleanup"));
+        }
+      } else {
+        toast.error(t("common.error"));
+      }
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate(ROUTES.AUTH);
-    toast.success(t("settings.signOut"));
+    const initiatingToken = useAuthStore.getState().session?.access_token;
+    const initiatingUserId = user?.id;
+    try {
+      await signOut();
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (isStillOutgoingOrCleared) {
+        navigate(ROUTES.AUTH);
+        toast.success(t("settings.signOut"));
+      }
+    } catch (err) {
+      const currentToken = useAuthStore.getState().session?.access_token;
+      const currentUserId = useAuthStore.getState().user?.id;
+      const isStillOutgoingOrCleared =
+        !currentToken ||
+        (initiatingToken ? currentToken === initiatingToken : currentUserId === initiatingUserId);
+      if (
+        err instanceof LocalSessionTerminationError ||
+        (err as { name?: string })?.name === "LocalSessionTerminationError"
+      ) {
+        if (isStillOutgoingOrCleared) {
+          navigate(ROUTES.AUTH);
+          toast.warning(t("settings.signOutPartialCleanup"));
+        }
+      } else {
+        if (isStillOutgoingOrCleared) {
+          navigate(ROUTES.AUTH);
+          toast.error(t("common.error"));
+        }
+      }
+    }
   };
 
   // --- Profile Data Fetching ---
@@ -212,38 +340,29 @@ export function SettingsPage() {
   const { data: readiness, isPending: readinessPending } = useOverallReadiness();
 
   const { data: quizBest = 0, isPending: quizPending } = useQuery({
-    queryKey: ["profile", "quizBest", userId],
+    queryKey: learnerKeys.profileBest("quiz", userId),
     queryFn: () => getBestQuizScore(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: mockBest = 0, isPending: mockPending } = useQuery({
-    queryKey: ["profile", "mockBest", userId],
+    queryKey: learnerKeys.profileBest("mock", userId),
     queryFn: () => getBestMockTestScore(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: simsDone = 0, isPending: simsPending } = useQuery({
-    queryKey: ["profile", "simsDone", userId],
+    queryKey: learnerKeys.profileBest("sims", userId),
     queryFn: () => getSimulationsDone(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: colorBest, isPending: colorPending } = useQuery({
-    queryKey: ["profile", "colorBest", userId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("colorblind_results")
-        .select("percentage")
-        .eq("user_id", userId!)
-        .order("percentage", { ascending: false })
-        .limit(1);
-      if (error) throw error;
-      return data && data.length > 0 ? (data[0] as { percentage: number }).percentage : null;
-    },
+    queryKey: learnerKeys.profileBest("color", userId),
+    queryFn: () => getBestColorVisionScore(userId!),
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
@@ -456,6 +575,87 @@ export function SettingsPage() {
                 </div>
               </div>
 
+              {/* Error reporting consent — withdrawable, per PDPA. Only shown
+                  when a telemetry provider is actually configured. */}
+              {import.meta.env.VITE_SENTRY_DSN && (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-foreground">{t("settings.telemetry")}</p>
+                    <p className="text-sm text-muted-foreground">{t("settings.telemetryDesc")}</p>
+                  </div>
+                  <div className="shrink-0">
+                    <Switch
+                      checked={telemetryOn}
+                      onCheckedChange={handleTelemetryChange}
+                      aria-label={t("settings.telemetry")}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Privacy Policy */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">{t("settings.privacyPolicy")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    How we collect, use and retain your personal data.
+                  </p>
+                </div>
+                <div className="shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto min-h-[44px] rounded-md"
+                    onClick={() => navigate(ROUTES.PRIVACY)}
+                  >
+                    {t("settings.privacyPolicy")}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Export My Data — PDPA 2010 §§30-34 / GDPR Art. 15 & 20 */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">{t("settings.exportData")}</p>
+                  <p className="text-sm text-muted-foreground">{t("settings.exportDataDesc")}</p>
+                </div>
+                <div className="shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto min-h-[44px] rounded-md"
+                    onClick={handleExportData}
+                    loading={isExporting}
+                    loadingLabel={t("common.loading")}
+                  >
+                    {t("settings.exportData")}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Offline Results Sync & Recovery */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">{t("settings.offlineRecoveryTitle")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.offlineRecoveryDesc", { pending: queueStatus.pendingCount, dead: queueStatus.deadLetterCount })}
+                  </p>
+                </div>
+                <div className="shrink-0 flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto min-h-[44px] rounded-md"
+                    onClick={handleRetryFailedQueue}
+                    disabled={isRetryingQueue || (queueStatus.pendingCount === 0 && queueStatus.deadLetterCount === 0)}
+                    loading={isRetryingQueue}
+                    loadingLabel={t("common.loading")}
+                  >
+                    {queueStatus.deadLetterCount > 0 ? t("settings.retryFailedSubmissions") : t("settings.syncPendingResults")}
+                  </Button>
+                </div>
+              </div>
+
               {/* Delete Account */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-4">
                 <div className="space-y-1">
@@ -585,7 +785,7 @@ export function SettingsPage() {
                   aria-hidden
                 />
                 <div>
-                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-xs font-medium text-muted-foreground">
                     {t("profile.email")}
                   </dt>
                   <dd className="text-sm text-foreground mt-1 break-all">
@@ -600,7 +800,7 @@ export function SettingsPage() {
                   aria-hidden
                 />
                 <div>
-                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-xs font-medium text-muted-foreground">
                     {t("profile.memberSince")}
                   </dt>
                   <dd className="text-sm font-tabular-nums text-foreground mt-1">

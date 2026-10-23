@@ -10,6 +10,7 @@ export const ROUTES = {
   SIMULATIONS: "/simulations",
   PROGRESS: "/progress",
   SAFETY: "/safety",
+  RPK_RSM: "/rpk-rsm",
   PROFILE: "/profile",
   SETTINGS: "/settings",
   AUTH: "/auth",
@@ -17,7 +18,20 @@ export const ROUTES = {
   RESET_PASSWORD: "/reset-password",
   VERIFY_EMAIL: "/verify-email",
   MFA: "/mfa",
+  PRIVACY: "/privacy",
 } as const;
+
+/**
+ * Contact address published in the privacy policy.
+ *
+ * ⚠️ CHANGE THIS BEFORE LAUNCH. `.local` is a reserved TLD that does not route
+ * anywhere — mail sent here is undeliverable. Malaysia's PDPA requires a
+ * working way for people to ask about their data or request its deletion, so a
+ * dead address means the policy does not actually satisfy the law.
+ *
+ * Use a real inbox you monitor.
+ */
+export const PRIVACY_CONTACT_EMAIL = "privacy@drivemy.local";
 
 export const STORAGE_KEYS = {
   QUIZ_PROGRESS: "drivemy-quiz-progress",

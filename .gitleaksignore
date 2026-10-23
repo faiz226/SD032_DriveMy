@@ -1,0 +1,6 @@
+# Findings checked by hand and found not to be secrets. One fingerprint per line
+# (commit:file:rule:line), so each ignores that finding in that commit and nothing else.
+
+# A placeholder, not a credential: a JWT header followed by the literal text ".dummy.key",
+# used only by a unit test to build a throwaway Supabase client.
+f4a417e284ecf1b1ad29b79c89dafe8dc0117383:src/services/auth.service.test.ts:generic-api-key:165

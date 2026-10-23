@@ -24,16 +24,13 @@ CREATE POLICY "kpp_images_public_read"
   TO public
   USING (bucket_id = 'kpp-images');
 
--- Allow authenticated users to upload (for admin seeding)
-CREATE POLICY "kpp_images_authenticated_insert"
-  ON storage.objects
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (bucket_id = 'kpp-images');
-
--- Allow authenticated users to update (for re-uploads)
-CREATE POLICY "kpp_images_authenticated_update"
-  ON storage.objects
-  FOR UPDATE
-  TO authenticated
-  USING (bucket_id = 'kpp-images');
+-- NOTE: there is deliberately NO write policy for the `authenticated` role.
+--
+-- Granting INSERT/UPDATE to `authenticated` would let anyone who completes the
+-- free self-service signup overwrite the road-sign and Ishihara plate images
+-- that every other learner is tested on. For a road-safety product, corrupted
+-- sign imagery is a worse outcome than a data leak.
+--
+-- Seeding (scripts/upload-images.js) authenticates with
+-- SUPABASE_SERVICE_ROLE_KEY, which bypasses RLS — so uploads work without any
+-- policy at all. Do not add one.

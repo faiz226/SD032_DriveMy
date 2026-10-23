@@ -10,7 +10,8 @@ interface ThemeState {
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: "system",
+      // Night is the signature theme; day stays one tap away in the header.
+      theme: "dark",
       setTheme: (theme) => set({ theme }),
     }),
     {

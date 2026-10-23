@@ -4,42 +4,40 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  // Base — always applied
   [
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap",
-    "rounded-md text-sm font-medium",
-    "transition-[color,background-color,box-shadow,transform] duration-200 ease-out-quart",
-    // Touch target
-    "min-h-[48px] min-w-[48px] px-4",
-    // Focus ring
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    // Disabled
-    "disabled:pointer-events-none disabled:opacity-50",
-    // Icon children
+    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap",
+    "rounded-lg text-sm font-semibold tracking-[-0.01em]",
+    "transition-[color,background-color,border-color,box-shadow,transform] duration-200 ease-out",
+    "active:scale-[0.97] motion-reduce:active:scale-100",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "disabled:pointer-events-none disabled:opacity-45",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   ],
   {
     variants: {
       variant: {
+        // Ink, like a car's start button. White on ink by day, ink on white by night.
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90 active:scale-[0.98]",
+          "bg-primary text-primary-foreground shadow-[0_1px_2px_rgb(0_0_0/0.18),inset_0_1px_0_rgb(255_255_255/0.12)] hover:bg-primary/90",
+        brand:
+          "bg-brand text-brand-foreground shadow-[0_1px_2px_rgb(0_0_0/0.14),inset_0_1px_0_rgb(255_255_255/0.16)] hover:bg-brand/90",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.98]",
+          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground active:scale-[0.98]",
+          "border border-border bg-card text-foreground shadow-xs hover:border-foreground/20 hover:bg-accent",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 active:scale-[0.98]",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/75",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground active:scale-[0.98]",
+          "text-foreground hover:bg-accent hover:text-accent-foreground",
         link:
-          "text-primary underline-offset-4 hover:underline min-h-0 min-w-0 px-0",
+          "h-auto px-0 text-brand-ink underline-offset-4 hover:underline active:scale-100",
       },
       size: {
-        default: "h-12 px-4 py-2",
-        sm:      "h-9 rounded-md px-3 text-xs min-h-[36px]",
-        lg:      "h-14 rounded-md px-8 text-base",
-        icon:    "h-12 w-12 p-0",
-        "icon-sm": "h-9 w-9 p-0 min-h-[36px] min-w-[36px]",
+        default: "h-11 px-5",
+        sm:      "h-9 px-3.5 text-[0.8125rem]",
+        lg:      "h-[52px] px-7 text-[0.9375rem]",
+        icon:    "h-11 w-11 p-0",
+        "icon-sm": "h-9 w-9 p-0",
       },
       loading: {
         true: "cursor-wait opacity-75",

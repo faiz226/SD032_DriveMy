@@ -1,6 +1,4 @@
-import { ElasticSlider } from "./ElasticSlider";
 import { useLanguage } from "@/hooks/useLanguage";
-import { User, UsersThree } from "phosphor-react";
 
 interface EthicsSliderProps {
   value: number;
@@ -13,17 +11,16 @@ export function EthicsSlider({ value, onChange, disabled }: EthicsSliderProps) {
 
   return (
     <div className="w-full space-y-6 px-4">
-      <ElasticSlider
-        defaultValue={value}
-        startingValue={1}
-        maxValue={10}
-        stepSize={1}
-        isStepped={false}
-        onChange={onChange}
+      <input
+        type="range"
+        min={1}
+        max={10}
+        step={0.1}
+        value={value}
+        onChange={event => onChange(Number(event.target.value))}
         disabled={disabled}
-        leftIcon={<User size={24} weight="fill" />}
-        rightIcon={<UsersThree size={24} weight="fill" />}
-        className="w-full"
+        aria-label={`${t("safety.slider.self")}  -  ${t("safety.slider.community")}`}
+        className="w-full min-h-12 accent-[rgb(var(--brand))]"
       />
       
       <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mt-8 px-2">
