@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { exchangeCodeForSession, getSession } from "@/services/auth.service";
+import { completeAuthRedirect, getSession } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { useLanguage } from "@/hooks/useLanguage";
 import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
@@ -12,15 +12,15 @@ import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
  * Supabase PKCE flow returns:
  *   https://drivemy-rho.vercel.app/auth/callback?code=<auth_code>
  *
- * We must call supabase.auth.exchangeCodeForSession(code) to swap the
- * one-time code for a real access + refresh token pair. Once that succeeds,
- * onAuthStateChange fires SIGNED_IN and we redirect to the dashboard.
+ * The Supabase client swaps that one-time code for a session by itself as it
+ * starts, so this page only waits for that exchange (completeAuthRedirect) and
+ * never makes its own. Once it succeeds, onAuthStateChange fires SIGNED_IN and
+ * we go on to the page the sign-in started from.
  */
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [error, setError] = useState<string | null>(null);
-  const exchangedRef = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,20 +46,18 @@ export function AuthCallbackPage() {
         return;
       }
 
-      // ── PKCE: exchange ?code= for a session ──────────────────────────────
+      // ── PKCE: wait for the client's own exchange of ?code= ───────────────
       if (code) {
-        if (exchangedRef.current === code) return;
-        exchangedRef.current = code;
+        let session: Awaited<ReturnType<typeof completeAuthRedirect>>;
         try {
-          await exchangeCodeForSession(code);
+          session = await completeAuthRedirect();
         } catch (exchangeError) {
           if (!cancelled) setError(sanitizeError(exchangeError instanceof Error ? exchangeError.message : null));
           return;
         }
         if (cancelled) return;
-        // Session is now active; onAuthStateChange (in AuthInit) will update
-        // the store. Navigate to dashboard immediately.
-        navigate(nextUrl, { replace: true });
+        // onAuthStateChange (in AuthInit) updates the store.
+        navigate(session ? nextUrl : ROUTES.AUTH, { replace: true });
         return;
       }
 

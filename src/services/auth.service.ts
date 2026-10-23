@@ -219,10 +219,16 @@ export function onAuthStateChange(callback: (event: AuthChangeEvent, session: Se
   return () => data.subscription.unsubscribe();
 }
 
-/** PKCE: trade the one-time `?code=` from an OAuth or email redirect for a session. */
-export async function exchangeCodeForSession(code: string) {
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+/**
+ * PKCE: wait for the one-time `?code=` from an OAuth or email redirect to become a session. The client trades it
+ * itself as it starts (detectSessionInUrl) and then removes it from the URL. Trading it again here made every
+ * Google sign-in fail: the first exchange uses up the code verifier, so the second threw "PKCE code verifier not
+ * found" over a session that already existed. Resolves with the session, or throws the client's exchange error.
+ */
+export async function completeAuthRedirect() {
+  const { error } = await supabase.auth.initialize();
   if (error) throw error;
+  return getSession();
 }
 
 // ── Two-factor (TOTP) ─────────────────────────────────────────────────────────
