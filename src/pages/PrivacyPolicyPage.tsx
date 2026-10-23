@@ -1,8 +1,26 @@
-import { PRIVACY_CONTACT_EMAIL } from "@/lib/constants";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "@/components/ui/icons";
+import { useLanguage } from "@/hooks/useLanguage";
+import { PRIVACY_CONTACT_EMAIL, ROUTES } from "@/lib/constants";
 
 export function PrivacyPolicyPage() {
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
+  // The page has no menu, so this is its only way out. Opened from inside the app (Settings, the consent
+  // banner) it goes back there; opened from a link it goes home: the dashboard, or sign-in when signed out.
+  const goBack = () => (location.key === "default" ? navigate(ROUTES.DASHBOARD) : navigate(-1));
+
   return (
     <div className="max-w-4xl mx-auto py-12 px-6">
+      <button
+        type="button"
+        onClick={goBack}
+        className="-ml-1 mb-4 inline-flex min-h-[48px] items-center gap-1.5 rounded-sm px-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+        {t("common.back")}
+      </button>
       <h1 className="text-3xl font-heading font-bold mb-6">Privacy Policy</h1>
       <p className="mb-4 text-muted-foreground">Effective Date: [Insert Date]</p>
       
