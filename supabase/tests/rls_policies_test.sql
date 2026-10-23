@@ -28,11 +28,22 @@ values
   ('22222222-2222-2222-2222-222222222222', 'bob@example.test',   false)
 on conflict (id) do nothing;
 
-insert into public.quiz_results
-  (user_id, quiz_title, score, total_questions, percentage, duration_seconds, language)
+-- The grading trigger (20260804000700) recomputes every result from its answers
+-- and accepts only questions from the practice pool, and this database has no
+-- seed data: so one pool question, which each result answers.
+insert into public.kpp_questions
+  (id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, correct_index)
 values
-  ('11111111-1111-1111-1111-111111111111', 'alice-quiz', 5, 10, 50.00, 60, 'en'),
-  ('22222222-2222-2222-2222-222222222222', 'bob-quiz',   7, 10, 70.00, 60, 'en');
+  ('33333333-3333-3333-3333-333333333301', 'rls-test', 'quiz-pool', 999001,
+   'RLS fixture question', 'Soalan ujian RLS', '["a","b","c","d"]', '["a","b","c","d"]', 0);
+
+insert into public.quiz_results
+  (user_id, quiz_title, score, total_questions, percentage, duration_seconds, language, question_ids, answers)
+values
+  ('11111111-1111-1111-1111-111111111111', 'alice-quiz', 0, 1, 0, 60, 'en',
+   array['33333333-3333-3333-3333-333333333301']::uuid[], '{"33333333-3333-3333-3333-333333333301": 0}'),
+  ('22222222-2222-2222-2222-222222222222', 'bob-quiz',   0, 1, 0, 60, 'en',
+   array['33333333-3333-3333-3333-333333333301']::uuid[], '{"33333333-3333-3333-3333-333333333301": 1}');
 
 -- ─── Anonymous access ────────────────────────────────────────────────────────
 

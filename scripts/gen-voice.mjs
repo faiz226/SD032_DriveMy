@@ -29,10 +29,19 @@ const VOICE = arg("voice", process.env.FISH_AUDIO_VOICE_ID ?? "");   // empty: F
 const CHECK = process.argv.includes("--check");
 const OUT = path.join("public", "sim", "voice");
 const MANIFEST = path.join(OUT, "manifest.json");
+const MAX_LINE_BYTES = 5 * 1024 * 1024;   // a spoken line is tens of kilobytes; anything near this is not one
 const LANGS = { en, ms };
 const lines = Object.keys(en).filter((k) => k.startsWith("sim.tips.") || k.startsWith("sim.voice."));
 
-const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, "utf8")) : {};
+// read straight away, a missing file being a first run: checking for it first and then using it is a race
+const manifest = (() => {
+  try {
+    return JSON.parse(readFileSync(MANIFEST, "utf8"));
+  } catch (err) {
+    if (err.code === "ENOENT") return {};
+    throw err;
+  }
+})();
 const sleep = (ms_) => new Promise((r) => setTimeout(r, ms_));
 const ffmpeg = spawnSync("ffmpeg", ["-version"]).status === 0;
 
@@ -51,7 +60,12 @@ async function speak(text) {
     headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json", model: MODEL },
     body: JSON.stringify({ text, format: "mp3", ...(VOICE ? { reference_id: VOICE } : {}) }),
   });
-  return Buffer.from(await res.arrayBuffer());
+  const audio = Buffer.from(await res.arrayBuffer());
+  // only an MP3 of a sane size is saved, never whatever else the response held: an ID3 tag or an MPEG frame sync first
+  const mp3 = audio.length > 0 && audio.length < MAX_LINE_BYTES
+    && (audio.subarray(0, 3).toString("latin1") === "ID3" || (audio[0] === 0xff && (audio[1] & 0xe0) === 0xe0));
+  if (!mp3) throw new Error(`Fish Audio sent ${audio.length} bytes that are not an MP3 (${res.headers.get("content-type")})`);
+  return audio;
 }
 
 async function transcribe(file, language) {

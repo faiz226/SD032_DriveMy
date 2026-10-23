@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, cleanup } from "@testing-library/react";
+import { act, fireEvent, render, screen, cleanup, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { SpeechControl } from "./SpeechControl";
 
@@ -57,14 +57,19 @@ it("ignores old playback callbacks after a new question starts", async () => {
   vi.stubGlobal("fetch", vi.fn(async () => new Response(new Blob(["audio"]), { headers: { "Content-Type": "audio/mpeg" } })));
   const view = render(<SpeechControl text="First question"/>);
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "Listen" })));
+  // the fetch, the blob and the player settle over more than one tick on some platforms (CI's Linux): wait for playback
+  await waitFor(() => expect(screen.getByRole("button", { name: "Stop audio" })).toBeEnabled());
   const oldEnd = recordings[0].onended;
   const oldError = recordings[0].onerror;
+  expect(oldEnd).toBeTypeOf("function");
+  expect(oldError).toBeTypeOf("function");
   view.rerender(<SpeechControl text="Second question"/>);
   expect(recordings[0].pause).toHaveBeenCalled();
   expect(recordings[0].onended).toBeNull();
   expect(recordings[0].onerror).toBeNull();
   expect(revoke).toHaveBeenCalledTimes(1);
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "Listen" })));
+  await waitFor(() => expect(screen.getByRole("button", { name: "Stop audio" })).toBeEnabled());
   act(() => { oldEnd?.(); oldError?.(); });
   expect(screen.getByRole("button", { name: "Stop audio" })).toBeEnabled();
   expect(recordings[1].pause).not.toHaveBeenCalled();

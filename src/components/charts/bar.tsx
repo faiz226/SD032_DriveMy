@@ -291,7 +291,6 @@ const BarInner = memo(function BarInner({
         if (isHorizontal) {
           // Horizontal bars: category on y-axis, value on x-axis
           const valuePos = scale(value) ?? 0;
-          barW = valuePos; // Width is the value position (grows from left)
           barHeight = barWidth;
 
           if (stacked && stackOffsets) {
@@ -311,10 +310,8 @@ const BarInner = memo(function BarInner({
             // non-negative data).
             x = Math.min(valuePos, zeroX);
             barW = Math.abs(valuePos - zeroX);
-            // For grouped bars, offset y position
-            const effectiveGroupGap = seriesCount > 1 ? groupGap : 0;
-            y = bandPos + seriesIndex * (barWidth + effectiveGroupGap);
           }
+          // grouped bars sit side by side along the band
           y = stacked
             ? bandPos
             : bandPos +
@@ -339,10 +336,8 @@ const BarInner = memo(function BarInner({
             }
           } else {
             y = Math.min(valuePos, zeroY);
-            // For grouped bars, offset x position
-            const effectiveGroupGap = seriesCount > 1 ? groupGap : 0;
-            x = bandPos + seriesIndex * (barWidth + effectiveGroupGap);
           }
+          // grouped bars sit side by side along the band
           x = stacked
             ? bandPos
             : bandPos +
