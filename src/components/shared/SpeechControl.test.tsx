@@ -54,7 +54,9 @@ it("ignores old playback callbacks after a new question starts", async () => {
   });
   const revoke = vi.fn();
   vi.stubGlobal("URL", { createObjectURL: vi.fn(() => "blob:test"), revokeObjectURL: revoke });
-  vi.stubGlobal("fetch", vi.fn(async () => new Response(new Blob(["audio"]), { headers: { "Content-Type": "audio/mpeg" } })));
+  // bytes, not a Blob: jsdom's Blob has no stream(), which Node 22's fetch calls on anything Blob-like (Node 24 turns it
+  // into the text "[object Blob]"), so on CI the response threw and the control showed "Audio unavailable"
+  vi.stubGlobal("fetch", vi.fn(async () => new Response(new Uint8Array([0xff, 0xfb, 0x90]), { headers: { "Content-Type": "audio/mpeg" } })));
   const view = render(<SpeechControl text="First question"/>);
   await act(async () => fireEvent.click(screen.getByRole("button", { name: "Listen" })));
   // the fetch, the blob and the player settle over more than one tick on some platforms (CI's Linux): wait for playback

@@ -12,6 +12,63 @@ const SENTRY_PROJECT = process.env["SENTRY_PROJECT"];
 const SENTRY_AUTH_TOKEN = process.env["SENTRY_AUTH_TOKEN"];
 const sentryUploadEnabled = Boolean(SENTRY_ORG && SENTRY_PROJECT && SENTRY_AUTH_TOKEN);
 
+/** Which vendor chunk a module belongs to (React and the router have their own group, ahead of these). */
+function vendorChunk(id: string): string | undefined {
+  // Phaser game engine — large, isolated
+  if (id.includes("node_modules/phaser")) {
+    return "vendor-phaser";
+  }
+  // Framer Motion chunk
+  if (id.includes("framer-motion") || id.includes("motion")) {
+    return "vendor-motion";
+  }
+  // PDF generation (only needed on specific pages)
+  if (
+    id.includes('jspdf') ||
+    id.includes('jspdf-autotable') ||
+    id.includes('html2canvas') ||
+    id.includes('canvg') ||
+    id.includes('dompurify') ||
+    id.includes('pako') ||
+    id.includes('fflate') ||
+    id.includes('fast-png') ||
+    id.includes('iobuffer')
+  ) {
+    return 'vendor-pdf';
+  }
+  // Charts (only needed on progress/analytics pages)
+  if (
+    id.includes('recharts') ||
+    id.includes('d3-') ||
+    id.includes('decimal.js')
+  ) {
+    return 'vendor-charts';
+  }
+  // Radix UI primitives (large, can be deferred)
+  if (id.includes('@radix-ui')) {
+    return 'radix';
+  }
+  // Supabase client (needed for auth but can be separate)
+  if (id.includes('@supabase') || id.includes('phoenix') || id.includes('realtime-js')) {
+    return 'supabase';
+  }
+  // TanStack Query
+  if (id.includes('@tanstack')) {
+    return 'vendor-query';
+  }
+  // The simulator's 3D stack: three.js, React Three Fiber, drei and Rapier (its wasm is inlined,
+  // which makes it large). Only the simulator route uses it, so it loads with that route. Under the
+  // catch-all below it sat in the chunk index.html loads, costing every page about 3 MB.
+  if (/\/node_modules\/(three|three-stdlib|three-mesh-bvh|@react-three|@dimforge|react-reconciler|its-fine|suspend-react|troika-[\w-]+|webgl-sdf-generator|bidi-js|camera-controls|maath|meshline|stats-gl|stats\.js|detect-gpu|tunnel-rat|hls\.js|postprocessing|n8ao|potpack|meshoptimizer|draco3d|@monogrid|glsl-noise)\//.test(id)) {
+    return 'vendor-3d';
+  }
+  // Other node_modules
+  if (id.includes('node_modules')) {
+    return 'vendor';
+  }
+  return undefined;
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   // Expose the build's release id to the client so Sentry.init() can tag
@@ -357,63 +414,15 @@ export default defineConfig({
     sourcemap: sentryUploadEnabled ? "hidden" : false,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Phaser game engine — large, isolated
-          if (id.includes("node_modules/phaser")) {
-            return "vendor-phaser";
-          }
-          // Framer Motion chunk
-          if (id.includes("framer-motion") || id.includes("motion")) {
-            return "vendor-motion";
-          }
-          // PDF generation (only needed on specific pages)
-          if (
-            id.includes('jspdf') || 
-            id.includes('jspdf-autotable') || 
-            id.includes('html2canvas') || 
-            id.includes('canvg') || 
-            id.includes('dompurify') ||
-            id.includes('pako') || 
-            id.includes('fflate') || 
-            id.includes('fast-png') || 
-            id.includes('iobuffer')
-          ) {
-            return 'vendor-pdf';
-          }
-          // Charts (only needed on progress/analytics pages)
-          if (
-            id.includes('recharts') || 
-            id.includes('d3-') || 
-            id.includes('decimal.js')
-          ) {
-            return 'vendor-charts';
-          }
-          // Radix UI primitives (large, can be deferred)
-          if (id.includes('@radix-ui')) {
-            return 'radix';
-          }
-          // Supabase client (needed for auth but can be separate)
-          if (id.includes('@supabase') || id.includes('phoenix') || id.includes('realtime-js')) {
-            return 'supabase';
-          }
-          // React core (keep together, needed immediately)
-          if (id.includes('react-dom') || id.includes('react-router') || id.includes('@remix-run/router')) {
-            return 'vendor-react';
-          }
-          // TanStack Query
-          if (id.includes('@tanstack')) {
-            return 'vendor-query';
-          }
-          // The simulator's 3D stack: three.js, React Three Fiber, drei and Rapier (its wasm is inlined,
-          // which makes it large). Only the simulator route uses it, so it loads with that route. Under the
-          // catch-all below it sat in the chunk index.html loads, costing every page about 3 MB.
-          if (/\/node_modules\/(three|three-stdlib|three-mesh-bvh|@react-three|@dimforge|react-reconciler|its-fine|suspend-react|troika-[\w-]+|webgl-sdf-generator|bidi-js|camera-controls|maath|meshline|stats-gl|stats\.js|detect-gpu|tunnel-rat|hls\.js|postprocessing|n8ao|potpack|meshoptimizer|draco3d|@monogrid|glsl-noise)\//.test(id)) {
-            return 'vendor-3d';
-          }
-          // Other node_modules
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        // Rolldown's groups also take in what their modules import, so whichever group reaches a shared module
+        // first keeps it. React, the router and Vite's helper for lazy routes go first, since every page loads
+        // them: under the rules alone the helper fell to vendor-3d (the 3D stack's own lazy imports use it), and
+        // index.html preloaded the whole 3D stack, about 3 MB, on every page.
+        codeSplitting: {
+          groups: [
+            { name: "vendor-react", test: /vite\/preload-helper|react-dom|react-router|@remix-run\/router/, priority: 2 },
+            { name: vendorChunk, priority: 1 },
+          ],
         },
       },
     },
