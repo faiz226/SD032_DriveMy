@@ -27,9 +27,6 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Preload critical PWA icon -->
-    <link rel="preload" href="/pwa-192x192.png" as="image">
-
     <!-- Fonts are self-hosted (see src/index.css). They used to load from
          fonts.googleapis.com / fonts.gstatic.com, which disclosed every
          visitor's IP address to Google on each page load. Material Symbols was
@@ -74,7 +71,13 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- The first paint while the app's code loads, until React replaces it on mount: the brand on the theme's
+           background, instead of a blank screen for the seconds that code takes on a slow phone. -->
+      <div class="flex min-h-screen items-center justify-center bg-background">
+        <span class="text-5xl font-black tracking-tight text-foreground">DriveMy</span>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
