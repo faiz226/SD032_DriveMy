@@ -148,7 +148,7 @@ export class Pilot {
 
   /**
    * Every station, from the spawn to a stop past the finish. With `faults` (WP6), the same line commits one fault
-   * of each kind on purpose: a rollback, not in the bay, a pole touch, the S's speed band, a kerb touch, a ramp
+   * of each kind on purpose: a rollback, not in the bay, the S's speed band, a kerb touch, a ramp
    * stop outside its window and a slow merge.
    */
   *assessment(faults = false): Plan {
@@ -165,7 +165,7 @@ export class Pilot {
       this.mark('rolled back');
     }
     // 2. side parking: along the band's far half (0.36 m off the line keeps the swinging nose clear of the
-    //    mouth pole), reverse in at full right lock, straight back, done
+    //    mouth's corner), reverse in at full right lock, straight back, done
     yield* this.follow(first, first[first.length - 1][0], slow, true, (s) => (s > station('side-parking').s_from + 3 ? 0.36 : 0));
     this.mark('side start');
     yield* this.turn(90, -1, true);
@@ -174,9 +174,9 @@ export class Pilot {
     yield* this.arc(-(station('side-parking').bay!.centre[1] + 1.703 - this.last.y) + (faults ? 1.6 : 0), 0);
     this.mark('side parked');
     yield* this.hold(1.5, true);
-    //    out the way a learner does: straight until the rear axle is 1.05 m short of the mouth poles' line,
-    //    then full left lock; the inner side clears the east pole by ~0.3 m, the outer front tyre the far kerb by ~0.4 m
-    //    (faults: turning 0.8 m earlier sweeps the inner side through the east pole)
+    //    out the way a learner does: straight until the rear axle is 1.05 m short of the bay mouth,
+    //    then full left lock; the outer front tyre clears the far kerb by ~0.4 m
+    //    (faults: 0.8 m earlier, also clear now the bay has no poles, the owner, 2 Nov)
     yield* this.arc(this.last.y - (faults ? 13.2 : 12.4), 0);
     yield* this.turn(90, 1, false);
     this.mark('side out');

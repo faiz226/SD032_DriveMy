@@ -9,6 +9,7 @@ Delineation (the owner, 20 Oct), cited by clause and figure.
 """
 import math
 
+import contourpy
 import numpy as np
 
 DESIGN = {
@@ -48,6 +49,26 @@ def in_poly(p, poly):
     return inside
 
 
+def simplify(pts, tol):
+    """Ramer-Douglas-Peucker: drop the points within tol of the line through their neighbours."""
+    if len(pts) < 3:
+        return pts
+    (ax, ay), (bx, by) = pts[0], pts[-1]
+    if math.hypot(bx - ax, by - ay) < 1e-6:   # a closed loop: split it where it is farthest from its start
+        far = max(range(len(pts)), key=lambda i: math.hypot(pts[i][0] - ax, pts[i][1] - ay))
+        return simplify(pts[:far + 1], tol)[:-1] + simplify(pts[far:], tol)
+    dx, dy = bx - ax, by - ay
+    norm = math.hypot(dx, dy) or 1e-9
+    far, worst = 0, -1.0
+    for i in range(1, len(pts) - 1):
+        d = abs((pts[i][0] - ax) * dy - (pts[i][1] - ay) * dx) / norm
+        if d > worst:
+            far, worst = i, d
+    if worst <= tol:
+        return [pts[0], pts[-1]]
+    return simplify(pts[:far + 1], tol)[:-1] + simplify(pts[far:], tol)
+
+
 def polys_overlap(a, b):
     """Convex polygons overlap (separating axis)."""
     for poly in (a, b):
@@ -84,7 +105,7 @@ class Roads:
         return m + {'e': w / 4, 'w': -w / 4, 'n': -w / 4, 's': w / 4}[heading]
 
 
-def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
+def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car, quiet_mask):
     roads = Roads(roads_list)
     RL, RR = v('turn_left_r'), v('turn_right_r')
     res = world.res
@@ -96,6 +117,10 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     def kept(x, y):
         ix, iy = int((x - world.x0) / res), int((y - world.y0) / res)
         return 0 <= iy < keep_mask.shape[0] and 0 <= ix < keep_mask.shape[1] and bool(keep_mask[iy, ix])
+
+    def quiet(x, y):   # the stations and the slopes, which keep their own paint
+        ix, iy = int((x - world.x0) / res), int((y - world.y0) / res)
+        return 0 <= iy < quiet_mask.shape[0] and 0 <= ix < quiet_mask.shape[1] and bool(quiet_mask[iy, ix])
 
     # ------------------------------------------------------------ junction boxes: where roads meet
     junctions = []
@@ -363,27 +388,125 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
     stop_lines += [[[round(zx - zlen / 2 - zs, 2), round(spine_m, 2)], [round(zx - zlen / 2 - zs, 2), round(spine_m + spine_w / 2 - 0.2, 2)]],
                    [[round(zx + zlen / 2 + zs, 2), round(spine_m - spine_w / 2 + 0.2, 2)], [round(zx + zlen / 2 + zs, 2), round(spine_m, 2)]]]
     give_way = [merge['give_way']]
+    triangles = [dict(at=[round((merge['give_way'][0][0] + merge['give_way'][1][0]) / 2, 2), round((merge['give_way'][0][1] + merge['give_way'][1][1]) / 2, 2)],
+                      heading_deg=merge['heading_deg'])]
+
+    # Edge lines (4.1.6, Fig 9; the owner, 2 Nov: "each side of road should have a line tracing the side of the road"):
+    # every kerb traced edge_in in from it, round the corners and the islands, as the pavement's distance from its edge
+    # contoured at edge_in. Where there is no kerb, across a road's mouth, there is no line. None on the stations or the
+    # slopes, which keep their own paint (they were missing wherever the centre lines' keep-out was, and on every bend).
     edge_lines = []
-    for r in roads_list:
-        if r['width'] < 6.0:
+
+    def flush(run):
+        if len(run) > 1 and sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(run, run[1:])) >= 2.0:
+            edge_lines.append([[round(x, 2), round(y, 2)] for x, y in simplify(run, 0.02)])
+
+    for line in contourpy.contour_generator(z=world.field, line_type='Separate').lines(v('edge_in')):
+        runs, run = [], []
+        for col, row in line:
+            x, y = world.x0 + float(col) * res, world.y0 + float(row) * res
+            if quiet(x, y):
+                if run:
+                    runs.append(run)
+                run = []
+            else:
+                run.append((x, y))
+        if run:
+            runs.append(run)
+        closed = len(line) > 2 and abs(line[0][0] - line[-1][0]) < 1e-6 and abs(line[0][1] - line[-1][1]) < 1e-6
+        if closed and len(runs) > 1 and runs[0][0] == (world.x0 + float(line[0][0]) * res, world.y0 + float(line[0][1]) * res):
+            runs[0] = runs.pop() + runs[0]   # a loop broken by a station: its two ends are one run
+        for r_ in runs:
+            flush(r_)
+
+    # Stop lines at every junction (the owner, 2 Nov: "a solid line should be drawn before exiting every junction"):
+    # across each arm's way in, its keep-left half (the whole lane where it is one-way, under 6 m), stop_off back from
+    # the box (4.2.2). Not on an arm that is only the few metres between two boxes (the spine and top roads' boxes
+    # stand 3 to 5 m apart), nor where a signal's or the zebra's line is already, nor on a station.
+    so = v('stop_off')
+    for j in junctions:
+        bx0, by0, bx1, by1 = extent(j['polygon'])
+        mx, my = (bx0 + bx1) / 2, (by0 + by1) / 2
+        arms = {   # side: (the way out of the box, a point just outside it, the arm's width, the line at stop_off)
+            'N': ((0, 1), (mx, by1 + 1.0), bx1 - bx0, lambda a, b: [(a, by1 + so), (b, by1 + so)]),
+            'S': ((0, -1), (mx, by0 - 1.0), bx1 - bx0, lambda a, b: [(a, by0 - so), (b, by0 - so)]),
+            'E': ((1, 0), (bx1 + 1.0, my), by1 - by0, lambda a, b: [(bx1 + so, a), (bx1 + so, b)]),
+            'W': ((-1, 0), (bx0 - 1.0, my), by1 - by0, lambda a, b: [(bx0 - so, a), (bx0 - so, b)]),
+        }
+        for side, ((ox, oy), (px, py), w, line_at) in arms.items():
+            if not paved(px, py):
+                continue
+            if any(k is not j and any(in_poly((px + ox * t_, py + oy * t_), k['polygon']) for t_ in np.arange(0.0, 8.0, 0.5)) for k in junctions):
+                continue
+            lo, hi = (bx0, bx1) if side in 'NS' else (by0, by1)
+            mid = (lo + hi) / 2
+            if w < 6.0:
+                a, b = lo + 0.2, hi - 0.2
+            else:   # coming in, a driver keeps left: north arm the east half, south the west, east the south, west the north
+                a, b = {'N': (mid, hi - 0.2), 'S': (lo + 0.2, mid), 'E': (lo + 0.2, mid), 'W': (mid, hi - 0.2)}[side]
+            seg = line_at(a, b)
+            c = ((seg[0][0] + seg[1][0]) / 2, (seg[0][1] + seg[1][1]) / 2)
+            if quiet(*c) or any(math.hypot(c[0] - (q[0][0] + q[1][0]) / 2, c[1] - (q[0][1] + q[1][1]) / 2) < 2.5 for q in stop_lines + give_way):
+                continue
+            stop_lines.append([[round(seg[0][0], 2), round(seg[0][1], 2)], [round(seg[1][0], 2), round(seg[1][1], 2)]])
+
+    # The roundabout (the owner, 2 Nov: "there's no line in roundabout"): its edges are traced above, round the island
+    # too; each entry gets a give-way line across its way in where it meets the circle, and the triangle before it
+    # (4.2.3, Fig 12), as the merge's has. Entries are the directions in which the pavement runs on past the circle.
+    (rcx, rcy), rb_r = L['rb_c'], L['rb_r']
+
+    def ray(a_deg, r_):
+        return rcx + r_ * math.cos(math.radians(a_deg)), rcy + r_ * math.sin(math.radians(a_deg))
+
+    # how far the pavement runs out from the circle in each direction: to its outer kerb, or on, along an arm
+    reach_out = []
+    for a_ in range(360):
+        r_ = rb_r - 2.0   # past the island
+        while r_ < 22.0 and paved(*ray(a_, r_)):
+            r_ += 0.1
+        reach_out.append(r_)
+    kerb_r = float(np.median([r_ for r_ in reach_out if r_ < 16.0]))
+    r_line = kerb_r + 0.5   # just outside the circle's outer edge
+    arm = [r_ > 16.0 for r_ in reach_out]
+    first = arm.index(False)
+    runs, run = [], []
+    for k_ in list(range(first, 360)) + list(range(first)):
+        if arm[k_]:
+            run.append(k_)
+        elif run:
+            runs.append(run)
+            run = []
+    if run:
+        runs.append(run)
+    for run in runs:
+        mid_a = run[len(run) // 2]
+        if not paved(*ray(mid_a, r_line)):
             continue
-        for a, b, m, w in r['sections']:
-            for sgn in (1, -1):
-                cur = []
-                for t_ in list(np.arange(a, b + 0.01, 0.25)) + [None]:
-                    ok = False
-                    if t_ is not None:
-                        off = m + sgn * (w / 2 - v('edge_in'))
-                        out = m + sgn * (w / 2 + 0.4)
-                        x, y = (t_, off) if r['axis'] == 'ew' else (off, t_)
-                        xo, yo = (t_, out) if r['axis'] == 'ew' else (out, t_)
-                        ok = paved(x, y) and not paved(xo, yo) and not kept(x, y) and not any(in_poly((x, y), j['polygon']) for j in junctions)
-                    if ok:
-                        cur.append([round(float(x), 2), round(float(y), 2)])
-                    elif cur:
-                        if math.hypot(cur[-1][0] - cur[0][0], cur[-1][1] - cur[0][1]) >= 3.0:
-                            edge_lines.append([cur[0], cur[-1]])
-                        cur = []
+        # the mouth, along the circle at r_line, from the arm's middle out to its kerbs on either side
+        lo_a, hi_a = mid_a, mid_a
+        while paved(*ray(lo_a - 0.5, r_line)) and mid_a - lo_a < 90:
+            lo_a -= 0.5
+        while paved(*ray(hi_a + 0.5, r_line)) and hi_a - mid_a < 90:
+            hi_a += 0.5
+        p_lo, p_hi = ray(lo_a, r_line), ray(hi_a, r_line)
+        w = math.dist(p_lo, p_hi)
+        if w < 3.0:
+            continue
+        mx_, my_ = (p_lo[0] + p_hi[0]) / 2, (p_lo[1] + p_hi[1]) / 2
+        th = math.atan2(my_ - rcy, mx_ - rcx)   # the way out along the arm
+        lx, ly = math.sin(th), -math.cos(th)    # the left of a driver coming in, towards the middle
+        keep_end = p_lo if (p_lo[0] - mx_) * lx + (p_lo[1] - my_) * ly > 0 else p_hi
+        u = ((keep_end[0] - mx_) / (w / 2), (keep_end[1] - my_) / (w / 2))
+        if w < 6.0:   # one-way: the whole mouth
+            far_end = p_hi if keep_end is p_lo else p_lo
+            seg = [(far_end[0] + u[0] * 0.2, far_end[1] + u[1] * 0.2), (keep_end[0] - u[0] * 0.2, keep_end[1] - u[1] * 0.2)]
+        else:
+            seg = [(mx_, my_), (keep_end[0] - u[0] * 0.2, keep_end[1] - u[1] * 0.2)]
+        c = ((seg[0][0] + seg[1][0]) / 2, (seg[0][1] + seg[1][1]) / 2)
+        if any(math.hypot(c[0] - (q[0][0] + q[1][0]) / 2, c[1] - (q[0][1] + q[1][1]) / 2) < 5.0 for q in give_way):
+            continue   # the merge's entry has its line
+        give_way.append([[round(seg[0][0], 2), round(seg[0][1], 2)], [round(seg[1][0], 2), round(seg[1][1], 2)]])
+        triangles.append(dict(at=[round(c[0], 2), round(c[1], 2)], heading_deg=round((math.degrees(th) + 180.0) % 360.0, 1)))
 
     # the second 3-side parking bay (the owner, 20 Oct): the pocket off the lane cut into island F, painted as station
     # 2's is, with another learner reversed into it
@@ -396,6 +519,6 @@ def build(L, pts, stations, roads_list, world, keep_mask, Turtle, car):
                    parameters={k: dict(value=val, source=src, note=note) for k, (val, src, note) in DESIGN.items()})
     # yellow box junctions at J1 (signalled) and J2 (the crossroads): no waiting in them (JKR 4.3.7, Fig 24)
     yellow_boxes = [J1['polygon'], J2['polygon']]
-    markings = dict(edge_lines=edge_lines, stop_lines=stop_lines, give_way=give_way, arrows=arrows, chevrons=chevrons, zebras=[zebra],
-                    yellow_boxes=yellow_boxes, bays=[twin_bay])
+    markings = dict(edge_lines=edge_lines, stop_lines=stop_lines, give_way=give_way, triangles=triangles, arrows=arrows, chevrons=chevrons,
+                    zebras=[zebra], yellow_boxes=yellow_boxes, bays=[twin_bay])
     return traffic, markings, zebra_box, [lp['points'] for lp in loops], twin_bay

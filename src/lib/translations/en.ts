@@ -365,7 +365,7 @@ export const en = {
   "sim.hud.signalRight":           "Right turn signal",
   "sim.hud.mirrorCheck":           "Mirror check",
   "sim.tips.hill-start":           "Stop with both front tyres on the yellow band and pull the handbrake. Hold still for 2 s, then pull away without rolling back more than 0.30 m.",
-  "sim.tips.side-parking":         "Drive past the bay, reverse in and stop inside the lines. Pull the handbrake for 1 s to say done, then drive out.",
+  "sim.tips.side-parking":         "Drive past the bay. Stop when your door mirrors line up with the two black-and-white poles, turn the wheel fully right and reverse in. Stop inside the lines, pull the handbrake for 1 s to say done, then drive out.",
   "sim.tips.parallel-parking":     "Reverse into the box and stop inside the lines. Pull the handbrake for 1 s to say done, then drive out.",
   "sim.tips.three-point-turn":     "Turn the car round in three movements: forward, reverse, forward. Keep the tyres off the kerbs.",
   "sim.tips.s-curve":              "Keep moving through the S below 18 km/h, with every tyre off the kerbs.",

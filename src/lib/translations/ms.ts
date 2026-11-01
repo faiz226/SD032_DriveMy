@@ -366,7 +366,7 @@ export const ms: Record<TranslationKey, string> = {
   "sim.hud.signalRight":           "Isyarat belok kanan",
   "sim.hud.mirrorCheck":           "Pemeriksaan cermin",
   "sim.tips.hill-start":           "Berhenti dengan kedua-dua tayar depan di atas jalur kuning dan tarik brek tangan. Kekal pegun 2 s, kemudian bergerak tanpa mengundur lebih 0.30 m.",
-  "sim.tips.side-parking":         "Pandu melepasi petak, undur masuk dan berhenti di dalam garisan. Tarik brek tangan 1 s sebagai tanda selesai, kemudian pandu keluar.",
+  "sim.tips.side-parking":         "Pandu melepasi petak. Berhenti apabila cermin sisi sebaris dengan dua tiang hitam putih, pusing stereng penuh ke kanan dan undur masuk. Berhenti di dalam garisan, tarik brek tangan 1 s sebagai tanda selesai, kemudian pandu keluar.",
   "sim.tips.parallel-parking":     "Undur masuk ke dalam kotak dan berhenti di dalam garisan. Tarik brek tangan 1 s sebagai tanda selesai, kemudian pandu keluar.",
   "sim.tips.three-point-turn":     "Pusingkan kereta dalam tiga gerakan: ke depan, undur, ke depan. Jauhkan tayar dari bebendul.",
   "sim.tips.s-curve":              "Terus bergerak melalui selekoh S di bawah 18 km/j, tanpa tayar menyentuh bebendul.",

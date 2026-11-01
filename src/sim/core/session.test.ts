@@ -80,15 +80,13 @@ describe('assessment run', () => {
     d.rollBack(0.35);
     d.stop(0.5);
     d.follow(CREST() + 5, 8);
-    sideReverseIn(d);                                     // side parking: touch a pole
-    d.hitPole(0);
-    d.tick();
+    sideReverseIn(d);                                     // side parking: cleared (it has no poles since 2 Nov)
     d.stop(1.5, true);
     d.rs = SIDE.inBay;
     d.follow(station('side-parking').s_to + 2, 8);
-    const par = station('parallel-parking');              // parallel: done half a metre out into the lane
+    const par = station('parallel-parking');              // parallel: a mirror 0.2 m out past the line at the mouth
     parallelReverseIn(d);
-    d.glide([d.at[0] + 0.5, d.at[1]], d.heading, 1);
+    d.glide([d.at[0] + par.bay!.width / 2 - swift.width_mirrors_m / 2 + 0.2, d.at[1]], d.heading, 1);
     d.stop(1.5, true);
     d.arc(R_LOCK * PAR.phi, 4, -LOCK);
     d.arc(R_LOCK * PAR.phi, 4, LOCK);
@@ -101,9 +99,9 @@ describe('assessment run', () => {
 
     const v = d.last.verdict!;
     expect(v.pass).toBe(false);
-    expect([...new Set(v.faults.map((f) => f.kind))].sort()).toEqual(['cone', 'kerb', 'not_in_bay', 'pole', 'rollback', 'station_failed']);
-    expect(v.failedStations).toEqual(['hill-start', 'side-parking', 's-curve']);
-    expect(v.demerits).toBe(5 + 5 + 20 + 20 + 10);
+    expect([...new Set(v.faults.map((f) => f.kind))].sort()).toEqual(['cone', 'kerb', 'not_in_bay', 'rollback', 'station_failed']);
+    expect(v.failedStations).toEqual(['hill-start', 's-curve']);
+    expect(v.demerits).toBe(5 + 5 + 20 + 10);
     for (const f of v.faults) {
       expect(f.basis.length, f.kind).toBeGreaterThan(0);
       expect(en[f.reasonKey as keyof typeof en], f.reasonKey).toBeTruthy();
@@ -248,15 +246,6 @@ describe('side parking', () => {
     expect(d.last.demerits).toBe(points);
   });
 
-  it('costs 20 and fails when a pole is touched', () => {
-    const d = drill('side-parking');
-    sideReverseIn(d);
-    d.hitPole(0);
-    d.tick();
-    expect(status(d, 'side-parking')).toBe('failed');
-    expect(d.last.faults.map((f) => [f.kind, f.points])).toEqual([['pole', 20]]);
-  });
-
   it.each([[0.98, 'failed'], [1.0, 'cleared']])('a %s s handbrake stop in the bay: %s', (secs, want) => {
     const d = drill('side-parking');
     sideReverseIn(d);
@@ -290,10 +279,10 @@ describe('parallel parking', () => {
     expect(d.last.faults).toEqual([]);
   });
 
-  it('costs 10 when done half a metre out into the lane', () => {
+  it('costs 10 when a mirror sticks out 0.2 m past the line at the recess mouth', () => {
     const d = drill('parallel-parking');
     parallelReverseIn(d);
-    parkAt(d, 'parallel-parking', -0.5);
+    parkAt(d, 'parallel-parking', -(station('parallel-parking').bay!.width / 2 - swift.width_mirrors_m / 2 + 0.2));
     d.stop(1.5, true);
     expect(d.last.faults.map((f) => f.kind)).toEqual(['not_in_bay']);
   });

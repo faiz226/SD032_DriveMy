@@ -302,7 +302,7 @@ def main():
     for crit in ('tyre', 'body'):
         b = reverse_into_bay(car, world, sp['bay'], aisle, crit=crit)
         record('possible', 'side parking: reverse into the bay (%s)' % crit, b is not None,
-               ('one full-lock arc then straight back; ends %.1f deg off (limit %.1f deg); poles untouched' % (b[0], lim)) if b
+               ('one full-lock arc then straight back; ends %.1f deg off (limit %.1f deg)' % (b[0], lim)) if b
                else 'no single-arc plan found')
     pp = by['parallel-parking']
     slot = dict(centre=pp['bay']['centre'], length=pp['bay']['length'], width=pp['bay']['width'])
@@ -423,6 +423,36 @@ def main():
     record('possible', 'every signal is seen from the first and second car in its queue', not unseen and not on_road,
            ('; '.join(unseen) or ('posts on the road: %s' % on_road) if (unseen or on_road) else '%d approaches; e.g. %s' % (len(seen) // 2, seen[0])))
 
+    # the paint (the owner, 2 Nov: "each side of road should have a line tracing the side of the road", "a solid line
+    # before every junction", "no line in roundabout"): a kerb sampled every metre has an edge line 0.2 to 0.45 m in
+    # from it, except on the stations, the slopes and the walls; every roundabout entry has a give-way line
+    mk = C.get('markings') or {}
+    segs = np.array([(a[0], a[1], b[0], b[1]) for pl in mk.get('edge_lines', []) for a, b in zip(pl, pl[1:])]) if mk.get('edge_lines') else np.zeros((0, 4))
+    on_station = np.array([(q[1], q[2]) for q in samples if q[5] in {st['id'] for st in stations} and q[5] != 'road-merging'])
+    feet = [(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + sl['profile'][-1][0] + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0) for sl in C['slopes']]
+    def ring_area(r):
+        return abs(sum(r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1] for i in range(len(r)))) / 2
+    lined = total = 0
+    for ring in C['kerbs']['rings']:
+        if ring_area(ring) < 40.0:
+            continue   # a wall or a divider
+        for (ax, ay), (bx, by) in zip(ring, ring[1:] + ring[:1]):
+            n = max(1, int(math.hypot(bx - ax, by - ay)))
+            for k in range(n):
+                px, py = ax + (bx - ax) * (k + 0.5) / n, ay + (by - ay) * (k + 0.5) / n
+                if (len(on_station) and np.min(np.hypot(on_station[:, 0] - px, on_station[:, 1] - py)) < 5.0) or any(f[0] <= px <= f[2] and f[1] <= py <= f[3] for f in feet):
+                    continue
+                total += 1
+                if len(segs):
+                    dx, dy = segs[:, 2] - segs[:, 0], segs[:, 3] - segs[:, 1]
+                    t = np.clip(((px - segs[:, 0]) * dx + (py - segs[:, 1]) * dy) / np.maximum(dx * dx + dy * dy, 1e-9), 0, 1)
+                    d = np.min(np.hypot(px - segs[:, 0] - t * dx, py - segs[:, 1] - t * dy))
+                    lined += 0.2 <= d <= 0.45
+    covered = lined / max(1, total)
+    entries = len(mk.get('give_way', []))
+    record('organised', 'the kerbs carry edge lines; the junctions and the roundabout their lines', covered >= 0.9 and len(mk.get('stop_lines', [])) >= 20 and entries >= 3,
+           '%.0f%% of %d m of road kerb has its edge line (need >= 90%%); %d stop lines; %d give-way lines' % (100 * covered, total, len(mk.get('stop_lines', [])), entries))
+
     # ---------------------------------------------------------------- 5 Cheap
     print('\n5 CHEAP')
     kerb_len = sum(float(np.hypot(*np.diff(np.asarray(r), axis=0).T).sum()) for r in C['kerbs']['rings'])
@@ -433,8 +463,8 @@ def main():
            '%d vertices, %.0f m of kerb (about %d instances at 1 m)' % (kerb_vertices, kerb_len, kerb_len))
     record('cheap', 'circuit data is small', size_kb < 400, '%.0f KB uncompressed' % size_kb)
     props = C['props']
-    record('cheap', 'few props', len(props['booths']) + 1 + len(C['obstacles']['poles']) <= 14,
-           '%d booths, 1 office, %d poles' % (len(props['booths']), len(C['obstacles']['poles'])))
+    record('cheap', 'few props', len(props['booths']) + 1 + len(C['obstacles']['poles']) + len(props.get('ref_poles', [])) <= 14,
+           '%d booths, 1 office, %d pole, %d reference poles' % (len(props['booths']), len(C['obstacles']['poles']), len(props.get('ref_poles', []))))
 
     print('\n%s: %d checks, %d failed (%.0f s)' % ('PASS' if not failures else 'FAIL', len(results), len(failures), time.time() - t0))
     with open(os.path.join(HERE, 'check_report.json'), 'w', encoding='utf-8') as f:

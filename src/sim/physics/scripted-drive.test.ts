@@ -105,7 +105,6 @@ describe('acceptance runs through the real controls (WP6)', () => {
     const want: [string, string | undefined, string][] = [
       ['rollback', undefined, 'hill-start'],
       ['not_in_bay', undefined, 'side-parking'],
-      ['pole', undefined, 'side-parking'],
       ['station_failed', 'sim.fault.s.speed', 's-curve'],
       ['kerb', undefined, 'z-curve'],
       ['station_failed', 'sim.fault.ramp.window', 'ramp-test'],

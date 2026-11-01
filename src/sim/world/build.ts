@@ -351,11 +351,10 @@ export function buildWorld(c: CircuitData): WorldBuild {
   for (const line of marks?.edge_lines ?? []) for (let i = 1; i < line.length; i++) strip(line[i - 1], line[i], EDGE_M, WHITE);
   for (const [a, b] of marks?.stop_lines ?? []) strip(a, b, STOP_M, WHITE);
   for (const [a, b] of marks?.give_way ?? []) dashed(a, b, GIVE_WAY.width, GIVE_WAY.dash, GIVE_WAY.gap, WHITE);
-  // the merge's give-way triangle (Fig 12): an outline, its base 2.75 m before the line, its point at the drivers
-  const merge = c.traffic?.merge;
-  if (merge) {
-    const [a, b] = merge.give_way;
-    const t = place([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], rad(merge.heading_deg));
+  // a give-way triangle (Fig 12) before each give-way line: an outline, its base 2.75 m before the line, its point at
+  // the drivers
+  for (const tri of marks?.triangles ?? []) {
+    const t = place(tri.at, rad(tri.heading_deg));
     const g = GIVE_WAY_SIGN;
     const apex = -g.back - g.long;
     const half = (x: number) => (g.wide / 2) * ((x - apex) / g.long);           // the half width at x
@@ -493,6 +492,8 @@ export function buildWorld(c: CircuitData): WorldBuild {
     }
   };
   // where each station's queue stops: a yellow and black pole on the grass, a plate on top facing the road
+  // reference poles on the grass (the side bay's): black and white, where the door mirrors line up before reversing in
+  for (const r of c.props.ref_poles ?? []) post(r.at, MARKER.radius, 0, r.height, MARKER.band, [[0.08, 0.08, 0.08], [0.95, 0.95, 0.95]]);
   for (const w of c.traffic?.waiting ?? []) {
     post(w.pole, MARKER.radius, 0, MARKER.height, MARKER.band, [[0.08, 0.08, 0.08], YELLOW]);
     box(w.pole, [0.04, MARKER.plate], w.heading_deg + 90, MARKER.height - 0.05, MARKER.height - 0.05 + MARKER.plate, YELLOW);

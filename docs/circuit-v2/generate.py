@@ -58,7 +58,7 @@ P = {
     'pole_out':      (0.3,   'decided', 'Poles at the four bay corners, 0.3 m outside the lines (guides: touching a pole fails)'),
     'par_slot_l':    (6.60,  'photo',   'Parallel recess in the top-left island, along lane A-B'),
     'par_slot_w':    (3.77,  'photo',   'Parallel recess depth'),
-    'par_box_w':     (2.5,   'decided', 'Painted parking box inside the recess, against its kerb, 6.6 x 2.5 m (v1 value, kept on 14 Oct)'),
+    'par_box_w':     (3.77,  'decided', 'Painted parking box: the whole recess, its outer line from one kerb corner to the other (the owner, 2 Nov: the 2.5 m box sat too deep inside the recess)'),
     'tpt_w':         (7.64,  'photo',   'Three-point-turn lane: the real lane beside the Z, decided on 14 Oct to be the three-point-turn lane; inside the car-derived 6.0-9.5 m window'),
     's_w':           (3.6,   'photo',   'S lane, kerb to kerb (real p10-p90 3.35-3.76 m, median 3.6 m)'),
     's_r':           (7.5,   'photo',   'S centreline radius (real median 7.5 m and 7.1 m)'),
@@ -663,12 +663,15 @@ def main():
     up = v('hill_up')
     stop_s = s_of('hill_ramp_a') + v('hill_stop') * up
     bay_c = (L['pocket_x'], L['pocket_mouth'] + v('side_bay_l') / 2)
-    poles = []
-    lat = v('side_bay_w') / 2 + v('pole_out')
-    for py in (L['pocket_mouth'] - v('pole_out'), L['pocket_mouth'] + v('side_bay_l') + v('pole_out')):
-        for sx in (-1, 1):
-            poles.append(dict(station='side-parking', at=[round(bay_c[0] + sx * lat, 3), round(py, 3)], radius=0.05,
-                              height=1.2, status='decided 14 Oct: four corners, 0.3 m outside the lines'))
+    poles = []   # the side bay has none (the owner, 2 Nov)
+    # Reference poles for the side bay (the owner, 2 Nov: "add pole in red circles and tell the driver the ideal place
+    # to stop"): one on the grass either side of the band, on the line through the door mirrors where a driver stops to
+    # reverse in (rear axle at side_stop_x, heading west): stop with the mirrors on the poles, full lock right, reverse
+    mirror_x = L['side_stop_x'] - (2.45 / 2 + 0.535)   # the mirrors, 0.535 m ahead of the wheelbase's middle (swift-2022.ts)
+    band_n, band_s = M(0, 626.5)[1], M(0, 675)[1]
+    ref_poles = [dict(station='side-parking', at=[round(mirror_x, 3), round(y_, 3)], height=1.5,
+                      note='line up the door mirrors with this pole and its twin across the band, then reverse in on full right lock')
+                 for y_ in (band_n + 0.75, band_s - 0.75)]
     pole_at = (end_x - v('ramp_pole_in'), ramp_y)
     poles.append(dict(station='ramp-test', at=[round(pole_at[0], 3), round(pole_at[1], 3)], radius=0.05, height=1.2,
                       base_z=v('ramp_rise'), status='decided 14 Oct: on the platform centreline'))
@@ -698,7 +701,7 @@ def main():
              pocket=par_recess,
              bay=dict(centre=[round(par_c[0], 3), round(par_c[1], 3)], axis_deg=90.0,
                       length=v('par_slot_l'), width=v('par_box_w'), kerbed=True,
-                      note='painted box against the recess kerb; the recess itself is 3.77 m deep'),
+                      note='the painted box is the whole recess: its outer line runs from one kerb corner to the other'),
              gates=[gate(pts, s_of('par_in'), gid='enter'), gate(pts, s_of('par_out'), gid='leave')]),
         dict(id='s-curve', order=4, title='S-Curve', s_from=s_of('s_in'), s_to=s_of('s_out'),
              gates=[gate(pts, s_of('s_a'), gid='entry'), gate(pts, (s_of('s_a') + s_of('s_mid')) / 2, gid='apex-1'),
@@ -725,14 +728,18 @@ def main():
     # ------------------------------------------------------------ lane lines (the owner, 20 Oct)
     # Two-way roads, keeping left, with an unbroken centre line; the stations stay one car wide and unmarked.
     keep = World(*site, res=world.res)
+    # the stations and the slopes alone: no edge lines or stop lines there either. Road merging is ordinary road (the
+    # roundabout), and the side bay's band and the parallel recess's lane are aisles: painted as any other, their kerbs
+    # traced as in the real yard (the owner, 2 Nov); their bays keep only their own lines
+    quiet = World(*site, res=world.res)
     for st in stations:
         for poly in corridor_polys(pts, st['s_from'] - 2.0, st['s_to'] + 4.0):   # + 4: the nose, 3.1 m ahead of the rear axle
             keep.add(poly)
-        for key in ('pocket', 'box'):
-            if key in st:
-                keep.add(st[key])
-    for poly in z_legs + z_fill:
+            if st['id'] not in ('road-merging', 'side-parking', 'parallel-parking'):
+                quiet.add(poly)
+    for poly in [st[key] for st in stations for key in ('pocket', 'box') if key in st] + z_legs + z_fill:
         keep.add(poly)
+        quiet.add(poly)
     # wherever the route bends off a road's axis (a turn at a junction or a station's mouth, a sideways shift), the
     # line clears the car's swept footprint by 0.5 m: a turning car's nose swings wide of its path
     car = json.load(open(os.path.join(HERE, 'car-swift-2022.json'), encoding='utf-8'))
@@ -744,12 +751,26 @@ def main():
             keep.add([(q[1] + c * al - sn * ac, q[2] + sn * al + c * ac) for al, ac in ((-back, -side), (nose, -side), (nose, side), (-back, side))])
     for sl in (hill, ramp, hill_twin, ramp_twin):                 # no lines on any slope, a twin's included
         length = sl['profile'][-1][0]
-        keep.add(rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0))
+        foot = rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0)
+        keep.add(foot)
+        quiet.add(foot)
     keep.finish()
+    quiet.finish()
     centre_lines, roads = lane_centres(world, keep.mask)
     # the other cars, the signals, the merge, the queues and the rest of the paint (traffic_gen.py)
     LT = dict(L, hill_w=v('hill_w'), wall_w=v('wall_w'), hill_x0_wall=hx0, marks={k: m['s'] for k, m in t.marks.items()}, M=M)
-    traffic, more_paint, zebra_box, loop_paths, twin_bay = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car)
+    traffic, more_paint, zebra_box, loop_paths, twin_bay = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car, quiet.mask)
+    # a solid line across each station lane where it comes out onto a road (the owner, 2 Nov, drawn at the S-curve's
+    # exit), just inside its mouth, kerb to kerb
+    for sid in ('s-curve', 'z-curve'):
+        st = next(s_ for s_ in stations if s_['id'] == sid)
+        q = min(pts, key=lambda q_: abs(q_[0] - (st['s_to'] - 0.3)))
+        ax, ay = -math.sin(q[3]), math.cos(q[3])
+        half = q[4] / 2 - 0.2
+        more_paint['stop_lines'].append([[round(q[1] - ax * half, 2), round(q[2] - ay * half, 2)], [round(q[1] + ax * half, 2), round(q[2] + ay * half, 2)]])
+    for rp in ref_poles:
+        ix, iy = int((rp['at'][0] - world.x0) / world.res), int((rp['at'][1] - world.y0) / world.res)
+        assert not world.mask[iy, ix], 'a reference pole on the pavement: %s' % rp
     centre_lines = break_lines(centre_lines, [[(q[1], q[2]) for q in pts]] + loop_paths, [j['polygon'] for j in traffic['junctions']])
     centre_lines = cut_box(centre_lines, zebra_box, 4.0)              # no centre line across or just before the zebra
     for r in roads:
@@ -807,7 +828,7 @@ def main():
                            'dash 0 and gap 0: unbroken', **more_paint),
         traffic=traffic,
         props=dict(booths=booths, office=office, fence=site,
-                   npc_cars=npc_cars + [dict(on='side-twin', at=twin_bay['centre'], heading_deg=180.0)]),
+                   npc_cars=npc_cars + [dict(on='side-twin', at=twin_bay['centre'], heading_deg=180.0)], ref_poles=ref_poles),
         spawn=spawn,
     )
     out = rnd(out)

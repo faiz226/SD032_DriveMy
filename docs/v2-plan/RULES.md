@@ -47,8 +47,8 @@ verdict is a fail from then on, and the run carries on (`end_run_at_fail` is fal
 | # | Station | Time | Cleared when | Fails when | Basis |
 |---|---|---|---|---|---|
 | 1 | Hill Start | 3 min | Both front tyres stop on the yellow stop band. The car holds still (5 cm at most) for 2 s with the handbrake on. It then moves off over the crest with no rollback. | Crosses the crest without that stop; rollback (also 20 demerits) | guides: front tyre on the yellow line, handbrake on, 3 min. decided: 2 s hold, 5 cm |
-| 2 | 3-Side Parking | 5 min | The learner signals "done" by stopping with the handbrake on for 1 s. At that moment the whole car, **mirrors included** (1.847 m wide), is inside the painted bay, within the heading limit. | Touches a pole (also 20). Outside at "done" costs 10 (not in bay) but still counts as done. | rubric; guides: the right mirror must be inside the box, a pole touch fails. decided: handbrake as the "done" signal |
-| 3 | Parallel Park | 5 min | Same as Side Parking, in the painted 6.6 × 2.5 m box inside the real recess (6.6 × 3.77 m). The heading limit is 10.2° with mirrors. | Same as Side Parking | rubric + guides + decided |
+| 2 | 3-Side Parking | 5 min | The learner signals "done" by stopping with the handbrake on for 1 s. At that moment the whole car, **mirrors included** (1.847 m wide), is inside the painted bay, within the heading limit. | Outside at "done" costs 10 (not in bay) but still counts as done. No poles stand round the bay (the owner, 2 Nov); two reference poles on the grass mark where to stop before reversing in. | rubric; guides: the right mirror must be inside the box. decided: handbrake as the "done" signal |
+| 3 | Parallel Park | 5 min | Same as Side Parking, in the painted box: the whole recess, 6.6 × 3.77 m, its outer line from one kerb corner to the other (the owner, 2 Nov: the 2.5 m box sat too deep inside). The heading limit is 36.5° with mirrors. | Same as Side Parking | rubric + guides + the owner |
 | 4 | S-Curve | 3 min | Gates passed in order, with the speed held at 1–18 km/h | More than 1.2 s outside the band (assessment). Practice mode restarts the drill instead. | PRD |
 | 5 | Z-Curve | 3 min | Gates passed in order. A corner gate counts only at 12 km/h or slower; too fast does not fail, the gate just waits. | Time limit, or passing it by | PRD |
 | 6 | Ramp Test | 5 min | Drive up the ramp. Stop with the front bumper **0.2–1.0 m short of the pole**. Hold still for 2 s. Then reverse back down and out past the mouth. | Touching the pole (also 20). Driving on after stopping only outside the window (the verdict shows the measured gap) | guides: a DA learner, "climb onto the cement block, don't hit the pole in the middle"; 5 min. decided: the stop window, the hold, the reverse out |
@@ -84,9 +84,13 @@ handbrake is also the "I'm done" signal in both parking bays.
   - The platform is 7 m long, with the pole on the centreline 0.4 m before the end wall.
   - These dimensions are decided; there is no public source.
 - **Side bay:**
-  - A painted 2.6 × 5.6 m bay inside the real 4.72 × 5.78 m pocket.
-  - Four poles, one at each corner of the bay, 0.3 m outside the lines.
-- **Parallel box:** a painted 6.6 × 2.5 m box against the kerb of the real 6.6 × 3.77 m recess.
+  - A painted 2.6 × 5.6 m bay inside the real 4.72 × 5.78 m pocket, with no poles round it (the owner, 2 Nov).
+  - Two black-and-white reference poles, one on the grass either side of the band, on the line through the door
+    mirrors where a driver stops to reverse in: mirrors on the poles, full lock right, reverse.
+- **Parallel box:** the whole 6.6 × 3.77 m recess, its outer line from one kerb corner to the other.
+- **Markings** (the owner, 2 Nov): an edge line traces every kerb, round the corners, the islands and the
+  roundabout (not on the S, the Z, the slopes or inside a bay); a solid stop line crosses each junction arm's way in
+  and each station lane where it comes out onto a road; each roundabout entry has a give-way line and triangle.
 
 ## Modes
 

@@ -34,7 +34,7 @@ describe('the world is placed from circuit.json', () => {
     for (const s of circuit.slopes) { near(find(`slope:${s.id}`), toThree(s.start[0], s.start[1]), `slope ${s.id}`); count++; }
     circuit.props.booths.forEach((b, i) => { near(find(`booth:${i}`), toThree(b.centre[0], b.centre[1]), `booth ${i}`); count++; });
     near(find('spawn'), toThree(circuit.spawn.at[0], circuit.spawn.at[1]), 'spawn');
-    expect(count).toBeGreaterThan(40);
+    expect(count).toBeGreaterThan(35);
   });
 
   it('puts a collider on every pole, carrying its index', () => {

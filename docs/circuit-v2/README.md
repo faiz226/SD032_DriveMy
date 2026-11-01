@@ -42,8 +42,8 @@ band, as a real yard does. It breaks once, where the car reverses into the side 
 | # | Station | Route s (m) | As built | Basis |
 |---|---|---|---|---|
 | 1 | Hill Start | 10–41 | Strip 25.75 × 4.5 m with kerbed walls: up 10.8 m, flat 4.15 m, down 10.8 m. Rise 1.3 m (12%). Yellow stop band 0.6 m long at a third of the rise. A twin strip beside it holds another learner. | Photo (strip 26.6 × 4.6 m); PRD lengths; rise and band decided |
-| 2 | 3-Side Parking | 131–162 | Pocket 4.72 × 5.78 m off a 4.58 m band. Painted bay 2.6 × 5.6 m, four poles 0.3 m outside its corners. A second bay, in island F's notch, holds another learner. | Photo (pocket and band); bay and poles decided |
-| 3 | Parallel Park | 184–201 | Recess 6.6 × 3.77 m on the lane's west side, with a painted box 6.6 × 2.5 m against its kerb. Heading limit 10.2°, mirrors included. | Photo (recess); box decided |
+| 2 | 3-Side Parking | 131–162 | Pocket 4.72 × 5.78 m off a 4.58 m band. Painted bay 2.6 × 5.6 m with no poles; two reference poles on the grass mark where to stop before reversing in (the owner, 2 Nov). A second bay, in island F's notch, holds another learner. | Photo (pocket and band); bay decided, poles the owner |
+| 3 | Parallel Park | 184–201 | Recess 6.6 × 3.77 m on the lane's west side, its painted box the whole recess, the outer line from one kerb corner to the other (the owner, 2 Nov). Heading limit 36.5°, mirrors included. | Photo (recess); box the owner |
 | 4 | S-Curve | 275–319 | Lane 3.6 m. Two opposite 141° bends at a 7.5 m centreline radius, 3 m straights at each end. | Photo (real S) |
 | 5 | Z-Curve | 369–396 | Lane 4.0 m, driven north. Jog 7.73 m between the legs. Square outer corners, inner corners rounded 1 m. | Photo (real Z) |
 | 6 | Ramp Test | 453–464 | 4.0 m wide on the open floor at the top right, in line with the hill: a 3 m run-in, 6 m up to a 0.6 m platform (10%), a 7 m platform to an end wall. The pole stands on the centreline 0.4 m before the wall. A twin ramp beside it holds another learner. | The real yard has no ramp; the blueprint draws a structure here. Dimensions decided |
@@ -79,7 +79,7 @@ value cited by clause or figure.
   - The Swift's body overhangs a Z kerb by 5 cm at one corner; overhang is not a fault.
   - Every tyre stays at least 0.42 m off every centre line (0.30 m needed); touching one fails the test.
 - **Possible.**
-  - **Side bay:** one full-lock reverse arc, mirrors inside the lines, all four poles untouched.
+  - **Side bay:** one full-lock reverse arc from the reference poles, mirrors inside the lines.
   - **Parallel box:** one two-arc reverse, mirrors inside.
   - **Hill:** the whole stop band sits on the up-slope.
   - **Ramp:** in and up with the tyres 0.86 m from the kerbs; it stops 0.81 m short of the pole,
