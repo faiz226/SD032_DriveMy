@@ -90,8 +90,8 @@ export interface CircuitData {
     booths: { centre: Vec2; size: Vec2; heading_deg: number }[]; office: { centre: Vec2; size: Vec2; heading_deg: number }; fence: number[];
     /** Other learners' cars, stopped mid-test on the twin tracks: `at` is the car's centre, the wheelbase's middle. */
     npc_cars?: { on: string; at: Vec2; heading_deg: number }[];
-    /** Reference poles on the grass: where a driver lines up the door mirrors before reversing into a bay. */
-    ref_poles?: { station: StationId; at: Vec2; height: number; note?: string }[];
+    /** Reference poles: where a driver lines up the door mirrors, on the grass before reversing into a bay, or on a hill wall's top (base_z) beside the stop band. */
+    ref_poles?: { station: StationId; at: Vec2; height: number; base_z?: number; note?: string }[];
   };
   spawn: { at: Vec2; heading_deg: number; handbrake: boolean };
   parameters: Record<string, { value: unknown; source: string; note: string }>;

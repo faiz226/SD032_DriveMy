@@ -50,6 +50,7 @@ EYE = dict(up=1.20, behind_mid=0.265, right=0.33)
 SCREEN = dict(top=12.5, right=15.0, left=29.0, mirror=(16.5, 31.0, 4.5, 10.0))
 ROOF_M = 1.51
 QUEUE = dict(short=0.4, gap=2.0)
+MIRROR_AHEAD = 0.535   # the door mirrors, ahead of the wheelbase's middle (swift-2022.ts): the hill's guide poles stand level with them
 HEAD = dict(underside=2.9, middle=0.46, lamp=0.28, bracket=0.28, deep=0.24)
 
 
@@ -323,6 +324,31 @@ def main():
     record('possible', 'hill: the whole stop band sits on the up-slope', on_slope,
            'band s %.1f-%.1f m on an up-slope from s %.1f to %.1f m; %.1f%% (%.1f deg)' % (
                band['s_from'], band['s_to'], ramp_from, ramp_from + prof[1][0], grade * 100, math.degrees(math.atan(grade))))
+    # the guide poles (the owner, 2 Nov: "near-peak of the slope with a pole guiding the yellow line"): the band's far edge
+    # within 1.5 m of the crest; a pole on each wall beside it, on the wall top and off the pavement, level with the door
+    # mirrors when the front tyres are mid-band
+    hx, hy = hill['start']
+    hu = (math.cos(math.radians(hill['heading_deg'])), math.sin(math.radians(hill['heading_deg'])))
+    mid_s = (band['s_from'] + band['s_to']) / 2
+    mid_a = (np.interp(mid_s, S, [q[1] for q in samples]) - hx) * hu[0] + (np.interp(mid_s, S, [q[2] for q in samples]) - hy) * hu[1]   # the band's middle, metres up the hill
+    crest_gap = prof[1][0] - mid_a - (band['s_to'] - band['s_from']) / 2
+    wall = C['parameters']['wall_w']['value']
+    gp, bad, sides = [p for p in C['props'].get('ref_poles', []) if p['station'] == 'hill-start'], [], set()
+    for p in gp:
+        a = (p['at'][0] - hx) * hu[0] + (p['at'][1] - hy) * hu[1]
+        c = -(p['at'][0] - hx) * hu[1] + (p['at'][1] - hy) * hu[0]
+        sides.add(c > 0)
+        if not (hill['width'] / 2 <= abs(c) <= hill['width'] / 2 + wall):
+            bad.append('not on a wall')
+        if world.mask[int((p['at'][1] - world.y0) / world.res), int((p['at'][0] - world.x0) / world.res)]:
+            bad.append('on the pavement')
+        if abs(a + car.wb / 2 - MIRROR_AHEAD - mid_a) > 0.05:
+            bad.append('not level with the mirrors')
+        if abs(p['base_z'] - (grade * a + kerb_h)) > 0.01:
+            bad.append('not on the wall top')
+    record('possible', 'hill: a guide pole each side of the band, near the crest', crest_gap <= 1.5 and len(gp) == 2 and sides == {True, False} and not bad,
+           'band %.2f m short of the crest (need <= 1.5 m); %d poles, mirrors level at %.2f m up the hill, wall top %.2f m up%s' % (
+               crest_gap, len(gp), mid_a - (car.wb / 2 - MIRROR_AHEAD), gp[0]['base_z'] if gp else 0.0, '; ' + ', '.join(sorted(set(bad))) if bad else ''))
 
     # ramp test: drive in from the lane, stop short of the pole, reverse back out into the lane
     rt = by['ramp-test']

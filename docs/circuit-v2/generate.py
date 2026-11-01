@@ -48,7 +48,7 @@ P = {
     'hill_up':       (10.8,  'prd',     'Up-slope length'),
     'hill_top':      (4.15,  'prd',     'Flat top: 25.75 total - 2 x 10.8 (PRD hill length)'),
     'hill_rise':     (1.3,   'decided', 'Rise 1.3 m, 12.0% (v1 value, kept on 14 Oct: no public JPJ gradient found)'),
-    'hill_stop':     (0.33,  'decided', 'Yellow stop band at 33% of the rise'),
+    'hill_stop':     (0.9,   'decided', 'Yellow stop band 90% of the way up the slope, near the crest and still on it (the owner, 2 Nov: "the yellow line is placed at near-peak of the slope with a pole guiding the yellow line"; it stood at 33%, the PRD value)'),
     'hill_band':     (0.6,   'decided', 'Yellow stop band along the slope; the front wheels must stop on it (guides: front tyre on the yellow line)'),
     'side_pocket_l': (4.72,  'photo',   'Side-parking pocket in the bottom-left island, along the band'),
     'side_pocket_d': (5.78,  'photo',   'Pocket depth from the band'),
@@ -667,11 +667,20 @@ def main():
     # Reference poles for the side bay (the owner, 2 Nov: "add pole in red circles and tell the driver the ideal place
     # to stop"): one on the grass either side of the band, on the line through the door mirrors where a driver stops to
     # reverse in (rear axle at side_stop_x, heading west): stop with the mirrors on the poles, full lock right, reverse
-    mirror_x = L['side_stop_x'] - (2.45 / 2 + 0.535)   # the mirrors, 0.535 m ahead of the wheelbase's middle (swift-2022.ts)
+    mirror_ahead = 0.535                                # the mirrors, ahead of the wheelbase's middle (swift-2022.ts)
+    mirror_x = L['side_stop_x'] - (2.45 / 2 + mirror_ahead)
     band_n, band_s = M(0, 626.5)[1], M(0, 675)[1]
     ref_poles = [dict(station='side-parking', at=[round(mirror_x, 3), round(y_, 3)], height=1.5,
                       note='line up the door mirrors with this pole and its twin across the band, then reverse in on full right lock')
                  for y_ in (band_n + 0.75, band_s - 0.75)]
+    # Reference poles for the hill (the owner, 2 Nov: "a pole guiding the yellow line"): one on each wall beside the band, on
+    # the line through the door mirrors when the front tyres are mid-band: stop with the mirrors on the poles. They stand on
+    # the wall tops (the deck's height there plus its kerb), so the shared wall's pole serves the twin learner's mirror as well
+    pole_a = v('hill_stop') * up - (2.45 / 2 - mirror_ahead)      # along the hill: the mirrors sit behind the front axle
+    ref_poles += [dict(station='hill-start', at=[round(hill['start'][0] + pole_a, 3), round(hill['start'][1] + side * (hh + ww / 2), 3)],
+                       base_z=round(v('hill_rise') * pole_a / up + v('kerb_h'), 3), height=1.5,
+                       note='line up the door mirrors with this pole and its twin across the strip: both front tyres are then on the yellow band')
+                  for side in (-1, 1)]
     pole_at = (end_x - v('ramp_pole_in'), ramp_y)
     poles.append(dict(station='ramp-test', at=[round(pole_at[0], 3), round(pole_at[1], 3)], radius=0.05, height=1.2,
                       base_z=v('ramp_rise'), status='decided 14 Oct: on the platform centreline'))

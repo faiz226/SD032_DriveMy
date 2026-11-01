@@ -1,6 +1,7 @@
 // Development only (/dev/sim): the simulator's world and car without the app's screens.
 //   ?view=drive (default) first person, ?view=top straight down, ?view=orbit a free camera
 //   ?start=<station id> starts at that station's practice start point instead of the spawn
+//   ?at=x,y,heading_deg puts the car there (its middle, the wheelbase's), stopped: a view from the seat at a chosen pose
 //   ?tier=medium uses the larger textures
 //   ?touch=on shows the touch controls on any device
 //   ?verdict=demo shows the verdict screen over the scene, with a sample failed run
@@ -10,7 +11,7 @@ import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { StationId } from '../contracts';
+import type { StationId, Vec2 } from '../contracts';
 import { circuit } from '../data';
 import { rad } from '../geom';
 import { useDriver, useKeyboardControls, useTouchUi } from '../input';
@@ -36,7 +37,9 @@ export function SimPreview() {
   const view = params.get('view') ?? 'drive';
   const tier = params.get('tier') === 'medium' ? 'medium' : 'low';
   const station = circuit.stations.find((s) => s.id === (params.get('start') as StationId));
-  const start = station ? { at: station.start.at, heading: rad(station.start.heading_deg) } : { at: circuit.spawn.at, heading: rad(circuit.spawn.heading_deg) };
+  const pose = params.get('at')?.split(',').map(Number);
+  const start = pose?.length === 3 && pose.every(Number.isFinite) ? { at: [pose[0], pose[1]] as Vec2, heading: rad(pose[2]) }
+    : station ? { at: station.start.at, heading: rad(station.start.heading_deg) } : { at: circuit.spawn.at, heading: rad(circuit.spawn.heading_deg) };
   const topDown = useDriver((s) => s.topDown) || view === 'top';
   const paused = useDriver((s) => s.paused);
   const [readout, setReadout] = useState('');

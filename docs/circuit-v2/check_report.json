@@ -175,7 +175,13 @@
    "section": "possible",
    "check": "hill: the whole stop band sits on the up-slope",
    "ok": true,
-   "detail": "band s 17.6-18.2 m on an up-slope from s 14.6 to 25.4 m; 12.0% (6.9 deg)"
+   "detail": "band s 23.8-24.4 m on an up-slope from s 14.4 to 25.2 m; 12.0% (6.9 deg)"
+  },
+  {
+   "section": "possible",
+   "check": "hill: a guide pole each side of the band, near the crest",
+   "ok": true,
+   "detail": "band 0.78 m short of the crest (need <= 1.5 m); 2 poles, mirrors level at 9.03 m up the hill, wall top 1.22 m up"
   },
   {
    "section": "possible",
@@ -241,7 +247,7 @@
    "section": "cheap",
    "check": "few props",
    "ok": true,
-   "detail": "4 booths, 1 office, 1 pole, 2 reference poles"
+   "detail": "4 booths, 1 office, 1 pole, 4 reference poles"
   }
  ]
 }

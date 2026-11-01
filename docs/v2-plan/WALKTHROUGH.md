@@ -19,7 +19,7 @@ Every start runs the same way: the instructor reads the brief, the engine starts
 the car move. Each brief is read once per visit, so a restart only starts the engine again.
 
 **Keys:** W accelerate, S brake, A and D steer, R to change between D and R (only when stopped),
-Q to look over your left shoulder (the blind spot), E to look down out of your window (on the hill, the yellow band shows beside the door mirror),
+Q to look over your left shoulder (the blind spot), E to look down out of your window (on the hill, the yellow band and its black-and-white guide pole show beside the door mirror),
 drag the view to look anywhere, including over your right shoulder,
 Space for the handbrake, Z and C for the left and right indicators, L for the headlamps, H for the horn,
 T for the top-down view, V for the view from behind the car (free drive only), + and - to zoom, P or Esc to pause.

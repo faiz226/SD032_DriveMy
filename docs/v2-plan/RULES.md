@@ -46,7 +46,7 @@ verdict is a fail from then on, and the run carries on (`end_run_at_fail` is fal
 
 | # | Station | Time | Cleared when | Fails when | Basis |
 |---|---|---|---|---|---|
-| 1 | Hill Start | 3 min | Both front tyres stop on the yellow stop band. The car holds still (5 cm at most) for 2 s with the handbrake on. It then moves off over the crest with no rollback. | Crosses the crest without that stop; rollback (also 20 demerits) | guides: front tyre on the yellow line, handbrake on, 3 min. decided: 2 s hold, 5 cm |
+| 1 | Hill Start | 3 min | Both front tyres stop on the yellow stop band, near the crest of the up-slope (the owner, 2 Nov). Two black-and-white poles beside the band show where: the door mirrors are level with them. The car holds still (5 cm at most) for 2 s with the handbrake on. It then moves off over the crest with no rollback. | Crosses the crest without that stop; rollback (also 20 demerits) | guides: front tyre on the yellow line, handbrake on, 3 min. decided: 2 s hold, 5 cm. the owner, 2 Nov: band near the crest, guide poles |
 | 2 | 3-Side Parking | 5 min | The learner signals "done" by stopping with the handbrake on for 1 s. At that moment the whole car, **mirrors included** (1.847 m wide), is inside the painted bay, within the heading limit. | Outside at "done" costs 10 (not in bay) but still counts as done. No poles stand round the bay (the owner, 2 Nov); two reference poles on the grass mark where to stop before reversing in. | rubric; guides: the right mirror must be inside the box. decided: handbrake as the "done" signal |
 | 3 | Parallel Park | 5 min | Same as Side Parking, in the painted box: the whole recess, 6.6 × 3.77 m, its outer line from one kerb corner to the other (the owner, 2 Nov: the 2.5 m box sat too deep inside). The heading limit is 36.5° with mirrors. | Same as Side Parking | rubric + guides + the owner |
 | 4 | S-Curve | 3 min | Gates passed in order, with the speed held at 1–18 km/h | More than 1.2 s outside the band (assessment). Practice mode restarts the drill instead. | PRD |
@@ -78,6 +78,12 @@ handbrake is also the "I'm done" signal in both parking bays.
   island F's notch). They are scenery: solid, never marked.
 - **Hill:** the real strip along the top of the yard. Rise 1.3 m over 10.8 m (12%): v1's value; no
   public JPJ gradient was found.
+  - The yellow stop band (0.6 m) is centred 90% of the way up the slope, near the crest and still wholly on it
+    (the owner, 2 Nov: "the yellow line is placed at near-peak of the slope with a pole guiding the yellow line").
+    It stood at 33% of the rise, the PRD's value.
+  - Two black-and-white guide poles, one on each wall beside the band, off the pavement, on the line through the door
+    mirrors when the front tyres are mid-band: mirrors on the poles, handbrake, hold. The twin learner's car stops with
+    its mirror on the shared wall's pole.
 - **Ramp:** the real yard has none, so it stands on the open floor at the top right, where the
   blueprint draws a structure. 4.0 m wide.
   - Its slope runs 6 m up to a 0.6 m-high platform (10%).

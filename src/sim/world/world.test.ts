@@ -47,6 +47,18 @@ describe('the world is placed from circuit.json', () => {
     });
   });
 
+  it('draws each reference pole from its base: the hill\'s on its wall tops, the bay\'s on the grass', () => {
+    const refs = circuit.props.ref_poles ?? [];
+    expect(refs.filter((r) => r.station === 'hill-start' && r.base_z)).toHaveLength(2);
+    const pos = (world.group.getObjectByName('things') as THREE.Mesh).geometry.getAttribute('position');
+    for (const r of refs) {
+      const ys: number[] = [];
+      for (let i = 0; i < pos.count; i++) if (Math.hypot(pos.getX(i) - r.at[0], pos.getZ(i) + r.at[1]) < 0.06) ys.push(pos.getY(i));
+      expect(Math.min(...ys), `${r.station} pole base`).toBeCloseTo(r.base_z ?? 0, 3);
+      expect(Math.max(...ys), `${r.station} pole top`).toBeCloseTo((r.base_z ?? 0) + r.height, 3);
+    }
+  });
+
   it('raises both slopes to their profiles', () => {
     for (const s of circuit.slopes) {
       for (const [along, h] of s.profile) {

@@ -492,8 +492,11 @@ export function buildWorld(c: CircuitData): WorldBuild {
     }
   };
   // where each station's queue stops: a yellow and black pole on the grass, a plate on top facing the road
-  // reference poles on the grass (the side bay's): black and white, where the door mirrors line up before reversing in
-  for (const r of c.props.ref_poles ?? []) post(r.at, MARKER.radius, 0, r.height, MARKER.band, [[0.08, 0.08, 0.08], [0.95, 0.95, 0.95]]);
+  // reference poles (the side bay's on the grass, the hill's on its walls): black and white, where the door mirrors line up
+  for (const r of c.props.ref_poles ?? []) {
+    const base = r.base_z ?? 0;
+    post(r.at, MARKER.radius, base, base + r.height, MARKER.band, [[0.08, 0.08, 0.08], [0.95, 0.95, 0.95]]);
+  }
   for (const w of c.traffic?.waiting ?? []) {
     post(w.pole, MARKER.radius, 0, MARKER.height, MARKER.band, [[0.08, 0.08, 0.08], YELLOW]);
     box(w.pole, [0.04, MARKER.plate], w.heading_deg + 90, MARKER.height - 0.05, MARKER.height - 0.05 + MARKER.plate, YELLOW);
