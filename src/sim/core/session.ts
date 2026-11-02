@@ -217,11 +217,12 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
    * Practice only: the attempt is void. The station waits, unarmed, for restartStation (the screen moves the car
    * back to its start); detail.voids counts the voids so the screen can react.
    */
-  function voidRun(run: Run) {
+  /** Practice: the attempt does not count (`key` says why, for the screens); the station waits for a restart. */
+  function voidRun(run: Run, key: string) {
     const voids = Number(run.pub.detail.voids ?? 0) + 1;
     run.pub.status = 'waiting';
     run.pub.startedAt = null;
-    run.pub.detail = { voids };
+    run.pub.detail = { voids, voidKey: key };
     run.m = freshWork();
     run.blocked = true;
   }
@@ -374,7 +375,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     if (w.gate >= 1 && w.gate < gates.length) {
       w.outT = v < R.sBand[0] || v > R.sBand[1] ? w.outT + dt : 0;
       if (w.outT > R.sGrace + EPS) {
-        if (mode === 'practice') return voidRun(run);
+        if (mode === 'practice') return voidRun(run, 's.speed');
         return fail(run, 's.speed', p, x.t, `${v.toFixed(0)} km/h for more than ${R.sGrace} s`, `${R.sBand[0]}–${R.sBand[1]} km/h`);
       }
     }
@@ -415,7 +416,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     const v = Math.abs(x.speedKmh);
     run.pub.detail = { ...run.pub.detail, finishKmh: Math.round(v) };
     if (v >= R.mergeKmh - EPS) clear(run);
-    else if (mode === 'practice') voidRun(run);
+    else if (mode === 'practice') voidRun(run, 'merge.slow');
     else fail(run, 'merge.slow', p, x.t, `${v.toFixed(0)} km/h`, `${R.mergeKmh} km/h`);
   }
 
@@ -449,6 +450,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
       const stopped = Math.abs(x.speedKmh) < R.stoppedKmh;
       if (topDownOn) state.topDownSeconds += dt;
       track(p);
+      state.progress = s;
       kerbStep(x, events);
       hitStep(events);
       lineStep(x);

@@ -26,6 +26,8 @@ interface RunStore {
   toasts: Toast[];
   /** performance.now() of the newest fault, for the camera kick. */
   lastFaultAt: number;
+  /** Where the car was at the latest snapshot: the way arrow points from it. */
+  pose: Pose | null;
   /** Start a run (practice: one station) and say where the car goes. */
   begin(mode: Mode, drill?: StationId): Pose;
   /** The same run again, from its start. */
@@ -58,6 +60,7 @@ export const useRun = create<RunStore>((set, get) => ({
   elapsed: 0,
   chaseUsed: false,
   toasts: [],
+  pose: null,
   lastFaultAt: -Infinity,
 
   begin(mode, drill = get().drill) {
@@ -66,7 +69,7 @@ export const useRun = create<RunStore>((set, get) => ({
     publishedAt = -Infinity;
     shown = '';
     t0 = null;
-    set({ mode, drill, runId: generateUUID(), state: session.state(), t: 0, elapsed: 0, chaseUsed: false, toasts: [] });
+    set({ mode, drill, runId: generateUUID(), state: session.state(), t: 0, elapsed: 0, chaseUsed: false, toasts: [], pose: null });
     return pose;
   },
 
@@ -83,9 +86,10 @@ export const useRun = create<RunStore>((set, get) => ({
     const fresh = s.faults.slice(get().state.faults.length);
     shown = sig;
     publishedAt = sample.t;
+    const pose: Pose = { at: [sample.x, sample.y], heading: sample.heading };
     set(fresh.length
-      ? { state: s, t: sample.t, elapsed: sample.t - t0, toasts: [...get().toasts, ...fresh.map((fault) => ({ id: ++toastId, fault }))].slice(-MAX_TOASTS), lastFaultAt: performance.now() }
-      : { state: s, t: sample.t, elapsed: sample.t - t0 });
+      ? { state: s, t: sample.t, elapsed: sample.t - t0, pose, toasts: [...get().toasts, ...fresh.map((fault) => ({ id: ++toastId, fault }))].slice(-MAX_TOASTS), lastFaultAt: performance.now() }
+      : { state: s, t: sample.t, elapsed: sample.t - t0, pose });
   },
 
   dismiss(id) {

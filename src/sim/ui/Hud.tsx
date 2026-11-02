@@ -7,7 +7,7 @@ import { Figure } from '@/components/ui/surface';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { TranslationKey } from '@/lib/translations';
 import { cn } from '@/lib/utils';
-import type { Fault, StationProgress } from '../contracts';
+import type { Fault, StationId, StationProgress } from '../contracts';
 import { circuit, rules } from '../data';
 import { useDriver, ZOOM_STEP } from '../input';
 import { blinkOn, lampClock } from '../physics/Lamps';
@@ -16,6 +16,8 @@ import { useEggs } from './Eggs';
 import { useRun } from './run';
 import { faultSound, tickSound } from './sound';
 import { stationName } from './Verdict';
+import { Steps } from './Steps';
+import { routeAt, wayTurnDeg } from './way';
 
 const TIP_S = 6;          // rules.json modes: tips show for 6 s when a station arms
 const TOAST_S = 3.5;
@@ -41,11 +43,13 @@ interface Props {
   /** Free drive: nothing is marked, so no station, demerits or faults; back to the start, and the chase view. */
   free?: boolean;
   onRestart(): void;
+  /** Practice: the next station's drill. */
+  onNext(): void;
   onStations(): void;
   onExit(): void;
 }
 
-export function Hud({ touch, free = false, onRestart, onStations, onExit }: Props) {
+export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit }: Props) {
   const { t } = useLanguage();
   const mode = useRun((s) => s.mode);
   const state = useRun((s) => s.state);
@@ -60,15 +64,26 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
   const belowMirror = topDown ? 12 : MIRROR_PAD * k + INTERIOR_MIRROR_H * k + 8;
 
   const station = free ? null : (state.stations.find((s) => s.id === state.current) ?? null);
-  const done = !free && mode === 'practice' && state.current === null ? state.stations[0] : null;
   const voided = mode === 'practice' && station?.status === 'waiting' && Number(station.detail.voids ?? 0) > 0;
+  const done = free || mode !== 'practice' ? null : state.current === null ? state.stations[0] : voided ? station : null;
 
   return (
     <div className="pointer-events-none absolute inset-0 select-none">
       <div className="absolute left-3 top-3 w-[min(40vw,300px)] space-y-2">
-        {station && <StationPanel station={station} now={now} />}
-        {voided && <p className={cn(HUD_PLATE, 'type-label px-3 py-2')} role="status">{t('sim.hud.void')}</p>}
+        {station && <StationPanel station={station} now={now} tips={mode !== 'practice'} />}
+        {station && mode === 'practice' && (
+          <details open={!touch} className={cn(HUD_PLATE, 'pointer-events-auto px-3 py-2')}>
+            <summary className="type-label-strong cursor-pointer">{t('sim.hud.steps')}</summary>
+            <Steps id={station.id} className="type-label mt-1 text-sm" />
+          </details>
+        )}
       </div>
+
+      {station?.status === 'waiting' && !voided && (
+        <div className="absolute left-1/2 top-3 -translate-x-1/2">
+          <WayArrow id={station.id} progress={state.progress ?? 0} />
+        </div>
+      )}
 
       <div className="absolute right-3 top-3 flex w-[min(40vw,300px)] flex-col items-end gap-2">
         <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
@@ -124,7 +139,7 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
 
       <Readouts bottom={touch ? 72 : 12} />
 
-      {done && <DrillDone station={done} onRestart={onRestart} onStations={onStations} />}
+      {done && <DrillDone station={done} onRestart={onRestart} onNext={onNext} onStations={onStations} />}
       {paused && (
         <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[rgb(var(--road)/0.45)]">
           <div className={cn(HUD_PLATE, 'max-w-sm space-y-3 p-4 text-center')} role="status">
@@ -154,11 +169,11 @@ function HudButton({ label, pressed, onClick, children }: { label: string; press
 }
 
 /** The station's number and title; its tip for the first 6 s after it arms, then just the title. */
-function StationPanel({ station, now }: { station: StationProgress; now: number }) {
+function StationPanel({ station, now, tips }: { station: StationProgress; now: number; tips: boolean }) {
   const { t } = useLanguage();
   const n = circuit.stations.find((s) => s.id === station.id)?.order ?? 0;
   const armed = station.status === 'armed';
-  const tip = armed && now - (station.startedAt ?? now) < TIP_S;
+  const tip = tips && armed && now - (station.startedAt ?? now) < TIP_S;   // practice shows the steps instead
   return (
     <div className={cn(HUD_PLATE, 'px-3 py-2')} role="status">
       <p className="type-label-strong">
@@ -273,18 +288,45 @@ function Readouts({ bottom }: { bottom: number }) {
   );
 }
 
-/** Practice: the station is over. */
-function DrillDone({ station, onRestart, onStations }: { station: StationProgress; onRestart(): void; onStations(): void }) {
+const LOOK_M = 15;   // the way arrow points at the route this far ahead of the car
+
+/**
+ * On the way to a station (the testers, 2 Nov: "I couldn't follow the next direction without the top-down view"):
+ * an arrow at the route a few seconds ahead, turned to where it lies from the car, and how far the station is (its name
+ * is in the station panel beside it).
+ */
+function WayArrow({ id, progress }: { id: StationId; progress: number }) {
   const { t } = useLanguage();
-  const cleared = station.status === 'cleared';
+  const pose = useRun((s) => s.pose);
+  if (!pose) return null;
+  const from = circuit.stations.find((g) => g.id === id)!.s_from;
+  const metres = Math.max(0, Math.round((from - progress) / 5) * 5);
+  return (
+    <div className={cn(HUD_PLATE, 'flex items-center gap-2 px-3 py-1.5')} role="img" aria-label={`${t('sim.hud.next')}: ${stationName(t, id)}, ${metres} m`}>
+      <ArrowFatRight size={28} weight="fill" aria-hidden style={{ transform: `rotate(${wayTurnDeg(pose, routeAt(progress + LOOK_M))}deg)` }} />
+      <span className="type-label-strong whitespace-nowrap tabular-nums" aria-hidden>{metres} m</span>
+    </div>
+  );
+}
+
+/** Practice: the station is over, or the attempt did not count; why, how to fix it, and what next. */
+export function DrillDone({ station, onRestart, onNext, onStations }: { station: StationProgress; onRestart(): void; onNext(): void; onStations(): void }) {
+  const { t } = useLanguage();
   const fault = useRun((s) => s.state.faults.at(-1));
+  const voidKey = station.status === 'waiting' ? String(station.detail.voidKey ?? '') : '';
+  const cleared = station.status === 'cleared';
+  const reason = voidKey ? `sim.fault.${voidKey}` : cleared ? undefined : fault?.reasonKey;
+  const fix = voidKey ? `sim.fix.${voidKey}` : cleared ? undefined : fault?.fixKey;
+  const edge = voidKey ? 'border-l-[rgb(var(--warning))]' : cleared ? 'border-l-[rgb(var(--success))]' : 'border-l-[rgb(var(--destructive))]';
   return (
     <div className="pointer-events-auto absolute inset-x-0 top-1/3 mx-auto w-[min(92vw,380px)]">
-      <div className={cn(HUD_PLATE, 'space-y-3 border-l-4 p-4', cleared ? 'border-l-[rgb(var(--success))]' : 'border-l-[rgb(var(--destructive))]')} role="status">
-        <p className="type-label-strong text-lg">{stationName(t, station.id)}: {cleared ? t('sim.hud.cleared') : t('sim.hud.failed')}</p>
-        {!cleared && fault && <p className="type-label">{t(fault.fixKey as TranslationKey)}</p>}
+      <div className={cn(HUD_PLATE, 'space-y-3 border-l-4 p-4', edge)} role="status">
+        <p className="type-label-strong text-lg">{stationName(t, station.id)}: {t(voidKey ? 'sim.hud.voided' : cleared ? 'sim.hud.cleared' : 'sim.hud.failed')}</p>
+        {reason && <p className="type-label">{t(reason as TranslationKey)}</p>}
+        {fix && <p className="type-label">{t(fix as TranslationKey)}</p>}
         <div className="flex flex-wrap gap-2">
           <Button onClick={onRestart}>{t('sim.hud.restartDrill')}</Button>
+          <Button variant="outline" onClick={onNext}>{t('sim.hud.nextStation')}</Button>
           <Button variant="outline" onClick={onStations}>{t('sim.hud.drills')}</Button>
         </div>
       </div>

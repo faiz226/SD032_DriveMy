@@ -43,6 +43,9 @@ type Phase = 'choose' | 'explore' | 'drive' | 'verdict';
 const STATIONS = new Set<string>(circuit.stations.map((s) => s.id));
 const isStation = (id: string | undefined): id is StationId => !!id && STATIONS.has(id);
 /** /simulations/free opens free drive; a station's id, its practice; anything else, the assessment. */
+/** Practice's next drill, in the circuit's order; after the last, the first. */
+const ORDER = [...circuit.stations].sort((a, b) => a.order - b.order).map((st) => st.id);
+const nextStation = (id: StationId): StationId => ORDER[(ORDER.indexOf(id) + 1) % ORDER.length];
 const modeFor = (id: string | undefined): PanelMode => (id === 'free' ? 'free' : isStation(id) ? 'practice' : 'assessment');
 
 const stationStart = (id: StationId): Pose => {
@@ -301,6 +304,7 @@ export function SimulatorPage() {
             touch={touch}
             free={mode === 'free'}
             onRestart={() => begin(mode, drill)}
+            onNext={() => begin('practice', nextStation(drill))}
             onStations={() => { if (mode !== 'free') setMode('practice'); go('choose'); }}
             onExit={exit}
           />

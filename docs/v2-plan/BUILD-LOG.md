@@ -667,3 +667,26 @@ reversed out of. Another tester saw learners turn into the twin ramp, at the car
 - **A dead end left behind.** The world still closed the ramp's end with an invisible guard and raised the
   walls' last metre, from the old end wall; the scripted car stopped with its bumper on the guard at the
   down-slope's foot. Both are gone.
+
+## 2 Nov: finding the way, and what to do at each station
+
+All three testers lost the route without the top-down view ("after one practice I don't know where to go";
+"after the spawn, which way?"), two asked for the stations explained step by step, and one failed road
+merging "without knowing I failed".
+
+- **The way arrow.** On the way to a station, an arrow at the top of the screen points at the route 15 m
+  ahead of the car, turned to where it lies from the car, with the metres left to the station (its name is
+  in the station panel beside it). The rules engine now publishes its own progress along the route
+  (`SessionState.progress`), so the arrow follows the same reading of the route the marking uses, the same
+  road driven twice included; `way.ts` holds the geometry and its left-and-right test.
+- **What next, after a drill.** The panel at the end of a practice drill now offers Next station (the
+  circuit's order, the last back to the first) beside Restart and the station list.
+- **Why an attempt did not count.** A practice attempt voided for its speed (the S's band, the merge's
+  finish) used to leave a small "Attempt void" note with no reason. The session now records why
+  (`detail.voidKey`), and the same panel says what happened and how to fix it, edged in the warning
+  colour (neither a pass nor a fail).
+- **Steps.** Each station has four to six numbered steps with the reference points to use (`sim.steps.*`,
+  English and Malay): mirrors on the poles for the hill and the 3-side bay, half the car past the kerb's
+  corner (checked with Q or E) before turning in the S and the Z, close to the outside kerb before each
+  bend, the ramp's first turn. The briefing screen lists them under the station's tip; in practice the HUD
+  keeps them in a Steps box under the station panel (closed at first on a phone, where space is short).

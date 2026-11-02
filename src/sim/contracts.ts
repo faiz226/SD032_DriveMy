@@ -207,6 +207,7 @@ export interface SessionState {
   mode: Mode;
   current: StationId | null;           // the only armed station; null after the last
   stations: StationProgress[];         // in order
+  progress?: number;                   // metres along route.samples the car has come: the screens' way arrow
   demerits: number;
   faults: Fault[];
   ended: boolean;

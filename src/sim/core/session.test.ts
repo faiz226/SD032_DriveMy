@@ -311,6 +311,7 @@ describe('S-curve', () => {
     d.follow(ENTRY() + 12, 25);
     expect(status(d, 's-curve')).toBe('waiting');
     expect(d.stationState('s-curve').detail.voids).toBe(1);
+    expect(d.stationState('s-curve').detail.voidKey).toBe('s.speed');   // the screens say why
     d.follow(station('s-curve').s_to + 2, 10);
     expect(status(d, 's-curve')).toBe('waiting');        // nothing arms until the restart
     const start = d.session.restartStation('s-curve');
@@ -375,6 +376,14 @@ describe('Z-curve', () => {
     d.follow(station('z-curve').s_from + 1, 8);
     d.stop(181);
     expect(reasons(d)).toEqual(['sim.fault.time']);
+  });
+});
+
+describe('progress', () => {
+  it('publishes how far along the route the car has come, for the way arrow', () => {
+    const d = assessment();
+    d.follow(50, 8);
+    expect(d.last.progress).toBeCloseTo(50, 0);
   });
 });
 
@@ -463,6 +472,7 @@ describe('road merging', () => {
     mergeDrive(d, 10);
     expect(status(d, 'road-merging')).toBe('waiting');
     expect(d.stationState('road-merging').detail.voids).toBe(1);
+    expect(d.stationState('road-merging').detail.voidKey).toBe('merge.slow');
     const start = d.session.restartStation('road-merging');
     const g = station('road-merging');
     d.at = [...start.at] as Vec2;
