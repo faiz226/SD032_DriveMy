@@ -1,10 +1,11 @@
 // Development only (/dev/sim): the simulator's world and car without the app's screens.
-//   ?view=drive (default) first person, ?view=top straight down, ?view=orbit a free camera
+//   ?view=drive (default) first person, ?view=top straight down, ?view=orbit a free camera, ?view=chase behind the car
 //   ?start=<station id> starts at that station's practice start point instead of the spawn
 //   ?at=x,y,heading_deg puts the car there (its middle, the wheelbase's), stopped: a view from the seat at a chosen pose
 //   ?tier=medium uses the larger textures
 //   ?touch=on shows the touch controls on any device
 //   ?verdict=demo shows the verdict screen over the scene, with a sample failed run
+//   ?pole=open draws the ramp's pole moved aside
 // Keys: W go, S brake then reverse, A/D steer, Space handbrake, T top-down, P pause.
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
@@ -19,6 +20,7 @@ import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import { TIERS } from '../quality';
 import { TouchControls } from '../TouchControls';
 import { LoadingMap } from '../ui/LoadingMap';
+import { ChaseCamera } from '../ui/scene';
 import { type Verdict, VerdictView } from '../ui/Verdict';
 
 const DEMO: Verdict = {
@@ -76,6 +78,7 @@ export function SimPreview() {
           <Daylight shadows={TIERS[tier].shadows} follow={() => car.current?.group() ?? null} />
         </Suspense>
         <TopDownCamera active={topDown} />
+        <ChaseCamera active={view === 'chase' && !topDown} follow={() => car.current?.group() ?? null} />
         {view === 'orbit' && !topDown && (
           <>
             <PerspectiveCamera makeDefault position={[centre[0] - 45, 40, centre[2] + 55]} fov={50} near={0.1} far={1000} />

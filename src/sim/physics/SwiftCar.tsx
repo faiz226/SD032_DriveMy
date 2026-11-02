@@ -64,6 +64,20 @@ function setGlow(m: THREE.MeshStandardMaterial | null, k: number) {
   if (m && m.emissiveIntensity !== k) m.emissiveIntensity = k;
 }
 
+/**
+ * The tyres' rubber. The model has them metallic and smooth, so under the sky's light they mirrored it white (the
+ * testers, 2 Nov); the other cars bake plain colours and never showed it.
+ */
+function rubber(scene: THREE.Object3D) {
+  scene.traverse((o) => {
+    const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+    if (m?.isMeshStandardMaterial && m.name.startsWith('Tire')) {
+      m.metalness = 0;
+      m.roughness = 0.9;
+    }
+  });
+}
+
 /** The red paint (opaque, red, nothing else in it): free drive's secret code turns it to rainbow. */
 const isPaint = (m: THREE.MeshStandardMaterial) => !m.transparent && m.color.r > 0.4 && m.color.g < 0.1 && m.color.b < 0.1;
 interface Paint { m: THREE.MeshStandardMaterial; base: THREE.Color; lightness: number }
@@ -116,11 +130,14 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       });
     }
   }, [bodyScene, steering.scene]);
-  const wheelScenes = useMemo(() => [0, 1, 2, 3].map(() => {
-    const scene = wheel.scene.clone(true);   // shares geometry and materials
-    scene.traverse((o) => { o.castShadow = shadows; });
-    return scene;
-  }), [wheel.scene, shadows]);
+  const wheelScenes = useMemo(() => {
+    rubber(wheel.scene);
+    return [0, 1, 2, 3].map(() => {
+      const scene = wheel.scene.clone(true);   // shares geometry and materials
+      scene.traverse((o) => { o.castShadow = shadows; });
+      return scene;
+    });
+  }, [wheel.scene, shadows]);
   const blob = useMemo(() => (shadows ? null : blobTexture()), [shadows]);
   const tailLamps = useMemo(() => {
     let found: THREE.MeshStandardMaterial | null = null;
