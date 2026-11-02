@@ -28,7 +28,11 @@ drag the view to look anywhere, including over your right shoulder,
 Space for the handbrake, Z and C for the left and right indicators, L for the headlamps, H for the horn,
 T for the top-down view, V for the view from behind the car (every mode; an assessment's result says if you used it, and its marks are unchanged), + and - to zoom, P or Esc to pause.
 
-**On a phone:** hold it sideways. The left pad steers and keeps its angle; double-tap it to centre.
+**On a phone:** start the app with `npm run dev:phone` instead, and open the Network address it prints
+(`http://<the laptop's address>:5173`) on a phone on the same Wi-Fi; if Windows asks, let Node.js through its
+firewall. Google sign-in only works on the deployed site, so on the laptop's address go straight to
+`/dev/sim/assessment`, `/dev/sim/free` or a station such as `/dev/sim/hill-start`: no sign-in, nothing saved.
+Hold it sideways. The left pad steers and keeps its angle; double-tap it to centre.
 The right pedals press harder the higher up you touch them. The buttons along the bottom are the left
 indicator, D/R, handbrake, pause, the top-down view and the right indicator. If the touch controls do not appear, open Settings on the
 simulator's first panel and set Touch controls to On.
