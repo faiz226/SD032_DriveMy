@@ -82,7 +82,8 @@ in the app and in the tests.
   - Full lock is kept at walking pace.
   - The steering angle moves toward the requested angle at 0.8 rad/s and never snaps.
 - **Speed.** Horizontal speed only. Don't use `currentVehicleSpeed()`: it is the 3D speed.
-- **Brake and reverse are separate.** Holding the brake never selects reverse.
+- **Brake and reverse are separate.** At the drive layer the brake input never selects reverse: the gear is
+  its own input, set by R, the touch D/R button or, with the keyboard's automatic gears (below), a key press.
 - **Each physics step,** emit a `VehicleSample` in the circuit frame (`X = x, Y = z, Z = -y`) and its
   `SimEvent`s:
   - Kerb contacts: test each wheel's contact point (`wheelContactPoint`) with WP2's
@@ -94,9 +95,27 @@ in the app and in the tests.
 **Controls:**
 
 - **Keyboard:**
-  - W / ↑ throttle; S / ↓ brake (never reverse); A / D or ← / → steer.
-  - R toggles D/R. It works only when stopped; otherwise show a "Stop first" toast.
-  - Space toggles the handbrake; P or Esc pauses; T toggles the top-down view.
+  - A / D or ← / → steer. Shift+A / Shift+D also look left and right, like Q and E; A and D keep steering
+    while Shift is held.
+  - R toggles D/R in both gear modes. It works only when stopped (below 1 km/h); otherwise show a "Stop first"
+    toast.
+  - Space toggles the handbrake; P or Esc pauses; T toggles the top-down view; V the view from behind the car,
+    in every mode (an assessment's verdict says when it was used: WP4).
+  - **Gears have two modes**, set by "Realistic gears (R key)" in the simulator's settings. It is off by default.
+    - **Automatic (the default).** W / ↑ go and S / ↓ brake, and the keys change gear too, through the real gear
+      input, so the rules see every change. What a press means is settled as the key goes down and kept for as
+      long as that same press is held:
+      - the key for the way the gear drives (W in D, S in R) drives;
+      - the key for the other way (S in D, W in R) brakes a car that is moving, and holds it stopped for as long as
+        that press lasts, however long, on a slope or at a stop line. That press never reverses;
+      - a fresh press (the key let go, then pressed again) while the car is stopped, or creeping below 2 km/h the
+        way its gear drives (the creep that starts when the brake is let go), selects the other gear (S: R, W: D)
+        and drives;
+      - a car rolling the other way at 1 km/h or more (back down the hill in D) is braked, never reversed;
+      - both keys together only brake, and a key pressed while the other is held never changes gear;
+      - the first time S holds the car stopped, a one-line hint says "Press S again to reverse".
+    - **Realistic.** W / ↑ is only the throttle and S / ↓ only the brake, never reverse. The gear changes only
+      with R.
 - **Touch:**
   - Left thumb: a steering control that holds its angle. Double-tap it to centre.
   - Right thumb: brake and throttle pedals.
@@ -126,6 +145,8 @@ three.js render-target one in `REFERENCES.md`.
   - Door mirrors: 35° wide, turned about 15° outward and 14° down, so the car's flank by the rear
     tyre shows along the inner edge, in the lower half. That is where learners watch the bay lines
     and the kerb.
+  - In R both door mirrors dip a further 12° (eased over about 0.15 s), as a real car's do, so the rear tyre's
+    patch of road, the kerb and the bay lines show; they come back up in D. The interior mirror never dips.
   - Interior mirror: 50° wide, 3° down, looking through the rear window.
   - These aims were checked by projecting points through three.js cameras (14 Oct). Adjust them
     only if the glb's mirror positions differ much from 0.92 m off the centreline.
@@ -134,7 +155,9 @@ three.js render-target one in `REFERENCES.md`.
   on a drei `Hud` overlay, flipped left to right with `texture.repeat.x = -1` and
   `texture.offset.x = 1`. At 851 × 393:
   - the interior mirror top centre, about 240 × 60 px;
-  - the door mirrors at the left and right edges, about 150 × 100 px, above the touch controls.
+  - the door mirrors about 150 × 100 px: the left one, which is outside the windscreen view, as a panel where the
+    right one shows, across the middle of the screen and at the same height (so it never covers the road ahead,
+    the HUD or the interior mirror); with touch controls, at the left edge and above the steering pad.
 - **Cost.** The quality tier (WP5) sets each target's size and how many mirrors update per frame.
   Until WP5: render one mirror per frame, in turn, into 256 × 128 targets.
 - **Also, optionally:** the same textures on the glb's own mirror glass, at no extra render cost.
@@ -151,7 +174,9 @@ three.js render-target one in `REFERENCES.md`.
     least 2 m in 5 s;
   - at walking pace, the full-lock rear-axle radius is 3.43 m ± 0.15;
   - creeping over a 0.13 m kerb: no wheel leaves the ground and the body never touches it.
-- **Hill reverse.** Holding S at rest on the hill never selects reverse.
+- **Hill reverse.** The press of S that braked the car holds it on the hill and never selects reverse, however
+  long it is held; with Realistic gears on, S never selects reverse at all. Only a fresh press of S at rest
+  reverses, in the automatic mode (`input.test.ts`).
 - **Steering schedule.** Steering lock follows the PRD's schedule.
 - **Frame conversion.** A unit test checks it.
 - **Mirrors**, tested without rendering: project points through each mirror camera and apply the

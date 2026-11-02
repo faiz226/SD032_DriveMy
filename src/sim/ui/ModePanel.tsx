@@ -7,7 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import type { Mode, StationId } from '../contracts';
 import { circuit } from '../data';
-import type { TouchPref } from '../input';
+import type { GearPref, TouchPref } from '../input';
 import type { Tier, TierPref } from '../quality';
 import type { VoicePref } from './sound';
 import { stationName } from './Verdict';
@@ -25,10 +25,10 @@ interface Props {
   /** A free camera over the circuit first: nothing marked. */
   onExplore(): void;
   onExit(): void;
-  /** The simulator's own settings: quality tier and touch controls, each Auto by default; the instructor's voice, on. */
+  /** The simulator's own settings: quality tier and touch controls, each Auto by default; the instructor's voice, on; realistic gears, off. */
   settings: {
-    quality: TierPref; detected: Tier; touch: TouchPref; voice: VoicePref;
-    onQuality(p: TierPref): void; onTouch(p: TouchPref): void; onVoice(p: VoicePref): void;
+    quality: TierPref; detected: Tier; touch: TouchPref; voice: VoicePref; gears: GearPref;
+    onQuality(p: TierPref): void; onTouch(p: TouchPref): void; onVoice(p: VoicePref): void; onGears(p: GearPref): void;
   };
 }
 
@@ -88,8 +88,14 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExpl
             options={[['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
             onChange={settings.onVoice}
           />
+          <Choice
+            label={t('sim.settings.gears')}
+            value={settings.gears}
+            options={[['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
+            onChange={settings.onGears}
+          />
         </details>
-        <p className="type-label text-xs">{t('sim.mode.keys')}</p>
+        <p className="type-label text-xs">{t(settings.gears === 'on' ? 'sim.mode.keysRealistic' : 'sim.mode.keys')}</p>
       </Panel>
     </div>
   );

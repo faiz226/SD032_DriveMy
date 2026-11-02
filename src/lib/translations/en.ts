@@ -415,6 +415,7 @@ export const en = {
   "sim.touch.pause":               "Pause",
   "sim.touch.topDown":             "Top-down view",
   "sim.notice.stopFirst":          "Stop first: the gear changes only when the car is stopped.",
+  "sim.notice.pressAgain":         "Press S again to reverse.",
   "sim.label":                     "Practice rehearsal, not official marking",
   "sim.loading":                   "Loading the circuit: {{pct}}%",
   "sim.rotate":                    "Turn your phone sideways to drive.",
@@ -440,7 +441,8 @@ export const en = {
   "sim.egg.doughnut":              "Three doughnuts! Good thing nothing is marked.",
   "sim.egg.catThanks":             "Meow! The cat thanks you for stopping at the zebra crossing.",
   "sim.egg.catJump":               "The cat leapt clear. At a zebra crossing, stop for anyone crossing.",
-  "sim.mode.keys":                 "Keys: W accelerate, S brake, A and D steer, R gear D/R, Space handbrake, Z and C left and right indicators, L headlamps, H horn, Q look over your left shoulder, E look down out of your window, T top-down view, V view from behind (free drive), P pause. Drag the view to look around.",
+  "sim.mode.keys":                 "Keys: W go, S brake (press S again once stopped to reverse, W to go forward again), R gear D/R, A and D steer, Space handbrake, Z and C left and right indicators, L headlamps, H horn, Q or Shift+A look over your left shoulder, E or Shift+D look down out of your window, T top-down view, V view from behind the car, P pause. Drag the view to look around.",
+  "sim.mode.keysRealistic":        "Keys: W accelerate, S brake, R gear D/R, A and D steer, Space handbrake, Z and C left and right indicators, L headlamps, H horn, Q or Shift+A look over your left shoulder, E or Shift+D look down out of your window, T top-down view, V view from behind the car, P pause. Drag the view to look around.",
   "sim.hud.next":                  "Next",
   "sim.hud.timeLeft":              "Time left",
   "sim.hud.demerits":              "Demerits",
@@ -477,6 +479,7 @@ export const en = {
   "sim.verdict.failedStations":    "Not cleared",
   "sim.verdict.allCleared":        "All seven stations cleared.",
   "sim.verdict.topDown":           "Top-down view on for {{s}} s. No penalty.",
+  "sim.verdict.chase":             "You used the view from behind the car (V). Marks are unchanged, but this is not like the real test.",
   "sim.verdict.saving":            "Saving the result.",
   "sim.verdict.savedOffline":      "Saved on this device. It uploads when you are back online.",
   "sim.verdict.faults":            "Faults",
@@ -498,6 +501,7 @@ export const en = {
   "sim.settings.touchAuto":        "Auto",
   "sim.settings.on":               "On",
   "sim.settings.off":              "Off",
+  "sim.settings.gears":            "Realistic gears (R key)",
 
   // ── Colour blindness test ──────────────────────────────────────────────
   "colorblind.title":              "Colour Vision Test",

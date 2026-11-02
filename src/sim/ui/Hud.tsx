@@ -1,5 +1,5 @@
 // What the learner sees while driving. It keeps out of the mirrors' three areas (the top centre, and the
-// side edges a little above the middle) and clear of the touch controls along the bottom.
+// lower side edges) and clear of the touch controls along the bottom.
 import { ArrowCounterClockwise, ArrowFatLeft, ArrowFatRight, Headlights, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut, VideoCamera } from '@/components/ui/icons';
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { stationName } from './Verdict';
 const TIP_S = 6;          // rules.json modes: tips show for 6 s when a station arms
 const TOAST_S = 3.5;
 const EGG_S = 4.5;
+const NOTICE_S = 4.5;
 const INTERIOR_MIRROR_H = 60;
 
 // the HUD's own surface: asphalt with paint, the on-road palette
@@ -75,7 +76,6 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
             <>
               <HudButton label={t('sim.hud.toStart')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>
               <HudButton label={t('sim.hud.modes')} onClick={onStations}><ListBullets size={20} /></HudButton>
-              <HudButton label={t('sim.hud.chase')} pressed={chase} onClick={() => useDriver.getState().set({ chase: !chase })}><VideoCamera size={20} /></HudButton>
             </>
           )}
           {!free && mode === 'practice' && (
@@ -84,6 +84,7 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
               <HudButton label={t('sim.hud.drills')} onClick={onStations}><ListBullets size={20} /></HudButton>
             </>
           )}
+          <HudButton label={t('sim.hud.chase')} pressed={chase} onClick={() => useDriver.getState().set({ chase: !chase })}><VideoCamera size={20} /></HudButton>
           {!touch && (
             <>
               <HudButton label={t('sim.touch.topDown')} pressed={topDown} onClick={() => useDriver.getState().set({ topDown: !topDown })}><MapTrifold size={20} /></HudButton>
@@ -118,6 +119,7 @@ export function Hud({ touch, free = false, onRestart, onStations, onExit }: Prop
         {starting && <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(starting === 'brief' ? 'sim.hud.brief' : 'sim.hud.engine')}</p>}
         {!free && <Toasts />}
         <EggLine />
+        <NoticeLine />
       </div>
 
       <Readouts bottom={touch ? 72 : 12} />
@@ -179,6 +181,20 @@ function EggLine() {
   }, [toast]);
   if (!toast || shown === toast.at) return null;
   return <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(toast.key)}</p>;
+}
+
+/** The driver's notice (the gear refused while moving, or how to reverse after S holds the car), for a few seconds. */
+function NoticeLine() {
+  const { t } = useLanguage();
+  const notice = useDriver((s) => s.notice);
+  const [shown, setShown] = useState<number | null>(null);
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(() => setShown(notice.at), NOTICE_S * 1000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+  if (!notice || shown === notice.at) return null;
+  return <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(`sim.notice.${notice.key}` as TranslationKey)}</p>;
 }
 
 /** One per fault, in the order they happened, each with a short tone. Kerbs and poles count once per contact. */

@@ -5,7 +5,7 @@
 //   ?tier=medium uses the larger textures
 //   ?touch=on shows the touch controls on any device
 //   ?verdict=demo shows the verdict screen over the scene, with a sample failed run
-// Keys: W/S throttle and brake, A/D steer, R gear, Space handbrake, T top-down, P pause.
+// Keys: W go, S brake then reverse, A/D steer, Space handbrake, T top-down, P pause.
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';

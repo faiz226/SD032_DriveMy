@@ -8,10 +8,12 @@ import { type Pose, useRun } from './run';
 
 const ORDER = [...circuit.stations].sort((a, b) => a.order - b.order).map((g) => g.id);
 
+let chase = false;   // the view from behind the car, which the page passes along with the top-down flag
+
 /** A session that is really the run store: what SwiftCar's onStep does on the page. */
 const viaRun: Session = {
   step: (sample, events, dt, topDown) => {
-    useRun.getState().step(sample, events, dt, topDown);
+    useRun.getState().step(sample, events, dt, topDown, chase);
     return useRun.getState().state;
   },
   restartStation: () => { throw new Error('the page restarts through useRun.begin'); },
@@ -55,6 +57,26 @@ describe('the run', () => {
     expect(useRun.getState().runId).not.toBe(first);
     expect(useRun.getState().state.topDownSeconds).toBe(0);
     expect(useRun.getState().toasts).toEqual([]);
+  });
+
+  it('the view from behind the car marks nothing: the same drive is marked the same, and the run remembers the view', () => {
+    const kerbRun = (withChase: boolean) => {
+      chase = withChase;
+      const d = driverAt(useRun.getState().begin('assessment'), [0, 5]);
+      d.stop(0.2);
+      d.kerbOverride = 0;
+      d.stop(1.5);
+      const { state, chaseUsed } = useRun.getState();
+      return { faults: state.faults, demerits: state.demerits, chaseUsed };
+    };
+    const plain = kerbRun(false);
+    const behind = kerbRun(true);
+    chase = false;
+    expect(plain.faults).toHaveLength(1);
+    expect(behind).toEqual({ ...plain, chaseUsed: true });
+    expect(plain.chaseUsed).toBe(false);
+    useRun.getState().begin('assessment');
+    expect(useRun.getState().chaseUsed).toBe(false);   // the next run starts clean
   });
 
   it('one toast per kerb contact, however long the tyre stays on it', () => {
