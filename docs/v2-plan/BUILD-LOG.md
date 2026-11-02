@@ -713,3 +713,25 @@ voice, each in its own language, where one Malay female voice had read both. `ge
 per language (`--voice-en`, `--voice-ms`; the defaults are the owner's choice, and `FISH_AUDIO_VOICE_ID` stays
 the narration's), and all 26 lines were spoken again, the three tips rewritten today (hill, 3-side, ramp)
 among them, so the voice and the screen agree again.
+
+## 2 Nov: settings in the simulator
+
+The owner asked for a settings button in the simulator: the volumes, keys of one's own, the choice of S changing
+gear or the realistic R key, and the rest.
+
+- **One panel, two doors.** `Settings.tsx` holds the panel (Sound, Controls, Other): the first panel shows it as
+  before, and while driving a gear button on the HUD opens it as a dialog; the drive pauses while it is open and is
+  left as it was after, and the driving keys are off so the panel can take them.
+- **Sound.** A master volume over three mixes: the car and its effects (engine, horn, faults, chimes), the
+  surroundings (wind, birds, the far-off traffic) and the instructor, whose on and off stays too. Every sound now
+  goes through its mix (`out()` in `sound.ts`); the volumes are kept in the browser. There is no music in the
+  simulator, so the surroundings take that slider's place.
+- **Keys.** Every action is on one key the learner can change (`useKeys`): press its button, then the new key
+  (Esc keeps the old one); a key another action has swaps over, so every action keeps one. The arrows, Esc and the
+  keypad's + and - always do theirs, so no one can lock themselves out, and Shift, Tab and the system keys cannot
+  be taken. The strings that name a key (the first panel's keys line, "press S again", the pause hint, the verdict's
+  note, the S's and Z's steps) name the learner's own. The browser's own shortcuts (Ctrl, Alt, Cmd) no longer
+  reach the car.
+- **Gears.** The same choice as before, put plainly: "S and W change gear" or "Realistic: the R key", each naming
+  the learner's keys.
+

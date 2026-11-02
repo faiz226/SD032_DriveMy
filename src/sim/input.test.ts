@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useDriver, useGearPref, useHead, useKeyboardControls } from './input';
+import { DEFAULT_KEYS, useDriver, useGearPref, useHead, useKeyboardControls, useKeys } from './input';
 
 const press = (code: string, init: KeyboardEventInit = {}) => act(() => { window.dispatchEvent(new KeyboardEvent('keydown', { code, ...init })); });
 const release = (code: string) => act(() => { window.dispatchEvent(new KeyboardEvent('keyup', { code })); });
@@ -237,5 +237,32 @@ describe('looking with Shift', () => {
     release('ShiftLeft');
     expect(head()).toEqual({ yaw: 0, pitch: 0 });
     expect(car().wheel).toBe(0);
+  });
+});
+
+describe("the learner's own keys (Settings)", () => {
+  beforeEach(() => act(() => useKeys.getState().reset()));
+
+  it('a key given to an action does it, the key it replaced does nothing, and the arrows still drive', () => {
+    renderHook(() => useKeyboardControls());
+    act(() => useKeys.getState().bind('go', 'KeyI'));
+    press('KeyW');
+    expect(car().throttle).toBe(0);
+    release('KeyW');
+    press('KeyI');
+    expect(car().throttle).toBe(1);
+    release('KeyI');
+    press('ArrowUp');
+    expect(car().throttle).toBe(1);
+    release('ArrowUp');
+  });
+
+  it("taking another action's key swaps the two; Shift, Tab and the fixed keys cannot be taken; reset puts all back", () => {
+    act(() => useKeys.getState().bind('go', 'KeyS'));
+    expect(useKeys.getState().keys).toMatchObject({ go: 'KeyS', back: 'KeyW' });
+    for (const code of ['ShiftLeft', 'Tab', 'Escape', 'ArrowUp']) act(() => useKeys.getState().bind('horn', code));
+    expect(useKeys.getState().keys.horn).toBe('KeyH');
+    act(() => useKeys.getState().reset());
+    expect(useKeys.getState().keys).toEqual(DEFAULT_KEYS);
   });
 });

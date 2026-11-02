@@ -1,6 +1,6 @@
 // The driver's inputs, from the keyboard or the touch controls. The physics reads them every step;
 // the screens subscribe for the gear, the handbrake and notices.
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import type { Controls } from './physics/vehicle';
 
@@ -131,19 +131,100 @@ export function useTouchUi(): boolean {
 }
 
 type Pedal = 'go' | 'back';
-const PEDAL_KEYS: Record<Pedal, string[]> = { go: ['KeyW', 'ArrowUp'], back: ['KeyS', 'ArrowDown'] };
+
+/** What the keys do: each action on one key, which the learner can change in Settings (the owner, 2 Nov). */
+export const ACTIONS = ['go', 'back', 'left', 'right', 'handbrake', 'gear', 'indicatorLeft', 'indicatorRight', 'lookLeft', 'lookRight',
+  'headlights', 'horn', 'chase', 'topDown', 'zoomIn', 'zoomOut', 'pause'] as const;
+export type Action = (typeof ACTIONS)[number];
+export const DEFAULT_KEYS: Record<Action, string> = {
+  go: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', handbrake: 'Space', gear: 'KeyR', indicatorLeft: 'KeyZ',
+  indicatorRight: 'KeyC', lookLeft: 'KeyQ', lookRight: 'KeyE', headlights: 'KeyL', horn: 'KeyH', chase: 'KeyV',
+  topDown: 'KeyT', zoomIn: 'Equal', zoomOut: 'Minus', pause: 'KeyP',
+};
+/** Keys that always do the same whatever the learner sets, so no one is locked out: the arrows drive, Esc pauses. */
+const FIXED: Record<string, Action> = {
+  ArrowUp: 'go', ArrowDown: 'back', ArrowLeft: 'left', ArrowRight: 'right', Escape: 'pause', NumpadAdd: 'zoomIn', NumpadSubtract: 'zoomOut',
+};
+const HELD = new Set<Action>(['go', 'back', 'left', 'right', 'lookLeft', 'lookRight']);   // these act while held, the rest once a press
+const KEYS_KEY = 'drivemy.sim.keys';
+
+/** A key the learner may give an action: not a fixed one, nor Shift (it turns steering into looking), Tab or the system's. */
+export const bindable = (code: string) => !(code in FIXED) && !/^(Shift|Control|Alt|Meta|OS)|^(Tab|CapsLock|ContextMenu)$/.test(code);
+
+/** The saved keys, or the default ones if what was saved is not a full set of different, usable keys. */
+function savedKeys(): Record<Action, string> {
+  const keys = { ...DEFAULT_KEYS };
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEYS_KEY) ?? '{}') as Partial<Record<Action, unknown>>;
+    for (const a of ACTIONS) {
+      const code = saved[a];
+      if (typeof code === 'string' && bindable(code)) keys[a] = code;
+    }
+  } catch { /* storage blocked or unreadable: the default keys */ }
+  return new Set(Object.values(keys)).size === ACTIONS.length ? keys : { ...DEFAULT_KEYS };
+}
+
+function saveKeys(keys: Record<Action, string>) {
+  try { localStorage.setItem(KEYS_KEY, JSON.stringify(keys)); } catch { /* storage blocked: the keys last this visit */ }
+}
+
+/** The learner's keys (Settings). Giving an action a key another one has swaps the two, so every action keeps a key. */
+export const useKeys = create<{ keys: Record<Action, string>; bind(a: Action, code: string): void; reset(): void }>((set, get) => ({
+  keys: savedKeys(),
+  bind: (a, code) => {
+    if (!bindable(code)) return;
+    const keys = { ...get().keys };
+    const other = ACTIONS.find((b) => keys[b] === code);
+    if (other) keys[other] = keys[a];
+    keys[a] = code;
+    saveKeys(keys);
+    set({ keys });
+  },
+  reset: () => {
+    saveKeys(DEFAULT_KEYS);
+    set({ keys: { ...DEFAULT_KEYS } });
+  },
+}));
+
+const NAMED: Record<string, string> = {
+  Space: 'Space', Equal: '=', Minus: '-', BracketLeft: '[', BracketRight: ']', Semicolon: ';', Quote: "'", Comma: ',',
+  Period: '.', Slash: '/', Backslash: '\\', Backquote: '`', Enter: 'Enter', Backspace: 'Backspace',
+};
+/** A key's name, as printed on it. */
+export const keyLabel = (code: string) => NAMED[code] ?? code.replace(/^(Key|Digit)/, '').replace(/^Numpad/, 'Num ');
+
+/** Every action's key, by name, for the strings that name one ("press {{back}} again to reverse"). */
+export function useKeyNames(): Record<Action, string> {
+  const keys = useKeys((s) => s.keys);
+  return useMemo(() => Object.fromEntries(ACTIONS.map((a) => [a, keyLabel(keys[a])])) as Record<Action, string>, [keys]);
+}
+
+/** The settings while driving: open or not. The drive pauses while they are open, and is left as it was after. */
+export const useSettingsPanel = create<{ open: boolean; wasPaused: boolean; show(): void; hide(): void }>((set, get) => ({
+  open: false,
+  wasPaused: false,
+  show: () => {
+    set({ open: true, wasPaused: useDriver.getState().paused });
+    useDriver.getState().set({ paused: true });
+  },
+  hide: () => {
+    set({ open: false });
+    useDriver.getState().set({ paused: get().wasPaused });
+  },
+}));
 
 /**
- * Keyboard: W/Up go, S/Down brake, A/D or Left/Right steer (with Shift they also look), R gear when stopped, Space
- * handbrake, P or Esc pause, T top-down, +/- its zoom, Q over the left shoulder, E down out of the driver's window,
- * Z and C the left and right indicators, L the headlamps, H the horn, V the view from behind the car.
+ * Keyboard: the learner's keys (`useKeys`; by default W go, S brake, A and D steer, R gear when stopped, Space
+ * handbrake, P pause, T top-down, = and - its zoom, Q over the left shoulder, E down out of the driver's window, Z
+ * and C the indicators, L the headlamps, H the horn, V the view from behind the car), with the arrows, Esc and the
+ * keypad's + and - always theirs. Shift turns the steering keys into looks as well.
  *
- * Realistic gears (settings): W is only the throttle and S only the brake, and R is the one way to change gear.
- * Otherwise the keys change gear too, by what each press means, settled as the key goes down and kept while it is
- * held. The key for the way the gear drives drives. The key for the other way (S in D, W in R) brakes a car that is
- * moving, and holds it stopped for as long as that same press lasts; a fresh press, once the key has been let go,
- * while the car is stopped (or only creeping) selects the other gear and drives. Both keys together only brake.
- * Holding S on a slope or at a line therefore never reverses; the gear is always the real one, so the rules see it.
+ * Realistic gears (settings): the go key is only the throttle and the back key only the brake, and the gear key is the
+ * one way to change gear. Otherwise the keys change gear too, by what each press means, settled as the key goes down
+ * and kept while it is held. The key for the way the gear drives drives. The key for the other way (back in D, go in
+ * R) brakes a car that is moving, and holds it stopped for as long as that same press lasts; a fresh press, once the
+ * key has been let go, while the car is stopped (or only creeping) selects the other gear and drives. Both together
+ * only brake. Holding the back key on a slope or at a line therefore never reverses; the gear is always the real one.
  */
 export function useKeyboardControls(enabled = true) {
   useEffect(() => {
@@ -151,21 +232,26 @@ export function useKeyboardControls(enabled = true) {
     const held = new Set<string>();
     const meant: Partial<Record<Pedal, 'drive' | 'brake'>> = {};   // what each held pedal key meant when it went down
     let glancing = false;
-    const pressed = (p: Pedal) => PEDAL_KEYS[p].some((c) => held.has(c));
-    /** A fresh press of W or S with the automatic gears. */
+    /** What a key does now: its fixed action, or the one the learner gave it. */
+    const actionOf = (code: string): Action | undefined => {
+      const keys = useKeys.getState().keys;
+      return FIXED[code] ?? ACTIONS.find((a) => keys[a] === code);
+    };
+    const on = (a: Action) => [...held].some((c) => actionOf(c) === a);
+    /** A fresh press of the go or back key with the automatic gears. */
     const press = (p: Pedal) => {
       const d = useDriver.getState();
       const want = p === 'go' ? 'D' : 'R';
       const along = d.gear === 'D' ? d.speedKmh : -d.speedKmh;   // the car's speed the way its gear drives; negative: rolling the other way
       if (want === d.gear) meant[p] = 'drive';
-      else if (along < CREEP_KMH && along > -STOPPED_KMH && !pressed(p === 'go' ? 'back' : 'go')) { meant[p] = 'drive'; d.set({ gear: want }); }
+      else if (along < CREEP_KMH && along > -STOPPED_KMH && !on(p === 'go' ? 'back' : 'go')) { meant[p] = 'drive'; d.set({ gear: want }); }
       else meant[p] = 'brake';
     };
     const apply = () => {
-      const left = held.has('KeyA') || held.has('ArrowLeft');
-      const right = held.has('KeyD') || held.has('ArrowRight');
-      const go = pressed('go');
-      const back = pressed('back');
+      const left = on('left');
+      const right = on('right');
+      const go = on('go');
+      const back = on('back');
       let throttle = go;
       let brake = back;
       if (useGearPref.getState().pref === 'off') {
@@ -173,41 +259,42 @@ export function useKeyboardControls(enabled = true) {
         throttle = !brake && ((go && meant.go === 'drive') || (back && meant.back === 'drive'));
       }
       useDriver.getState().set({ throttle: throttle ? 1 : 0, brake: brake ? 1 : 0, wheel: (left ? 1 : 0) - (right ? 1 : 0) });
-      // Q and E, or A and D with Shift (they steer all the same): over the left shoulder, down out of the window
+      // the look keys, or the steering keys with Shift (they steer all the same): over the left shoulder, down out of the window
       const shift = held.has('ShiftLeft') || held.has('ShiftRight');
-      const glance = (held.has('KeyQ') || (shift && held.has('KeyA')) ? 1 : 0) - (held.has('KeyE') || (shift && held.has('KeyD')) ? 1 : 0);
+      const glance = (on('lookLeft') || (shift && left) ? 1 : 0) - (on('lookRight') || (shift && right) ? 1 : 0);
       if (glance !== 0) useHead.getState().set(glance > 0 ? GLANCE.left : GLANCE.right);
       else if (glancing) useHead.getState().set({ yaw: 0, pitch: 0 });
       glancing = glance !== 0;
     };
-    // the first time S holds the car stopped, say how to reverse
+    // the first time the back key holds the car stopped, say how to reverse
     const hint = useDriver.subscribe((now, was) => {
-      if (now.speedKmh !== was.speedKmh && !now.hinted && Math.abs(now.speedKmh) < STOPPED_KMH && pressed('back') && meant.back === 'brake') {
+      if (now.speedKmh !== was.speedKmh && !now.hinted && Math.abs(now.speedKmh) < STOPPED_KMH && on('back') && meant.back === 'brake') {
         useDriver.setState({ notice: { key: 'pressAgain', at: performance.now() }, hinted: true });
       }
     });
     const down = (e: KeyboardEvent) => {
-      if (e.repeat && !['KeyW', 'KeyS', 'KeyA', 'KeyD', 'KeyQ', 'KeyE', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;   // the browser's own shortcuts
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') { held.add(e.code); apply(); return; }
+      const action = actionOf(e.code);
+      if (!action || (e.repeat && !HELD.has(action))) return;
       const d = useDriver.getState();
-      switch (e.code) {
-        case 'KeyR': d.toggleGear(); break;
-        case 'Space': d.toggleHandbrake(); e.preventDefault(); break;
-        case 'KeyP': case 'Escape': d.set({ paused: !d.paused }); break;
-        case 'KeyT': d.set({ topDown: !d.topDown }); break;
-        case 'KeyZ': d.toggleIndicator(1); break;
-        case 'KeyC': d.toggleIndicator(-1); break;
-        case 'KeyL': d.set({ headlights: !d.headlights }); break;
-        case 'KeyV': d.set({ chase: !d.chase }); break;
-        case 'KeyH': d.set({ horn: performance.now() }); break;
-        case 'Equal': case 'NumpadAdd': d.zoomBy(ZOOM_STEP); break;
-        case 'Minus': case 'NumpadSubtract': d.zoomBy(1 / ZOOM_STEP); break;
-        default: {
-          const pedal = (['go', 'back'] as const).find((p) => PEDAL_KEYS[p].includes(e.code));
-          if (pedal && !pressed(pedal) && useGearPref.getState().pref === 'off') press(pedal);
+      switch (action) {
+        case 'gear': d.toggleGear(); break;
+        case 'handbrake': d.toggleHandbrake(); e.preventDefault(); break;
+        case 'pause': d.set({ paused: !d.paused }); break;
+        case 'topDown': d.set({ topDown: !d.topDown }); break;
+        case 'indicatorLeft': d.toggleIndicator(1); break;
+        case 'indicatorRight': d.toggleIndicator(-1); break;
+        case 'headlights': d.set({ headlights: !d.headlights }); break;
+        case 'chase': d.set({ chase: !d.chase }); break;
+        case 'horn': d.set({ horn: performance.now() }); break;
+        case 'zoomIn': d.zoomBy(ZOOM_STEP); break;
+        case 'zoomOut': d.zoomBy(1 / ZOOM_STEP); break;
+        default:   // held: the pedals, the steering and the looks
+          if ((action === 'go' || action === 'back') && !on(action) && useGearPref.getState().pref === 'off') press(action);
           held.add(e.code);
-          if (e.code.startsWith('Arrow')) e.preventDefault();
+          e.preventDefault();   // an arrow or Space would scroll the page
           apply();
-        }
       }
     };
     const up = (e: KeyboardEvent) => { held.delete(e.code); apply(); };

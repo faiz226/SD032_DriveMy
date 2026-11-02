@@ -22,6 +22,59 @@ export function unlockSound() {
   }
 }
 
+// ---------------------------------------------------------------- the mix (Settings, the owner, 2 Nov)
+export type Mix = 'effects' | 'ambience' | 'voice';
+export interface Volumes { master: number; effects: number; ambience: number; voice: number }
+const VOLUME_KEY = 'drivemy.sim.volume';
+const MIXES = ['effects', 'ambience', 'voice'] as const;
+
+/** The saved volumes, each kept only if it is a number from 0 to 1. */
+function savedVolumes(): Volumes {
+  const full: Volumes = { master: 1, effects: 1, ambience: 1, voice: 1 };
+  try {
+    const saved = JSON.parse(localStorage.getItem(VOLUME_KEY) ?? '{}') as Partial<Record<keyof Volumes, unknown>>;
+    for (const k of Object.keys(full) as (keyof Volumes)[]) {
+      const v = saved[k];
+      if (typeof v === 'number' && v >= 0 && v <= 1) full[k] = v;
+    }
+  } catch { /* storage blocked or unreadable: full volume */ }
+  return full;
+}
+
+let mixes: Record<Mix | 'master', GainNode> | null = null;
+
+/** The volumes, 0 to 1: a master over the car and its effects, the yard's air, and the instructor. */
+export const useVolume = create<Volumes & { setVolume(p: Partial<Volumes>): void }>((set, get) => ({
+  ...savedVolumes(),
+  setVolume: (p) => {
+    set(p);
+    const { master, effects, ambience, voice } = get();
+    try { localStorage.setItem(VOLUME_KEY, JSON.stringify({ master, effects, ambience, voice })); } catch { /* this visit only */ }
+    if (!ctx || !mixes) return;
+    const t = ctx.currentTime;
+    mixes.master.gain.setTargetAtTime(master, t, 0.03);
+    for (const m of MIXES) mixes[m].gain.setTargetAtTime(get()[m], t, 0.03);
+  },
+}));
+
+/** Where a sound goes: its mix, under the master volume. */
+function out(c: AudioContext, mix: Mix): AudioNode {
+  if (!mixes) {
+    const v = useVolume.getState();
+    const master = c.createGain();
+    master.gain.value = v.master;
+    master.connect(c.destination);
+    const made = { master } as Record<Mix | 'master', GainNode>;
+    for (const m of MIXES) {
+      made[m] = c.createGain();
+      made[m].gain.value = v[m];
+      made[m].connect(master);
+    }
+    mixes = made;
+  }
+  return mixes[mix];
+}
+
 // each clip's level, from its measured loudness: the horn a little over the instructor, the rest under the engine
 const CLIPS = {
   horn: ['/sim/sfx/horn.mp3', 0.4],
@@ -48,7 +101,7 @@ function play(name: Clip, delayS = 0) {
   const level = ctx.createGain();
   src.buffer = buffer;
   level.gain.value = CLIPS[name][1];
-  src.connect(level).connect(ctx.destination);
+  src.connect(level).connect(out(ctx, 'effects'));
   src.start(ctx.currentTime + delayS);
 }
 
@@ -63,7 +116,7 @@ export function faultSound() {
   level.gain.setValueAtTime(0.0001, t);
   level.gain.exponentialRampToValueAtTime(0.08, t + 0.01);
   level.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
-  tone.connect(level).connect(ctx.destination);
+  tone.connect(level).connect(out(ctx, 'effects'));
   tone.start(t);
   tone.stop(t + 0.2);
 }
@@ -96,7 +149,7 @@ export function meowSound() {
   level.gain.setValueAtTime(0.0001, t);
   level.gain.exponentialRampToValueAtTime(0.12, t + 0.06);
   level.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
-  cry.connect(mouth).connect(level).connect(ctx.destination);
+  cry.connect(mouth).connect(level).connect(out(ctx, 'effects'));
   cry.start(t);
   cry.stop(t + 0.7);
 }
@@ -112,7 +165,7 @@ export function tickSound(on: boolean) {
   level.gain.setValueAtTime(0.0001, t);
   level.gain.exponentialRampToValueAtTime(0.04, t + 0.002);
   level.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-  tone.connect(level).connect(ctx.destination);
+  tone.connect(level).connect(out(ctx, 'effects'));
   tone.start(t);
   tone.stop(t + 0.04);
 }
@@ -149,7 +202,7 @@ export function startEngine(): Promise<void> {
   const level = c.createGain();
   src.loop = true;
   level.gain.value = 0;
-  src.connect(level).connect(c.destination);
+  src.connect(level).connect(out(c, 'effects'));
   const claimed: Engine = { src, level };
   engine = claimed;   // claimed now: a newer start, or leaving, replaces it
   return engineFiles.then(([start, idle]) => {
@@ -159,7 +212,7 @@ export function startEngine(): Promise<void> {
     const onceLevel = c.createGain();
     once.buffer = start;
     onceLevel.gain.value = ENGINE_LEVEL;
-    once.connect(onceLevel).connect(c.destination);
+    once.connect(onceLevel).connect(out(c, 'effects'));
     once.start(t);
     claimed.once = once;
     src.buffer = idle;
@@ -214,7 +267,7 @@ function trafficBed(c: AudioContext): AudioScheduledSourceNode[] {
   const depth = c.createGain();
   depth.gain.value = TRAFFIC.depth;
   swell.connect(depth).connect(level.gain);
-  src.connect(low).connect(level).connect(c.destination);
+  src.connect(low).connect(level).connect(out(c, 'ambience'));
   src.start();
   swell.start();
   level.gain.setTargetAtTime(TRAFFIC.level, c.currentTime, 2);
@@ -230,7 +283,7 @@ function startBeds(c: AudioContext) {
     const cabin = c.createBiquadFilter();
     cabin.type = 'lowpass';
     cabin.frequency.value = hz;
-    cabin.connect(c.destination);
+    cabin.connect(out(c, 'ambience'));
     const src = c.createBufferSource();
     const level = c.createGain();
     src.loop = true;
@@ -325,7 +378,7 @@ async function sayNext() {
     src.buffer = await Promise.race([lines.get(line.url)!, new Promise<never>((_, no) => { window.setTimeout(() => no(new Error('slow')), 8000); })]);
     const level = c.createGain();
     level.gain.value = VOICE_LEVEL;
-    src.connect(level).connect(c.destination);
+    src.connect(level).connect(out(c, 'voice'));
     // said: when it ends, or by its own length (a stalled audio clock never ends a line), held while paused
     let said = false;
     let timer = 0;

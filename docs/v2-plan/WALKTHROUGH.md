@@ -28,6 +28,10 @@ drag the view to look anywhere, including over your right shoulder,
 Space for the handbrake, Z and C for the left and right indicators, L for the headlamps, H for the horn,
 T for the top-down view, V for the view from behind the car (every mode; an assessment's result says if you used it, and its marks are unchanged), + and - to zoom, P or Esc to pause.
 
+**Settings:** the gear button while driving (it pauses the drive), or Settings on the simulator's first panel:
+the volumes (overall, the car and its effects, the surroundings, the instructor), how the gears change, every key
+(press its button, then the new key), the quality and the touch controls.
+
 **On a phone:** start the app with `npm run dev:phone` instead, and open the Network address it prints
 (`http://<the laptop's address>:5173`) on a phone on the same Wi-Fi; if Windows asks, let Node.js through its
 firewall. Google sign-in only works on the deployed site, so on the laptop's address go straight to

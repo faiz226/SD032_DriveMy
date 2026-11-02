@@ -16,7 +16,7 @@ import { useAuthStore } from '@/stores/authStore';
 import type { SimEvent, StationId, VehicleSample } from '../contracts';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
-import { useDriver, useGearPref, useHead, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
+import { useDriver, useGearPref, useHead, useKeyboardControls, useSettingsPanel, useTouchPref, useTouchUi } from '../input';
 import { OtherCars } from '../physics/OtherCars';
 import { Traffic } from '../traffic/model';
 import { TrafficView } from '../traffic/TrafficView';
@@ -28,6 +28,7 @@ import { TouchControls } from '../TouchControls';
 import { Daylight, TopDownCamera, World } from '../world/World';
 import { Scenery } from '../world/Scenery';
 import { Hud, HUD_PLATE } from './Hud';
+import type { SettingsProps } from './Settings';
 import { ModePanel, type PanelMode } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
@@ -118,7 +119,8 @@ export function SimulatorPage() {
   const getTraffic = useCallback(() => traffic.current, []);
 
   // the autopilot never loses focus to a person, so it never pauses for it
-  useKeyboardControls(phase === 'drive' && !autopilotOn);
+  const settingsOpen = useSettingsPanel((s) => s.open);
+  useKeyboardControls(phase === 'drive' && !autopilotOn && !settingsOpen);   // the settings take the keys while open
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
   useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead, __simCar: () => car.current, __simEggs: getEggs }); }, [getEggs]);
   useEffect(() => () => {
@@ -254,6 +256,11 @@ export function SimulatorPage() {
     useQualityPref.getState().setPref(p);
   };
 
+  const settings: SettingsProps = {
+    quality: qualityPref, detected, touch: touchPref, voice: voicePref, gears: gearPref,
+    onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p), onVoice: (p) => useVoicePref.getState().setPref(p), onGears: (p) => useGearPref.getState().setPref(p),
+  };
+
   return (
     <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--road))]', phase === 'explore' && EXPLORE_CANVAS, phase === 'drive' && '[&_canvas]:touch-none')}>
       <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows && 'percentage'} gl={{ powerPreference: 'high-performance' }}>
@@ -288,10 +295,7 @@ export function SimulatorPage() {
           ready={ready}
           onMode={setMode}
           onDrill={setDrill}
-          settings={{
-            quality: qualityPref, detected, touch: touchPref, voice: voicePref, gears: gearPref,
-            onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p), onVoice: (p) => useVoicePref.getState().setPref(p), onGears: (p) => useGearPref.getState().setPref(p),
-          }}
+          settings={settings}
           onStart={() => begin(mode, drill)}
           onExplore={() => go('explore')}
           onExit={exit}
@@ -307,6 +311,7 @@ export function SimulatorPage() {
             onNext={() => begin('practice', nextStation(drill))}
             onStations={() => { if (mode !== 'free') setMode('practice'); go('choose'); }}
             onExit={exit}
+            settings={settings}
           />
           {touch && <TouchControls />}
         </>

@@ -1,6 +1,6 @@
 // What the learner sees while driving. It keeps out of the mirrors' three areas (the top centre, and the
 // lower side edges) and clear of the touch controls along the bottom.
-import { ArrowCounterClockwise, ArrowFatLeft, ArrowFatRight, Headlights, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut, VideoCamera } from '@/components/ui/icons';
+import { ArrowCounterClockwise, ArrowFatLeft, ArrowFatRight, Gear, Headlights, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut, VideoCamera } from '@/components/ui/icons';
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { Figure } from '@/components/ui/surface';
@@ -9,11 +9,12 @@ import type { TranslationKey } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 import type { Fault, StationId, StationProgress } from '../contracts';
 import { circuit, rules } from '../data';
-import { useDriver, ZOOM_STEP } from '../input';
+import { useDriver, useKeyNames, useSettingsPanel, ZOOM_STEP } from '../input';
 import { blinkOn, lampClock } from '../physics/Lamps';
 import { MIRROR_PAD, mirrorScale } from '../physics/mirrors';
 import { useEggs } from './Eggs';
 import { useRun } from './run';
+import { type SettingsProps, SettingsDialog } from './Settings';
 import { faultSound, tickSound } from './sound';
 import { stationName } from './Verdict';
 import { Steps } from './Steps';
@@ -47,10 +48,13 @@ interface Props {
   onNext(): void;
   onStations(): void;
   onExit(): void;
+  /** The settings, behind the button (the same panel as the first screen's). */
+  settings: SettingsProps;
 }
 
-export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit }: Props) {
+export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit, settings }: Props) {
   const { t } = useLanguage();
+  const names = useKeyNames();
   const mode = useRun((s) => s.mode);
   const state = useRun((s) => s.state);
   const now = useRun((s) => s.t);
@@ -108,6 +112,7 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
               </HudButton>
             </>
           )}
+          <HudButton label={t('sim.settings.title')} onClick={() => useSettingsPanel.getState().show()}><Gear size={20} /></HudButton>
           <HudButton label={t('sim.hud.lights')} pressed={headlights} onClick={() => useDriver.getState().set({ headlights: !headlights })}><Headlights size={20} /></HudButton>
           <HudButton label={t('sim.hud.exit')} onClick={onExit}><SignOut size={20} /></HudButton>
         </div>
@@ -140,11 +145,12 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
       <Readouts bottom={touch ? 72 : 12} />
 
       {done && <DrillDone station={done} onRestart={onRestart} onNext={onNext} onStations={onStations} />}
+      <SettingsDialog settings={settings} />
       {paused && (
         <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[rgb(var(--road)/0.45)]">
           <div className={cn(HUD_PLATE, 'max-w-sm space-y-3 p-4 text-center')} role="status">
             <p className="type-label-strong text-lg">{t('sim.hud.paused')}</p>
-            <p className="type-label">{t('sim.hud.pausedHint')}</p>
+            <p className="type-label">{t('sim.hud.pausedHint', names)}</p>
             <Button onClick={() => useDriver.getState().set({ paused: false })}>{t('sim.hud.resume')}</Button>
           </div>
         </div>
@@ -201,6 +207,7 @@ function EggLine() {
 /** The driver's notice (the gear refused while moving, or how to reverse after S holds the car), for a few seconds. */
 function NoticeLine() {
   const { t } = useLanguage();
+  const names = useKeyNames();
   const notice = useDriver((s) => s.notice);
   const [shown, setShown] = useState<number | null>(null);
   useEffect(() => {
@@ -209,7 +216,7 @@ function NoticeLine() {
     return () => window.clearTimeout(timer);
   }, [notice]);
   if (!notice || shown === notice.at) return null;
-  return <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(`sim.notice.${notice.key}` as TranslationKey)}</p>;
+  return <p className={cn(HUD_PLATE, 'type-label w-full px-3 py-1.5 text-center')} role="status">{t(`sim.notice.${notice.key}` as TranslationKey, { key: names.back })}</p>;
 }
 
 /** One per fault, in the order they happened, each with a short tone. Kerbs and poles count once per contact. */

@@ -7,9 +7,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 import type { Mode, StationId } from '../contracts';
 import { circuit } from '../data';
-import type { GearPref, TouchPref } from '../input';
-import type { Tier, TierPref } from '../quality';
-import type { VoicePref } from './sound';
+import { useKeyNames } from '../input';
+import { type SettingsProps, SimSettings } from './Settings';
 import { stationName } from './Verdict';
 
 /** What the panel offers: the rules' two modes, and free drive, which the rules never see. */
@@ -25,15 +24,13 @@ interface Props {
   /** A free camera over the circuit first: nothing marked. */
   onExplore(): void;
   onExit(): void;
-  /** The simulator's own settings: quality tier and touch controls, each Auto by default; the instructor's voice, on; realistic gears, off. */
-  settings: {
-    quality: TierPref; detected: Tier; touch: TouchPref; voice: VoicePref; gears: GearPref;
-    onQuality(p: TierPref): void; onTouch(p: TouchPref): void; onVoice(p: VoicePref): void; onGears(p: GearPref): void;
-  };
+  /** The simulator's own settings (Settings.tsx): the same panel the settings button opens while driving. */
+  settings: SettingsProps;
 }
 
 export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExplore, onExit, settings }: Props) {
   const { t } = useLanguage();
+  const names = useKeyNames();
   const choice = (selected: boolean) => cn('tile text-left', selected ? 'tile-selected' : 'tile-open');
   return (
     <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[rgb(var(--road)/0.55)] p-3 sm:items-center">
@@ -66,51 +63,10 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExpl
         </div>
         <details className="space-y-2">
           <summary className="type-label-strong cursor-pointer">{t('sim.settings.title')}</summary>
-          <Choice
-            label={t('sim.settings.quality')}
-            value={settings.quality}
-            options={[
-              ['auto', t('sim.settings.auto', { what: t(settings.detected === 'low' ? 'sim.settings.low' : 'sim.settings.medium') })],
-              ['low', t('sim.settings.low')],
-              ['medium', t('sim.settings.medium')],
-            ]}
-            onChange={settings.onQuality}
-          />
-          <Choice
-            label={t('sim.settings.touch')}
-            value={settings.touch}
-            options={[['auto', t('sim.settings.touchAuto')], ['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
-            onChange={settings.onTouch}
-          />
-          <Choice
-            label={t('sim.settings.voice')}
-            value={settings.voice}
-            options={[['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
-            onChange={settings.onVoice}
-          />
-          <Choice
-            label={t('sim.settings.gears')}
-            value={settings.gears}
-            options={[['on', t('sim.settings.on')], ['off', t('sim.settings.off')]]}
-            onChange={settings.onGears}
-          />
+          <SimSettings settings={settings} />
         </details>
-        <p className="type-label text-xs">{t(settings.gears === 'on' ? 'sim.mode.keysRealistic' : 'sim.mode.keys')}</p>
+        <p className="type-label text-xs">{t(settings.gears === 'on' ? 'sim.mode.keysRealistic' : 'sim.mode.keys', names)}</p>
       </Panel>
-    </div>
-  );
-}
-
-function Choice<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: [T, string][]; onChange(v: T): void }) {
-  return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap items-center gap-2">
-      <span className="type-label text-sm">{label}</span>
-      {options.map(([v, text]) => (
-        <button key={v} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(v)}
-          className={cn('tile tap-sm px-2 py-1 text-sm', value === v ? 'tile-selected' : 'tile-open')}>
-          {text}
-        </button>
-      ))}
     </div>
   );
 }
