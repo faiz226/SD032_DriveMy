@@ -29,9 +29,9 @@ The owner's layout (20 Oct). Start in the apron at the top left, facing east, an
 4. **S-curve:** east along the top road, down lane C-D, east along the spine road, then south through
    the S. The three-point turn's old lane is an ordinary road now.
 5. **Z-curve:** west along the bottom road, then north through the Z.
-6. **Ramp:** east along the spine road, north up lane E-F; the ramp is on your right. Drive in, stop,
-   reverse out, carry on north.
-7. **Road merging:** east along the top lane, down the east road and west along the spine road to the
+6. **Ramp:** east along the spine road, north up lane E-F; the ramp is the first turn on your right. Drive
+   up, stop with both front tyres on the platform; once the pole is moved aside, drive on, down off the front.
+7. **Road merging:** right down the east road and west along the spine road to the
    roundabout. Give way at its entry to the cars going round, join them, leave by the north arm, and
    cross the finish at 15 km/h or faster.
 
@@ -46,7 +46,7 @@ band, as a real yard does. It breaks once, where the car reverses into the side 
 | 3 | Parallel Park | 184–201 | Recess 6.6 × 3.77 m on the lane's west side, its painted box the whole recess, the outer line from one kerb corner to the other (the owner, 2 Nov). Heading limit 36.5°, mirrors included. | Photo (recess); box the owner |
 | 4 | S-Curve | 275–319 | Lane 3.6 m. Two opposite 141° bends at a 7.5 m centreline radius, 3 m straights at each end. | Photo (real S) |
 | 5 | Z-Curve | 369–396 | Lane 4.0 m, driven north. Jog 7.73 m between the legs. Square outer corners, inner corners rounded 1 m. | Photo (real Z) |
-| 6 | Ramp Test | 453–464 | 4.0 m wide on the open floor at the top right, in line with the hill: a 3 m run-in, 6 m up to a 0.6 m platform (10%), a 7 m platform to an end wall. The pole stands on the centreline 0.4 m before the wall. A twin ramp beside it holds another learner. | The real yard has no ramp; the blueprint draws a structure here. Dimensions decided |
+| 6 | Ramp Test | 453–487 | 4.0 m wide on the open floor at the top right, in line with the hill: a 3 m run-in, 6 m up to a 0.6 m platform (10%), a 4 m platform and 5 m down off its far end (12%). The pole stands on the centreline 2.05 m past the crest and is moved aside once the car has held still. A twin ramp north of it holds another learner. | The real yard has no ramp; the blueprint draws a structure here. Dimensions decided; out through the front, the owner (2 Nov) |
 | 7 | Road Merging | 616–672 | The roundabout: traffic goes round clockwise on a circle 9 m from its middle. The give-way line crosses the approach lane 3.7 m before the circle. The finish is on the north arm, 56 m from the lane's start. | PRD; the owner, 20 Oct (at the roundabout); JKR (give-way line 1.2 to 10 m); a 3 s gap decided |
 
 Exact `s` values are in `circuit.json`.
@@ -82,16 +82,16 @@ value cited by clause or figure.
   - **Side bay:** one full-lock reverse arc from the reference poles, mirrors inside the lines.
   - **Parallel box:** one two-arc reverse, mirrors inside.
   - **Hill:** the whole stop band sits on the up-slope, within 1.5 m of the crest, with a pole each side level with the door mirrors when the front tyres are mid-band.
-  - **Ramp:** in and up with the tyres 0.86 m from the kerbs; it stops 0.81 m short of the pole,
-    inside the 0.2–1.0 m window; then it reverses straight back 11.5 m and turns out on full lock,
-    facing on.
+  - **Ramp:** up the route with the tyres 1.00 m from the kerbs; it stops 0.83 m short of the pole, and
+    anywhere in the 0.2–1.0 m window the front axle is 0.30–1.10 m past the crest, on the platform; with the
+    pole moved aside it drives on and down off the front, the tyres 0.50 m from the kerbs.
   - **Merge:** 56 m of lane to reach 15 km/h, where 5.8 m would do.
   - **Practice:** every station's start point is on the road, clear of the kerbs.
   - **Signals:** from the driver's eye of the first car at each stop line and of the second behind it, a
     head shows all three lamps through the windscreen, below the roof's edge, clear of the interior
     mirror and, for the second, over the car ahead's roof.
-- **Cheap.** Flat ground plus four slopes (the hill and the ramp, each with its twin); 19 kerb rings,
-  968 vertices; a 172 KB data file; four booths, one office and five poles.
+- **Cheap.** Flat ground plus four slopes (the hill and the ramp, each with its twin); 21 kerb rings,
+  984 vertices; a 181 KB data file; four booths, one office and five poles.
 
 ## Files
 
@@ -135,8 +135,8 @@ python docs/circuit-v2/generate.py && python docs/circuit-v2/check.py && python 
     mouth, `length`, `width`).
   - **parallel-parking:** the recess as `pocket` and the painted box as `bay`.
   - **s-curve** and **z-curve:** gates; the Z also has `legs` and `fillets`.
-  - **ramp-test:** the `box`, the `pole`, and the `axis` (the slope's foot and heading), with gates
-    `mouth` and `platform`.
+  - **ramp-test:** the `pole` and the `axis` (the slope's foot and heading), with gates `mouth`,
+    `platform` and `exit`.
   - **road-merging:** gates `lane-start`, `give-way` and `finish`.
 - **`junctions`**: the polygons where the route may cross itself.
 - **`route.samples`** has columns `[s, x, y, heading_deg, width, tag]`, one row every 0.25 m.
@@ -179,6 +179,17 @@ Each of these has its reasons in `../v2-plan/RULES.md`.
 - The hill and the ramp each have a twin, and there is a second 3-side bay, each holding another
   learner.
 - Every marking follows JKR's Arahan Teknik (Jalan) 2D/85.
+
+**2 Nov (the owner, from the testers' walkthroughs):**
+
+- An edge line traces every kerb; a solid stop line crosses each junction's way in and each station
+  lane's way out; each roundabout entry has a give-way line and triangle.
+- The 3-side bay has no poles; two reference poles on the grass mark where to stop before reversing in.
+  The parallel box is the whole recess.
+- The hill's band sits near the crest, with a guide pole each side level with the door mirrors.
+- The ramp runs on and down off the platform's far end: stop with both front tyres on the platform, the
+  pole is moved aside, and the car leaves through the front. Its twin moved north, so ours is the first
+  turn.
 
 Two figures remain assumptions, stated in the car config: the tyre width (185 mm) and equal
 front and rear overhangs.

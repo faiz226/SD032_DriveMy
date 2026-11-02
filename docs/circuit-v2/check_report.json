@@ -85,7 +85,7 @@
    "section": "roomy",
    "check": "the driver reaches the end of every driven piece",
    "ok": true,
-   "detail": "2 pieces between manoeuvres, 678 m of route"
+   "detail": "2 pieces between manoeuvres, 670 m of route"
   },
   {
    "section": "roomy",
@@ -127,19 +127,19 @@
    "section": "roomy",
    "check": "clearance: ramp-test",
    "ok": true,
-   "detail": "tyres 1.18 m (need >= 0.10), body 1.05 m, worst at s = 453.1"
+   "detail": "tyres 0.96 m (need >= 0.10), body 0.81 m, worst at s = 466.6"
   },
   {
    "section": "roomy",
    "check": "clearance: road-merging",
    "ok": true,
-   "detail": "tyres 1.20 m (need >= 0.10), body 1.15 m, worst at s = 667.2"
+   "detail": "tyres 1.20 m (need >= 0.10), body 1.15 m, worst at s = 658.5"
   },
   {
    "section": "roomy",
    "check": "clearance: exit-road",
    "ok": true,
-   "detail": "tyres 1.20 m (need >= 0.50), body 1.15 m, worst at s = 672.2"
+   "detail": "tyres 1.20 m (need >= 0.50), body 1.15 m, worst at s = 663.6"
   },
   {
    "section": "roomy",
@@ -185,21 +185,21 @@
   },
   {
    "section": "possible",
-   "check": "ramp: drive in and up without touching a kerb or the pole",
+   "check": "ramp: anywhere in the stop window, both front tyres are on the platform",
    "ok": true,
-   "detail": "tyres 0.86 m from the kerbs, body 0.81 m from the pole"
+   "detail": "front axle 0.30-1.10 m past the crest (platform 4.0 m)"
   },
   {
    "section": "possible",
-   "check": "ramp: the stop window can be reached",
+   "check": "ramp: up into the stop window without touching a kerb or the pole",
    "ok": true,
-   "detail": "front bumper 0.81 m short of the pole (window 0.2-1.0 m)"
+   "detail": "tyres 1.00 m from the kerbs; front bumper 0.83 m short of the pole (window 0.2-1.0 m)"
   },
   {
    "section": "possible",
-   "check": "ramp: reverse down and out, ending in the lane facing on",
+   "check": "ramp: with the pole moved aside, on past where it stood, down off the front and out",
    "ok": true,
-   "detail": "straight back 11.5 m, then full right lock"
+   "detail": "tyres 0.50 m from the kerbs; into the turn down the east road"
   },
   {
    "section": "possible",
@@ -223,7 +223,7 @@
    "section": "organised",
    "check": "the kerbs carry edge lines; the junctions and the roundabout their lines",
    "ok": true,
-   "detail": "100% of 1214 m of road kerb has its edge line (need >= 90%); 31 stop lines; 3 give-way lines"
+   "detail": "100% of 1225 m of road kerb has its edge line (need >= 90%); 31 stop lines; 3 give-way lines"
   },
   {
    "section": "cheap",
@@ -235,13 +235,13 @@
    "section": "cheap",
    "check": "kerbs fit in one instanced mesh",
    "ok": true,
-   "detail": "968 vertices, 1470 m of kerb (about 1470 instances at 1 m)"
+   "detail": "985 vertices, 1468 m of kerb (about 1468 instances at 1 m)"
   },
   {
    "section": "cheap",
    "check": "circuit data is small",
    "ok": true,
-   "detail": "180 KB uncompressed"
+   "detail": "181 KB uncompressed"
   },
   {
    "section": "cheap",

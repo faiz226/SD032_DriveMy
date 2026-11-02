@@ -31,7 +31,7 @@ import { Hud, HUD_PLATE } from './Hud';
 import { ModePanel, type PanelMode } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
-import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
+import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RampGate, RenderScale, WhereNext } from './scene';
 import { engineSound, farHornSound, hornSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
 import { briefFor } from './start';
 import { Eggs, RoofNote, useEggs, useKonami, ZebraCat } from './Eggs';
@@ -266,6 +266,7 @@ export function SimulatorPage() {
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
           {mode !== 'free' && <WhereNext />}
+          <RampGate free={mode === 'free'} />
           <ZebraCat eggs={getEggs} />
           <RoofNote />
         </Suspense>

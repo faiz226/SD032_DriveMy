@@ -4,10 +4,10 @@ import { circuit, rules, swift } from '../data';
 import { bayHeadingLimit, dir, rad, toDeg } from '../geom';
 import { en } from '../../lib/translations/en';
 import { ms } from '../../lib/translations/ms';
-import { createSession } from './session';
+import { createSession, rampPoleOpen } from './session';
 import {
   DT, Driver, HILL_STOP_S, L, LOCK, PAR, POSITIVE, R_LOCK, SIDE, assessment, drill, hillDrive, mergeDrive,
-  parallelDrive, parallelReverseIn, rampDrive, rampIn, rampOut, sDrive, sNear, sideDrive, sideReverseIn, station,
+  parallelDrive, parallelReverseIn, rampDrive, rampIn, rampOn, sDrive, sNear, sideDrive, sideReverseIn, station,
   zDrive,
 } from './testkit';
 
@@ -379,7 +379,7 @@ describe('Z-curve', () => {
 });
 
 describe('ramp test', () => {
-  it('clears: up, stop 0.6 m short of the pole, hold, reverse out', () => {
+  it('clears: up, stop 0.6 m short of the pole, hold, then on and down off the front', () => {
     const d = drill('ramp-test');
     rampDrive(d);
     expect(status(d, 'ramp-test')).toBe('cleared');
@@ -391,8 +391,7 @@ describe('ramp test', () => {
       const d = drill('ramp-test', 'assessment');
       rampIn(d, gap);
       d.stop(2.5);
-      rampOut(d);
-      d.follow(station('ramp-test').s_to + 2, 8);
+      rampOn(d);
       expect(status(d, 'ramp-test')).toBe(want);
     });
 
@@ -400,12 +399,27 @@ describe('ramp test', () => {
     const d = drill('ramp-test', 'assessment');
     rampIn(d, 1.6);
     d.stop(2.5);
-    rampOut(d);
-    d.follow(station('ramp-test').s_to + 2, 8);
+    rampOn(d);
     expect(status(d, 'ramp-test')).toBe('failed');
     expect(d.last.faults.find((f) => f.station === 'ramp-test')).toMatchObject({
       kind: 'station_failed', reasonKey: 'sim.fault.ramp.window', fixKey: 'sim.fix.ramp.window', measured: '1.60 m', limit: '0.2-1.0 m',
     });
+  });
+
+  it('the pole stands until the car has held still in the window, and a touch where it stood then costs nothing', () => {
+    const d = drill('ramp-test');
+    const pole = circuit.obstacles.poles.findIndex((p) => p.station === 'ramp-test');
+    const ramp = () => d.last.stations.find((st) => st.id === 'ramp-test');
+    rampIn(d);
+    d.stop(1);
+    expect(rampPoleOpen(ramp())).toBe(false);
+    d.stop(1.5);
+    expect(rampPoleOpen(ramp())).toBe(true);
+    d.hitPole(pole);
+    d.tick();
+    rampOn(d);
+    expect(status(d, 'ramp-test')).toBe('cleared');
+    expect(d.last.faults).toEqual([]);
   });
 
   it('costs 20 and fails when the pole is touched', () => {
@@ -420,9 +434,9 @@ describe('ramp test', () => {
   it('costs 20 for a 0.31 m rollback on the slope', () => {
     const d = drill('ramp-test');
     const g = station('ramp-test');
-    d.follow(sNear([g.start.at[0], g.axis!.start[1] - R_LOCK], g.s_from - 3, g.s_to), 6);
-    d.arc(R_LOCK * (Math.PI / 2), 5, -LOCK);
-    d.arc(g.axis!.start[0] + 3 - d.at[0], 5, 0);        // 3 m up the slope
+    const [ax, ay] = g.axis!.start;
+    const h = (g.axis!.heading_deg * Math.PI) / 180;
+    d.follow(sNear([ax + 3 * Math.cos(h), ay + 3 * Math.sin(h)], g.s_from, g.s_to), 5);   // 3 m up the slope
     d.stop(1);
     d.rollBack(0.31);
     d.stop(0.5);

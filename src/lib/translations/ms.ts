@@ -371,7 +371,7 @@ export const ms: Record<TranslationKey, string> = {
   "sim.tips.three-point-turn":     "Pusingkan kereta dalam tiga gerakan: ke depan, undur, ke depan. Jauhkan tayar dari bebendul.",
   "sim.tips.s-curve":              "Terus bergerak melalui selekoh S di bawah 18 km/j, tanpa tayar menyentuh bebendul.",
   "sim.tips.z-curve":              "Ambil setiap selekoh di bawah 12 km/j, tanpa tayar menyentuh bebendul.",
-  "sim.tips.ramp-test":            "Naik dan berhenti 0.2 hingga 1.0 m sebelum tiang. Kekal pegun 2 s, kemudian undur turun dan keluar.",
+  "sim.tips.ramp-test":            "Naik dan berhenti dengan kedua-dua tayar depan di atas pelantar, 0.2 hingga 1.0 m sebelum tiang. Kekal pegun 2 s dan tiang akan dialihkan. Teruskan lurus, turun dari hadapan, dan belok ke kanan.",
   "sim.tips.road-merging":         "Di bulatan, beri laluan kepada kereta yang sedang berpusing. Masuk apabila ada ruang, keluar di simpang utara dan lintasi garisan penamat pada kelajuan jalan.",
   "sim.resultSaved":               "Keputusan berjaya disimpan.",
   "sim.resultSaveFailed":          "Tidak dapat menyimpan keputusan simulasi anda.",

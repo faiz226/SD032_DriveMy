@@ -644,3 +644,26 @@ Three learners on a laptop keyboard walked the simulator. Their notes, and what 
   stays above the steering pad.
 - **Key help.** The keys line on the mode panel, in English and Malay, describes whichever gear mode is
   set; `WALKTHROUGH.md` and WP3 describe both.
+
+## 2 Nov: the ramp, rebuilt from the real one
+
+The owner's photo of a real yard's ramp and a tester's note ("both front tyres on a platform, then the pole
+is moved to the side; carry on straight and exit through the front") replaced the dead end that was
+reversed out of. Another tester saw learners turn into the twin ramp, at the car parked on it.
+
+- **The ramp.** A 3 m run-in, 6 m up to the 0.6 m platform (10%), a 4 m platform and 5 m down off its far
+  end (12%, the hill's own). The pole stands 2.05 m past the crest, so a stop anywhere in the 0.2-1.0 m
+  window puts both front tyres on the platform (`check.py` checks the whole window, not one stop). It is
+  1.6 m tall, as the photo's is, so its top bands show over the bonnet at the stop.
+- **The route goes through it.** Up lane E-F, right into the ramp, and out the far end straight onto the
+  east road, where the route went anyway; the top lane past the ramp is no longer driven. The rules used
+  to hold the car's progress while it was on the ramp beside the route; that `box` is gone.
+- **The pole moves aside.** Once the car has held still in the window, the pole slides to the wall
+  (`RampPole.tsx`, drawn from the same station state the rules read, `rampPoleOpen`), and a touch where it
+  stood costs nothing; touching it while it stands still costs 20 and fails the station. The station
+  clears at a gate past the down-slope's foot.
+- **The twin moved north,** so driving up lane E-F ours is the first turn, and the parked learner sits on
+  the second. The yard's edge is pushed out 1.5 m beside it, as it is beside the twin hill.
+- **A dead end left behind.** The world still closed the ramp's end with an invisible guard and raised the
+  walls' last metre, from the old end wall; the scripted car stopped with its bumper on the guard at the
+  down-slope's foot. Both are gone.

@@ -149,7 +149,7 @@ export class Pilot {
   /**
    * Every station, from the spawn to a stop past the finish. With `faults` (WP6), the same line commits one fault
    * of each kind on purpose: a rollback, not in the bay, the S's speed band, a kerb touch, a ramp
-   * stop outside its window and a slow merge.
+   * stop outside its window (and so a touch on its standing pole) and a slow merge.
    */
   *assessment(faults = false): Plan {
     const [first, second] = PIECES;   // the route breaks once, where the car reverses into the 3-side bay
@@ -195,29 +195,26 @@ export class Pilot {
     yield* this.turn(phiDeg, -1, false);
     yield* this.turn(phiDeg, 1, false);
     this.mark('parallel out');
-    // 4-5. the S and the Z at 8 km/h; then to the ramp's turning point
+    // 4-5. the S and the Z at 8 km/h; then up lane E-F and right into the ramp, along the route, to its stop: 0.6 m
+    //    short of the pole, both front tyres on the platform (faults: 1.6 m short, outside the 0.2-1.0 m window)
     const ramp = station('ramp-test');
-    const turnIn = sNear([ramp.start.at[0], ramp.axis!.start[1] - R_LOCK], ramp.s_from - 3, ramp.s_to);
+    const pole = circuit.obstacles.poles.find((p) => p.station === 'ramp-test')!;
+    const back = pole.radius + (faults ? 1.6 : 0.6) + P.wheelbase + swift.front_overhang_m;   // the rear axle
+    const h = rad(ramp.axis!.heading_deg);
+    const rampStop = sNear([pole.at[0] - Math.cos(h) * back, pole.at[1] - Math.sin(h) * back], ramp.s_from, ramp.s_to);
     if (faults) {   // a stop in the middle of the S, longer than its grace; then the left tyres over a Z kerb
       const s = station('s-curve');
       yield* this.follow(second, (s.s_from + s.s_to) / 2, slow, true);
       yield* this.hold(2.5, false);
       const z = station('z-curve');   // the left tyres over the Z's first leg's kerb
-      yield* this.follow(second, turnIn, slow, true, (q) => (q > z.s_from + 2.9 && q < z.s_from + 6.9 ? 1.3 : 0));
+      yield* this.follow(second, rampStop, slow, true, (q) => (q > z.s_from + 2.9 && q < z.s_from + 6.9 ? 1.3 : 0));
     } else {
-      yield* this.follow(second, turnIn, slow, true);
+      yield* this.follow(second, rampStop, slow, true);
     }
-    this.mark('ramp turn-in');
-    // 6. ramp: turn in, climb to 0.6 m short of the pole, hold, reverse out and turn back into the lane
-    const pole = circuit.obstacles.poles.find((p) => p.station === 'ramp-test')!;
-    yield* this.turn(90, -1, false);
-    const gap = faults ? 1.6 : 0.6;   // the window is 0.2-1.0 m
-    yield* this.arc(pole.at[0] - pole.radius - gap - (P.wheelbase + swift.front_overhang_m) - this.last.x, 0, 4);
     this.mark('ramp top');
+    // 6. ramp: hold still, and the pole is moved aside; then on past where it stood, down off the front and right down
+    //    the east road (faults: held outside the window, so the pole stands, and driving on touches it)
     yield* this.hold(2.5, false);
-    yield* this.arc(-(this.last.x - (ramp.gates.find((g) => g.id === 'mouth')!.a[0] - 1)), 0);
-    yield* this.turn(90, -1, true);
-    this.mark('ramp out');
     // 7. road merging, at the roundabout: give way at its entry (follow() waits for a gap in the traffic), go round,
     //    leave by the north arm and build speed through the finish; the rule wants 15 km/h or more there
     const merge = station('road-merging');

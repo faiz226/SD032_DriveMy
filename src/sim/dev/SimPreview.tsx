@@ -30,6 +30,7 @@ const DEMO: Verdict = {
   ],
 };
 import { Daylight, TopDownCamera, World } from '../world/World';
+import { RampPole } from '../world/RampPole';
 import { Scenery } from '../world/Scenery';
 
 export function SimPreview() {
@@ -58,6 +59,7 @@ export function SimPreview() {
           <Physics timeStep={1 / 60} paused={paused}>
             <World tier={tier} />
             <Scenery tier={tier} />
+            <RampPole open={params.get('pole') === 'open'} />
             <SwiftCar
               ref={car}
               quality={TIERS[tier]}

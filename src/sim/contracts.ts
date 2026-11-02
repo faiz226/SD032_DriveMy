@@ -27,7 +27,6 @@ export interface StationGeometry {
   stop_band?: { s_from: number; s_to: number; note: string };
   pocket?: Polygon;
   bay?: { centre: Vec2; axis_deg: number; length: number; width: number; kerbed?: boolean };
-  box?: Polygon;            // ramp test: the ramp's footprint
   width?: number;
   depth?: number;
   legs?: Polygon[];

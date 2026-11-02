@@ -370,7 +370,7 @@ export const en = {
   "sim.tips.three-point-turn":     "Turn the car round in three movements: forward, reverse, forward. Keep the tyres off the kerbs.",
   "sim.tips.s-curve":              "Keep moving through the S below 18 km/h, with every tyre off the kerbs.",
   "sim.tips.z-curve":              "Take each corner below 12 km/h, with every tyre off the kerbs.",
-  "sim.tips.ramp-test":            "Drive up and stop 0.2 to 1.0 m short of the pole. Hold still for 2 s, then reverse down and out.",
+  "sim.tips.ramp-test":            "Drive up and stop with both front tyres on the platform, 0.2 to 1.0 m short of the pole. Hold still for 2 s and the pole is moved aside. Drive straight on, down off the front, and turn right.",
   "sim.tips.road-merging":         "At the roundabout, give way to the cars going round. Join a gap, take the north exit and cross the finish at road speed.",
   "sim.resultSaved":               "Result saved successfully.",
   "sim.resultSaveFailed":          "Could not save your simulation result.",

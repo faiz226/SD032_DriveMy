@@ -49,10 +49,10 @@ export interface WorldBuild {
 // The markings follow JKR's Arahan Teknik (Jalan) 2D/85, Road Marking and Delineation (the owner, 20 Oct), cited by
 // clause and figure. Kerbs: white and black segments, white first (4.3.8: 1.5 m at most).
 const KERB_COLOURS: [number, number, number][] = [[0.95, 0.95, 0.93], [0.08, 0.08, 0.08]];
-const WHITE: [number, number, number] = [0.95, 0.95, 0.93];
+export const WHITE: [number, number, number] = [0.95, 0.95, 0.93];
 const YELLOW: [number, number, number] = [0.98, 0.8, 0.1];
 const BOX_YELLOW: [number, number, number] = [0.95, 0.66, 0.05];    // 3.0: JKR's one yellow, BS 381C No. 356, for yellow boxes
-const RED: [number, number, number] = [0.82, 0.12, 0.12];
+export const RED: [number, number, number] = [0.82, 0.12, 0.12];
 const DASH_M = 1;              // kerb paint: 1 m yellow, 1 m black
 const LINE_M = 0.1;            // painted bay lines
 const FINISH_M = 0.4;          // the finish line
@@ -70,7 +70,6 @@ const MARKER = { radius: 0.05, height: 1.6, band: 0.2, plate: 0.36 };   // the p
 const SIGNAL = { pole: 0.06, height: 2.9, box: [0.24, 0.92, 0.32] as const, lamp: 0.28, bracket: 0.28 };
 const PAINT_LIFT = 0.012;      // paint sits just above the surface
 const GUARD_M = 1.2;           // invisible guard rails above a slope's walls: the car cannot fall off
-const RAMP_END_WALL_M = 0.45;  // the wall at the end of the ramp's platform stands this far above the deck
 const BOOTH_H = 2.6;
 export const OFFICE_H = 3.2;
 export const ROOF = { thick: 0.15, over: 0.25 };
@@ -175,8 +174,7 @@ export function buildWorld(c: CircuitData): WorldBuild {
     const ring = densify(wallRing, 0.5);
     const top = ring.map((p) => {
       const along = slopeLocal(s, p).along;
-      const end = s.id === 'ramp' && along >= slopeLength(s) - 0.05 ? RAMP_END_WALL_M : kerbH;
-      return slopeHeight(s, Math.max(0, Math.min(slopeLength(s), along))) + end;
+      return slopeHeight(s, Math.max(0, Math.min(slopeLength(s), along))) + kerbH;
     });
     let run = 0;
     ring.forEach((p, i) => {
@@ -462,7 +460,8 @@ export function buildWorld(c: CircuitData): WorldBuild {
     const base = p.base_z ?? 0;
     const bands = Math.max(1, Math.round(p.height / 0.2));
     const segs = 10;
-    for (let k = 0; k < bands; k++) {
+    const drawn = p.station !== 'ramp-test';   // the ramp's pole is moved aside: RampPole draws it
+    for (let k = 0; drawn && k < bands; k++) {
       const z0 = base + (k * p.height) / bands;
       const z1 = base + ((k + 1) * p.height) / bands;
       for (let s = 0; s < segs; s++) {
@@ -581,12 +580,6 @@ export function buildWorld(c: CircuitData): WorldBuild {
         const p1 = pt(a1, across);
         guards.quad(toThree(p0[0], p0[1], h0), toThree(p1[0], p1[1], h1), toThree(p1[0], p1[1], h1 + GUARD_M), toThree(p0[0], p0[1], h0 + GUARD_M));
       }
-    }
-    if (s.id === 'ramp') {
-      const h = slopeHeight(s, L);
-      const p0 = pt(L + 0.1, -s.width / 2 - 0.3);
-      const p1 = pt(L + 0.1, s.width / 2 + 0.3);
-      guards.quad(toThree(p0[0], p0[1], 0), toThree(p1[0], p1[1], 0), toThree(p1[0], p1[1], h + GUARD_M), toThree(p0[0], p0[1], h + GUARD_M));
     }
   }
 

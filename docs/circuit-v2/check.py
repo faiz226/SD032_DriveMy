@@ -21,7 +21,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 
-from lib_geom import HERE, Car, World, follow, parallel_into_slot, reverse_into_bay, reverse_out, three_point
+from lib_geom import HERE, Car, World, follow, parallel_into_slot, reverse_into_bay, three_point
 
 RULES = os.path.join(HERE, '..', 'v2-plan', 'rules.json')
 
@@ -350,50 +350,48 @@ def main():
            'band %.2f m short of the crest (need <= 1.5 m); %d poles, mirrors level at %.2f m up the hill, wall top %.2f m up%s' % (
                crest_gap, len(gp), mid_a - (car.wb / 2 - MIRROR_AHEAD), gp[0]['base_z'] if gp else 0.0, '; ' + ', '.join(sorted(set(bad))) if bad else ''))
 
-    # ramp test: drive in from the lane, stop short of the pole, reverse back out into the lane
+    # ramp test (the owner, 2 Nov): up lane E-F, right into the ramp, up to a stop in the window with both front tyres
+    # on the platform; the pole is then moved aside, and the car drives on, down off the front and out
     rt = by['ramp-test']
     ax, ay = rt['axis']['start']
     ah = math.radians(rt['axis']['heading_deg'])
     ux, uy = math.cos(ah), math.sin(ah)
     px, py = rt['pole']
     pole_r = next(p['radius'] for p in C['obstacles']['poles'] if p['station'] == 'ramp-test')
-    lane = [q for q in samples if q[5] == 'ramp-test']
-    lane_h = math.radians(lane[0][3])
-    lx, ly = math.cos(lane_h), math.sin(lane_h)
-    # where the ramp's axis crosses the lane centreline, and how far from it the ramp's mouth is
-    t_cross = ((ax - lane[0][1]) * lx + (ay - lane[0][2]) * ly)
-    cx, cy = lane[0][1] + lx * t_cross, lane[0][2] + ly * t_cross
-    turn_r = 5.0
-    path = [(cx - lx * (turn_r + 10.0), cy - ly * (turn_r + 10.0)), (cx - lx * turn_r, cy - ly * turn_r)]
-    ccx, ccy = cx - lx * turn_r + ux * turn_r, cy - ly * turn_r + uy * turn_r
-    for k in range(1, 19):
-        a = k / 18 * math.pi / 2
-        path.append((ccx - ux * turn_r * math.cos(a) + lx * turn_r * math.sin(a),
-                     ccy - uy * turn_r * math.cos(a) + ly * turn_r * math.sin(a)))
+    prof = next(sl['profile'] for sl in C['slopes'] if sl['id'] == rt['slope'])
+    crest, top_end = prof[1][0], prof[2][0]                   # along the axis from the up-slope's foot
     window = rules['ramp-test']['stop_window_m']
-    stop_gap = sum(window) / 2
-    d_pole = (px - cx) * ux + (py - cy) * uy
-    axle_d = d_pole - pole_r - stop_gap - (car.wb + car.f_oh)
-    path.append((cx + ux * axle_d, cy + uy * axle_d))
-    rec = follow(car, world, path, lookahead=2.0, ds=0.05, kerb_h=kerb_h)
+    d_pole = (px - ax) * ux + (py - ay) * uy - pole_r         # the pole's near side
+    front = [d_pole - g - car.f_oh for g in window]           # the front axle at each edge of the window
+    record('possible', 'ramp: anywhere in the stop window, both front tyres are on the platform',
+           crest + 0.1 <= front[1] and front[0] <= top_end,
+           'front axle %.2f-%.2f m past the crest (platform %.1f m)' % (front[1] - crest, front[0] - crest, top_end - crest))
+
+    def along(x, y):
+        return (x - ax) * ux + (y - ay) * uy
+    lane = [q for q in samples if q[5] == 'ramp-test']
+    axle_d = d_pole - sum(window) / 2 - (car.wb + car.f_oh)   # the rear axle, stopped mid-window
+    path = [(q[1], q[2]) for q in lane if along(q[1], q[2]) < axle_d] + [(ax + ux * axle_d, ay + uy * axle_d)]
+    rec = follow(car, world, path, lookahead=2.0, ds=0.05, kerb_h=kerb_h, start=(lane[0][1], lane[0][2], math.radians(lane[0][3])))
     tyre = min(r[7] for r in rec)
     obst = min(r[8] for r in rec)
-    s_end, x_end, y_end, th_end = rec[-1][:4]
+    x_end, y_end, th_end = rec[-1][1:4]
     fx, fy = car.front_centre(x_end, y_end, th_end)
     gap_to_pole = math.hypot(px - fx, py - fy) - pole_r
-    record('possible', 'ramp: drive in and up without touching a kerb or the pole', tyre >= 0.10 and obst > 0,
-           'tyres %.2f m from the kerbs, body %.2f m from the pole' % (tyre, obst))
-    record('possible', 'ramp: the stop window can be reached', window[0] <= gap_to_pole <= window[1],
-           'front bumper %.2f m short of the pole (window %.1f-%.1f m)' % (gap_to_pole, *window))
-
-    def in_lane(x, y, th):
-        q = min(lane, key=lambda q: (q[1] - x) ** 2 + (q[2] - y) ** 2)
-        h = math.radians(q[3])
-        lateral = -(x - q[1]) * math.sin(h) + (y - q[2]) * math.cos(h)
-        return abs(lateral) <= 1.6
-    out = reverse_out(car, world, (x_end, y_end, th_end), lane_h, in_lane)
-    record('possible', 'ramp: reverse down and out, ending in the lane facing on', out is not None,
-           ('straight back %.1f m, then full %s lock' % (out[0], out[1])) if out else 'no reverse-out plan found')
+    record('possible', 'ramp: up into the stop window without touching a kerb or the pole',
+           tyre >= 0.10 and obst > 0 and window[0] <= gap_to_pole <= window[1],
+           'tyres %.2f m from the kerbs; front bumper %.2f m short of the pole (window %.1f-%.1f m)' % (tyre, gap_to_pole, *window))
+    # the pole moved aside: on from the stop, down off the front and into the turn down the east road
+    s_stop = min(lane, key=lambda q: math.hypot(q[1] - x_end, q[2] - y_end))[0]
+    on = [(q[1], q[2]) for q in samples if s_stop < q[0] <= rt['s_to'] + 8.0]
+    standing = world.obstacles
+    world.obstacles = [o for o in standing if (o[0], o[1]) != (px, py)]
+    rec = follow(car, world, on, lookahead=2.0, ds=0.05, kerb_h=kerb_h, start=(x_end, y_end, th_end))
+    world.obstacles = standing
+    tyre = min(r[7] for r in rec)
+    out = math.hypot(rec[-1][1] - on[-1][0], rec[-1][2] - on[-1][1]) < 1.0
+    record('possible', 'ramp: with the pole moved aside, on past where it stood, down off the front and out', tyre >= 0.10 and out,
+           'tyres %.2f m from the kerbs; %s' % (tyre, 'into the turn down the east road' if out else 'stopped short'))
 
     mg = by['road-merging']
     min_kmh = rules['road-merging']['min_kmh']

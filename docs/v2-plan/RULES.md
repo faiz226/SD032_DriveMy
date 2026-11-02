@@ -51,7 +51,7 @@ verdict is a fail from then on, and the run carries on (`end_run_at_fail` is fal
 | 3 | Parallel Park | 5 min | Same as Side Parking, in the painted box: the whole recess, 6.6 × 3.77 m, its outer line from one kerb corner to the other (the owner, 2 Nov: the 2.5 m box sat too deep inside). The heading limit is 36.5° with mirrors. | Same as Side Parking | rubric + guides + the owner |
 | 4 | S-Curve | 3 min | Gates passed in order, with the speed held at 1–18 km/h | More than 1.2 s outside the band (assessment). Practice mode restarts the drill instead. | PRD |
 | 5 | Z-Curve | 3 min | Gates passed in order. A corner gate counts only at 12 km/h or slower; too fast does not fail, the gate just waits. | Time limit, or passing it by | PRD |
-| 6 | Ramp Test | 5 min | Drive up the ramp. Stop with the front bumper **0.2–1.0 m short of the pole**. Hold still for 2 s. Then reverse back down and out past the mouth. | Touching the pole (also 20). Driving on after stopping only outside the window (the verdict shows the measured gap) | guides: a DA learner, "climb onto the cement block, don't hit the pole in the middle"; 5 min. decided: the stop window, the hold, the reverse out |
+| 6 | Ramp Test | 5 min | Drive up the ramp. Stop with both front tyres on the platform, the front bumper **0.2–1.0 m short of the pole**. Hold still for 2 s, and the pole is moved aside. Then drive straight on, down off the front, and right down the east road. | Touching the pole while it stands (also 20). Driving on after stopping only outside the window (the verdict shows the measured gap) | guides: a DA learner, "climb onto the cement block, don't hit the pole in the middle"; 5 min. the owner, 2 Nov (the real ramp): front tyres on the platform, the pole moved aside, out through the front. decided: the stop window, the hold |
 | 7 | Road Merging | none | At the roundabout: give way at its entry to the cars going round (clockwise: traffic keeps left), join a gap, go round, leave by the north arm, and cross the finish gate at 15 km/h or faster. | Crossing the give-way line with a car going round less than 3 s from the join, or in it (merge.noYield); slower than 15 km/h at the finish (assessment; practice allows a retry) | PRD + the owner, 20 Oct (a vehicle joins moving traffic and gives way to it; at the roundabout) + decided (a 3 s gap) |
 
 **Handbrake.** It is required on the hill. On the ramp, the brake alone may hold the car. The
@@ -87,7 +87,11 @@ handbrake is also the "I'm done" signal in both parking bays.
 - **Ramp:** the real yard has none, so it stands on the open floor at the top right, where the
   blueprint draws a structure. 4.0 m wide.
   - Its slope runs 6 m up to a 0.6 m-high platform (10%).
-  - The platform is 7 m long, with the pole on the centreline 0.4 m before the end wall.
+  - The platform is 4 m long, with the pole on the centreline 2.05 m past the crest, so a stop anywhere in the
+    window puts both front tyres on the platform. Once the car has held still, the pole is moved aside; a 5 m slope
+    (12%) runs down off the far end, and the route turns right down the east road (the owner, 2 Nov).
+  - Its twin, with another learner parked on it, is on its north side: driving up lane E-F, ours is the first turn
+    (the owner, 2 Nov; the twin stood south of it, where learners turned into it first).
   - These dimensions are decided; there is no public source.
 - **Side bay:**
   - A painted 2.6 × 5.6 m bay inside the real 4.72 × 5.78 m pocket, with no poles round it (the owner, 2 Nov).
