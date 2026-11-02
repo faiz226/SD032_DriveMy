@@ -416,6 +416,7 @@ export const ms: Record<TranslationKey, string> = {
   "sim.touch.pause":               "Jeda",
   "sim.touch.topDown":             "Pandangan atas",
   "sim.notice.stopFirst":          "Berhenti dahulu: gear hanya boleh ditukar semasa kereta berhenti.",
+  "sim.notice.pressAgain":         "Tekan S sekali lagi untuk undur.",
   "sim.label":                     "Latihan raptai, bukan pemarkahan rasmi",
   "sim.loading":                   "Memuatkan litar: {{pct}}%",
   "sim.rotate":                    "Pusingkan telefon anda ke sisi untuk memandu.",
@@ -441,7 +442,8 @@ export const ms: Record<TranslationKey, string> = {
   "sim.egg.doughnut":              "Tiga pusingan donat! Nasib baik tiada markah.",
   "sim.egg.catThanks":             "Meow! Kucing berterima kasih kerana anda berhenti di lintasan zebra.",
   "sim.egg.catJump":               "Kucing sempat melompat. Di lintasan zebra, berhenti untuk sesiapa yang melintas.",
-  "sim.mode.keys":                 "Kekunci: W memecut, S brek, A dan D stereng, R gear D/R, Space brek tangan, Z dan C lampu isyarat kiri dan kanan, L lampu besar, H hon, Q toleh ke belakang kiri, E lihat ke bawah melalui tingkap anda, T pandangan atas, V pandangan dari belakang (pandu bebas), P jeda. Seret pandangan untuk melihat sekeliling.",
+  "sim.mode.keys":                 "Kekunci: W maju, S brek (tekan S sekali lagi selepas berhenti untuk undur, W untuk maju semula), R gear D/R, A dan D pusing stereng, Space brek tangan, Z dan C lampu isyarat kiri dan kanan, L lampu besar, H hon, Q atau Shift+A toleh ke bahu kiri, E atau Shift+D lihat ke bawah keluar tingkap, T pandangan atas, V pandangan dari belakang kereta, P jeda. Seret pandangan untuk melihat sekeliling.",
+  "sim.mode.keysRealistic":        "Kekunci: W memecut, S brek, R gear D/R, A dan D pusing stereng, Space brek tangan, Z dan C lampu isyarat kiri dan kanan, L lampu besar, H hon, Q atau Shift+A toleh ke bahu kiri, E atau Shift+D lihat ke bawah keluar tingkap, T pandangan atas, V pandangan dari belakang kereta, P jeda. Seret pandangan untuk melihat sekeliling.",
   "sim.hud.next":                  "Seterusnya",
   "sim.hud.timeLeft":              "Baki masa",
   "sim.hud.demerits":              "Demerit",
@@ -478,6 +480,7 @@ export const ms: Record<TranslationKey, string> = {
   "sim.verdict.failedStations":    "Tidak lulus",
   "sim.verdict.allCleared":        "Ketujuh-tujuh stesen lulus.",
   "sim.verdict.topDown":           "Pandangan atas dibuka selama {{s}} s. Tiada penalti.",
+  "sim.verdict.chase":             "Anda menggunakan pandangan dari belakang kereta (V). Markah tidak berubah, tetapi ini tidak sama seperti ujian sebenar.",
   "sim.verdict.saving":            "Menyimpan keputusan.",
   "sim.verdict.savedOffline":      "Disimpan pada peranti ini. Ia dimuat naik apabila anda kembali dalam talian.",
   "sim.verdict.faults":            "Kesalahan",
@@ -499,6 +502,7 @@ export const ms: Record<TranslationKey, string> = {
   "sim.settings.touchAuto":        "Auto",
   "sim.settings.on":               "Hidup",
   "sim.settings.off":              "Mati",
+  "sim.settings.gears":            "Gear realistik (kekunci R)",
 
   // ── Colour blindness test ──────────────────────────────────────────────
   "colorblind.title":              "Ujian Penglihatan Warna",

@@ -69,6 +69,9 @@ Put the DriveMy v2 simulator together in the app.
 
 - The verdict renders only from session state, and no button or path can pass a run.
 - The top-down toggle works in both modes, and an assessment verdict reports the seconds it was on.
+- The view from behind the car works in every mode. In an assessment it changes no marking, and the
+  verdict says plainly that it was used and that this is not like the real test. The note is on the
+  verdict screen only: the saved record is unchanged.
 - Two syncs started together insert one row.
 - Every new i18n key exists in both languages.
 - Touch controls show at 800 × 360 with touch and a coarse pointer, and stay hidden on a desktop

@@ -1,5 +1,5 @@
 // In the 3D scene: the "where next" marker over the next station's entry on route.samples, a small camera kick when
-// a fault happens (both still for anyone who asks for reduced motion), and free drive's chase view.
+// a fault happens (both still for anyone who asks for reduced motion), and the view from behind the car.
 import { PerformanceMonitor, PerspectiveCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
@@ -62,7 +62,7 @@ const chaseFwd = new THREE.Vector3();
 const chaseWant = new THREE.Vector3();
 const chaseQ = new THREE.Quaternion();
 
-/** Free drive's view from behind the car: the wheels, the lamps and the yard around it. */
+/** The view from behind the car: the wheels, the lamps and the yard around it. */
 export function ChaseCamera({ active, follow }: { active: boolean; follow: () => THREE.Object3D | null }) {
   const cam = useRef<THREE.PerspectiveCamera>(null);
   const was = useRef(false);

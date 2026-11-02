@@ -41,7 +41,7 @@ interface Props {
 }
 
 const DT = CAR.drive.dt;
-const EYE_PITCH = -0.07;   // a little nose-down, so the bonnet line shows
+const EYE_PITCH = CAR.eyeView.pitch;
 const EYE_ROTATION: [number, number, number, 'YXZ'] = [EYE_PITCH, -Math.PI / 2, 0, 'YXZ'];
 const HEAD_EASE_S = 0.12;  // how quickly the head turns to where it is asked to look
 // The head leans as it turns, as a driver's does (metres). Measured off the model: the door is so high
@@ -81,7 +81,7 @@ function poseAt(at: Vec2, heading: number) {
   return { x: at[0], y: ground + CAR.wheelRadius + 0.02, z: -at[1], yaw: heading };
 }
 
-export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = TIERS.low, start, firstPerson, onStep, fov = 50, mirrors = true, onReady }, ref) {
+export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = TIERS.low, start, firstPerson, onStep, fov = CAR.eyeView.fovDeg, mirrors = true, onReady }, ref) {
   const { rapier, world } = useRapier();
   const getThree = useThree((s) => s.get);
   const files = CAR.files(quality.tier);

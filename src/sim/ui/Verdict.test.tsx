@@ -55,6 +55,14 @@ describe('the verdict', () => {
     expect(screen.getByText('All seven stations cleared.')).toBeInTheDocument();
   });
 
+  it('says plainly when the view from behind the car was used, and says nothing when it was not', () => {
+    const { rerender } = render(<VerdictView verdict={passing} save={null} {...noop} />);
+    expect(screen.queryByText(/not like the real test/)).not.toBeInTheDocument();
+    rerender(<VerdictView verdict={passing} chase save={null} {...noop} />);
+    expect(screen.getByText('You used the view from behind the car (V). Marks are unchanged, but this is not like the real test.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Pass');   // the verdict is the session's, whatever the view
+  });
+
   it('no button can pass a run: they only retry, practise the failed station or leave', () => {
     const calls = { onRetry: vi.fn(), onPractise: vi.fn(), onExit: vi.fn() };
     render(<VerdictView verdict={failing} save={null} {...calls} />);

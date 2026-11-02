@@ -434,7 +434,8 @@ languages, with a rule test.
 **Also:**
 
 - `input.test.ts`: switching tabs releases every input and pauses; R changes gear only when stopped;
-  holding S never selects reverse.
+  holding S never selects reverse (since 2 Nov: the press of S that braked the car, and any press with
+  Realistic gears on; see the 2 Nov entry).
 - **The v1 simulator is removed.** Its components (`SimulationHUD`, `SimulationResults`,
   `MobileControls`, `JPJCircuit`) and its score store (`src/stores/carStore.ts`) had no route since
   WP4. `rules.json` and `RULES.md` now say the rubric's weights came from that store, which git
@@ -609,3 +610,37 @@ The owner's asks through the day, in order. Each was committed the same day.
   woodland outside the fence. Now: first drive 19.3 s (target 15 s, missed), the whole drive's p50 30 fps but
   13–18 fps in its first minutes, and Medium 42 fps. Performance builds can switch the scenery and the moving
   cars' drawing off (`scenery=0`, `traffic=0`), and `__simPerf.programs()` lists each shader program's users.
+
+## 2 Nov: the testers' notes on keys, views and mirrors
+
+Three learners on a laptop keyboard walked the simulator. Their notes, and what was done (all in
+`src/sim/`; no database or schema change):
+
+- **"People are used to S = reverse, W = go"; "the gear change is quite confusing."** The keys now change
+  gear (`input.ts`), and a setting, Realistic gears (R key), keeps the old behaviour. A press means what it
+  meant as the key went down, for as long as that press is held. The key for the way the gear drives
+  drives. The key for the other way (S in D, W in R) brakes a moving car and holds it stopped, however
+  long, so S at a stop line or on the hill never reverses; a fresh press (let go, then pressed again) while
+  the car is stopped, or creeping below 2 km/h (the creep after the brake is let go), selects the other
+  gear and drives. A car rolling the other way is braked, both keys together only brake, and the first
+  time S holds the car stopped a one-line hint says "Press S again to reverse". R changes gear when stopped
+  in both modes. The gear is the real one, so the rules see every change; the touch controls are as they
+  were. This replaces WP3's "holding S at rest on the hill never selects reverse", now true of the press
+  that braked and of Realistic gears; the drive layer still never reads the brake as reverse.
+- **The "Stop first" notice was never shown.** `useDriver.notice` was set and nothing read it. The HUD now
+  shows it (and the hint) for a few seconds; a new run starts without the last run's.
+- **"To see the side view maybe use Shift+A/D instead?"** Shift+A and Shift+D look left and right like Q and
+  E, and A and D go on steering while Shift is held.
+- **"I drive well with the view that shows the car."** V, and its HUD button, now work in practice and
+  assessment too. An assessment's marking never sees it; the verdict says plainly that the view was used
+  and that this is not like the real test. The flag lives in the run store, so the saved record is unchanged.
+- **"Hard to judge the bay lines and the kerb."** In R both door mirrors dip 12 degrees (eased), as a real
+  car's do: the rear tyre's patch of road, the kerb and the bay lines now show in them, and they rise again
+  in D (`mirrors.test.ts` projects the tyre's patch into both).
+- **"Fix the side mirror's position."** The left panel sat above the middle and touched the interior
+  mirror, where the right mirror sits lower on the car's own glass. It is now the right mirror's place
+  across the middle of the screen, found by projecting the right glass through the driver's camera, at the
+  same height, so it covers neither the road ahead nor the HUD; with touch controls it keeps the edge and
+  stays above the steering pad.
+- **Key help.** The keys line on the mode panel, in English and Malay, describes whichever gear mode is
+  set; `WALKTHROUGH.md` and WP3 describe both.

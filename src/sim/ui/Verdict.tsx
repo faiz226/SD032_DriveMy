@@ -24,13 +24,15 @@ const SAVE_KEY: Record<SaveStatus, TranslationKey> = {
 
 interface Props {
   verdict: Verdict;
+  /** The view from behind the car was used: the marks stand, but the run was not like the real test. */
+  chase?: boolean;
   save: SaveStatus | null;
   onRetry(): void;
   onPractise(id: StationId): void;
   onExit(): void;
 }
 
-export function VerdictView({ verdict, save, onRetry, onPractise, onExit }: Props) {
+export function VerdictView({ verdict, chase = false, save, onRetry, onPractise, onExit }: Props) {
   const { t } = useLanguage();
   const practise = verdict.failedStations[0] ?? verdict.faults[0]?.station ?? null;
   return (
@@ -50,6 +52,7 @@ export function VerdictView({ verdict, save, onRetry, onPractise, onExit }: Prop
               : t('sim.verdict.allCleared')}
           </p>
           <p className="type-label">{t('sim.verdict.topDown', { s: Math.round(verdict.topDownSeconds) })}</p>
+          {chase && <p className="type-label-strong">{t('sim.verdict.chase')}</p>}
           {save && <p className="type-label" role="status">{t(SAVE_KEY[save])}</p>}
         </header>
 
