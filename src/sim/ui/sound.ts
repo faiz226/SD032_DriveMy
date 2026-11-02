@@ -4,7 +4,8 @@
 // seamless loop of the settled idle, whose pitch and level follow the road speed and the throttle.
 // The owner's other recordings (SFX/, 22 Oct), cut and levelled into the same folder: the horn; a horn far off,
 // the cars that answer ours in free drive; a chime for each surprise; and the yard's air, wind and birds, in
-// 28 s seamless loops under the engine, muffled as heard from inside the car.
+// 28 s seamless loops under the engine, muffled as heard from inside the car. Under them, far-off traffic beyond
+// the fence, generated (a tester, 2 Nov: "add ambience sound").
 // The instructor's voice reads the screen's own strings (scripts/gen-voice.mjs), one line at a time.
 import { create } from 'zustand';
 import type { Language } from '@/lib/constants';
@@ -171,21 +172,65 @@ export function startEngine(): Promise<void> {
   }).catch(() => { /* no engine files: the drive carries on without them */ });
 }
 
-// the yard's air: each loop's level, and the low-pass that muffles it as heard from inside the car
-const BEDS = [['/sim/sfx/wind.mp3', 0.35], ['/sim/sfx/birds.mp3', 0.25]] as const;
-const CABIN_HZ = 1400;
-let beds: AudioBufferSourceNode[] | null = null;
+// the yard's air: each loop's level, and the low-pass that muffles it as heard from inside the car. The cabin
+// dulls the wind's hiss, but birdsong (2-8 kHz) still comes through the glass: at the wind's 1.4 kHz the birds
+// were filtered out altogether, and the testers heard no ambience (2 Nov)
+const BEDS = [['/sim/sfx/wind.mp3', 0.35, 1400], ['/sim/sfx/birds.mp3', 0.3, 5000]] as const;
+const TRAFFIC = { level: 0.12, hz: 320, swell: 0.07, depth: 0.05, seconds: 8 };   // far off: low, rising as cars pass
+let beds: AudioScheduledSourceNode[] | null = null;
 
-/** The wind and the birds, from the first start until the simulator is left; a restart leaves them playing. */
+/**
+ * Brown noise for a seamless loop: a random walk, its last `fade` seconds blended into its first so the loop's
+ * seam has no step. `random` is Math.random but for tests.
+ */
+export function brownLoop(rate: number, seconds: number, random = Math.random, fade = 0.25) {
+  const n = Math.round(rate * seconds);
+  const f = Math.round(rate * fade);
+  const walk = new Float32Array(n + f);
+  let last = 0;
+  for (let i = 0; i < walk.length; i++) {
+    last = (last + 0.02 * (random() * 2 - 1)) / 1.02;
+    walk[i] = last * 3.5;
+  }
+  const out = walk.slice(0, n);
+  for (let i = 0; i < f; i++) out[i] = walk[i] * (i / f) + walk[n + i] * (1 - i / f);   // the tail runs on into the head
+  return out;
+}
+
+/** Far-off traffic beyond the fence: low brown noise whose level swells and ebbs, as cars pass on a road outside. */
+function trafficBed(c: AudioContext): AudioScheduledSourceNode[] {
+  const buffer = c.createBuffer(1, Math.round(c.sampleRate * TRAFFIC.seconds), c.sampleRate);
+  buffer.copyToChannel(brownLoop(c.sampleRate, TRAFFIC.seconds), 0);
+  const src = c.createBufferSource();
+  src.buffer = buffer;
+  src.loop = true;
+  const low = c.createBiquadFilter();
+  low.type = 'lowpass';
+  low.frequency.value = TRAFFIC.hz;
+  const level = c.createGain();
+  level.gain.value = 0;
+  const swell = c.createOscillator();
+  swell.frequency.value = TRAFFIC.swell;
+  const depth = c.createGain();
+  depth.gain.value = TRAFFIC.depth;
+  swell.connect(depth).connect(level.gain);
+  src.connect(low).connect(level).connect(c.destination);
+  src.start();
+  swell.start();
+  level.gain.setTargetAtTime(TRAFFIC.level, c.currentTime, 2);
+  return [src, swell];
+}
+
+/** The wind, the birds and the traffic, from the first start until the simulator is left; a restart leaves them. */
 function startBeds(c: AudioContext) {
   if (beds) return;
-  const cabin = c.createBiquadFilter();
-  cabin.type = 'lowpass';
-  cabin.frequency.value = CABIN_HZ;
-  cabin.connect(c.destination);
-  const playing: AudioBufferSourceNode[] = [];
+  const playing: AudioScheduledSourceNode[] = trafficBed(c);
   beds = playing;
-  for (const [url, gain] of BEDS) {
+  for (const [url, gain, hz] of BEDS) {
+    const cabin = c.createBiquadFilter();
+    cabin.type = 'lowpass';
+    cabin.frequency.value = hz;
+    cabin.connect(c.destination);
     const src = c.createBufferSource();
     const level = c.createGain();
     src.loop = true;

@@ -690,3 +690,17 @@ merging "without knowing I failed".
   corner (checked with Q or E) before turning in the S and the Z, close to the outside kerb before each
   bend, the ramp's first turn. The briefing screen lists them under the station's tip; in practice the HUD
   keeps them in a Steps box under the station panel (closed at first on a phone, where space is short).
+
+## 2 Nov: tyres, a phone, and the yard's air
+
+- **White tyres.** The wheel model's tyre materials are metallic (0.72-0.83) and smooth (roughness about
+  0.28), so under the sky's light the learner's tyres mirrored it white; the other cars bake plain colours
+  and never showed it. `SwiftCar` makes them rubber (metalness 0, roughness 0.9).
+- **"No phone control available."** `npm run dev:phone` serves the app on the local network (Vite's
+  `--host`); the walkthrough says how to open it on a phone, and points at `/dev/sim/<mode>`, since Google
+  sign-in only works on the deployed site.
+- **"Add ambience sound."** The wind and birds were there, but both ran through the cabin's 1.4 kHz
+  low-pass, and birdsong lives at 2-8 kHz: the birds were filtered out. Each loop now has its own filter
+  (wind 1.4 kHz, birds 5 kHz), and under them runs far-off traffic, generated: low brown noise whose level
+  swells and ebbs every 14 s or so, as cars pass on a road outside the fence (`brownLoop`, a seamless loop,
+  tested).
