@@ -5,7 +5,7 @@
  * voice and the text never disagree. Unchanged lines are skipped (public/sim/voice/manifest.json), so run it
  * again after editing any of those strings.
  *
- *   FISH_AUDIO_API_KEY=... node scripts/gen-voice.mjs [--model s2.1-pro-free] [--voice <reference_id>] [--check]
+ *   FISH_AUDIO_API_KEY=... node scripts/gen-voice.mjs [--model s2.1-pro-free] [--voice-en <id>] [--voice-ms <id>] [--check]
  *
  * --check transcribes each new line back with Fish Audio's speech-to-text and reports how many of its words
  * came back, a guard on languages nobody on the project can listen to in time. The key stays here: the app
@@ -25,7 +25,12 @@ const arg = (name, fallback) => {
 const KEY = process.env.FISH_AUDIO_API_KEY;
 if (!KEY) throw new Error("Set FISH_AUDIO_API_KEY (it lives in .env.local, never in the repository).");
 const MODEL = arg("model", "s2.1-pro-free");   // free under fair use; s2.1-pro is the paid production model
-const VOICE = arg("voice", process.env.FISH_AUDIO_VOICE_ID ?? "");   // empty: Fish Audio's default voice
+// The instructor, a voice for each language, each speaking its own (the owner chose them from samples, 2 Nov, when
+// the testers asked for a new voice). FISH_AUDIO_VOICE_ID is the narration's voice, not the simulator's.
+const VOICES = {
+  en: arg("voice-en", "bf322df2096a46f18c579d0baa36f41d"),   // Fish Audio's "Adrian", English, male
+  ms: arg("voice-ms", "77fcb887d38f4bc8abeed568a43919cc"),   // Fish Audio's Malay male voice
+};
 const CHECK = process.argv.includes("--check");
 const OUT = path.join("public", "sim", "voice");
 const MANIFEST = path.join(OUT, "manifest.json");
@@ -54,11 +59,11 @@ async function api(url, init, tries = 4) {
   }
 }
 
-async function speak(text) {
+async function speak(text, voice) {
   const res = await api("https://api.fish.audio/v1/tts", {
     method: "POST",
     headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json", model: MODEL },
-    body: JSON.stringify({ text, format: "mp3", ...(VOICE ? { reference_id: VOICE } : {}) }),
+    body: JSON.stringify({ text, format: "mp3", reference_id: voice }),
   });
   const audio = Buffer.from(await res.arrayBuffer());
   // only an MP3 of a sane size is saved, never whatever else the response held: an ID3 tag or an MPEG frame sync first
@@ -95,9 +100,9 @@ for (const [lang, strings] of Object.entries(LANGS)) {
   for (const key of lines) {
     const text = strings[key];
     const file = path.join(OUT, lang, `${key}.mp3`);
-    const hash = createHash("sha1").update(`${MODEL}\n${VOICE}\n${text}`).digest("hex").slice(0, 12);
+    const hash = createHash("sha1").update(`${MODEL}\n${VOICES[lang]}\n${text}`).digest("hex").slice(0, 12);
     if (manifest[`${lang}/${key}`] === hash && existsSync(file)) continue;
-    const audio = await speak(text);
+    const audio = await speak(text, VOICES[lang]);
     writeFileSync(file, audio);
     if (ffmpeg) {
       // mono at 48 kbps: a spoken line needs no more, and it keeps each file to tens of kilobytes
@@ -112,4 +117,4 @@ for (const [lang, strings] of Object.entries(LANGS)) {
   }
 }
 writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
-console.log(`${made} line(s) spoken, ${lines.length * Object.keys(LANGS).length - made} unchanged; model ${MODEL}${VOICE ? `, voice ${VOICE}` : ", default voice"}`);
+console.log(`${made} line(s) spoken, ${lines.length * Object.keys(LANGS).length - made} unchanged; model ${MODEL}, voices en ${VOICES.en}, ms ${VOICES.ms}`);

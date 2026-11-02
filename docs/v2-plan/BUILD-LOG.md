@@ -704,3 +704,12 @@ merging "without knowing I failed".
   (wind 1.4 kHz, birds 5 kHz), and under them runs far-off traffic, generated: low brown noise whose level
   swells and ebbs every 14 s or so, as cars pass on a road outside the fence (`brownLoop`, a seamless loop,
   tested).
+
+## 2 Nov: a new instructor
+
+A tester asked for a different voice. The owner chose from four samples (the ramp's tip read in English and
+Malay): the Malay lines now speak in a Malay male voice and the English lines in "Adrian", an English male
+voice, each in its own language, where one Malay female voice had read both. `gen-voice.mjs` takes a voice
+per language (`--voice-en`, `--voice-ms`; the defaults are the owner's choice, and `FISH_AUDIO_VOICE_ID` stays
+the narration's), and all 26 lines were spoken again, the three tips rewritten today (hill, 3-side, ramp)
+among them, so the voice and the screen agree again.
