@@ -103,7 +103,9 @@ export function Daylight({ shadows = false, follow }: { shadows?: boolean; follo
 // scenery's haze is its horizon colour (Scenery.tsx, HAZE), so distance fades into it. Painted, not the Sky shader,
 // whose horizon read as white once tone-mapped.
 const SKY = { zenith: new THREE.Color('#3b7bcb'), high: new THREE.Color('#6ea6df'), horizon: new THREE.Color('#cfe0ec'), glow: new THREE.Color('#fff4dc') };
-const BACKDROP_R = 500;   // inside the eyes' 600 m; it follows the camera, drawn first and behind everything
+// It follows the camera, drawn first and behind everything, so its size never shows; but it must sit inside every
+// camera's far plane, the mirrors' 60 m among them, or they cut it away and show black where the sky is (the owner, 3 Nov)
+const BACKDROP_R = 50;
 
 function SkyBackdrop() {
   const geometry = useMemo(() => {

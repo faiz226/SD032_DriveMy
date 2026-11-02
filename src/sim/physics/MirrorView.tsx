@@ -1,7 +1,7 @@
 // The mirrors. Each rear-facing camera rides on the car and renders into its own small target, a few mirrors a
 // frame in turn. The interior mirror and the right door mirror show on the car's own mirror glass (surface.ts),
 // flipped left to right as mirrors are; the left door mirror, outside the windscreen view, shows on a HUD
-// layer, opposite the right one. Both door mirrors dip in reverse. Only for the first-person view.
+// layer at the screen's edge. Only for the first-person view.
 //
 // The targets are rendered exactly as the screen is: sRGB output and the same tone mapping. three.js gives a
 // plain render target linear output and no tone mapping, which made every material switch shader programs
@@ -12,18 +12,9 @@ import { Hud, OrthographicCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { type RefObject, useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { rad } from '../geom';
-import { useDriver, useTouchUi } from '../input';
 import { SWIFT_2022 as CAR } from './cars/swift-2022';
-import { doorPanelAt, GLASS, MIRROR_PAD, type MirrorId, type MirrorSpec, MIRRORS, mirrorCamera, mirrorScale, pitchAt, targetSize } from './mirrors';
+import { DOOR_MIRROR_RISE, GLASS, MIRROR_PAD, type MirrorId, type MirrorSpec, MIRRORS, mirrorCamera, mirrorScale, targetSize } from './mirrors';
 import { flatFace } from './surface';
-
-const TILT_EASE_S = 0.15;   // how quickly the door mirrors dip into reverse and come back
-
-/** Set a mirror camera's pitch for this much reverse (outside the component: hooks keep memos immutable). */
-function tilt(cam: THREE.PerspectiveCamera, m: MirrorSpec, reverse: number) {
-  cam.rotation.x = rad(pitchAt(m, reverse));
-}
 
 interface Props {
   car: RefObject<THREE.Group | null>;
@@ -60,7 +51,6 @@ export function MirrorView({ car, body, perFrame = 1, budget = 256 * 128, ids }:
   const onGlass = useRef<(THREE.Mesh | null)[]>([]);
   const next = useRef(0);
   const due = useRef(0);
-  const reverse = useRef(0);   // 0 in D to 1 in R, eased: how far the door mirrors have dipped
 
   useEffect(() => () => { for (const t of targets) t.dispose(); }, [targets]);
   useEffect(() => () => { for (const g of glasses) g.dispose(); }, [glasses]);
@@ -74,8 +64,7 @@ export function MirrorView({ car, body, perFrame = 1, budget = 256 * 128, ids }:
   }, [car, cams]);
 
   // After the car's pose is synced (priority 0) and before the HUD draws the frame (priority 1).
-  useFrame(({ gl, scene }, dt) => {
-    reverse.current += ((useDriver.getState().gear === 'R' ? 1 : 0) - reverse.current) * (1 - Math.exp(-dt / TILT_EASE_S));
+  useFrame(({ gl, scene }) => {
     due.current += perFrame;
     const count = Math.floor(due.current);
     if (count === 0) return;
@@ -87,7 +76,6 @@ export function MirrorView({ car, body, perFrame = 1, budget = 256 * 128, ids }:
     for (const m of onGlass.current) if (m) m.visible = false;
     for (let k = 0; k < count; k++) {
       const n = next.current++ % cams.length;
-      tilt(cams[n], shown[n], reverse.current);
       gl.setRenderTarget(targets[n]);
       gl.render(scene, cams[n]);
     }
@@ -116,7 +104,6 @@ export function MirrorView({ car, body, perFrame = 1, budget = 256 * 128, ids }:
 /** Mirrors shown as panels, sized for an 851 x 393 screen and scaled with it. */
 function Panels({ panels }: { panels: { m: MirrorSpec; glass: THREE.ShaderMaterial }[] }) {
   const { width, height } = useThree((s) => s.size);
-  const touch = useTouchUi();
   const k = mirrorScale(width, height);
   const pad = MIRROR_PAD * k;
   return (
@@ -124,9 +111,10 @@ function Panels({ panels }: { panels: { m: MirrorSpec; glass: THREE.ShaderMateri
       {panels.map(({ m, glass }) => {
         const w = m.px[0] * k;
         const h = m.px[1] * k;
-        // interior mirror top centre; a door mirror where the real right one shows, the left across the middle
-        // from it, below the road ahead and clear of the HUD and the touch controls' steering pad
-        const [x, y] = m.id === 'interior' ? [0, height / 2 - pad - h / 2] : doorPanelAt(m, width, height, touch);
+        // interior mirror top centre; door mirrors at the side edges, a little above the middle,
+        // which keeps them clear of the touch controls' steering pad and pedals
+        const x = m.id === 'interior' ? 0 : (m.id === 'left' ? -1 : 1) * (width / 2 - pad - w / 2);
+        const y = m.id === 'interior' ? height / 2 - pad - h / 2 : DOOR_MIRROR_RISE * height;
         return (
           <group key={m.id} position={[x, y, 0]}>
             <mesh position={[0, 0, -1]}>

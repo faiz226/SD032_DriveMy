@@ -735,3 +735,22 @@ gear or the realistic R key, and the rest.
 - **Gears.** The same choice as before, put plainly: "S and W change gear" or "Realistic: the R key", each naming
   the learner's keys.
 
+## 3 Nov: the owner's look at the cabin
+
+- **The mirrors as they were.** The 12° dip of the door mirrors in reverse and the left panel's move (2 Nov) are
+  taken out: the owner preferred the earlier, steady view, which showed more ("I can't see anything now").
+- **The sky was black in the mirrors.** The painted sky is a dome that follows the camera, drawn first and behind
+  everything; at 500 m it lay past the mirror cameras' 60 m far plane, so they cut it away and showed black where
+  the sky is. At 50 m it sits inside every camera's far plane, and, drawn first and behind everything, its size
+  never shows.
+- **The dials were not round.** The silver rings round the dials and the bezels inside them are faceted in the
+  model itself (the same 333 and 248 vertices in both tiers). `Cluster.tsx` now draws them round: each faceted
+  triangle cut into 64 and every point laid back on the circle about its dial's axis (the circle the silver ring's
+  points make, seen straight on), at its own radius and depth, its texture where it was; sharp edges stay sharp.
+  The faceted ones are hidden while the round ones show.
+- **The windscreen pillar's trim was broken.** From the seat the right pillar's trim, the red paint and the black
+  surround did not meet, and the sky showed through the seams: the model draws its roof trim and the black plastic
+  parts from one side only. Those three materials (`Roof_Beige_Plas`, `Roof_BeigeFab`, `Black_Plst_Parts`) are now
+  drawn from both sides and the seams close. Not the whole car: from both sides, the backs of the outer panels came
+  across the side windows.
+

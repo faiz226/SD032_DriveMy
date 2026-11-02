@@ -12,8 +12,8 @@ the details are in `BUILD-LOG.md` under 2 Nov.
 | The hill's yellow line is near the peak, with a pole guiding it (Faiz) | The band sits 0.78 m short of the crest, with a guide pole each side level with the door mirrors | bc883dd |
 | "S = reverse, W = go" is what people expect; the gear change is confusing (Adam, Areefa) | The keys change gear by default (S again at a stop reverses); Realistic gears in Settings keeps the R key | 6dcc0da |
 | See the sides with Shift+A/D (Areefa) | Shift+A and Shift+D look left and right, still steering | 6dcc0da |
-| Hard to judge the bay lines and kerb from the seat; better with the car in view (Areefa, Adam) | The view from behind the car works in every mode (an assessment's verdict notes it); the door mirrors dip in reverse | 6dcc0da |
-| Fix the side mirror's position (Adam) | The left mirror panel sits level with the right mirror, clear of the interior mirror | 6dcc0da |
+| Hard to judge the bay lines and kerb from the seat; better with the car in view (Areefa, Adam) | The view from behind the car works in every mode (an assessment's verdict notes it). A dip of the door mirrors in reverse was tried and taken out: the owner preferred the steady view (3 Nov) | 6dcc0da |
+| Fix the side mirror's position (Adam) | Moved level with the right mirror on 2 Nov, then put back at the screen's edge on 3 Nov: the owner preferred it there | 3 Nov |
 | The ramp must be rebuilt: front tyres on a platform, the pole moved aside, out through the front (Faiz) | Platform, pole moved aside after a held stop, a down-slope off the far end onto the east road | 6246035 |
 | At the ramp, learners turn into the lane with a car in it (Adam) | The twin ramp moved north: ours is the first turn | 6246035 |
 | Could not follow the route without the top-down view (Areefa, Adam) | A way arrow at the top of the screen points at the route ahead, with the metres to the next station | 90ea03a |

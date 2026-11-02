@@ -1,5 +1,5 @@
 // What the learner sees while driving. It keeps out of the mirrors' three areas (the top centre, and the
-// lower side edges) and clear of the touch controls along the bottom.
+// side edges a little above the middle) and clear of the touch controls along the bottom.
 import { ArrowCounterClockwise, ArrowFatLeft, ArrowFatRight, Gear, Headlights, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut, VideoCamera } from '@/components/ui/icons';
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';

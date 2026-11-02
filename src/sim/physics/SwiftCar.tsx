@@ -78,6 +78,13 @@ function rubber(scene: THREE.Object3D) {
   });
 }
 
+/**
+ * Trim the model draws from one side only, which from the seat left the windscreen pillar's seams open to the sky
+ * (the owner, 3 Nov): drawn from both sides, they close. Only these: from both sides, the whole car would put the
+ * backs of its outer panels across the side windows.
+ */
+const BOTH_SIDES = new Set(['Roof_Beige_Plas', 'Roof_BeigeFab', 'Black_Plst_Parts']);
+
 /** The red paint (opaque, red, nothing else in it): free drive's secret code turns it to rainbow. */
 const isPaint = (m: THREE.MeshStandardMaterial) => !m.transparent && m.color.r > 0.4 && m.color.g < 0.1 && m.color.b < 0.1;
 interface Paint { m: THREE.MeshStandardMaterial; base: THREE.Color; lightness: number }
@@ -111,10 +118,12 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       if (!mesh.isMesh) return;
       mesh.castShadow = shadows;
       const m = mesh.material as THREE.MeshPhysicalMaterial;
-      // this car's own copy: the tail lamps (lit by its brake), the paint (free drive's rainbow), or without clearcoat
-      if (m.name === 'R_Light_Metal' || isPaint(m) || (!clearcoat && m.clearcoat)) {
+      // this car's own copy: the tail lamps (lit by its brake), the paint (free drive's rainbow), without clearcoat,
+      // or trim seen from its back as well
+      if (m.name === 'R_Light_Metal' || isPaint(m) || (!clearcoat && m.clearcoat) || BOTH_SIDES.has(m.name)) {
         const own = m.clone();
         if (!clearcoat) own.clearcoat = 0;
+        if (BOTH_SIDES.has(m.name)) own.side = THREE.DoubleSide;
         mesh.material = own;
       }
     });

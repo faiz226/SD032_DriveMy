@@ -19,7 +19,7 @@ export interface MirrorSpec {
   near: number;            // past the housing
   /**
    * Shown on the car's own mirror glass, which the driver sees through the windscreen. The left door mirror is
-   * outside that view (a driver turns their head to it), so it stays a panel, opposite where the right one shows.
+   * outside that view (a driver turns their head to it), so it stays a panel at the screen's edge.
    */
   onGlass: boolean;
 }
@@ -38,47 +38,11 @@ export const MIRRORS: MirrorSpec[] = [
 
 export const MIRROR_FAR = 60;
 
-// A real car tips its door mirrors down in reverse, so the driver sees the kerb and the bay lines by the rear
-// wheels. Here both door mirrors dip this far in R (eased, MirrorView.tsx) and come back up in D: at this much the
-// rear tyre's patch of road sits low in the middle of each (mirrors.test.ts).
-export const REVERSE_TILT_DEG = 12;
-
-/** A mirror's pitch, degrees, with `reverse` from 0 (in D) to 1 (in R): the door mirrors dip, the interior one never does. */
-export const pitchAt = (m: MirrorSpec, reverse: number) => m.pitchDeg - (m.id === 'interior' ? 0 : REVERSE_TILT_DEG * reverse);
-
 /** The mirrors' sizes are for an 851 x 393 screen; this scales them with the screen. */
 export const mirrorScale = (w: number, h: number) => Math.min(1.6, Math.max(0.75, Math.min(w / 851, h / 393)));
 export const MIRROR_PAD = 10;
-/** The touch steering pad's top edge above the screen's bottom (TouchControls.tsx: 16 px up, 140 px tall) and a gap. */
-export const TOUCH_PAD_TOP = 164;
-
-/**
- * Where the right door mirror's glass shows on the driver's screen, x and y in -1..1, for a screen of this shape
- * with the head at rest. The left door mirror is out of the windscreen view, so its panel takes the opposite place.
- */
-export function rightMirrorOnScreen(aspect: number): [number, number] {
-  const eye = new THREE.PerspectiveCamera(CAR.eyeView.fovDeg, aspect, 0.05, 600);
-  eye.position.set(...CAR.eye);
-  eye.rotation.set(CAR.eyeView.pitch, -Math.PI / 2, 0, 'YXZ');
-  eye.updateMatrixWorld();
-  const p = new THREE.Vector3(...CAR.mirrors.right).project(eye);
-  return [p.x, p.y];
-}
-
-/**
- * The centre of a door mirror's panel on a width x height screen, in pixels from the middle (x right, y up): the
- * left panel is the right mirror's place across the middle, the right one (when its glass is missing) its own
- * place, never past the screen's edge. With touch controls the panel keeps to the edge, clear of the interior
- * mirror, and stays above the steering pad.
- */
-export function doorPanelAt(m: MirrorSpec, width: number, height: number, touch: boolean): [number, number] {
-  const k = mirrorScale(width, height);
-  const [sx, sy] = rightMirrorOnScreen(width / height);
-  const edge = width / 2 - MIRROR_PAD * k - (m.px[0] * k) / 2;
-  const x = (m.id === 'left' ? -1 : 1) * (touch ? edge : Math.min((sx * width) / 2, edge));
-  const y = Math.max((sy * height) / 2, touch ? TOUCH_PAD_TOP - height / 2 + (m.px[1] * k) / 2 : -Infinity);
-  return [x, y];
-}
+/** Door mirrors sit this fraction of the screen height above the middle, clear of the touch controls. */
+export const DOOR_MIRROR_RISE = 0.06;
 
 export function mirrorCamera(m: MirrorSpec): THREE.PerspectiveCamera {
   const aspect = m.px[0] / m.px[1];

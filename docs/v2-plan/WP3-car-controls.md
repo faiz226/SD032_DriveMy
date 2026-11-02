@@ -145,8 +145,8 @@ three.js render-target one in `REFERENCES.md`.
   - Door mirrors: 35° wide, turned about 15° outward and 14° down, so the car's flank by the rear
     tyre shows along the inner edge, in the lower half. That is where learners watch the bay lines
     and the kerb.
-  - In R both door mirrors dip a further 12° (eased over about 0.15 s), as a real car's do, so the rear tyre's
-    patch of road, the kerb and the bay lines show; they come back up in D. The interior mirror never dips.
+  - The mirrors keep their aim in R. A 12° dip in reverse was tried on 2 Nov and taken out on 3 Nov: the owner
+    preferred the steady view, which showed more.
   - Interior mirror: 50° wide, 3° down, looking through the rear window.
   - These aims were checked by projecting points through three.js cameras (14 Oct). Adjust them
     only if the glb's mirror positions differ much from 0.92 m off the centreline.
