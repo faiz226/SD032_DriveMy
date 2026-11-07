@@ -1,15 +1,12 @@
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import {
   Car, Mountains, Square, Compass,
   Waves, Lightning, Warning, GitMerge, Trophy, ArrowRight
 } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useAuthStore } from "@/stores/authStore";
+import { useSimStats } from "@/hooks/useProgressStats";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/constants";
-import { getSimulationsDone } from "@/services/analytics.service";
-import { learnerKeys } from "@/lib/queryKeys";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TranslationKey } from "@/lib/translations";
 
@@ -44,14 +41,10 @@ const DIFFICULTY_COLORS: Record<Difficulty, string> = {
 
 export function SimulationsPage() {
   const { t } = useLanguage();
-  const { user } = useAuthStore();
 
   // Fetch how many unique maneuvers this user has completed
-  const { data: completedCount = 0, isPending: countPending } = useQuery({
-    queryKey: learnerKeys.simsDone(user?.id),
-    queryFn: () => getSimulationsDone(user!.id),
-    enabled: !!user,
-  });
+  const { data: simStats, isPending: countPending } = useSimStats();
+  const completedCount = simStats?.completed ?? 0;
 
   return (
     <div className="page-shell max-w-5xl space-y-6">

@@ -1,4 +1,4 @@
-import type { ExamQuestion, AnswerKeyEntry } from "@/services/questions.service";
+import type { ExamQuestion, AnswerKeyEntry } from "@/types/database";
 
 /**
  * Per-question option permutation: `perm[displayIndex] = originalIndex`.

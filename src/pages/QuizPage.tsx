@@ -1,13 +1,12 @@
 import { useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { Warning } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
 import { fetchQuizQuestions } from "@/services/questions.service";
 import { saveQuizResult } from "@/services/results.service";
-import { invalidateLearnerData } from "@/lib/queryKeys";
+import { useSaveResultMutation } from "@/hooks/useResults";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
@@ -20,7 +19,6 @@ type Phase = "launch" | "testing" | "results";
 export function QuizPage() {
   const { t, language: globalLang } = useLanguage();
   const { user } = useAuthStore();
-  const queryClient = useQueryClient();
 
   const [phase, setPhase] = useState<Phase>("launch");
   const [examLang, setExamLang] = useState<"en" | "ms">(globalLang);
@@ -35,17 +33,7 @@ export function QuizPage() {
   });
 
   // Save mutation
-  const saveMutation = useMutation({
-    mutationFn: saveQuizResult,
-    onSuccess: () => {
-      toast.success(t("exam.saved"));
-      void invalidateLearnerData(queryClient);
-    },
-    onError: (error) => {
-      console.error("Failed to save quiz result", error);
-      toast.error(t("common.error"));
-    }
-  });
+  const saveMutation = useSaveResultMutation(saveQuizResult);
 
   // Randomize and pick N questions
   const pickQuestions = useCallback(

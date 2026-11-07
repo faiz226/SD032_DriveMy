@@ -14,11 +14,10 @@ export const learnerKeys = {
   readiness: (userId?: string) => ["progress", "readiness", userId] as const,
   theoryRows: (userId?: string) => ["theoryProgress", userId] as const,
   activity: (userId?: string) => ["recentActivity", userId] as const,
-  simsDone: (userId?: string) => ["simsDone", userId] as const,
-  profileBest: (stat: "quiz" | "mock" | "sims" | "color", userId?: string) => ["profile", stat, userId] as const,
+  profileBest: (stat: "color", userId?: string) => ["profile", stat, userId] as const,
 };
 
-const LEARNER_ROOTS = ["progress", "theoryProgress", "recentActivity", "simsDone", "profile"] as const;
+const LEARNER_ROOTS = ["progress", "theoryProgress", "recentActivity", "profile"] as const;
 
 /** Refresh every view built from results — call after a result is saved or erased. */
 export function invalidateLearnerData(queryClient: QueryClient) {

@@ -2,30 +2,6 @@ import { supabase } from "@/lib/supabase";
 import type { QuizResult, MockTestResult, SimulationResult } from "@/types/database";
 import { expandSimRuns } from "@/sim/record";
 
-export async function getBestQuizScore(userId: string): Promise<number> {
-  const { data, error } = await supabase
-    .from("quiz_results")
-    .select("percentage")
-    .eq("user_id", userId)
-    .order("percentage", { ascending: false })
-    .limit(1);
-  if (error) throw error;
-  const rows = (data ?? []) as { percentage: number }[];
-  return rows.length > 0 ? Number(rows[0].percentage) || 0 : 0;
-}
-
-export async function getBestMockTestScore(userId: string): Promise<number> {
-  const { data, error } = await supabase
-    .from("mock_test_results")
-    .select("percentage")
-    .eq("user_id", userId)
-    .order("percentage", { ascending: false })
-    .limit(1);
-  if (error) throw error;
-  const rows = (data ?? []) as { percentage: number }[];
-  return rows.length > 0 ? Number(rows[0].percentage) || 0 : 0;
-}
-
 /** Best colour-vision percentage, or null when the learner has not taken the test. */
 export async function getBestColorVisionScore(userId: string): Promise<number | null> {
   const { data, error } = await supabase
@@ -36,20 +12,6 @@ export async function getBestColorVisionScore(userId: string): Promise<number | 
     .limit(1);
   if (error) throw error;
   return data && data.length > 0 ? (data[0] as { percentage: number }).percentage : null;
-}
-
-export async function getSimulationsDone(userId: string): Promise<number> {
-  const { data, error } = await supabase
-    .from("simulation_results")
-    .select("maneuver_id, score, attempt_data")
-    .eq("user_id", userId);
-  if (error) throw error;
-  if (!data) return 0;
-
-  // a v2 assessment run is one row covering every station it reached
-  const rows = expandSimRuns(data as { maneuver_id: string; score: number; attempt_data?: unknown }[]);
-  const uniqueManeuvers = new Set(rows.map((r) => r.maneuver_id));
-  return uniqueManeuvers.size;
 }
 
 export type ActivityEvent = {

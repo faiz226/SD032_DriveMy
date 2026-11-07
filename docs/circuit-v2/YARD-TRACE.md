@@ -1,10 +1,10 @@
 # Real ARM yard: trace notes (14 Oct 2026)
 
-The map is the real ARM yard (the drone photo and blueprint in `bar/circuit/`), drawn cleanly.
+The map is the real ARM yard (the drone photo in `docs/circuit-v2/reference_aerial_grid.png`), drawn cleanly.
 These are the outlines read off the photo; `generate.py` builds the yard from them, and
 `yard-vs-photo.png` draws the result over the photo.
 
-**Source:** `bar/circuit/reference_aerial_grid.png` (1271 × 734 px) with the grid lines painted
+**Source:** `docs/circuit-v2/reference_aerial_grid.png` (1271 × 734 px) with the grid lines painted
 out. Scale 0.0943 m/px (±5%). Pixel coordinates: x right, y down. To get metres:
 `x_m = px * 0.0943`, `y_m = (750 - py) * 0.0943` (the bottom edge of the yard sits near py 748,
 just below the photo).

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { GoogleLogo } from "@/components/shared/GoogleLogo";
+import { GoogleLogo } from "./GoogleLogo";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { signInWithGoogle } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
-import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
+import { AuthFormAlert } from "./AuthFormAlert";
 
 // ─── AuthPage ─────────────────────────────────────────────────────────────────
 // Google is the only way in. The same button signs a learner in or, the first time, creates the account.
