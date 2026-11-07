@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuthStore } from '@/stores/authStore';
-import { useTheoryProgress, useUpdateTheoryProgress } from '@/hooks/useProgress';
+import { useTheoryProgressRows, useUpdateTheoryProgress } from '@/hooks/useProgress';
 import { toast } from 'sonner';
 
 // ── Regulatory / Prohibitory - vector renders, confirmed correct by browser audit
@@ -165,7 +165,7 @@ export function TheoryPage() {
   const lang = language === 'en' ? 'en' : 'bm';
   const { user } = useAuthStore();
   const completion = useUpdateTheoryProgress();
-  const progress = useTheoryProgress(user?.id ?? "");
+  const progress = useTheoryProgressRows(user?.id ?? "");
   const [learned, setLearned] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});

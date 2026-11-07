@@ -7,7 +7,7 @@ const { mutate, reset } = vi.hoisted(() => ({ mutate: vi.fn(), reset: vi.fn() })
 vi.mock("@/hooks/useLanguage", () => ({ useLanguage: () => ({ language: "en" }) }));
 vi.mock("@/stores/authStore", () => ({ useAuthStore: () => ({ user: { id: "learner" } }) }));
 vi.mock("@/hooks/useProgress", () => ({
-  useTheoryProgress: () => ({ data: [], isPending: false, isError: false }),
+  useTheoryProgressRows: () => ({ data: [], isPending: false, isError: false }),
   useUpdateTheoryProgress: () => ({ mutate, reset, isPending: false }),
 }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });

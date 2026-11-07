@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import NumberFlow from "@number-flow/react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
-import { useOverallReadiness, useMockStats, useTheoryProgress } from "@/hooks/useProgressStats";
+import { useOverallReadiness, useMockStats, useTheoryProgressStats } from "@/hooks/useProgressStats";
 import { getRecentActivity, type ActivityEvent } from "@/services/analytics.service";
 import { GantrySign } from "@/components/dashboard/GantrySign";
 import { JourneyRoad } from "@/components/dashboard/JourneyRoad";
@@ -28,7 +28,7 @@ export function DashboardPage() {
   const user = useAuthStore(s => s.user);
   const readiness = useOverallReadiness();
   const mock = useMockStats();
-  const theory = useTheoryProgress();
+  const theory = useTheoryProgressStats();
   const activity = useQuery({ queryKey: learnerKeys.activity(user?.id), queryFn: () => getRecentActivity(user!.id), enabled: !!user });
   const queries = [readiness, mock, theory, activity];
   const fullName = typeof user?.user_metadata?.full_name === "string" ? user.user_metadata.full_name : undefined;

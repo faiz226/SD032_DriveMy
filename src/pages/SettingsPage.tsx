@@ -10,12 +10,18 @@ import { useThemeStore } from "@/stores/themeStore";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { useTheoryProgress, useOverallReadiness } from "@/hooks/useProgressStats";
-import { getBestQuizScore, getBestMockTestScore, getSimulationsDone, getBestColorVisionScore } from "@/services/analytics.service";
+import {
+  useQuizStats,
+  useMockStats,
+  useSimStats,
+  useTheoryProgressStats,
+  useOverallReadiness,
+  useBestColorVisionScore,
+} from "@/hooks/useProgressStats";
 import { exportUserData, deleteAccount, resetProgress, AccountCleanupError } from "@/services/account.service";
-import { learnerKeys, invalidateLearnerData } from "@/lib/queryKeys";
+import { invalidateLearnerData } from "@/lib/queryKeys";
 import { getUserPendingStatus, getUserDeadLetterItems, retryUserDeadLetterItem, syncOfflineResults } from "@/services/results.service";
 import { LocalSessionTerminationError } from "@/services/auth.service";
 import { hasTelemetryConsent, writeConsent } from "@/lib/consent";
@@ -336,36 +342,16 @@ export function SettingsPage() {
   const memberSince = user?.created_at ? format(new Date(user.created_at), "d MMM yyyy") : "-";
   const initial = displayName.charAt(0).toUpperCase() || "?";
 
-  const { data: theory, isPending: theoryPending } = useTheoryProgress();
+  const { data: theory, isPending: theoryPending } = useTheoryProgressStats();
   const { data: readiness, isPending: readinessPending } = useOverallReadiness();
+  const { data: quizStats, isPending: quizPending } = useQuizStats();
+  const { data: mockStats, isPending: mockPending } = useMockStats();
+  const { data: simStats, isPending: simsPending } = useSimStats();
+  const { data: colorBest, isPending: colorPending } = useBestColorVisionScore();
 
-  const { data: quizBest = 0, isPending: quizPending } = useQuery({
-    queryKey: learnerKeys.profileBest("quiz", userId),
-    queryFn: () => getBestQuizScore(userId!),
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: mockBest = 0, isPending: mockPending } = useQuery({
-    queryKey: learnerKeys.profileBest("mock", userId),
-    queryFn: () => getBestMockTestScore(userId!),
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: simsDone = 0, isPending: simsPending } = useQuery({
-    queryKey: learnerKeys.profileBest("sims", userId),
-    queryFn: () => getSimulationsDone(userId!),
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: colorBest, isPending: colorPending } = useQuery({
-    queryKey: learnerKeys.profileBest("color", userId),
-    queryFn: () => getBestColorVisionScore(userId!),
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-  });
+  const quizBest = quizStats?.best ?? 0;
+  const mockBest = mockStats?.best ?? 0;
+  const simsDone = simStats?.completed ?? 0;
 
   const statusLabel = (state: MilestoneState): string => {
     const key: Record<MilestoneState, TranslationKey> = {

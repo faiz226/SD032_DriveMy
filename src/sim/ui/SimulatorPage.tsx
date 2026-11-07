@@ -11,6 +11,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ROUTES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { invalidateLearnerData } from '@/lib/queryKeys';
 import { OFFLINE_QUEUED_ID, saveSimulationResult } from '@/services/results.service';
 import { useAuthStore } from '@/stores/authStore';
 import type { SimEvent, StationId, VehicleSample } from '../contracts';
@@ -201,10 +202,9 @@ export function SimulatorPage() {
     const record = runRecord({ id: run.runId, userId: user.id, language, state: run.state, seconds: run.elapsed, rulesLabel: rules.label, car: swift.name });
     saveSimulationResult(record)
       .then((row) => {
-        setSave((row as { id?: string } | null)?.id === OFFLINE_QUEUED_ID ? 'offline' : 'saved');
-        for (const key of [['recentActivity'], ['simsDone', user.id], ['progress', 'sim', user.id], ['progress', 'readiness', user.id]]) {
-          void queryClient.invalidateQueries({ queryKey: key });
-        }
+        const queued = (row as { id?: string } | null)?.id === OFFLINE_QUEUED_ID;
+        setSave(queued ? 'offline' : 'saved');
+        if (!queued) void invalidateLearnerData(queryClient);
       })
       .catch((err: unknown) => setSave(isDuplicate(err) ? 'saved' : 'failed'));
   }, [go, begin, user, language, queryClient]);

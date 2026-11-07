@@ -2,7 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { useActivityStore } from "@/stores/activityStore";
-import { useSaveColorblindResult } from "@/hooks/useResults";
+import { useSaveResultMutation } from "@/hooks/useResults";
+import { saveColorblindResult } from "@/services/results.service";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -104,7 +105,10 @@ function checkAnswer(answer: string | undefined, p: (typeof PLATES)[0]): boolean
 export function ColorVisionPage() {
   const { t, language } = useLanguage();
   const { user } = useAuthStore();
-  const { mutateAsync: saveResult } = useSaveColorblindResult();
+  const saveMutation = useSaveResultMutation(saveColorblindResult, {
+    successToastKey: "color.saved",
+    errorToastKey: "color.error.saveFailed",
+  });
 
   const plateDescription = (type: PlateType) => t(PLATE_TYPE_KEYS[type]);
   const plateAlt = (plateNum: number, type: PlateType) =>
@@ -264,18 +268,13 @@ export function ColorVisionPage() {
     const percentage = Math.round((score / activePlates.length) * 100);
 
     if (user) {
-      try {
-        await saveResult({
-          user_id: user.id,
-          score,
-          total_plates: activePlates.length,
-          percentage,
-          answers: Object.fromEntries(Object.entries(finalAnswers).map(([k, v]) => [k, String(v)]))
-        });
-        toast.success(t("color.saved"));
-      } catch (_error) {
-        toast.error(t("color.error.saveFailed"));
-      }
+      saveMutation.mutate({
+        user_id: user.id,
+        score,
+        total_plates: activePlates.length,
+        percentage,
+        answers: Object.fromEntries(Object.entries(finalAnswers).map(([k, v]) => [k, String(v)]))
+      });
     }
   };
 

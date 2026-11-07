@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/question
 import { applyAnswerKey, hasCompleteAnswerKey } from "@/lib/exam/scoring";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { OFFLINE_QUEUED_ID, saveMockResult } from "@/services/results.service";
-import { invalidateLearnerData } from "@/lib/queryKeys";
+import { useSaveResultMutation } from "@/hooks/useResults";
 import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
 import { TestResultsView } from "@/components/exam/TestResultsView";
@@ -39,18 +39,7 @@ export function MockTestPage() {
   });
 
   // Save mutation
-  const saveMutation = useMutation({
-    mutationFn: saveMockResult,
-    onSuccess: (saved) => {
-      if ((saved as { id?: string } | null)?.id === OFFLINE_QUEUED_ID) return;
-      toast.success(t("exam.saved"));
-      void invalidateLearnerData(queryClient);
-    },
-    onError: (error) => {
-      console.error("Failed to save mock result", error);
-      toast.error(t("common.error")); // Or a more specific error key if available
-    }
-  });
+  const saveMutation = useSaveResultMutation(saveMockResult);
 
   const handleStart = async ({ language, setId }: { language: "en" | "ms"; setId?: string }) => {
     setExamLang(language);

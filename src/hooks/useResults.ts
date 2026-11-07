@@ -1,45 +1,38 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import {
-  saveQuizResult,
-  saveMockResult,
-  saveSimulationResult,
-  saveColorblindResult,
-} from "@/services/results.service";
+import { OFFLINE_QUEUED_ID } from "@/services/results.service";
+import { invalidateLearnerData } from "@/lib/queryKeys";
 import { useLanguageStore } from "@/stores/languageStore";
+import type { TranslationKey } from "@/lib/translations/en";
 
 /**
- * Result-saving mutations.
+ * Shared mutation for saving learner results (quiz, mock test, colour vision).
  *
- * saveResult() now THROWS on permanent failures (RLS denial, constraint
- * violation, 4xx) instead of quietly queueing them behind a success marker.
- * Every mutation therefore needs an onError, or the learner is told nothing
- * when their attempt genuinely fails to save.
+ * Checks OFFLINE_QUEUED_ID so offline-queued attempts do not toast premature
+ * server confirmation or trigger redundant refetches, invalidates cached
+ * learner data on online saves, and surfaces permanent save failures via toast.
  */
-function useSaveResultMutation<TArgs, TResult>(
-  mutationFn: (args: TArgs) => Promise<TResult>
+export function useSaveResultMutation<TArgs, TResult>(
+  mutationFn: (args: TArgs) => Promise<TResult>,
+  options?: {
+    successToastKey?: TranslationKey;
+    errorToastKey?: TranslationKey;
+  }
 ) {
+  const queryClient = useQueryClient();
+  const successKey = options?.successToastKey ?? "exam.saved";
+  const errorKey = options?.errorToastKey ?? "common.error";
+
   return useMutation({
     mutationFn,
+    onSuccess: (saved) => {
+      if ((saved as { id?: string } | null)?.id === OFFLINE_QUEUED_ID) return;
+      toast.success(useLanguageStore.getState().t(successKey));
+      void invalidateLearnerData(queryClient);
+    },
     onError: (error) => {
       console.error("[results] save failed", error);
-      toast.error(useLanguageStore.getState().t("common.error"));
+      toast.error(useLanguageStore.getState().t(errorKey));
     },
   });
-}
-
-export function useSaveQuizResult() {
-  return useSaveResultMutation(saveQuizResult);
-}
-
-export function useSaveMockResult() {
-  return useSaveResultMutation(saveMockResult);
-}
-
-export function useSaveSimulationResult() {
-  return useSaveResultMutation(saveSimulationResult);
-}
-
-export function useSaveColorblindResult() {
-  return useSaveResultMutation(saveColorblindResult);
 }
