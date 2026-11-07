@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           # Pinned: CLI v3 rejects [inbucket] in config.toml and drops `db push --linked`.
           version: 2.122.1
@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           # Pinned: CLI v3 rejects [inbucket] in config.toml and drops `db push --linked`.
           version: 2.122.1
