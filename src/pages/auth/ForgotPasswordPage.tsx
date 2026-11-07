@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Envelope, ArrowLeft, CheckCircle } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
-import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
+import { AuthFormAlert } from "./AuthFormAlert";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useCaptcha } from "@/hooks/useCaptcha";
 import { sendPasswordResetEmail } from "@/services/auth.service";

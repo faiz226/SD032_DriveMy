@@ -1,6 +1,6 @@
 import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useDriver, useTouchPref, useTouchUi } from './input';
+import { useDriver, useTouchPref, useTouchUi } from '../input';
 import { TouchControls } from './TouchControls';
 
 beforeEach(() => {

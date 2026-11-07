@@ -22,7 +22,7 @@ is still worth running when the builder model is available again.
 
 ## The yardstick, measured before drafting
 
-The photo measurements use `bar/circuit/reference_aerial_grid.png` at 0.0943 m per pixel (120 m
+The photo measurements use `docs/circuit-v2/reference_aerial_grid.png` at 0.0943 m per pixel (120 m
 across the frame, ±5% per the PRD). The car is the PRD's Swift: 3.842 × 1.730 m, wheelbase
 2.450 m, track 1.493 m, steer lock 0.62 rad. Equal overhangs are assumed, as v1 did.
 

@@ -14,10 +14,10 @@ narrow and disorganised: no single route, stations scattered, and its S-bend cha
 
 The bar is real and on disk, in this worktree:
 
-- `bar/circuit/reference_aerial_grid.png`: drone photo of the real ARM circuit. The frame is
+- `docs/circuit-v2/reference_aerial_grid.png`: drone photo of the real ARM circuit. The frame is
   about 120 m across (about 0.094 m per pixel, ±5%).
-- `bar/circuit/reference_plan_view_only.png`: its blueprint. Its dimension strings are
-  unreliable; see `bar/README.md`.
+- `docs/circuit-v2/reference_plan_view_only.png`: its blueprint. Its dimension strings are
+  unreliable.
 - `docs/circuit-v2/prd-excerpt.md`: the eight exercises' rules, the car, and every current
   number with its status. Its "port the v1 trace" plan is the thing being replaced.
 

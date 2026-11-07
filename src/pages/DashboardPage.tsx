@@ -6,7 +6,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useOverallReadiness, useMockStats, useTheoryProgressStats } from "@/hooks/useProgressStats";
 import { getRecentActivity, type ActivityEvent } from "@/services/analytics.service";
 import { GantrySign } from "@/components/dashboard/GantrySign";
-import { JourneyRoad } from "@/components/dashboard/JourneyRoad";
+import { JourneyRoad } from "@/components/shared/JourneyRoad";
 import { VmsBoard } from "@/components/dashboard/VmsBoard";
 import { TollPlaza, type Lane } from "@/components/dashboard/TollPlaza";
 import { Skeleton } from "@/components/ui/skeleton";

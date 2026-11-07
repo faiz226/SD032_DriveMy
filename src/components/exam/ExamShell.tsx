@@ -30,7 +30,7 @@ import { SectionTitle } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
 import { useUIStore } from "@/stores/uiStore";
 import { ROUTES } from "@/lib/constants";
-import type { ExamQuestion } from "@/services/questions.service";
+import type { ExamQuestion } from "@/types/database";
 import type { TranslationKey } from "@/lib/translations";
 
 // ── Runtime shuffle (true random — runs once per mount) ────────────────────────

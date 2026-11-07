@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Lock, Eye, EyeSlash, CheckCircle, Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
-import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
+import { AuthFormAlert } from "./AuthFormAlert";
 import { useLanguage } from "@/hooks/useLanguage";
 import { updatePassword, onAuthStateChange, getSession } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";

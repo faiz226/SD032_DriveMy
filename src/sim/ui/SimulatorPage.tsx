@@ -25,7 +25,7 @@ import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import type { MirrorId } from '../physics/mirrors';
 import { TIERS, type TierPref, useQualityPref, useTier } from '../quality';
 import { runRecord } from '../record';
-import { TouchControls } from '../TouchControls';
+import { TouchControls } from './TouchControls';
 import { Daylight, TopDownCamera, World } from '../world/World';
 import { Scenery } from '../world/Scenery';
 import { Hud, HUD_PLATE } from './Hud';

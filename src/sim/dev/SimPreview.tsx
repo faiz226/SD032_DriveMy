@@ -16,7 +16,7 @@ import { rad } from '../geom';
 import { useDriver, useKeyboardControls, useTouchUi } from '../input';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import { TIERS } from '../quality';
-import { TouchControls } from '../TouchControls';
+import { TouchControls } from '../ui/TouchControls';
 import { LoadingMap } from '../ui/LoadingMap';
 import { type Verdict, VerdictView } from '../ui/Verdict';
 
