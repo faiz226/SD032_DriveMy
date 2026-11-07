@@ -7,7 +7,7 @@ import {
   useQuizStats, 
   useMockStats, 
   useSimStats, 
-  useTheoryProgress, 
+  useTheoryProgressStats, 
   useOverallReadiness 
 } from "@/hooks/useProgressStats";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,7 +37,7 @@ export function ProgressPage() {
   const quizQ = useQuizStats(dateRange || undefined);
   const mockQ = useMockStats(dateRange || undefined);
   const simQ = useSimStats(dateRange || undefined);
-  const theoryQ = useTheoryProgress();
+  const theoryQ = useTheoryProgressStats();
   const readinessQ = useOverallReadiness();
 
   const { data: quiz, isPending: quizPending } = quizQ;

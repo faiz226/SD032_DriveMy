@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { completeAuthRedirect, getSession } from "@/services/auth.service";
 import { ROUTES } from "@/lib/constants";
 import { useLanguage } from "@/hooks/useLanguage";
-import { AuthFormAlert } from "@/components/shared/AuthFormAlert";
+import { AuthFormAlert } from "./AuthFormAlert";
 
 /**
  * AuthCallbackPage — handles the OAuth redirect from Google (and email magic

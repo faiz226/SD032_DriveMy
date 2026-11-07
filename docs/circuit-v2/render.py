@@ -12,8 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from lib_geom import HERE
 
-REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
-PHOTO = os.path.join(REPO, 'bar', 'circuit', 'reference_aerial_grid.png')
+PHOTO = os.path.join(HERE, 'reference_aerial_grid.png')
 PHOTO_M_PER_PX = 120.0 / 1271
 
 GRASS = (111, 140, 82)

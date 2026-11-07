@@ -8,7 +8,7 @@ Frame: metres, x = east, y = north, z = up. Origin = where the course leaves the
 In three.js (y-up) use  X = x,  Y = z,  Z = -y.
 
 Every number below carries its source:
-  photo  measured off bar/circuit/reference_aerial_grid.png at 0.0943 m/px (scale +/-5%)
+  photo  measured off docs/circuit-v2/reference_aerial_grid.png at 0.0943 m/px (scale +/-5%)
   prd    taken from the PRD (docs/circuit-v2/prd-excerpt.md)
   car    derived from the car config (car-swift-2022.json)
   design a layout choice of this draft, not a JPJ figure

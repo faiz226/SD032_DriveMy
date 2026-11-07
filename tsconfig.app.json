@@ -33,27 +33,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@pages/*": [
-        "./src/pages/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@lib/*": [
-        "./src/lib/*"
-      ],
-      "@stores/*": [
-        "./src/stores/*"
-      ],
-      "@types/*": [
-        "./src/types/*"
-      ],
-      "@assets/*": [
-        "./src/assets/*"
       ]
     }
   },

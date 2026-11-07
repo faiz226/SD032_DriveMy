@@ -5,7 +5,7 @@
 import { ArrowFatLeft, ArrowFatRight, MapTrifold, Pause, Play } from '@/components/ui/icons';
 import { type CSSProperties, type PointerEvent, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useDriver } from './input';
+import { useDriver } from '../input';
 
 const STEER_PX = 110;        // a drag this far is full lock
 const DOUBLE_TAP_MS = 300;

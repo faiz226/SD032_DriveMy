@@ -2,14 +2,6 @@ import { useState, useId } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { MotionConfig } from "motion/react";
 import {
-  GridFour,
-  Book,
-  BookOpen,
-  Clipboard,
-  ShieldWarning,
-  Eye,
-  Car,
-  TrendUp,
   User,
   Gear,
   SignOut,
@@ -20,7 +12,6 @@ import {
   Sun,
   Moon,
   Translate,
-  Wrench
 } from "@/components/ui/icons";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
@@ -48,37 +39,22 @@ interface NavItem {
   end?:     boolean;
 }
 
-const NAV_ICONS: Record<string, React.ReactNode> = {
-  [ROUTES.DASHBOARD]:    <GridFour weight="fill" className="h-5 w-5" />,
-  [ROUTES.THEORY]:       <BookOpen weight="fill" className="h-5 w-5" />,
-  [ROUTES.RPK_RSM]:      <Wrench weight="fill" className="h-5 w-5" />,
-  [ROUTES.QUIZ]:         <Book weight="fill" className="h-5 w-5" />,
-  [ROUTES.MOCK_TEST]:    <Clipboard weight="fill" className="h-5 w-5" />,
-  [ROUTES.SIMULATIONS]:  <Car weight="fill" className="h-5 w-5" />,
-  [ROUTES.SAFETY]:       <ShieldWarning weight="fill" className="h-5 w-5" />,
-  [ROUTES.COLOR_VISION]: <Eye weight="fill" className="h-5 w-5" />,
-  [ROUTES.PROGRESS]:     <TrendUp weight="fill" className="h-5 w-5" />,
-};
-
 // Every destination in navigation.ts, in the order learners meet them.
-const NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.map(item => ({
+const NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.map(({ icon: Icon, ...item }) => ({
   ...item,
-  icon: NAV_ICONS[item.href],
-  end: item.href === ROUTES.DASHBOARD,
+  icon: <Icon weight="fill" className="h-5 w-5" />,
 }));
 
 const UTILITY_ITEMS: NavItem[] = [
   { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="fill" className="h-5 w-5" /> },
 ];
 
-const MOBILE_NAV_ITEMS: NavItem[] = [
-  { labelKey: "nav.dashboard",  href: ROUTES.DASHBOARD,   icon: <GridFour className="h-5 w-5" />, end: true },
-  { labelKey: "nav.learn",      href: ROUTES.THEORY,      icon: <BookOpen    className="h-5 w-5" /> },
-  { labelKey: "nav.quiz",       href: ROUTES.QUIZ,        icon: <Book        className="h-5 w-5" /> },
-  { labelKey: "nav.mockTest",   href: ROUTES.MOCK_TEST,   icon: <Clipboard   className="h-5 w-5" /> },
-  { labelKey: "nav.simulator",  href: ROUTES.SIMULATIONS, icon: <Car             className="h-5 w-5" /> },
-  { labelKey: "nav.progress",   href: ROUTES.PROGRESS,    icon: <TrendUp      className="h-5 w-5" /> },
-];
+const MOBILE_NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.filter((item) => item.mobile).map(
+  ({ icon: Icon, ...item }) => ({
+    ...item,
+    icon: <Icon className="h-5 w-5" />,
+  })
+);
 
 
 // ─── Sidebar nav link ─────────────────────────────────────────────────────────

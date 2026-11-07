@@ -6,7 +6,7 @@ Then: python docs/circuit-v2/check.py      (proves the claims from circuit.json 
       python docs/circuit-v2/render.py     (draws the plan, the minimap and the photo overlay)
 
 Frame: metres, x = east, y = north, z = up. In three.js (y-up) use  X = x,  Y = z,  Z = -y.
-Trace: bar/circuit/reference_aerial_grid.png at 0.0943 m/px (+/-5%). Photo pixel (px, py) maps to
+Trace: docs/circuit-v2/reference_aerial_grid.png at 0.0943 m/px (+/-5%). Photo pixel (px, py) maps to
 x = px * 0.0943, y = (750 - py) * 0.0943; the yard's south edge sits near py 748, just below the
 photo. The pixel outlines and how they were read are in YARD-TRACE.md.
 
@@ -38,7 +38,7 @@ def M(px, py):
 
 
 P = {
-    'photo_scale':   (PX,    'photo',   'Metres per pixel of bar/circuit/reference_aerial_grid.png (120 m across, +/-5%)'),
+    'photo_scale':   (PX,    'photo',   'Metres per pixel of docs/circuit-v2/reference_aerial_grid.png (120 m across, +/-5%)'),
     'kerb_h':        (0.13,  'prd',     'Kerb height (PRD, v1 value)'),
     'kerb_w':        (0.20,  'design',  'Kerb width; the kerb sits outside the pavement edge'),
     'wall_w':        (0.25,  'design',  'Kerbed wall along the sides of the hill and the ramp'),
@@ -787,7 +787,7 @@ def main():
         name='DriveMy practice yard (the ARM yard, traced)',
         units='metres',
         frame=dict(x='east', y='north', z='up', three_js='X = x, Y = z, Z = -y',
-                   origin='photo pixel (0, 750) of bar/circuit/reference_aerial_grid.png; x = px * 0.0943, y = (750 - py) * 0.0943'),
+                   origin='photo pixel (0, 750) of docs/circuit-v2/reference_aerial_grid.png; x = px * 0.0943, y = (750 - py) * 0.0943'),
         site=dict(bounds=[round(c, 2) for c in site], ground='grass everywhere that is not pavement'),
         car_config='car-swift-2022.json',
         parameters={k: dict(value=val, source=src, note=note) for k, (val, src, note) in P.items()},

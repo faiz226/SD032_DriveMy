@@ -3,7 +3,7 @@ import { MotionConfig } from "motion/react";
 import { Car, ChartLineUp, ClipboardText } from "@/components/ui/icons";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { BrandMark } from "@/components/shared/BrandMark";
-import { JourneyRoad } from "@/components/dashboard/JourneyRoad";
+import { JourneyRoad } from "@/components/shared/JourneyRoad";
 import { useLanguage } from "@/hooks/useLanguage";
 
 const POST = "absolute bottom-0 h-20 w-4 bg-[linear-gradient(90deg,#55524c,#8d8a83,#55524c)]";

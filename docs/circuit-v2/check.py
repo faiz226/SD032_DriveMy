@@ -25,7 +25,7 @@ from lib_geom import HERE, Car, World, follow, parallel_into_slot, reverse_into_
 
 RULES = os.path.join(HERE, '..', 'v2-plan', 'rules.json')
 
-# Measured off bar/circuit/reference_aerial_grid.png at 0.0943 m/px (+/-5% scale). See AUDIT.md.
+# Measured off docs/circuit-v2/reference_aerial_grid.png at 0.0943 m/px (+/-5% scale). See AUDIT.md.
 REAL = {
     's_lane':      (3.35, 3.76, 'S lane kerb to kerb, p10-p90 along the real centreline'),
     's_bend':      (141.0, 7.5, 'Real S: two opposite bends of about 141 deg at about 7.5 m centreline radius'),

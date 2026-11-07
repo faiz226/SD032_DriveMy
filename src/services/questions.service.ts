@@ -1,5 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import type { KppQuestion } from "@/types/database";
+import type { KppQuestion, ExamQuestion, AnswerKeyEntry } from "@/types/database";
+
+export type { ExamQuestion, AnswerKeyEntry };
 
 /**
  * Columns safe to send to the browser while an exam is in progress.
@@ -16,30 +18,6 @@ import type { KppQuestion } from "@/types/database";
  */
 const EXAM_COLUMNS =
   "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, source_url, created_at";
-
-/**
- * A question as delivered during an exam — no answer key attached.
- *
- * The key fields are optional rather than absent so a fully-populated
- * KppQuestion remains assignable here. Practice quizzes still fetch the key up
- * front, because immediate feedback is the point of practice.
- */
-export type ExamQuestion = Omit<
-  KppQuestion,
-  "correct_index" | "explanation_en" | "explanation_ms"
-> & {
-  correct_index?: number;
-  explanation_en?: string | null;
-  explanation_ms?: string | null;
-};
-
-/** The answer key for one question, fetched only after submission. */
-export interface AnswerKeyEntry {
-  id: string;
-  correct_index: number;
-  explanation_en: string | null;
-  explanation_ms: string | null;
-}
 
 /**
  * Practice quiz questions — WITH the answer key.
