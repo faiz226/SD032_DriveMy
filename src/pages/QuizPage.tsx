@@ -5,6 +5,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
 import { fetchQuizQuestions } from "@/services/questions.service";
+import { getTextbookSet, getTextbookPracticePool } from "@/content/kppQuestionBank";
 import { saveQuizResult } from "@/services/results.service";
 import { useSaveResultMutation } from "@/hooks/useResults";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
@@ -16,20 +17,26 @@ import type { KppQuestion } from "@/types/database";
 
 type Phase = "launch" | "testing" | "results";
 
+function resolveSectionCategory(section: string): string {
+  if (section === "B" || section.startsWith("quiz-b")) return "traffic-rules";
+  if (section === "C" || section.startsWith("quiz-c")) return "safety-principles";
+  return "road-signs";
+}
+
 export function QuizPage() {
   const { t, language: globalLang } = useLanguage();
-  const { user } = useAuthStore();
+  const { user, isDevBypass } = useAuthStore();
 
   const [phase, setPhase] = useState<Phase>("launch");
   const [examLang, setExamLang] = useState<"en" | "ms">(globalLang);
-  const [selectedSection, setSelectedSection] = useState<string>("A");
+  const [selectedSection, setSelectedSection] = useState<string>("quiz-a-1");
   const [result, setResult] = useState<ExamResult | null>(null);
   const [activeQuestions, setActiveQuestions] = useState<KppQuestion[]>([]);
 
   // Fetch quiz questions
   const { data: allQuestions = [], isLoading } = useQuery({
     queryKey: [...QUERY_KEYS.QUESTIONS, "quiz-pool"],
-    queryFn: () => fetchQuizQuestions({ limit: 200 }),
+    queryFn: () => fetchQuizQuestions({ limit: 500 }),
   });
 
   // Save mutation
@@ -50,16 +57,23 @@ export function QuizPage() {
 
   const handleStart = ({ language, setId }: { language: "en" | "ms"; setId?: string }) => {
     setExamLang(language);
-    const section = setId || "A";
+    const section = setId || "quiz-a-1";
     setSelectedSection(section);
-    
-    // Map section A, B, C to categories:
-    let category = "road-signs";
-    if (section === "B") category = "traffic-rules";
-    if (section === "C") category = "safety-principles";
 
-    const pool = allQuestions.filter(q => q.category === category);
-    const picked = pickQuestions(pool.length > 0 ? pool : allQuestions, QUIZ_QUESTION_COUNT);
+    if (section.startsWith("quiz-")) {
+      const fromDb = allQuestions.filter((q) => q.set_id === section);
+      const textbookSet = fromDb.length > 0 ? fromDb : getTextbookSet(section);
+      if (textbookSet.length > 0) {
+        setActiveQuestions(textbookSet.map((q) => ({ ...q })));
+        setPhase("testing");
+        return;
+      }
+    }
+
+    const category = resolveSectionCategory(section);
+    const pool = allQuestions.filter((q) => q.category === category);
+    const fallbackPool = pool.length > 0 ? pool : getTextbookPracticePool(category);
+    const picked = pickQuestions(fallbackPool.length > 0 ? fallbackPool : allQuestions, QUIZ_QUESTION_COUNT);
     setActiveQuestions(picked);
     setPhase("testing");
   };
@@ -68,11 +82,9 @@ export function QuizPage() {
     setResult(examResult);
     setPhase("results");
 
-    // Save to DB
-    if (user) {
-      let category = "road-signs";
-      if (selectedSection === "B") category = "traffic-rules";
-      if (selectedSection === "C") category = "safety-principles";
+    // Save to DB when authenticated with a real session
+    if (user && !isDevBypass) {
+      const category = resolveSectionCategory(selectedSection);
 
       saveMutation.mutate({
         user_id: user.id,
@@ -96,9 +108,15 @@ export function QuizPage() {
   };
 
   const handleRetryWrong = (wrongIds: string[]) => {
-    const wrongQs = allQuestions
-      .filter((q) => wrongIds.includes(q.id))
-      .map((q) => ({ ...q })); // Fresh copy to prevent mutation
+    const combined = [...activeQuestions, ...allQuestions];
+    const seen = new Set<string>();
+    const wrongQs: KppQuestion[] = [];
+    for (const q of combined) {
+      if (wrongIds.includes(q.id) && !seen.has(q.id)) {
+        seen.add(q.id);
+        wrongQs.push({ ...q });
+      }
+    }
     if (wrongQs.length === 0) return;
     setActiveQuestions(wrongQs);
     setResult(null);
@@ -172,6 +190,7 @@ export function QuizPage() {
           t={t}
           onRetry={handleRetry}
           onRetryWrong={handleRetryWrong}
+          setId={selectedSection}
         />
       )}
     </div>

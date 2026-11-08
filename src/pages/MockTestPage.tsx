@@ -5,8 +5,9 @@ import { Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
-import { MOCK_TIME_LIMIT, QUESTIONS_BY_SET } from "@/lib/constants";
+import { MOCK_TIME_LIMIT, MOCK_PASS_MARK, QUESTIONS_BY_SET } from "@/lib/constants";
 import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/questions.service";
+import { getTextbookSet } from "@/content/kppQuestionBank";
 import { applyAnswerKey, hasCompleteAnswerKey } from "@/lib/exam/scoring";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
 import { OFFLINE_QUEUED_ID, saveMockResult } from "@/services/results.service";
@@ -22,12 +23,12 @@ type Phase = "launch" | "testing" | "grading" | "results";
 
 export function MockTestPage() {
   const { t, language: globalLang } = useLanguage();
-  const { user } = useAuthStore();
+  const { user, isDevBypass } = useAuthStore();
   const queryClient = useQueryClient();
 
   const [phase, setPhase] = useState<Phase>("launch");
   const [examLang, setExamLang] = useState<"en" | "ms">(globalLang);
-  const [selectedSet, setSelectedSet] = useState("mock-1");
+  const [selectedSet, setSelectedSet] = useState("mock-da-1");
   const [submissionStatus, setSubmissionStatus] = useState<"queued" | "failed" | null>(null);
   const [result, setResult] = useState<ExamResult | null>(null);
 
@@ -74,6 +75,32 @@ export function MockTestPage() {
     setPhase("grading");
     setSubmissionStatus(null);
     setResult(examResult);
+
+    if (isDevBypass) {
+      const localKey = getTextbookSet(selectedSet).map((q) => ({
+        id: q.id,
+        correct_index: q.correct_index,
+        explanation_en: q.explanation_en,
+        explanation_ms: q.explanation_ms,
+      }));
+      if (localKey.length > 0) {
+        const reviewed = applyAnswerKey(examResult.questions, examResult.permutations, localKey);
+        const score = reviewed.filter((q) => examResult.answers[q.id] === q.correct_index).length;
+        const total = reviewed.length;
+        const percentage = total > 0 ? Math.round((score / total) * 10000) / 100 : 0;
+        setResult({
+          ...examResult,
+          score,
+          total,
+          percentage,
+          passed: score >= MOCK_PASS_MARK,
+          questions: reviewed,
+        });
+        setPhase("results");
+        return;
+      }
+    }
+
     try {
       if (!user) throw new Error("A signed-in account is required to save a mock attempt");
       const saved = await saveMutation.mutateAsync({

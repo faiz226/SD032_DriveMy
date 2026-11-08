@@ -279,7 +279,19 @@ export function TestResultsView({
 
                   {isExpanded && (
                     <div className="space-y-3 border-t border-border p-4">
-                      <p className="text-sm">{qText}</p>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-sm">{qText}</p>
+                        {q.source_url && !q.source_url.startsWith("http") && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
+                            {q.source_url}
+                          </span>
+                        )}
+                      </div>
+                      {q.image_url && (
+                        <div className="panel overflow-hidden">
+                          <img src={q.image_url} alt="" className="mx-auto max-h-40 w-auto object-contain p-3" />
+                        </div>
+                      )}
                       <div className="space-y-1.5">
                         {opts.map((opt, oi) => (
                           <div

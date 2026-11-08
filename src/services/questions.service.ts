@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { KppQuestion, ExamQuestion, AnswerKeyEntry } from "@/types/database";
+import { getTextbookSet } from "@/content/kppQuestionBank";
 
 export type { ExamQuestion, AnswerKeyEntry };
 
@@ -19,6 +20,35 @@ export type { ExamQuestion, AnswerKeyEntry };
 const EXAM_COLUMNS =
   "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, source_url, created_at";
 
+function stripAnswerKey(q: KppQuestion): ExamQuestion {
+  const {
+    id,
+    category,
+    set_id,
+    order_index,
+    question_en,
+    question_ms,
+    options_en,
+    options_ms,
+    image_url,
+    source_url,
+    created_at,
+  } = q;
+  return {
+    id,
+    category,
+    set_id,
+    order_index,
+    question_en,
+    question_ms,
+    options_en,
+    options_ms,
+    image_url,
+    source_url,
+    created_at,
+  };
+}
+
 /**
  * Practice quiz questions — WITH the answer key.
  *
@@ -28,9 +58,11 @@ const EXAM_COLUMNS =
  */
 export async function fetchQuizQuestions({
   category,
+  setId,
   limit = 20,
 }: {
   category?: string;
+  setId?: string;
   limit?: number;
 }): Promise<KppQuestion[]> {
   let query = supabase
@@ -39,9 +71,18 @@ export async function fetchQuizQuestions({
     .order("order_index", { ascending: true })
     .limit(limit);
   if (category) query = query.eq("category", category);
+  if (setId) query = query.eq("set_id", setId);
   const { data, error } = await query;
   if (error) throw new Error(`fetchQuizQuestions: ${error.message}`);
-  return (data ?? []) as KppQuestion[];
+  const rows = (data ?? []) as KppQuestion[];
+  if (rows.length > 0) return rows;
+
+  // If a specific textbook practice set (quiz-a-1..6, quiz-b-1..6, quiz-c-da-1..6, quiz-c-d-1..6)
+  // is requested before the database migration has run, serve that textbook set cleanly.
+  if (setId && setId.startsWith("quiz-") && setId !== "quiz-pool") {
+    return getTextbookSet(setId).slice(0, limit);
+  }
+  return rows;
 }
 
 /**
@@ -58,7 +99,13 @@ export async function fetchMockQuestionsBySet(setId: string): Promise<ExamQuesti
     .order("order_index", { ascending: true });
 
   if (error) throw new Error(`fetchMockQuestionsBySet(${setId}): ${error.message}`);
-  return (data ?? []) as unknown as ExamQuestion[];
+  const rows = (data ?? []) as unknown as ExamQuestion[];
+  if (rows.length > 0) return rows;
+
+  if (setId.startsWith("mock-da-") || setId.startsWith("mock-d-")) {
+    return getTextbookSet(setId).map(stripAnswerKey);
+  }
+  return rows;
 }
 
 /** Only a saved, caller-owned attempt can release the mock answer key. */

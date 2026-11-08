@@ -258,6 +258,12 @@ export function ExamShell({
                 ? question.question_en || question.question_ms
                 : question.question_ms || question.question_en}
             </h1>
+            {question.source_url && !question.source_url.startsWith("http") && (
+              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-3 py-0.5 font-mono text-xs text-muted-foreground">
+                <span>{t("exam.sourceCitation")}:</span>
+                <span className="font-semibold text-foreground">{question.source_url}</span>
+              </p>
+            )}
             <SpeechControl key={`${question.id}-${language}`} text={[(language === "en" ? question.question_en || question.question_ms : question.question_ms || question.question_en), ...optionsEn.map((option, index) => `${String.fromCharCode(65 + index)}. ${language === "ms" ? optionsMs[index] || option : option || optionsMs[index]}`)].filter(Boolean).join(". ")} />
             {language === "en" && !question.question_en && (
               <p className="mt-2 text-sm italic text-muted-foreground">(English translation unavailable)</p>
