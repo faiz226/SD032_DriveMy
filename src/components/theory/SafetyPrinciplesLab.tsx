@@ -24,45 +24,45 @@ interface SpeedSpec {
 const STOPPING_SPEEDS: SpeedSpec[] = [
   {
     speedKmh: 30,
-    thinkingMeters: 6,
+    thinkingMeters: 9,
     brakingDryMeters: 6,
-    refNoteEn: "Residential / school zone speed (total 12 m dry = ~3 car lengths)",
-    refNoteMs: "Kelajuan kawasan perumahan / sekolah (jumlah 12 m kering = ~3 panjang kereta)",
+    refNoteEn: "Residential / school zone speed (total 15 m dry = ~3.5 car lengths)",
+    refNoteMs: "Kelajuan kawasan perumahan / sekolah (jumlah 15 m kering = ~3.5 panjang kereta)",
   },
   {
     speedKmh: 50,
-    thinkingMeters: 9,
-    brakingDryMeters: 14,
-    refNoteEn: "Urban road speed (total 23 m dry = ~5.5 car lengths)",
-    refNoteMs: "Kelajuan jalan bandar (jumlah 23 m kering = ~5.5 panjang kereta)",
+    thinkingMeters: 14,
+    brakingDryMeters: 18,
+    refNoteEn: "Urban road speed (total 32 m dry = ~7.5 car lengths)",
+    refNoteMs: "Kelajuan jalan bandar (jumlah 32 m kering = ~7.5 panjang kereta)",
   },
   {
     speedKmh: 60,
-    thinkingMeters: 12,
-    brakingDryMeters: 20,
-    refNoteEn: "City arterial speed (total 32 m dry = ~7.5 car lengths)",
-    refNoteMs: "Kelajuan jalan utama bandar (jumlah 32 m kering = ~7.5 panjang kereta)",
+    thinkingMeters: 17,
+    brakingDryMeters: 27,
+    refNoteEn: "City arterial speed (total 44 m dry = ~10.5 car lengths)",
+    refNoteMs: "Kelajuan jalan utama bandar (jumlah 44 m kering = ~10.5 panjang kereta)",
   },
   {
     speedKmh: 80,
-    thinkingMeters: 15,
-    brakingDryMeters: 38,
-    refNoteEn: "Heavy vehicle expressway speed (total 53 m dry = ~12.5 car lengths)",
-    refNoteMs: "Had laju kenderaan berat di lebuh raya (jumlah 53 m kering = ~12.5 panjang kereta)",
+    thinkingMeters: 22,
+    brakingDryMeters: 54,
+    refNoteEn: "Heavy vehicle expressway speed (total 76 m dry = ~18 car lengths)",
+    refNoteMs: "Had laju kenderaan berat di lebuh raya (jumlah 76 m kering = ~18 panjang kereta)",
   },
   {
     speedKmh: 90,
-    thinkingMeters: 18,
-    brakingDryMeters: 45,
-    refNoteEn: "National federal / state road limit (total 63 m dry = ~15 car lengths)",
-    refNoteMs: "Had laju jalan persekutuan / negeri (jumlah 63 m kering = ~15 panjang kereta)",
+    thinkingMeters: 25,
+    brakingDryMeters: 68,
+    refNoteEn: "National federal / state road limit (total 93 m dry = ~22 car lengths)",
+    refNoteMs: "Had laju jalan persekutuan / negeri (jumlah 93 m kering = ~22 panjang kereta)",
   },
   {
     speedKmh: 110,
-    thinkingMeters: 21,
-    brakingDryMeters: 75,
-    refNoteEn: "National expressway limit (total 96 m dry = ~22 car lengths)",
-    refNoteMs: "Had laju lebuh raya kebangsaan (jumlah 96 m kering = ~22 panjang kereta)",
+    thinkingMeters: 31,
+    brakingDryMeters: 102,
+    refNoteEn: "National expressway limit (total 133 m dry = ~31.5 car lengths)",
+    refNoteMs: "Had laju lebuh raya kebangsaan (jumlah 133 m kering = ~31.5 panjang kereta)",
   },
 ];
 
@@ -85,8 +85,8 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Kehausan bunga tayar sekata",
     wearPatternEn: "Uniform tread depth >= 1.6 mm across centre and both shoulders",
     wearPatternMs: "Kedalaman bunga sekata >= 1.6 mm di bahagian tengah dan kedua-dua bahu tayar",
-    causeEn: "Correct cold tyre inflation pressure (180-220 kPa / 26-32 psi) and balanced wheel alignment (`KPP_DA_Auto.pdf` p. 166).",
-    causeMs: "Tekanan angin tayar sejuk yang betul (180-220 kPa / 26-32 psi) dan penjajaran roda seimbang (`KPP_DA_Auto.pdf` m/s 166).",
+    causeEn: "Correct cold tyre inflation pressure (180-220 kPa / 26-32 psi) and balanced wheel alignment.",
+    causeMs: "Tekanan angin tayar sejuk yang betul (180-220 kPa / 26-32 psi) dan penjajaran roda seimbang.",
     fixEn: "Rotate tyres every 8,000-10,000 km and check pressure weekly when tyres are cold.",
     fixMs: "Giliskan tayar setiap 8,000-10,000 km dan periksa tekanan setiap minggu semasa tayar sejuk.",
   },
@@ -96,8 +96,8 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Bunga tayar haus di bahagian tengah sahaja",
     wearPatternEn: "Centre strip is smooth while both outer edges still have deep tread",
     wearPatternMs: "Jalur tengah haus licin manakala kedua-dua bahu luar masih tebal",
-    causeEn: "Over-inflation (terlalu banyak angin). Excess air pressure crowns the centre of the tyre (`KPP_DA_Auto.pdf` p. 167).",
-    causeMs: "Tekanan angin berlebihan (over-inflation) menyebabkan bahagian tengah tayar membonjol (`KPP_DA_Auto.pdf` m/s 167).",
+    causeEn: "Over-inflation (terlalu banyak angin). Excess air pressure crowns the centre of the tyre.",
+    causeMs: "Tekanan angin berlebihan (over-inflation) menyebabkan bahagian tengah tayar membonjol.",
     fixEn: "Bleed air down to the manufacturer's recommended cold kPa/psi specification on the door-jamb placard.",
     fixMs: "Kurangkan tekanan angin mengikut spesifikasi kPa/psi pengeluar pada pelekat tiang pintu.",
   },
@@ -107,8 +107,8 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Kedua-dua bahagian tepi (bahu) tayar haus",
     wearPatternEn: "Left and right edges are worn smooth while the centre remains deeper",
     wearPatternMs: "Bahu kiri dan kanan haus manakala bahagian tengah masih mempunyai bunga",
-    causeEn: "Under-inflation (kurang tekanan angin). Low pressure causes the tyre sidewalls to flex and load the shoulders (`KPP_DA_Auto.pdf` p. 167).",
-    causeMs: "Kekurangan tekanan angin (under-inflation) menyebabkan beban tertumpu pada kedua-dua bahu tayar (`KPP_DA_Auto.pdf` m/s 167).",
+    causeEn: "Under-inflation (kurang tekanan angin). Low pressure causes the tyre sidewalls to flex and load the shoulders.",
+    causeMs: "Kekurangan tekanan angin (under-inflation) menyebabkan beban tertumpu pada kedua-dua bahu tayar.",
     fixEn: "Inflate cold tyres to 180-220 kPa (26-32 psi) and inspect the valve stem or tread for slow punctures.",
     fixMs: "Pam tayar sejuk kepada 180-220 kPa (26-32 psi) dan periksa injap atau kebocoran perlahan.",
   },
@@ -118,8 +118,8 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Haus pada sebelah bahagian tepi sahaja",
     wearPatternEn: "Only one shoulder is worn down unevenly",
     wearPatternMs: "Hanya sebelah bahu tayar sahaja yang haus tidak sekata",
-    causeEn: "Faulty wheel alignment (camber/toe misalignment) or worn suspension ball-joints (`KPP_DA_Auto.pdf` p. 167).",
-    causeMs: "Penjajaran roda (wheel alignment) lari atau komponen gantungan/stereng longgar (`KPP_DA_Auto.pdf` m/s 167).",
+    causeEn: "Faulty wheel alignment (camber/toe misalignment) or worn suspension ball-joints.",
+    causeMs: "Penjajaran roda (wheel alignment) lari atau komponen gantungan/stereng longgar.",
     fixEn: "Perform computerised wheel alignment and suspension inspection before fitting a replacement tyre.",
     fixMs: "Lakukan penjajaran roda berkomputer dan pemeriksaan gantungan sebelum menukar tayar baharu.",
   },
@@ -157,9 +157,9 @@ const CRS_PROFILES: CrsProfile[] = [
       "Dipangku dengan kemas di atas riba penumpang dewasa di tempat duduk belakang",
     ],
     ruleEn:
-      "Infants up to 13 kg must ride in a rear-facing carrier so deceleration forces are distributed across the back and head. Never place a rear-facing seat in front of an active SRS airbag (`KPP_DA_Auto.pdf` pp. 137-140).",
+      "Infants up to 13 kg must ride in a rear-facing carrier so deceleration forces are distributed across the back and head. Never place a rear-facing seat in front of an active SRS airbag.",
     ruleMs:
-      "Bayi sehingga 13 kg wajib menggunakan kerusi bayi menghadap ke belakang supaya daya brek diagihkan pada belakang badan. Jangan sekali-kali meletakkan kerusi menghadap belakang di hadapan beg udara SRS aktif (`KPP_DA_Auto.pdf` m/s 137-140).",
+      "Bayi sehingga 13 kg wajib menggunakan kerusi bayi menghadap ke belakang supaya daya brek diagihkan pada belakang badan. Jangan sekali-kali meletakkan kerusi menghadap belakang di hadapan beg udara SRS aktif.",
   },
   {
     id: "crs-toddler",
@@ -179,9 +179,9 @@ const CRS_PROFILES: CrsProfile[] = [
       "Berdiri di ruang tengah antara dua kerusi hadapan",
     ],
     ruleEn:
-      "Children weighing 9-18 kg require a Group I child seat with an integrated 5-point harness anchored securely in the rear cabin (`KPP_DA_Auto.pdf` p. 139).",
+      "Children weighing 9-18 kg require a Group I child seat with an integrated 5-point harness anchored securely in the rear cabin.",
     ruleMs:
-      "Kanak-kanak seberat 9-18 kg memerlukan kerusi keselamatan Kumpulan I dengan abah-abah bersepadu yang dipasang kemas di tempat duduk belakang (`KPP_DA_Auto.pdf` m/s 139).",
+      "Kanak-kanak seberat 9-18 kg memerlukan kerusi keselamatan Kumpulan I dengan abah-abah bersepadu yang dipasang kemas di tempat duduk belakang.",
   },
   {
     id: "crs-booster",
@@ -201,9 +201,9 @@ const CRS_PROFILES: CrsProfile[] = [
       "Kongsi satu tali pinggang keledar dewasa untuk dua orang kanak-kanak",
     ],
     ruleEn:
-      "Mandatory CRS rules in Malaysia cover children under 135 cm, under 36 kg, and under 12 years old. A booster elevates the child so the adult belt rests on strong pelvic and shoulder bones rather than the neck and abdomen (`KPP_DA_Auto.pdf` p. 139).",
+      "Mandatory CRS rules in Malaysia cover children under 135 cm, under 36 kg, and under 12 years old. A booster elevates the child so the adult belt rests on strong pelvic and shoulder bones rather than the neck and abdomen.",
     ruleMs:
-      "Peraturan wajib CRS di Malaysia meliputi kanak-kanak di bawah 135 cm, di bawah 36 kg, dan berumur bawah 12 tahun. Kerusi penggalak memastikan tali pinggang terletak pada tulang bahu dan pelvis, bukan pada leher atau perut (`KPP_DA_Auto.pdf` m/s 139).",
+      "Peraturan wajib CRS di Malaysia meliputi kanak-kanak di bawah 135 cm, di bawah 36 kg, dan berumur bawah 12 tahun. Kerusi penggalak memastikan tali pinggang terletak pada tulang bahu dan pelvis, bukan pada leher atau perut.",
   },
   {
     id: "crs-headrest",
@@ -223,9 +223,9 @@ const CRS_PROFILES: CrsProfile[] = [
       "Tanggalkan penyandar kepala sepenuhnya untuk meluaskan pandangan cermin belakang",
     ],
     ruleEn:
-      "The headrest is a safety restraint, not a pillow. Align its centre with eye/ear level and keep the gap behind your head within 3.5 inches (9-10 cm) to prevent severe neck hyperextension (`KPP_DA_Auto.pdf` p. 132).",
+      "The headrest is a safety restraint, not a pillow. Align its centre with eye/ear level and keep the gap behind your head within 3.5 inches (9-10 cm) to prevent severe neck hyperextension.",
     ruleMs:
-      "Penyandar kepala ialah alat keselamatan, bukan bantal rehat. Laraskan bahagian tengahnya selari dengan paras mata/telinga dan pastikan jarak belakang kepala tidak melebihi 3.5 inci (9-10 cm) (`KPP_DA_Auto.pdf` m/s 132).",
+      "Penyandar kepala ialah alat keselamatan, bukan bantal rehat. Laraskan bahagian tengahnya selari dengan paras mata/telinga dan pastikan jarak belakang kepala tidak melebihi 3.5 inci (9-10 cm).",
   },
 ];
 
@@ -248,7 +248,7 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-cito",
     titleEn: "C.I.T.O. lane-change & overtaking sequence",
     titleMs: "Urutan menukar lorong & memotong C.I.T.O.",
-    ref: "KPP_General.pdf p. 102",
+    ref: "C.I.T.O.",
     scenarioEn: "You want to move into the right lane to overtake a slower lorry. What is the exact C.I.T.O. order?",
     scenarioMs: "Anda ingin bergerak ke lorong kanan untuk memotong lori yang perlahan. Apakah urutan C.I.T.O. yang betul?",
     optionsEn: [
@@ -271,7 +271,7 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-under-oversteer",
     titleEn: "Understeer vs Oversteer cornering recovery",
     titleMs: "Pemulihan Understeer vs Oversteer di selekoh",
-    ref: "KPP_General.pdf pp. 93-95",
+    ref: "Kawalan Selekoh",
     scenarioEn: "While cornering on a slippery road, the front tyres lose grip and push wide toward the outer kerb (Understeer). How do you recover?",
     scenarioMs: "Semasa membelok di jalan licin, tayar hadapan hilang cengkaman dan tersasar melebar ke luar selekoh (Understeer). Bagaimanakah cara memulihkannya?",
     optionsEn: [
@@ -294,7 +294,7 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-breakdown",
     titleEn: "Expressway breakdown & MERS 999 emergency",
     titleMs: "Kerosakan di lebuh raya & kecemasan MERS 999",
-    ref: "KPP_General.pdf pp. 115-124",
+    ref: "Kecemasan Lebuh Raya",
     scenarioEn: "Your vehicle breaks down on the expressway shoulder at night. Where must you place the red reflective warning triangle?",
     scenarioMs: "Kenderaan anda rosak di lorong kecemasan lebuh raya pada waktu malam. Di manakah segitiga amaran pantulan merah wajib diletakkan?",
     optionsEn: [
@@ -343,7 +343,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
   const safeFollowingMeters = Math.round(metersPerSecond * followingRuleSeconds);
   const twelveSecScanMeters = Math.round(metersPerSecond * 12);
 
-  // Night glare math (`KPP_General.pdf` p. 105: 1s glare = 7s recovery = 140 m at 72 km/h)
+  // Night glare math (1s glare = 7s recovery = 140 m at 72 km/h)
   const recoverySeconds = glareSeconds * 7;
   const blindDistanceMeters = Math.round(metersPerSecond * recoverySeconds);
 
@@ -357,9 +357,9 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
       titleEn: "1. LOCK · Steering locked & key insertion/removal",
       titleMs: "1. LOCK · Stereng dikunci & kunci dimasukkan/dicabut",
       descEn:
-        "All electrical circuits are off and the steering column is mechanically locked. If the key will not turn from LOCK, gently rock the steering wheel left and right while turning the key (`KPP_DA_Auto.pdf` p. 205).",
+        "All electrical circuits are off and the steering column is mechanically locked. If the key will not turn from LOCK, gently rock the steering wheel left and right while turning the key.",
       descMs:
-        "Semua litar elektrik dimatikan dan stereng dikunci secara mekanikal. Jika kunci ketat pada kedudukan LOCK, gerakkan sedikit stereng ke kiri dan kanan sambil memulas kunci (`KPP_DA_Auto.pdf` m/s 205).",
+        "Semua litar elektrik dimatikan dan stereng dikunci secara mekanikal. Jika kunci ketat pada kedudukan LOCK, gerakkan sedikit stereng ke kiri dan kanan sambil memulas kunci.",
     },
     ACC: {
       titleEn: "2. ACC · Accessories powered (Engine off)",
@@ -381,9 +381,9 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
       titleEn: "4. START · Crank starter motor for 1 to 4 seconds max",
       titleMs: "4. START · Hidupkan motor penghidup selama 1 hingga 4 saat sahaja",
       descEn:
-        "Hold at START for 1-4 seconds and release immediately once the engine fires (`KPP_DA_Auto.pdf` p. 205). If it fails to start, wait 10 seconds before re-cranking so the starter motor does not overheat.",
+        "Hold at START for 1-4 seconds and release immediately once the engine fires. If it fails to start, wait 10 seconds before re-cranking so the starter motor does not overheat.",
       descMs:
-        "Pulas ke START selama 1-4 saat dan lepaskan kunci serta-merta sebaik sahaja enjin hidup (`KPP_DA_Auto.pdf` m/s 205). Jika gagal hidup, tunggu 10 saat sebelum mencuba semula.",
+        "Pulas ke START selama 1-4 saat dan lepaskan kunci serta-merta sebaik sahaja enjin hidup. Jika gagal hidup, tunggu 10 saat sebelum mencuba semula.",
     },
   };
 
@@ -471,8 +471,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-semibold text-foreground">
                   {lang === "en"
-                    ? "Select travel speed (`KPP_DA_Auto.pdf` p. 263 & `KPP_General.pdf` p. 91):"
-                    : "Pilih kelajuan pemanduan (`KPP_DA_Auto.pdf` m/s 263 & `KPP_General.pdf` m/s 91):"}
+                    ? "Select travel speed (Malaysian road safety standards):"
+                    : "Pilih kelajuan pemanduan (Piawaian keselamatan jalan raya Malaysia):"}
                 </span>
                 <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted/40">
                   <button
@@ -608,8 +608,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                   <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <Headlights size={15} aria-hidden="true" />
                     {lang === "en"
-                      ? "Night high-beam glare recovery (`KPP_General.pdf` p. 105)"
-                      : "Pemulihan silau lampu tinggi malam (`KPP_General.pdf` m/s 105)"}
+                      ? "Night high-beam glare recovery"
+                      : "Pemulihan silau lampu tinggi malam"}
                   </span>
                   <div className="inline-flex gap-1">
                     {[1, 2].map((sec) => (
@@ -730,8 +730,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "Click a tread wear pattern to inspect root cause (`KPP_DA_Auto.pdf` pp. 166-167)"
-                      : "Pilih corak kehausan bunga tayar untuk melihat punca (`KPP_DA_Auto.pdf` m/s 166-167)"}
+                      ? "Click a tread wear pattern to inspect root cause"
+                      : "Pilih corak kehausan bunga tayar untuk melihat punca"}
                   </p>
                 </div>
                 <span className="pill pill-info">180-220 kPa · Min 1.6 mm TWI</span>
@@ -831,8 +831,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   {lang === "en"
-                    ? "Step through the ignition key positions (`KPP_DA_Auto.pdf` p. 205):"
-                    : "Pilih kedudukan suis penghidup enjin (`KPP_DA_Auto.pdf` m/s 205):"}
+                    ? "Step through the ignition key positions:"
+                    : "Pilih kedudukan suis penghidup enjin:"}
                 </p>
               </div>
 

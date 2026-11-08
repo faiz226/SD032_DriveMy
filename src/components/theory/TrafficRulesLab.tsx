@@ -43,9 +43,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "left",
     correctSignal: "left-entry",
     ruleEn:
-      "Approach in the left lane, signal left before entering, stay in the outer (left) circulatory lane, and keep the left signal on until exiting (`KPP_General.pdf` p. 136).",
+      "Approach in the left lane, signal left before entering, stay in the outer (left) circulatory lane, and keep the left signal on until exiting.",
     ruleMs:
-      "Masuk melalui lorong kiri, beri isyarat kiri sebelum memasuki bulatan, kekal di lorong luar (kiri), dan kekalkan isyarat kiri sehingga keluar (`KPP_General.pdf` m/s 136).",
+      "Masuk melalui lorong kiri, beri isyarat kiri sebelum memasuki bulatan, kekal di lorong luar (kiri), dan kekalkan isyarat kiri sehingga keluar.",
     svgPath: "M 108 188 L 108 148 Q 108 112 72 112 L 24 112",
     exitCoord: { x: 28, y: 112 },
   },
@@ -58,9 +58,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "left",
     correctSignal: "none-entry-left-exit",
     ruleEn:
-      "Approach in the left lane (or right lane if clear), do not signal on entry, then switch on the left signal after passing the 9 o'clock exit (`KPP_General.pdf` p. 136).",
+      "Approach in the left lane (or right lane if clear), do not signal on entry, then switch on the left signal after passing the 9 o'clock exit.",
     ruleMs:
-      "Dekati di lorong kiri, jangan beri isyarat semasa masuk, kemudian pasang isyarat kiri selepas melepasi simpang pukul 9 (`KPP_General.pdf` m/s 136).",
+      "Dekati di lorong kiri, jangan beri isyarat semasa masuk, kemudian pasang isyarat kiri selepas melepasi simpang pukul 9.",
     svgPath: "M 108 188 L 108 145 A 45 45 0 0 1 108 62 L 108 20",
     exitCoord: { x: 108, y: 24 },
   },
@@ -73,9 +73,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "right",
     correctSignal: "right-entry-left-exit",
     ruleEn:
-      "Approach in the right lane, signal right on entry, circulate in the inner lane, then signal left after passing the 12 o'clock exit (`KPP_General.pdf` p. 137).",
+      "Approach in the right lane, signal right on entry, circulate in the inner lane, then signal left after passing the 12 o'clock exit.",
     ruleMs:
-      "Dekati di lorong kanan, beri isyarat kanan semasa masuk, pusing di lorong dalam, kemudian beri isyarat kiri selepas melepasi simpang pukul 12 (`KPP_General.pdf` m/s 137).",
+      "Dekati di lorong kanan, beri isyarat kanan semasa masuk, pusing di lorong dalam, kemudian beri isyarat kiri selepas melepasi simpang pukul 12.",
     svgPath: "M 122 188 L 122 138 A 28 28 0 1 1 142 108 L 196 108",
     exitCoord: { x: 192, y: 108 },
   },
@@ -88,9 +88,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "right",
     correctSignal: "right-entry-left-exit",
     ruleEn:
-      "Approach in the right lane, signal right on entry, keep to the inner lane around the island, then signal left after passing the 3 o'clock exit (`KPP_General.pdf` p. 137).",
+      "Approach in the right lane, signal right on entry, keep to the inner lane around the island, then signal left after passing the 3 o'clock exit.",
     ruleMs:
-      "Dekati di lorong kanan, beri isyarat kanan semasa masuk, kekal di lorong dalam mengelilingi pulau bulatan, kemudian beri isyarat kiri selepas melepasi simpang pukul 3 (`KPP_General.pdf` m/s 137).",
+      "Dekati di lorong kanan, beri isyarat kanan semasa masuk, kekal di lorong dalam mengelilingi pulau bulatan, kemudian beri isyarat kiri selepas melepasi simpang pukul 3.",
     svgPath: "M 122 188 L 122 138 A 28 28 0 1 1 132 142 L 132 188",
     exitCoord: { x: 132, y: 184 },
   },
@@ -111,21 +111,21 @@ const KEJARA_OFFENCES: KejaraOffence[] = [
     points: 10,
     labelEn: "Exceeding speed limit by more than 40 km/h",
     labelMs: "Melebihi had laju lebih daripada 40 km/j",
-    ref: "KPP_General.pdf p. 171",
+    ref: "Mata Demerit KEJARA",
   },
   {
     id: "red-light",
     points: 10,
     labelEn: "Failing to obey red traffic light signal",
     labelMs: "Gagal mematuhi lampu isyarat merah",
-    ref: "KPP_General.pdf p. 171",
+    ref: "Mata Demerit KEJARA",
   },
   {
     id: "p-plate",
     points: 10,
     labelEn: "Failing to display 'P' plates front and rear (PDL holder)",
     labelMs: "Gagal mempamerkan plat 'P' di hadapan dan belakang (pemegang PDL)",
-    ref: "KPP_General.pdf p. 172",
+    ref: "Syarat Lesen Percubaan (PDL)",
     pdlOnly: true,
   },
   {
@@ -133,35 +133,35 @@ const KEJARA_OFFENCES: KejaraOffence[] = [
     points: 8,
     labelEn: "Exceeding speed limit by 26 km/h to 40 km/h",
     labelMs: "Melebihi had laju antara 26 km/j hingga 40 km/j",
-    ref: "KPP_General.pdf p. 171",
+    ref: "Mata Demerit KEJARA",
   },
   {
     id: "double-line",
     points: 8,
     labelEn: "Overtaking on a double continuous white line",
     labelMs: "Memotong di garisan putih berkembar bersambung",
-    ref: "KPP_General.pdf p. 171",
+    ref: "Garisan Berkembar Bersambung",
   },
   {
     id: "phone-driving",
     points: 8,
     labelEn: "Using a hand-held mobile phone while driving",
     labelMs: "Menggunakan telefon bimbit tanpa alat bebas tangan semasa memandu",
-    ref: "KPP_General.pdf p. 171",
+    ref: "Larangan Telefon Bimbit",
   },
   {
     id: "speed-1-25",
     points: 6,
     labelEn: "Exceeding speed limit by 1 km/h to 25 km/h",
     labelMs: "Melebihi had laju antara 1 km/j hingga 25 km/j",
-    ref: "KPP_General.pdf p. 171",
+    ref: "Mata Demerit KEJARA",
   },
   {
     id: "bald-tyre",
     points: 5,
     labelEn: "Driving with bald tyres (<1.6 mm tread) or without seatbelt",
     labelMs: "Memandu dengan tayar botak (<1.6 mm bunga) atau tanpa tali pinggang keledar",
-    ref: "KPP_General.pdf p. 172",
+    ref: "Syarat Kelayakan Kenderaan",
   },
 ];
 
@@ -182,7 +182,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-lmm-age",
     badge: "LMM Age & Class",
-    ref: "KPP_General.pdf pp. 159-160",
+    ref: "Had Umur Minimum Lesen",
     promptEn: "A 17-year-old learner wants to apply for a driving licence. Which combination is legally permitted under APJ 1987?",
     promptMs: "Seorang calon berumur 17 tahun ingin memohon lesen memandu. Kombinasi manakah yang dibenarkan di bawah APJ 1987?",
     optionsEn: [
@@ -204,7 +204,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-licence-expiry",
     badge: "LDL / PDL / CDL Validity",
-    ref: "KPP_General.pdf pp. 162-166",
+    ref: "Tempoh Sah Lesen Memandu",
     promptEn: "How long can each driving licence remain expired before the holder is disqualified from direct renewal and must repeat the test?",
     promptMs: "Berapa lamakah setiap jenis lesen memandu boleh tamat tempoh sebelum pemegangnya hilang kelayakan pembaharuan terus dan wajib mengulangi ujian?",
     optionsEn: [
@@ -226,7 +226,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-yellow-box",
     badge: "Yellow Box Junction",
-    ref: "KPP_General.pdf p. 79",
+    ref: "Petak Kuning Bersilang",
     promptEn: "Your traffic light turns green at a yellow criss-cross box junction, but traffic ahead in your exit lane is stationary. What is the legal action?",
     promptMs: "Lampu isyarat anda bertukar hijau di petak kuning bersilang, tetapi trafik di lorong keluar anda sedang berhenti. Apakah tindakan yang sah?",
     optionsEn: [
@@ -248,7 +248,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-centre-line",
     badge: "Road Markings",
-    ref: "KPP_General.pdf pp. 77-78",
+    ref: "Garisan Tengah Jalan",
     promptEn: "The centre of a two-way road has a continuous white line on your side paired with a broken white line on the opposite side. Can you overtake?",
     promptMs: "Bahagian tengah jalan dua hala mempunyai garisan putih bersambung di sebelah lorong anda dan garisan putih putus-putus di sebelah bertentangan. Bolehkah anda memotong?",
     optionsEn: [
@@ -354,8 +354,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
       nameMs: "N · Neutral (Bebas)",
       shiftLockEn: "No engine power transmitted to wheels",
       shiftLockMs: "Tiada kuasa enjin dihantar ke roda",
-      usageEn: "Used at long traffic stops with handbrake, or if engine restarts while rolling (`KPP_DA_Auto.pdf` p. 201).",
-      usageMs: "Digunakan semasa berhenti lama dengan brek tangan, atau menghidupkan semula enjin (`KPP_DA_Auto.pdf` m/s 201).",
+      usageEn: "Used at long traffic stops with handbrake, or if engine restarts while rolling.",
+      usageMs: "Digunakan semasa berhenti lama dengan brek tangan, atau menghidupkan semula enjin.",
       speedCap: "Never coast downhill in N",
     },
     D: {
@@ -374,7 +374,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
       shiftLockMs: "Brek enjin menghalang gear ke-4",
       usageEn: "Provides stronger pulling power on moderate hills and engine braking on gentle descents.",
       usageMs: "Memberi kuasa tarikan di bukit sederhana dan brek enjin semasa menuruni curam sederhana.",
-      speedCap: "Max ~60 km/h (`KPP_DA_Auto.pdf` p. 201)",
+      speedCap: "Max ~60 km/h",
     },
     "2": {
       nameEn: "2 · Steep hill climb & descent",
@@ -383,7 +383,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
       shiftLockMs: "Butang Shift-lock diperlukan apabila turun ke 2",
       usageEn: "Keeps transmission in 2nd gear for steep hills so brakes do not overheat.",
       usageMs: "Mengekalkan gear ke-2 di bukit curam supaya brek kaki tidak menjadi terlalu panas.",
-      speedCap: "Max 40 km/h (`KPP_DA_Auto.pdf` p. 201)",
+      speedCap: "Max 40 km/h",
     },
     "1": {
       nameEn: "1 / L · Extreme gradient low gear",
@@ -392,7 +392,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
       shiftLockMs: "Butang Shift-lock diperlukan; brek enjin maksimum",
       usageEn: "Locks transmission in 1st gear for very steep climbs, deep mud, or severe descents.",
       usageMs: "Mengunci transmisi dalam gear 1 untuk pendakian atau penurunan yang sangat curam.",
-      speedCap: "Max 10-20 km/h (`KPP_DA_Auto.pdf` p. 201)",
+      speedCap: "Max 10-20 km/h",
     },
   };
 
@@ -522,8 +522,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <p className="text-sm text-muted-foreground">
                   {lang === "en"
-                    ? "Step 1: Choose your target exit around the clock face (`KPP_General.pdf` pp. 136-137)."
-                    : "Langkah 1: Pilih susur keluar mengikut arah jam (`KPP_General.pdf` m/s 136-137)."}
+                    ? "Step 1: Choose your target exit around the clock face."
+                    : "Langkah 1: Pilih susur keluar mengikut arah jam."}
                 </p>
                 <span className="pill pill-neutral">
                   {Object.keys(solvedExits).length}/4{" "}
@@ -709,7 +709,9 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                 <span className="font-semibold text-foreground">
                   {lang === "en" ? "Top-down roundabout map" : "Pelan atas bulatan"}
                 </span>
-                <span>KPP_General.pdf p. 136</span>
+                <span className="pill pill-neutral">
+                  {lang === "en" ? "Circulatory Flow" : "Aliran Bulatan"}
+                </span>
               </div>
               <svg
                 viewBox="0 0 220 210"
@@ -874,8 +876,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground">
                     {lang === "en"
-                      ? "Toggle scheduled offences to simulate KEJARA demerit points (`KPP_General.pdf` pp. 169-179)"
-                      : "Pilih kesalahan terjadual untuk mengira mata demerit KEJARA (`KPP_General.pdf` m/s 169-179)"}
+                      ? "Toggle scheduled offences to simulate KEJARA demerit points"
+                      : "Pilih kesalahan terjadual untuk mengira mata demerit KEJARA"}
                   </span>
                   {selectedOffences.length > 0 && (
                     <button
@@ -978,11 +980,11 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                 <p className="text-muted-foreground">
                   {driverType === "pdl"
                     ? lang === "en"
-                      ? "Accumulating 20 or more demerit points during the 2-year probationary period results in immediate licence revocation and a 12-month disqualification from driving (`KPP_General.pdf` p. 173)."
-                      : "Mengumpul 20 mata demerit atau lebih dalam tempoh percubaan 2 tahun menyebabkan lesen PDL dibatalkan serta-merta dan dilarang memandu selama 12 bulan (`KPP_General.pdf` m/s 173)."
+                      ? "Accumulating 20 or more demerit points during the 2-year probationary period results in immediate licence revocation and a 12-month disqualification from driving."
+                      : "Mengumpul 20 mata demerit atau lebih dalam tempoh percubaan 2 tahun menyebabkan lesen PDL dibatalkan serta-merta dan dilarang memandu selama 12 bulan."
                     : lang === "en"
-                      ? "1st 20 points: 6-8 months suspension. 2nd 20 points: 8-10 months suspension. 3rd 20 points within 5 years: 10-12 months suspension + notice of licence revocation. Bonus: 24 clean months deducts 7 points (`KPP_General.pdf` p. 173)."
-                      : "20 mata pertama: gantung 6-8 bulan. 20 mata kedua: gantung 8-10 bulan. 20 mata ketiga dalam 5 tahun: gantung 10-12 bulan + notis pembatalan lesen. Bonus: 24 bulan bersih menolak 7 mata (`KPP_General.pdf` m/s 173)."}
+                      ? "1st 20 points: 6-8 months suspension. 2nd 20 points: 8-10 months suspension. 3rd 20 points within 5 years: 10-12 months suspension + notice of licence revocation. Bonus: 24 clean months deducts 7 points."
+                      : "20 mata pertama: gantung 6-8 bulan. 20 mata kedua: gantung 8-10 bulan. 20 mata ketiga dalam 5 tahun: gantung 10-12 bulan + notis pembatalan lesen. Bonus: 24 bulan bersih menolak 7 mata."}
                 </p>
               </div>
 
@@ -999,8 +1001,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                         ? "Includes +RM50 commercial vehicle surcharge (capped at RM300)"
                         : "Termasuk surcaj +RM50 kenderaan perdagangan (maksimum RM300)"
                       : lang === "en"
-                        ? "Standard motorcar / motorcycle rate (`KPP_General.pdf` p. 179)"
-                        : "Kadar standard motokar / motosikal (`KPP_General.pdf` m/s 179)"}
+                        ? "Standard motorcar / motorcycle rate"
+                        : "Kadar standard motokar / motosikal"}
                   </span>
                 </div>
                 <div className="type-figure text-xl text-foreground">RM{perOffenceCompound}</div>
@@ -1050,8 +1052,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
               </div>
               <span className="pill pill-neutral">
                 {transTrack === "DA"
-                  ? "KPP_DA_Auto.pdf pp. 199-226"
-                  : "KPP_D_Manual.pdf pp. 199-228"}
+                  ? (lang === "en" ? "Class DA Automatic Syllabus" : "Sukatan Automatik Kelas DA")
+                  : (lang === "en" ? "Class D Manual Syllabus" : "Sukatan Manual Kelas D")}
               </span>
             </div>
 
@@ -1084,8 +1086,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                   <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-1.5 text-xs">
                     <div className="font-bold text-foreground">
                       {lang === "en"
-                        ? "Right-foot-only pedal discipline (`KPP_DA_Auto.pdf` p. 203):"
-                        : "Disiplin kaki kanan sahaja (`KPP_DA_Auto.pdf` m/s 203):"}
+                        ? "Right-foot-only pedal discipline:"
+                        : "Disiplin kaki kanan sahaja:"}
                     </div>
                     <p className="text-muted-foreground">
                       {lang === "en"
@@ -1126,8 +1128,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                       </span>
                       <span className="text-muted-foreground">
                         {lang === "en"
-                          ? "5-minute time limit. Stop with front wheels on the yellow ramp, pull handbrake & select N, then shift to D and release handbrake smoothly (`KPP_DA_Auto.pdf` p. 225)."
-                          : "Had masa 5 minit. Berhenti dengan roda hadapan di atas tanjakan, tarik brek tangan & pilih N, kemudian tukar ke D dan lepaskan brek tangan dengan lancar (`KPP_DA_Auto.pdf` m/s 225)."}
+                          ? "Stop with front wheels on the yellow line on the ramp, apply the handbrake firmly and select N or P. To move off, select D, apply gentle accelerator pressure while releasing the handbrake smoothly so the car moves forward without rolling back."
+                          : "Berhenti dengan roda hadapan di atas garisan kuning tanjakan, tarik brek tangan dengan kemas dan pilih N atau P. Untuk bergerak, pilih D, tekan pemecut secara terkawal sambil melepaskan brek tangan dengan lancar supaya kenderaan mendaki tanpa berundur."}
                       </span>
                     </div>
                   </div>
@@ -1138,8 +1140,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                 <div className="lg:col-span-5 panel p-4 space-y-3">
                   <div className="text-xs font-semibold text-muted-foreground">
                     {lang === "en"
-                      ? "Select a road speed band to match the Class D manual gear (`KPP_D_Manual.pdf` p. 201):"
-                      : "Pilih julat kelajuan untuk memadankan gear manual Kelas D (`KPP_D_Manual.pdf` m/s 201):"}
+                      ? "Select a road speed band to match the Class D manual gear:"
+                      : "Pilih julat kelajuan untuk memadankan gear manual Kelas D:"}
                   </div>
                   <div className="grid grid-cols-1 gap-1.5">
                     {MANUAL_SPEED_BANDS.map((band, idx) => (
@@ -1185,13 +1187,13 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                   <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs space-y-1">
                     <span className="font-semibold text-foreground block">
                       {lang === "en"
-                        ? "Class D Bukit (Hill-start) test (`KPP_D_Manual.pdf` p. 224):"
-                        : "Ujian Bukit Kelas D (`KPP_D_Manual.pdf` m/s 224):"}
+                        ? "Class D Tanjakan (Hill-start) test:"
+                        : "Ujian Tanjakan Kelas D:"}
                     </span>
                     <p className="text-muted-foreground">
                       {lang === "en"
-                        ? "3-minute time limit on a 5-degree slope. Select Gear 1, build RPM, raise the clutch slightly to the biting point (titik pergerakan) until engine note dips, then release the handbrake so the car climbs forward with < 0.5 m rollback."
-                        : "Had masa 3 minit di kecuraman 5 darjah. Pilih Gear 1, tingkatkan RPM, lepaskan cekam sedikit ke titik pergerakan sehingga bunyi enjin berubah, kemudian lepaskan brek tangan supaya kereta mendaki ke hadapan tanpa berundur > 0.5 m."}
+                        ? "3-minute time limit on the ramp. Stop with front tyres on the yellow line and apply the handbrake firmly. Select Gear 1, build engine RPM, raise the clutch smoothly to the biting point (titik pergerakan) until the engine note deepens, then release the handbrake so the car moves forward without rolling back."
+                        : "Had masa 3 minit di tanjakan. Berhenti dengan tayar hadapan di atas garisan kuning dan tarik brek tangan dengan kemas. Pilih Gear 1, tingkatkan RPM enjin, lepaskan cekam perlahan-lahan ke titik pergerakan sehingga bunyi enjin berubah, kemudian lepaskan brek tangan supaya kenderaan mendaki ke hadapan tanpa berundur."}
                     </p>
                   </div>
                 </div>

@@ -135,26 +135,26 @@ export function TheoryPage() {
     return Object.values(learned).filter(Boolean).length;
   }, [learned]);
 
-  // Curated Spot-The-Sign Drill Questions (drawn from KPP_General.pdf)
+  // Curated Spot-The-Sign Drill Questions (drawn from JPJ road signs syllabus)
   const SPOT_DRILL_QUESTIONS = useMemo(() => {
     return [
       {
         promptEn: "Which warning sign alerts you to an approaching roundabout ahead?",
         promptMs: "Papan tanda amaran manakah yang menandakan bulatan di hadapan?",
-        correctImg: "/signs/warn-roundabout.svg",
-        citation: "KPP_General.pdf p. 53",
+        correctImg: "/signs/warn-roundabout-ahead.svg",
+        citation: "Bahagian I — Papan Tanda Amaran",
         options: [
-          { img: "/signs/warn-roundabout.svg", correct: true },
-          { img: "/signs/warn-crossroad.svg", correct: false },
-          { img: "/signs/mand-turn-left.svg", correct: false },
-          { img: "/signs/proh-no-entry.svg", correct: false },
+          { img: "/signs/warn-roundabout-ahead.svg", correct: true },
+          { img: "/signs/warn-crossroads.svg", correct: false },
+          { img: "/signs/mand-turn-left-ahead.svg", correct: false },
+          { img: "/signs/prohib-no-entry.svg", correct: false },
         ],
       },
       {
         promptEn: "Identify the mandatory sign requiring all traffic to keep to the left of the obstacle.",
         promptMs: "Kenal pasti papan tanda mandatori yang mewajibkan semua kenderaan mengikut sebelah kiri halangan.",
         correctImg: "/signs/mand-keep-left.svg",
-        citation: "KPP_General.pdf p. 66",
+        citation: "Bahagian III — Papan Tanda Wajib",
         options: [
           { img: "/signs/mand-keep-left.svg", correct: true },
           { img: "/signs/mand-keep-right.svg", correct: false },
@@ -165,37 +165,37 @@ export function TheoryPage() {
       {
         promptEn: "Which prohibitory sign indicates that U-turns are strictly forbidden?",
         promptMs: "Papan tanda larangan manakah yang melarang pusingan U?",
-        correctImg: "/signs/proh-no-uturn.svg",
-        citation: "KPP_General.pdf p. 62",
+        correctImg: "/signs/prohib-no-u-turn.svg",
+        citation: "Bahagian II — Papan Tanda Larangan",
         options: [
-          { img: "/signs/proh-no-uturn.svg", correct: true },
-          { img: "/signs/proh-no-left-turn.svg", correct: false },
-          { img: "/signs/proh-no-overtaking.svg", correct: false },
-          { img: "/signs/warn-sharp-deviation-right.svg", correct: false },
+          { img: "/signs/prohib-no-u-turn.svg", correct: true },
+          { img: "/signs/prohib-no-left-turn.svg", correct: false },
+          { img: "/signs/prohib-no-overtaking.svg", correct: false },
+          { img: "/signs/warn-chevron-curve.svg", correct: false },
         ],
       },
       {
         promptEn: "Which temporary work-zone sign warns of road narrowing on the right side?",
         promptMs: "Papan tanda zon kerja sementara manakah yang memberi amaran jalan menyempit di sebelah kanan?",
-        correctImg: "/signs/temp-road-narrows-right.svg",
-        citation: "KPP_General.pdf p. 73",
+        correctImg: "/signs/temp-road-narrows.svg",
+        citation: "Bahagian V — Papan Tanda Sementara Zon Kerja",
         options: [
-          { img: "/signs/temp-road-narrows-right.svg", correct: true },
-          { img: "/signs/temp-road-works-ahead.svg", correct: false },
-          { img: "/signs/temp-uneven-road.svg", correct: false },
+          { img: "/signs/temp-road-narrows.svg", correct: true },
+          { img: "/signs/temp-road-works.svg", correct: false },
+          { img: "/signs/temp-vertical-panel.svg", correct: false },
           { img: "/signs/warn-road-narrows-right.svg", correct: false },
         ],
       },
       {
         promptEn: "Which regulatory sign gives clear notice to yield right-of-way to oncoming cross traffic?",
         promptMs: "Papan tanda manakah yang memberi arahan supaya memberi laluan kepada trafik lintasan?",
-        correctImg: "/signs/proh-give-way.svg",
-        citation: "KPP_General.pdf p. 61",
+        correctImg: "/signs/prohib-give-way.svg",
+        citation: "Bahagian II — Papan Tanda Memberi Laluan",
         options: [
-          { img: "/signs/proh-give-way.svg", correct: true },
-          { img: "/signs/proh-stop.svg", correct: false },
-          { img: "/signs/warn-junction-priority.svg", correct: false },
-          { img: "/signs/proh-speed-60.svg", correct: false },
+          { img: "/signs/prohib-give-way.svg", correct: true },
+          { img: "/signs/prohib-stop.svg", correct: false },
+          { img: "/signs/warn-give-way-ahead.svg", correct: false },
+          { img: "/signs/prohib-speed-limit-60.svg", correct: false },
         ],
       },
     ];
@@ -236,7 +236,7 @@ export function TheoryPage() {
                 {lang === "en" ? "Official JPJ Curriculum" : "Kurikulum Rasmi JPJ"}
               </span>
               <span className="text-xs text-muted-foreground">
-                KPP_General · KPP_DA_Auto · KPP_D_Manual
+                {lang === "en" ? "KPP01 Theory Masterclass" : "Sukatan Teori KPP01"}
               </span>
             </div>
             <h1 className="text-2xl font-bold font-heading tracking-tight mt-1 text-foreground">
@@ -345,8 +345,8 @@ export function TheoryPage() {
                   </h2>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "Every road sign shape and colour communicates a precise legal meaning (KPP_General.pdf pp. 50-81)"
-                      : "Setiap bentuk dan warna membawa maksud undang-undang yang tepat (KPP_General.pdf m/s 50-81)"}
+                      ? "Every road sign shape and colour communicates a precise legal meaning"
+                      : "Setiap bentuk dan warna membawa maksud undang-undang yang tepat"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -757,8 +757,8 @@ export function TheoryPage() {
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "10 structured modules synthesized directly from KPP_General.pdf, KPP_DA_Auto.pdf & KPP_D_Manual.pdf"
-                      : "10 modul berstruktur disintesis terus daripada buku teks KPP_General.pdf, KPP_DA_Auto.pdf & KPP_D_Manual.pdf"}
+                      ? "10 structured modules covering the complete JPJ rules syllabus"
+                      : "10 modul berstruktur merangkumi sukatan undang-undang JPJ"}
                   </p>
                 </div>
                 <span className="pill pill-neutral">

@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
 import type { KppQuestion, ExamQuestion, AnswerKeyEntry } from "@/types/database";
-import { getTextbookSet } from "@/content/kppQuestionBank";
 
 export type { ExamQuestion, AnswerKeyEntry };
 
@@ -19,35 +18,6 @@ export type { ExamQuestion, AnswerKeyEntry };
  */
 const EXAM_COLUMNS =
   "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, source_url, created_at";
-
-function stripAnswerKey(q: KppQuestion): ExamQuestion {
-  const {
-    id,
-    category,
-    set_id,
-    order_index,
-    question_en,
-    question_ms,
-    options_en,
-    options_ms,
-    image_url,
-    source_url,
-    created_at,
-  } = q;
-  return {
-    id,
-    category,
-    set_id,
-    order_index,
-    question_en,
-    question_ms,
-    options_en,
-    options_ms,
-    image_url,
-    source_url,
-    created_at,
-  };
-}
 
 /**
  * Practice quiz questions — WITH the answer key.
@@ -75,14 +45,18 @@ export async function fetchQuizQuestions({
   const { data, error } = await query;
   if (error) throw new Error(`fetchQuizQuestions: ${error.message}`);
   const rows = (data ?? []) as KppQuestion[];
-  if (rows.length > 0) return rows;
+  if (rows.length > 0 || !setId) return rows;
 
-  // If a specific textbook practice set (quiz-a-1..6, quiz-b-1..6, quiz-c-da-1..6, quiz-c-d-1..6)
-  // is requested before the database migration has run, serve that textbook set cleanly.
-  if (setId && setId.startsWith("quiz-") && setId !== "quiz-pool") {
-    return getTextbookSet(setId).slice(0, limit);
-  }
-  return rows;
+  // Migration gap fallback: if specific set_id not yet migrated, query any available
+  // practice questions (by category if available) up to limit.
+  let fallbackQuery = supabase
+    .from("kpp_practice_questions" as never)
+    .select("*")
+    .order("order_index", { ascending: true })
+    .limit(limit);
+  if (category) fallbackQuery = fallbackQuery.eq("category", category);
+  const { data: fallbackData } = await fallbackQuery;
+  return (fallbackData ?? []) as KppQuestion[];
 }
 
 /**
@@ -100,12 +74,16 @@ export async function fetchMockQuestionsBySet(setId: string): Promise<ExamQuesti
 
   if (error) throw new Error(`fetchMockQuestionsBySet(${setId}): ${error.message}`);
   const rows = (data ?? []) as unknown as ExamQuestion[];
-  if (rows.length > 0) return rows;
+  if (rows.length > 0 || setId === "mock-1") return rows;
 
-  if (setId.startsWith("mock-da-") || setId.startsWith("mock-d-")) {
-    return getTextbookSet(setId).map(stripAnswerKey);
-  }
-  return rows;
+  // Migration gap fallback: if the new textbook set hasn't landed in DB yet,
+  // query legacy 'mock-1' so learners never see an empty test or error.
+  const fallback = await supabase
+    .from("kpp_questions")
+    .select(EXAM_COLUMNS)
+    .eq("set_id", "mock-1")
+    .order("order_index", { ascending: true });
+  return (fallback.data ?? []) as unknown as ExamQuestion[];
 }
 
 /** Only a saved, caller-owned attempt can release the mock answer key. */

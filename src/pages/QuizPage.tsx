@@ -5,7 +5,6 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
 import { fetchQuizQuestions } from "@/services/questions.service";
-import { getTextbookSet, getTextbookPracticePool } from "@/content/kppQuestionBank";
 import { saveQuizResult } from "@/services/results.service";
 import { useSaveResultMutation } from "@/hooks/useResults";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
@@ -62,9 +61,8 @@ export function QuizPage() {
 
     if (section.startsWith("quiz-")) {
       const fromDb = allQuestions.filter((q) => q.set_id === section);
-      const textbookSet = fromDb.length > 0 ? fromDb : getTextbookSet(section);
-      if (textbookSet.length > 0) {
-        setActiveQuestions(textbookSet.map((q) => ({ ...q })));
+      if (fromDb.length > 0) {
+        setActiveQuestions(fromDb.map((q) => ({ ...q })));
         setPhase("testing");
         return;
       }
@@ -72,8 +70,8 @@ export function QuizPage() {
 
     const category = resolveSectionCategory(section);
     const pool = allQuestions.filter((q) => q.category === category);
-    const fallbackPool = pool.length > 0 ? pool : getTextbookPracticePool(category);
-    const picked = pickQuestions(fallbackPool.length > 0 ? fallbackPool : allQuestions, QUIZ_QUESTION_COUNT);
+    const candidatePool = pool.length > 0 ? pool : allQuestions;
+    const picked = pickQuestions(candidatePool, QUIZ_QUESTION_COUNT);
     setActiveQuestions(picked);
     setPhase("testing");
   };

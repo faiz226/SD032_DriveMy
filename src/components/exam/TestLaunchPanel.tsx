@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { TranslationKey } from "@/lib/translations";
-import type { LicenseTrack } from "@/content/kppQuestionBank";
+import type { LicenseTrack } from "@/types/database";
 
 const TRACK_STORAGE_KEY = "drivemy-license-track";
 

@@ -1,7 +1,4 @@
-// Auto-generated from official JPJ KPP Textbooks:
-// - KPP_General.pdf (Kurikulum Pendidikan Pemandu - Panduan Pembelajaran Kurikulum Umum)
-// - KPP_DA_Auto.pdf (Kurikulum Pendidikan Pemandu Kelas DA - Motokar Tanpa Pedal Cekam)
-// - KPP_D_Manual.pdf (Kurikulum Pendidikan Pemandu Kelas D - Motokar Dengan Pedal Cekam)
+// Official JPJ KPP01 Curriculum Learning Content (General, Class DA, Class D)
 
 export type RoadSignCategory =
   | "warning"
@@ -51,8 +48,8 @@ export const ROAD_SIGN_CATEGORIES: {
     id: "warning",
     labelEn: "Warning signs",
     labelMs: "Isyarat bahaya (Amaran)",
-    bookSectionEn: "Part I · KPP_General.pdf pp. 50-60",
-    bookSectionMs: "Bahagian I · KPP_General.pdf m/s 50-60",
+    bookSectionEn: "Part I · Warning Signs",
+    bookSectionMs: "Bahagian I · Papan Tanda Amaran",
     shapeEn: "Diamond (rhombus)",
     shapeMs: "Berlian (rombus)",
     colorRuleEn: "Yellow background with black border and black symbol",
@@ -63,8 +60,8 @@ export const ROAD_SIGN_CATEGORIES: {
     id: "prohibitory",
     labelEn: "Prohibitory signs",
     labelMs: "Isyarat larangan",
-    bookSectionEn: "Part II · KPP_General.pdf pp. 61-65",
-    bookSectionMs: "Bahagian II · KPP_General.pdf m/s 61-65",
+    bookSectionEn: "Part II · Prohibitory Signs",
+    bookSectionMs: "Bahagian II · Papan Tanda Larangan",
     shapeEn: "Circle, Octagon (Stop), or Inverted Triangle (Give Way)",
     shapeMs: "Bulat, Oktagon (Berhenti), atau Segi Tiga Terbalik (Beri Laluan)",
     colorRuleEn: "White background with red border and black symbol (or red disc)",
@@ -75,8 +72,8 @@ export const ROAD_SIGN_CATEGORIES: {
     id: "mandatory",
     labelEn: "Mandatory signs",
     labelMs: "Isyarat mandatori (Wajib)",
-    bookSectionEn: "Part III · KPP_General.pdf p. 66",
-    bookSectionMs: "Bahagian III · KPP_General.pdf m/s 66",
+    bookSectionEn: "Part III · Mandatory Signs",
+    bookSectionMs: "Bahagian III · Papan Tanda Wajib",
     shapeEn: "Circle",
     shapeMs: "Bulatan",
     colorRuleEn: "Blue background with white directional arrow or symbol",
@@ -87,8 +84,8 @@ export const ROAD_SIGN_CATEGORIES: {
     id: "informational",
     labelEn: "Informational signs",
     labelMs: "Isyarat berinformasi (Maklumat)",
-    bookSectionEn: "Part IV · KPP_General.pdf pp. 67-81",
-    bookSectionMs: "Bahagian IV · KPP_General.pdf m/s 67-81",
+    bookSectionEn: "Part IV · Informational Signs",
+    bookSectionMs: "Bahagian IV · Papan Tanda Maklumat",
     shapeEn: "Rectangle or Square",
     shapeMs: "Segi empat tepat atau sama",
     colorRuleEn: "Blue/Green background (Green = Tolled Expressway, Blue = Federal/Non-tolled)",
@@ -99,8 +96,8 @@ export const ROAD_SIGN_CATEGORIES: {
     id: "temporary",
     labelEn: "Temporary signs",
     labelMs: "Isyarat sementara (Zon kerja)",
-    bookSectionEn: "Part V · KPP_General.pdf pp. 72-73",
-    bookSectionMs: "Bahagian V · KPP_General.pdf m/s 72-73",
+    bookSectionEn: "Part V · Temporary Work Zone Signs",
+    bookSectionMs: "Bahagian V · Papan Tanda Sementara Zon Kerja",
     shapeEn: "Diamond or Rectangle",
     shapeMs: "Berlian atau Segi Empat Tepat",
     colorRuleEn: "Orange background with black border and black symbol for roadworks",
@@ -2077,7 +2074,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "roundabout-right-of-way",
     "title": "Roundabout Lanes, Signals & Right of Way",
     "titleMs": "Lorong Bulatan, Isyarat & Hak Laluan",
-    "source": "KPP_General.pdf pp. 131-138",
+    "source": "Peraturan Hak Laluan Bulatan JPJ",
     "badge": "Bahagian B · Bab 6",
     "content": "Vehicles already circulating clockwise inside a roundabout have right of way. Approach in the left lane to turn left (9 o'clock) or go straight (12 o'clock); use the right lane to go straight (12 o'clock), turn right (3 o'clock), or make a U-turn (6 o'clock). Always signal left before exiting.",
     "contentMs": "Kenderaan yang sedang bergerak ikut arah jam di dalam bulatan mempunyai hak laluan. Gunakan lorong kiri untuk belok kiri (pukul 9) atau terus (pukul 12); gunakan lorong kanan untuk terus (pukul 12), belok kanan (pukul 3), atau pusing balik (pukul 6). Sentiasa beri isyarat kiri sebelum keluar."
@@ -2086,7 +2083,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "speed-limits-apj",
     "title": "National Speed Limits & Heavy Vehicle Rules",
     "titleMs": "Had Laju Kebangsaan & Peraturan Kenderaan Berat",
-    "source": "KPP_General.pdf pp. 101-106, 174",
+    "source": "Piawaian Had Laju Kebangsaan",
     "badge": "APJ 1987 · Seksyen 69",
     "content": "Expressways: 110 km/h maximum (80-90 km/h for commercial lorries and buses, which must stay in the left lane except when overtaking). Federal roads: 90 km/h. State roads: 80 km/h. Town/built-up areas: 50-60 km/h. School zones: 30 km/h.",
     "contentMs": "Lebuh raya: maksimum 110 km/j (80-90 km/j bagi lori dan bas perdagangan yang wajib kekal di lorong kiri kecuali memotong). Jalan persekutuan: 90 km/j. Jalan negeri: 80 km/j. Kawasan bandar: 50-60 km/j. Zon sekolah: 30 km/j."
@@ -2095,7 +2092,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "overtaking-12-steps",
     "title": "The 12-Step Overtaking Procedure & 9 Prohibited Zones",
     "titleMs": "Prosedur Memotong 12 Langkah & 9 Zon Larangan",
-    "source": "KPP_General.pdf pp. 127-130",
+    "source": "Tatacara Memotong Selamat JPJ",
     "badge": "Bahagian B · Bab 6",
     "content": "Overtake only on the right using the 2-second / 4-second rule and C.I.T.O. Never return to the left lane until both headlamps of the overtaken vehicle are visible in your interior rear-view mirror. Overtaking is strictly prohibited at bends, hill crests, double solid lines, junctions, bridges, level crossings, pedestrian crossings, narrow roads, and peak-hour queues.",
     "contentMs": "Memotong hanya di sebelah kanan menggunakan peraturan 2 saat / 4 saat dan C.I.T.O. Jangan masuk semula ke lorong kiri sehingga kedua-dua lampu hadapan kenderaan yang dipotong kelihatan di dalam cermin pandang belakang. Memotong dilarang di selekoh, puncak bukit, garisan berkembar, simpang, jambatan, lintasan kereta api, lintasan pejalan kaki, jalan sempit, dan waktu puncak."
@@ -2104,7 +2101,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "road-markings-discipline",
     "title": "Road Surface Markings & Yellow Edge Rules",
     "titleMs": "Garisan Permukaan Jalan & Peraturan Garisan Kuning Tepi",
-    "source": "KPP_General.pdf pp. 77-81",
+    "source": "Tatacara Tanda Garisan Jalan JPJ",
     "badge": "Bahagian A · Bab 4",
     "content": "Double solid white lines: no crossing, overtaking, or U-turns. Broken line beside solid line: overtake only if the broken line is on your side. Yellow box junction: never enter unless your exit is clear. Single solid yellow edge line: no parking (brief pick-up/drop-off allowed). Double solid yellow edge lines: no stopping or parking at any time.",
     "contentMs": "Garisan putih berkembar: dilarang melintas, memotong, atau membuat pusingan U. Garisan putus-putus di sebelah garisan terus: memotong hanya jika garisan putus-putus di sebelah lorong anda. Petak kuning: jangan masuk kecuali laluan keluar jelas. Garisan kuning tunggal di tepi: dilarang parkir. Garisan kuning berkembar di tepi: dilarang berhenti atau parkir pada bila-bila masa."
@@ -2113,7 +2110,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "kejara-demerit-system",
     "title": "Sistem KEJARA Demerit Points & Licence Suspension",
     "titleMs": "Sistem Mata Demerit KEJARA & Penggantungan Lesen",
-    "source": "KPP_General.pdf pp. 169-175",
+    "source": "Sistem Mata Demerit KEJARA",
     "badge": "Bahagian C · Bab 7",
     "content": "Probationary (PDL 'P') drivers have their licence revoked on accumulating 20 demerit points. Competent (CDL) drivers receive a warning below 20 points; at 20 points: 1st suspension 6-8 months, 2nd suspension 8-10 months, 3rd suspension 10-12 months (revoked if suspended 3 times within 5 years). Clean driving for 24 consecutive months resets points; attending a JPJ rehabilitation course deducts 4 points.",
     "contentMs": "Pemegang lesen percubaan (PDL 'P') dibatalkan lesen apabila mengumpul 20 mata demerit. Pemegang CDL menerima amaran di bawah 20 mata; pada 20 mata: gantungan pertama 6-8 bulan, kedua 8-10 bulan, ketiga 10-12 bulan (batal jika digantung 3 kali dalam 5 tahun). Rekod bersih 24 bulan berturut-turut menghapuskan mata; kursus pemulihan JPJ menolak 4 mata."
@@ -2122,7 +2119,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "apj-offences-compounds",
     "title": "Road Transport Act 1987 (APJ) Compounds & Penalties",
     "titleMs": "Kompaun & Penalti Akta Pengangkutan Jalan 1987 (APJ)",
-    "source": "KPP_General.pdf pp. 176-179",
+    "source": "Jadual Kompaun & Penalti APJ 1987",
     "badge": "Bahagian C · APJ 1987",
     "content": "Early payment reduces most JPJ compounds across three tiers: Days 1-15, Days 16-30, and Days 31-60. Major high-risk offences (speeding >40 km/h over limit, driving without a licence or road tax/insurance) carry a flat RM300 compound with no early discount. Blood/breath/urine alcohol limits under Section 45G: 80 mg/100 ml blood, 35 mcg/100 ml breath, 107 mg/100 ml urine.",
     "contentMs": "Bayaran awal mengurangkan kompaun JPJ mengikut tiga peringkat: Hari 1-15, Hari 16-30, dan Hari 31-60. Kesalahan berat (melebihi had laju >40 km/j, memandu tanpa lesen atau cukai jalan/insurans) dikenakan kadar tetap RM300 tanpa diskaun. Had alkohol Seksyen 45G: 80 mg/100 ml darah, 35 mcg/100 ml nafas, 107 mg/100 ml air kencing."
@@ -2131,7 +2128,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "lmm-licensing-classes",
     "title": "LMM Licence Classes, Minimum Ages & Validity Rules",
     "titleMs": "Kelas Lesen LMM, Had Umur Minimum & Tempoh Sah",
-    "source": "KPP_General.pdf pp. 159-168",
+    "source": "Peraturan Perlesenan Memandu JPJ",
     "badge": "Bahagian C · Perlesenan",
     "content": "Age 16: Classes A, A1 (OKU), B2 (<=250 cc), B (>500 cc), C. Age 17: Classes D (Manual <=3,500 kg BTM) and DA (Automatic <=3,500 kg BTM). Age 21: Classes E (>7,500 kg), E1, E2, F, G, H, I, and vocational GDL/PSV. Dormancy limits before re-testing: LDL >2 years, PDL >1 year, CDL >3 years. 'L' plate: 2y max (renew every 3/6m). 'P' plate: 2y probation (15 cm x 15 cm red background).",
     "contentMs": "Umur 16: Kelas A, A1 (OKU), B2 (<=250 sp), B (>500 sp), C. Umur 17: Kelas D (Manual <=3,500 kg BTM) dan DA (Automatik <=3,500 kg BTM). Umur 21: Kelas E (>7,500 kg), E1, E2, F, G, H, I, serta GDL/PSV. Had tamat tempoh sebelum ujian semula: LDL >2 tahun, PDL >1 tahun, CDL >3 tahun. Plat 'P': 15 cm x 15 cm latar merah."
@@ -2140,16 +2137,16 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "transmission-da-vs-d",
     "title": "Class DA (Automatic) vs Class D (Manual) Controls & Practical Test",
     "titleMs": "Kawalan Kelas DA (Automatik) vs Kelas D (Manual) & Ujian Amali",
-    "source": "KPP_DA_Auto.pdf pp. 199-226; KPP_D_Manual.pdf pp. 199-228",
+    "source": "Kawalan Transmisi DA & D JPJ",
     "badge": "Kelas DA & Kelas D",
-    "content": "Class DA uses 2 pedals operated exclusively by the right foot and selector positions P-R-N-D-3-2-1/L (low gears capped at 40/20/10 km/h for engine braking), plus Element 6.0 Tanjakan (5-minute ramp test). Class D uses 3 pedals (left foot on clutch, right foot on brake/accelerator), biting point control (titik pergerakan), 5 forward gears matched to speed bands, and a 3-minute Hill Start test (<0.5 m rollback).",
-    "contentMs": "Kelas DA mempunyai 2 pedal yang dikawal sepenuhnya oleh kaki kanan serta kedudukan gear P-R-N-D-3-2-1/L (had laju gear rendah 40/20/10 km/j untuk brek enjin) dan Ujian Tanjakan 5 minit. Kelas D mempunyai 3 pedal (kaki kiri pada cekam, kaki kanan pada brek/pemecut), kawalan titik pergerakan, 5 gear mengikut kelajuan, dan Ujian Bukit 3 minit (undur <0.5 m)."
+    "content": "Class DA uses 2 pedals operated exclusively by the right foot and selector positions P-R-N-D-3-2-1/L (low gears capped at 40/20/10 km/h for engine braking), plus Element 6.0 Tanjakan (ramp stop and smooth move-off). Class D uses 3 pedals (left foot on clutch, right foot on brake/accelerator), biting point control (titik pergerakan), 5 forward gears matched to speed bands, and a 3-minute Hill Start test on the ramp.",
+    "contentMs": "Kelas DA mempunyai 2 pedal yang dikawal sepenuhnya oleh kaki kanan serta kedudukan gear P-R-N-D-3-2-1/L (had laju gear rendah 40/20/10 km/j untuk brek enjin) dan Ujian Tanjakan Elemen 6.0 (berhenti di garisan kuning dan mendaki lancar). Kelas D mempunyai 3 pedal (kaki kiri pada cekam, kaki kanan pada brek/pemecut), kawalan titik pergerakan, 5 gear mengikut kelajuan, dan Ujian Bukit 3 minit di tanjakan."
   },
   {
     "id": "traffic-lights-signals",
     "title": "Traffic Signals, Police Hand Signals & Emergency Vehicles",
     "titleMs": "Lampu Isyarat, Isyarat Tangan Polis & Kenderaan Kecemasan",
-    "source": "KPP_General.pdf pp. 74-76, 118",
+    "source": "Isyarat Lalu Lintas & Kawalan Trafik",
     "badge": "Bahagian A & B",
     "content": "At traffic lights: Red means stop behind the white stop line; Amber means prepare to stop (do not accelerate); Green means proceed if clear. When a uniformed traffic police officer directs traffic at a junction with working traffic lights, the police officer's hand signals override both the traffic lights and road signs. Always pull left to clear a path for sirens.",
     "contentMs": "Di lampu isyarat: Merah bermaksud berhenti di belakang garisan berhenti; Kuning bermaksud bersedia berhenti (jangan memecut); Hijau bermaksud teruskan jika selamat. Apabila polis trafik mengawal simpang, arahan tangan polis mengatasi lampu isyarat dan papan tanda. Sentiasa ke kiri untuk memberi laluan kepada kenderaan kecemasan."
@@ -2158,7 +2155,7 @@ export const trafficRules: TheoryTopicItem[] = [
     "id": "parking-stopping-prohibitions",
     "title": "Statutory No-Parking Distances & Tunnel Rules",
     "titleMs": "Jarak Larangan Parkir Berkanun & Peraturan Terowong",
-    "source": "KPP_General.pdf pp. 142-145",
+    "source": "Larangan Meletak Kenderaan & Terowong",
     "badge": "Bahagian B · Bab 6",
     "content": "Parking or stopping is strictly prohibited within: 12 metres of a bus stop, 9 metres of a junction or corner, 9 metres of a railway level crossing, and 6 metres of a fire hydrant (pili bomba). Inside tunnels, switch on dipped headlamps, maintain safe following distance, and never change lanes, overtake, or sound the horn unnecessarily.",
     "contentMs": "Meletak kenderaan atau berhenti dilarang sama sekali dalam jarak: 12 meter dari perhentian bas, 9 meter dari persimpangan atau selekoh, 9 meter dari lintasan kereta api, dan 6 meter dari pili bomba. Di dalam terowong, nyalakan lampu rendah, kekalkan jarak selamat, dan jangan menukar lorong atau memotong."
@@ -2170,16 +2167,16 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "stopping-distance-following-rules",
     "title": "Following Distance (2s / 4s / 12s) & Stopping Physics",
     "titleMs": "Jarak Mengekori (2s / 4s / 12s) & Fizik Jarak Berhenti",
-    "source": "KPP_DA_Auto.pdf p. 263; KPP_General.pdf pp. 90-106",
+    "source": "Fizik Jarak Berhenti JPJ",
     "badge": "Bahagian B · Fizik Brek",
-    "content": "Total Stopping Distance = Reaction Distance (Jarak Berfikir, ~0.75s) + Braking Distance (Jarak Membrek). At 30 km/h: 6m + 6m = 12m (3 cars). At 60 km/h: 12m + 20m = 32m (7 cars). At 90 km/h: 18m + 45m = 63m (15 cars). At 110 km/h: 22m + 67m = 89m (21 cars). Maintain at least a 2-second following gap in dry weather, 4 seconds in rain or when tailgated, and scan 12 seconds ahead.",
-    "contentMs": "Jumlah Jarak Berhenti = Jarak Berfikir (~0.75s) + Jarak Membrek. Pada 30 km/j: 6m + 6m = 12m (3 kereta). Pada 60 km/j: 12m + 20m = 32m (7 kereta). Pada 90 km/j: 18m + 45m = 63m (15 kereta). Pada 110 km/j: 22m + 67m = 89m (21 kereta). Kekalkan jarak mengekori 2 saat semasa kering, 4 saat semasa hujan, dan imbas 12 saat ke hadapan."
+    "content": "Total Stopping Distance = Reaction Distance (Jarak Berfikir) + Braking Distance (Jarak Membrek). At 30 km/h: 9m + 6m = 15m. At 50 km/h: 14m + 18m = 32m. At 60 km/h: 17m + 27m = 44m. At 80 km/h: 22m + 54m = 76m. At 90 km/h: 25m + 68m = 93m. At 110 km/h: 31m + 102m = 133m. Maintain at least a 2-second following gap in dry weather, 4 seconds in rain or when tailgated, and scan 12 seconds ahead.",
+    "contentMs": "Jumlah Jarak Berhenti = Jarak Berfikir + Jarak Membrek. Pada 30 km/j: 9m + 6m = 15m. Pada 50 km/j: 14m + 18m = 32m. Pada 60 km/j: 17m + 27m = 44m. Pada 80 km/j: 22m + 54m = 76m. Pada 90 km/j: 25m + 68m = 93m. Pada 110 km/j: 31m + 102m = 133m. Kekalkan jarak mengekori 2 saat semasa kering, 4 saat semasa hujan, dan imbas 12 saat ke hadapan."
   },
   {
     "id": "cito-ptp-ipda-defensive",
     "title": "Defensive Driving Systems: C.I.T.O., P.T.P. & I.P.D.A.",
     "titleMs": "Sistem Pemanduan Berhemah: C.I.T.O., P.T.P. & I.P.D.A.",
-    "source": "KPP_General.pdf pp. 82-98, 120-124",
+    "source": "Sistem Pemanduan Berhemah JPJ",
     "badge": "Bahagian B · Bab 5",
     "content": "Before every maneuver, execute C.I.T.O. in order: Cermin (Mirrors) -> Isyarat (Signal >=3s) -> Titik Buta (Shoulder check for blind spots) -> Olah Gerak (Maneuver). Process hazards continuously with P.T.P. (Perhatikan, Tentukan, Bertindak) and I.P.D.A. (Kenal Pasti, Ramal, Putuskan, Laksanakan) to prevent all 6 textbook collision positions.",
     "contentMs": "Sebelum setiap olah gerak, laksanakan C.I.T.O. mengikut turutan: Cermin -> Isyarat (>=3s) -> Titik Buta (toleh bahu) -> Olah Gerak. Proses bahaya secara berterusan menggunakan P.T.P. (Perhatikan, Tentukan, Bertindak) dan I.P.D.A. (Kenal Pasti, Ramal, Putuskan, Laksanakan) bagi mengelakkan 6 posisi pelanggaran."
@@ -2188,7 +2185,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "cornering-understeer-oversteer",
     "title": "Cornering Forces: Understeer vs Oversteer Recovery",
     "titleMs": "Daya Selekoh: Pemulihan Understeer vs Oversteer",
-    "source": "KPP_DA_Auto.pdf pp. 265-266",
+    "source": "Dinamik Kawalan Selekoh JPJ",
     "badge": "Fizik Kenderaan",
     "content": "Slow down BEFORE entering a bend while still on the straight section. Understeer (terbabas keluar) happens when front tyres lose grip and push wide toward the outer edge; recover by easing off the accelerator smoothly. Oversteer (terbabas masuk) happens when rear tyres lose grip and the tail swings outward; recover by steering smoothly into the direction of the skid without slamming the brakes.",
     "contentMs": "Perlahankan kenderaan SEBELUM memasuki selekoh ketika jalan masih lurus. Understeer (terbabas keluar) berlaku apabila tayar hadapan hilang cengkaman; pulihkan dengan melepaskan pedal pemecut secara lembut. Oversteer (terbabas masuk) berlaku apabila tayar belakang menggelincir keluar; pulihkan dengan memusing stereng mengikut arah gelinciran tanpa membrek mengejut."
@@ -2197,7 +2194,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "rpk-powder-tyre-diagnostics",
     "title": "RPK Pre-Trip Inspection (P.O.W.D.E.R.) & Tyre Diagnostics",
     "titleMs": "Pemeriksaan Sebelum Memandu RPK (P.O.W.D.E.R.) & Diagnostik Tayar",
-    "source": "KPP_DA_Auto.pdf pp. 143-178",
+    "source": "Pemeriksaan Rutin Sebelum Memandu (RPK)",
     "badge": "Bahagian C · RPK 7 Minit",
     "content": "Inspect Petrol, Oil, Water, Damage, Electrics, and Rubber (25 items in 7 minutes). Passenger car tyre pressure: 180-220 kPa (26-32 psi) checked when cold; minimum legal tread depth: 1.6 mm (TWI). Centre-only tread wear indicates over-inflation; wear on both outer edges indicates under-inflation; one-sided wear indicates misaligned wheels. Engine oil interval: 5,000 km; gear oil: 20,000-30,000 km.",
     "contentMs": "Periksa Petrol, Oil, Water, Damage, Electrics, dan Rubber (25 item dalam 7 minit). Tekanan tayar kereta: 180-220 kPa (26-32 psi) ketika sejuk; kedalaman bunga minimum sah: 1.6 mm (TWI). Haus di tengah sahaja menunjukkan terlebih angin; haus di kedua-dua tepi menunjukkan kurang angin; haus sebelah menunjukkan jajaran roda lari. Minyak enjin: 5,000 km; minyak gear: 20,000-30,000 km."
@@ -2206,7 +2203,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "rsm-cockpit-drill-ignition",
     "title": "RSM Cockpit Routine (8 Steps in 5 Min) & Ignition Switch",
     "titleMs": "Rutin Semasa Memandu RSM (8 Langkah 5 Minit) & Suis Enjin",
-    "source": "KPP_DA_Auto.pdf pp. 179-198",
+    "source": "Rutin Semasa Memandu (RSM)",
     "badge": "Bahagian C · RSM 5 Minit",
     "content": "Follow the 8-step RSM sequence: (1) Handbrake on, (2) Adjust seat posture, (3) Adjust steering wheel (9-and-3 or 10-and-2 grip, arms slightly bent), (4) Adjust interior & side mirrors, (5) Check dashboard gauges, (6) Verify gear in P/N, (7) Fasten seatbelt, (8) Start engine via LOCK -> ACC -> ON -> START (release key within 1-4 seconds so the starter motor is not damaged).",
     "contentMs": "Ikut 8 langkah RSM: (1) Tarik brek tangan, (2) Laras tempat duduk, (3) Laras stereng (pegangan 9-dan-3 atau 10-dan-2), (4) Laras cermin pandang belakang & sisi, (5) Semak panel meter, (6) Pastikan gear di P/N, (7) Pakai tali pinggang keledar, (8) Hidupkan enjin melalui LOCK -> ACC -> ON -> START (lepaskan kunci dalam 1-4 saat)."
@@ -2215,7 +2212,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "occupant-crs-headrest-safety",
     "title": "CRS Child Seats, Headrest Whiplash Geometry & Airbags",
     "titleMs": "Kerusi Keselamatan Bayi (CRS), Geometri Penyandar Kepala & Beg Udara",
-    "source": "KPP_DA_Auto.pdf pp. 131-142",
+    "source": "Keselamatan Penumpang & Kanak-kanak (CRS)",
     "badge": "Bahagian C · Keselamatan",
     "content": "Children under 135 cm, 36 kg, or 12 years old must use an approved CRS (Group 0/0+ rear-facing infant carrier <13 kg, Group I harness 9-18 kg, Group II/III booster 15-36 kg). Never place a rear-facing infant seat in front of an active passenger airbag. Adjust the headrest so its top aligns with the top of your head/ears and the back-of-head gap is <= 3.5 inches (9-10 cm) to prevent neck whiplash.",
     "contentMs": "Kanak-kanak di bawah 135 cm, 36 kg, atau 12 tahun wajib menggunakan CRS (Kumpulan 0/0+ menghadap belakang <13 kg, Kumpulan I abah-abah 9-18 kg, Kumpulan II/III pelapik 15-36 kg). Jangan letak kerusi bayi menghadap belakang di hadapan beg udara aktif. Laraskan penyandar kepala supaya sejajar dengan atas telinga/kepala dengan jarak <= 3.5 inci (9-10 cm) bagi mengelakkan kecederaan leher (whiplash)."
@@ -2224,7 +2221,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "night-glare-weather-aquaplaning",
     "title": "Night High-Beam Glare (7s = 140m) & Aquaplaning Recovery",
     "titleMs": "Silau Lampu Tinggi Malam (7s = 140m) & Pemulihan Aquaplaning",
-    "source": "KPP_General.pdf pp. 140-143; KPP_DA_Auto.pdf p. 262",
+    "source": "Pemanduan Cuaca Buruk & Waktu Malam",
     "badge": "Cuaca & Waktu Malam",
     "content": "1 second of oncoming high-beam glare blinds the human eye for ~7 seconds; at 72 km/h (20 m/s), your vehicle travels 140 metres completely blind! Look toward the left road edge and dip headlamps when oncoming traffic is within 100-200 m. In heavy rain, if tyres aquaplane on standing water, hold the steering wheel straight and ease off the accelerator without slamming the brakes.",
     "contentMs": "1 saat terkena silau lampu tinggi membutakan mata selama ~7 saat; pada 72 km/j (20 m/s), kereta bergerak sejauh 140 meter tanpa penglihatan! Pandang ke garisan tepi kiri jalan dan rendahkan lampu dalam jarak 100-200 m. Semasa hujan lebat, jika berlaku aquaplaning, pegang stereng lurus dan lepaskan pemecut perlahan-lahan tanpa membrek mengejut."
@@ -2233,7 +2230,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "emergency-post-crash-protocol",
     "title": "Breakdown Triangle (>=45m), 999 Response & First-Aid Rules",
     "titleMs": "Segi Tiga Kecemasan (>=45m), Panggilan 999 & Peraturan Pertolongan Cemas",
-    "source": "KPP_General.pdf pp. 146-152",
+    "source": "Prosedur Kerosakan & Kecemasan Jalan Raya",
     "badge": "Kecemasan & Kemalangan",
     "content": "During a breakdown, switch on hazard lights and place the reflective red warning triangle at least 45 metres behind the vehicle on the same side of the road. At a crash scene, switch off ignitions to prevent fire, call 999, never move victims with suspected spinal injuries unless fire/explosion threatens, never give food or water to injured victims, and use the 2-rescuer technique if helmet removal is essential.",
     "contentMs": "Semasa kerosakan, hidupkan lampu kecemasan dan letakkan segi tiga amaran sekurang-kurangnya 45 meter di belakang kenderaan. Di lokasi kemalangan, matikan suis enjin untuk mengelakkan kebakaran, hubungi 999, jangan alihkan mangsa kecederaan tulang belakang kecuali ada bahaya kebakaran, jangan beri makanan/minuman kepada mangsa cedera, dan gunakan teknik 2 penyelamat jika topi keledar mesti ditanggalkan."

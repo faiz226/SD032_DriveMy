@@ -196,6 +196,8 @@ export interface Database {
   };
 }
 
+export type LicenseTrack = "DA" | "D";
+
 export type KppQuestion = Database["public"]["Tables"]["kpp_questions"]["Row"];
 export type QuizResult = Database["public"]["Tables"]["quiz_results"]["Row"];
 export type MockTestResult = Database["public"]["Tables"]["mock_test_results"]["Row"];
