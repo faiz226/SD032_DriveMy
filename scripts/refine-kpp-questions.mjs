@@ -842,35 +842,65 @@ const CLAUSES_MS = {
   ]
 };
 
-for (let i = 0; i < questions.length; i++) {
-  const q = questions[i];
-  const shouldBeLongest = (i % 4 === 0);
-
-  if (!shouldBeLongest) {
-    const distIdx = (q.correct_index + 1 + (i % 3)) % 4;
-    const cat = q.category in CLAUSES_EN ? q.category : "traffic-rules";
-    const clausesEn = CLAUSES_EN[cat];
-    const clausesMs = CLAUSES_MS[cat];
-
-    const corrLenEn = q.options_en[q.correct_index].length;
-    let optEn = q.options_en[distIdx];
-    let cIdxEn = i % clausesEn.length;
-    while (optEn.length <= corrLenEn) {
-      optEn += clausesEn[cIdxEn % clausesEn.length];
-      cIdxEn++;
-    }
-    q.options_en[distIdx] = optEn;
-
-    const corrLenMs = q.options_ms[q.correct_index].length;
-    let optMs = q.options_ms[distIdx];
-    let cIdxMs = i % clausesMs.length;
-    while (optMs.length <= corrLenMs) {
-      optMs += clausesMs[cIdxMs % clausesMs.length];
-      cIdxMs++;
-    }
-    q.options_ms[distIdx] = optMs;
+// Targeted fact fixes: claims the books do not support (checked against the PDF text).
+const PATCH = {
+  "quiz-c-da-4:5": ["RSM", "Rutin Sebelum Memandu (Pre-Driving Cockpit Routine), performed inside the driver's cabin before moving off", "Rutin Sebelum Memandu, iaitu prosedur pemeriksaan dan pelarasan di ruang pemandu sebelum menggerakkan kenderaan"],
+};
+for (const key of ["quiz-c-da-4:5", "quiz-c-d-4:5"]) {
+  const [s, n] = key.split(":");
+  const q = questions.find((x) => x.set_id === s && x.order_index === +n);
+  q.question_en = "What does the acronym 'RSM' stand for in the KPP02 curriculum?";
+  q.question_ms = "Apakah maksud singkatan 'RSM' dalam kurikulum KPP02?";
+  q.options_en[q.correct_index] = PATCH["quiz-c-da-4:5"][1];
+  q.options_ms[q.correct_index] = PATCH["quiz-c-da-4:5"][2];
+  for (let k = 0; k < 4; k++) {
+    if (k === q.correct_index) continue;
+    q.options_en[k] = q.options_en[k].replace(/, \d+ minutes?.*$/, "");
+    q.options_ms[k] = q.options_ms[k].replace(/, \d+ minit.*$/, "");
   }
+  q.explanation_en = "RSM is the routine of checking and adjusting everything inside the driver's cabin before the vehicle moves off.";
+  q.explanation_ms = "RSM ialah rutin memeriksa dan melaras segala yang ada di ruang pemandu sebelum kenderaan bergerak.";
 }
+{
+  const q = questions.find((x) => x.set_id === "quiz-c-d-6" && x.order_index === 14);
+  q.question_en = "In the KPP02 circuit test for Class D Manual, what is the time limit for Side Parking and for the Three-Point Turn?";
+  q.question_ms = "Dalam ujian litar KPP02 bagi Kelas D Manual, apakah had masa bagi Parkir Sisi dan Pusingan Tiga Penjuru?";
+  q.options_en = ["Side Parking: 1 minute; Three-Point Turn: 30 seconds", "Side Parking: 5 minutes; Three-Point Turn: 3 minutes", "Side Parking: 10 minutes; Three-Point Turn: 5 minutes", "Side Parking: 3 minutes; Three-Point Turn: 5 minutes"];
+  q.options_ms = ["Parkir Sisi: 1 minit; Pusingan Tiga Penjuru: 30 saat", "Parkir Sisi: 5 minit; Pusingan Tiga Penjuru: 3 minit", "Parkir Sisi: 10 minit; Pusingan Tiga Penjuru: 5 minit", "Parkir Sisi: 3 minit; Pusingan Tiga Penjuru: 5 minit"];
+  q.correct_index = 1;
+  q.explanation_en = "Side Parking must be finished within 5 minutes and the Three-Point Turn within 3 minutes.";
+  q.explanation_ms = "Parkir Sisi perlu disiapkan dalam 5 minit dan Pusingan Tiga Penjuru dalam 3 minit.";
+}
+for (const s of ["mock-da-2", "mock-d-2"]) {
+  const q = questions.find((x) => x.set_id === s && x.order_index === 31);
+  q.question_en = "Why is the road especially slippery at the start of rain after a dry spell?";
+  q.question_ms = "Mengapakah jalan sangat licin pada permulaan hujan selepas cuaca kering yang lama?";
+}
+for (const s of ["mock-da-5", "mock-d-5"]) {
+  const q = questions.find((x) => x.set_id === s && x.order_index === 43);
+  q.options_en[q.correct_index] = q.options_en[q.correct_index].replace(" at 300 km/h", "");
+  q.options_ms[q.correct_index] = q.options_ms[q.correct_index].replace(/ pada 300 km\/j/, "");
+}
+
+// Learner-facing text carries no citation: strip "(KPP ..., m/s N)" from explanations.
+const CITE = /\s*\(KPP[^()]*(?:\([^()]*\)[^()]*)*\)\s*$/;
+const LEAD_EN = /^(?:According to|Under|Based on|In)\s+[^,]*?(?:KPP|m\/s|page)[^,]*(?:\([^)]*\))?[^,]*,\s*/i;
+const LEAD_MS = /^(?:Menurut|Berdasarkan|Di bawah|Dalam)\s+[^,]*?(?:KPP|m\/s|halaman)[^,]*(?:\([^)]*\))?[^,]*,\s*/i;
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const PAREN = /\s*\([^()]*(?:m\/s|page|halaman)[^()]*\)/gi;
+const PAGE_EN = /\bPages?\s+[\d\s&–-]+\s+of\s+KPP\s+(?:Kelas\s+)?[A-Za-z/]+(?:\s+[A-Za-z]+)?(?=\s+(?:cites|states?|explicitly|lists|notes|says|defines))/gi;
+const PAGE_MS = /\bHalaman\s+[\d\s&–-]+\s+(?:buku teks\s+)?KPP\s+(?:Kelas\s+)?[A-Za-z/]+(?:\s+[A-Za-z]+)?/gi;
+const scrub = (s, lead, page, who) => cap(
+  s.replace(CITE, "").replace(PAREN, "").replace(/,\s*m\/s\s*[\d\s,–-]+(?=\))/gi, "")
+    .replace(lead, "").replace(page, who)
+    .replace(/\bpages?\s+[\d\s&–-]+(?=\s+[a-z])/g, "the textbook").replace(/\bPages?\s+[\d\s&–-]+(?=\s+[a-z])/g, "The textbook")
+    .replace(/\bhalaman\s+[\d\s&–-]+/g, "buku teks").replace(/\bHalaman\s+[\d\s&–-]+/g, "Buku teks")
+    .trim());
+for (const q of questions) {
+  q.explanation_en = scrub(q.explanation_en ?? "", LEAD_EN, PAGE_EN, "The textbook");
+  q.explanation_ms = scrub(q.explanation_ms ?? "", LEAD_MS, PAGE_MS, "Buku teks");
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6. Verify Acceptance Metrics

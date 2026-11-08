@@ -116,6 +116,13 @@ describe("KPP Question Bank & Architecture Audit", () => {
     }
   });
 
+  // 4b. Learner-facing explanations carry no raw book citation
+  it("ensures explanations carry no raw citation", () => {
+    for (const q of KPP_TEXTBOOK_QUESTIONS) {
+      expect(`${q.explanation_en} ${q.explanation_ms}`).not.toMatch(/\(KPP|m\/s \d|\.pdf/i);
+    }
+  });
+
   // 5. The right option is the longest no more often than chance (~1 in 4)
   it("ensures correct option is the longest no more often than chance (~1 in 4)", () => {
     let longestEn = 0;
