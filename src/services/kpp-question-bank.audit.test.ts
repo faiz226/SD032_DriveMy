@@ -66,7 +66,7 @@ describe("KPP Question Bank & Architecture Audit", () => {
 
   // 2. Every question has 4 options and a valid correct index (0-3)
   it("ensures every question has exactly 4 options and valid correct_index", () => {
-    expect(KPP_TEXTBOOK_QUESTIONS.length).toBe(1020);
+    expect(KPP_TEXTBOOK_QUESTIONS.length).toBe(510);
 
     for (const q of KPP_TEXTBOOK_QUESTIONS) {
       expect(Array.isArray(q.options_en)).toBe(true);

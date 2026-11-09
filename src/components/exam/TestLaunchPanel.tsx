@@ -34,9 +34,6 @@ const MOCK_NUMBERS = [
   { num: 1, titleKey: "launch.mock1", descKey: "launch.mockDesc" },
   { num: 2, titleKey: "launch.mock2", descKey: "launch.mockDesc" },
   { num: 3, titleKey: "launch.mock3", descKey: "launch.mockDesc" },
-  { num: 4, titleKey: "launch.mock4", descKey: "launch.mockDesc" },
-  { num: 5, titleKey: "launch.mock5", descKey: "launch.mockDesc" },
-  { num: 6, titleKey: "launch.mock6", descKey: "launch.mockDesc" },
 ] as const;
 
 function buildQuizSetId(part: string, setNum: number, track: LicenseTrack): string {
@@ -232,7 +229,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                 {t("launch.selectPracticeSet")}
               </legend>
               <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((num) => {
+                {[1, 2, 3].map((num) => {
                   const isSelected = Boolean(selectedPart) && selectedPracticeNum === num;
                   return (
                     <button

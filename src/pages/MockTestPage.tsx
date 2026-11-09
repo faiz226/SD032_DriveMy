@@ -85,7 +85,7 @@ export function MockTestPage() {
       if (!user) throw new Error("A signed-in account is required to save a mock attempt");
       const saved = await saveMutation.mutateAsync({
         user_id: user.id,
-        set_id: selectedSet,
+        set_id: questions[0]?.set_id ?? selectedSet,
         score: 0,
         total_questions: examResult.total,
         percentage: 0,
