@@ -13,58 +13,19 @@ interface SafetyPrinciplesLabProps {
   onScenarioSolved?: (id: string) => void;
 }
 
-interface SpeedSpec {
-  speedKmh: number;
-  thinkingMeters: number;
-  brakingDryMeters: number;
-  refNoteEn: string;
-  refNoteMs: string;
-}
-
-const STOPPING_SPEEDS: SpeedSpec[] = [
-  {
-    speedKmh: 30,
-    thinkingMeters: 9,
-    brakingDryMeters: 6,
-    refNoteEn: "Residential / school zone speed (total 15 m dry = ~3.5 car lengths)",
-    refNoteMs: "Kelajuan kawasan perumahan / sekolah (jumlah 15 m kering = ~3.5 panjang kereta)",
-  },
-  {
-    speedKmh: 50,
-    thinkingMeters: 14,
-    brakingDryMeters: 18,
-    refNoteEn: "Urban road speed (total 32 m dry = ~7.5 car lengths)",
-    refNoteMs: "Kelajuan jalan bandar (jumlah 32 m kering = ~7.5 panjang kereta)",
-  },
-  {
-    speedKmh: 60,
-    thinkingMeters: 17,
-    brakingDryMeters: 27,
-    refNoteEn: "City arterial speed (total 44 m dry = ~10.5 car lengths)",
-    refNoteMs: "Kelajuan jalan utama bandar (jumlah 44 m kering = ~10.5 panjang kereta)",
-  },
-  {
-    speedKmh: 80,
-    thinkingMeters: 22,
-    brakingDryMeters: 54,
-    refNoteEn: "Heavy vehicle expressway speed (total 76 m dry = ~18 car lengths)",
-    refNoteMs: "Had laju kenderaan berat di lebuh raya (jumlah 76 m kering = ~18 panjang kereta)",
-  },
-  {
-    speedKmh: 90,
-    thinkingMeters: 25,
-    brakingDryMeters: 68,
-    refNoteEn: "National federal / state road limit (total 93 m dry = ~22 car lengths)",
-    refNoteMs: "Had laju jalan persekutuan / negeri (jumlah 93 m kering = ~22 panjang kereta)",
-  },
-  {
-    speedKmh: 110,
-    thinkingMeters: 31,
-    brakingDryMeters: 102,
-    refNoteEn: "National expressway limit (total 133 m dry = ~31.5 car lengths)",
-    refNoteMs: "Had laju lebuh raya kebangsaan (jumlah 133 m kering = ~31.5 panjang kereta)",
-  },
+const STOPPING_SPEEDS = [
+  { speedKmh: 20, thinkingMeters: 6, brakingMeters: 3 },
+  { speedKmh: 30, thinkingMeters: 9, brakingMeters: 6 },
+  { speedKmh: 40, thinkingMeters: 11, brakingMeters: 11 },
+  { speedKmh: 60, thinkingMeters: 17, brakingMeters: 27 },
+  { speedKmh: 70, thinkingMeters: 19, brakingMeters: 39 },
+  { speedKmh: 80, thinkingMeters: 22, brakingMeters: 54 },
+  { speedKmh: 90, thinkingMeters: 25, brakingMeters: 68 },
+  { speedKmh: 100, thinkingMeters: 28, brakingMeters: 84 },
 ];
+const MAX_STOPPING_METERS = Math.max(
+  ...STOPPING_SPEEDS.map(({ thinkingMeters, brakingMeters }) => thinkingMeters + brakingMeters),
+);
 
 interface TyreDiagnostic {
   id: "normal" | "over" | "under" | "alignment";
@@ -85,10 +46,10 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Kehausan bunga tayar sekata",
     wearPatternEn: "Uniform tread depth >= 1.6 mm across centre and both shoulders",
     wearPatternMs: "Kedalaman bunga sekata >= 1.6 mm di bahagian tengah dan kedua-dua bahu tayar",
-    causeEn: "Correct cold tyre inflation pressure (180-220 kPa / 26-32 psi) and balanced wheel alignment.",
-    causeMs: "Tekanan angin tayar sejuk yang betul (180-220 kPa / 26-32 psi) dan penjajaran roda seimbang.",
-    fixEn: "Rotate tyres every 8,000-10,000 km and check pressure weekly when tyres are cold.",
-    fixMs: "Giliskan tayar setiap 8,000-10,000 km dan periksa tekanan setiap minggu semasa tayar sejuk.",
+    causeEn: "Tyres inflated to the recommended pressure and wheels correctly aligned.",
+    causeMs: "Tekanan angin tayar mengikut cadangan dan penjajaran roda yang betul.",
+    fixEn: "Check tyre pressure and inspect the tread.",
+    fixMs: "Periksa tekanan angin dan keadaan bunga tayar.",
   },
   {
     id: "over",
@@ -109,8 +70,8 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     wearPatternMs: "Bahu kiri dan kanan haus manakala bahagian tengah masih mempunyai bunga",
     causeEn: "Under-inflation (kurang tekanan angin). Low pressure causes the tyre sidewalls to flex and load the shoulders.",
     causeMs: "Kekurangan tekanan angin (under-inflation) menyebabkan beban tertumpu pada kedua-dua bahu tayar.",
-    fixEn: "Inflate cold tyres to 180-220 kPa (26-32 psi) and inspect the valve stem or tread for slow punctures.",
-    fixMs: "Pam tayar sejuk kepada 180-220 kPa (26-32 psi) dan periksa injap atau kebocoran perlahan.",
+    fixEn: "Inflate the tyres to the manufacturer’s recommended pressure.",
+    fixMs: "Pam tayar mengikut tekanan yang disyorkan oleh pengeluar.",
   },
   {
     id: "alignment",
@@ -252,20 +213,20 @@ const HAZARD_DRILLS: HazardDrill[] = [
     scenarioEn: "You want to move into the right lane to overtake a slower lorry. What is the exact C.I.T.O. order?",
     scenarioMs: "Anda ingin bergerak ke lorong kanan untuk memotong lori yang perlahan. Apakah urutan C.I.T.O. yang betul?",
     optionsEn: [
-      "1. Cermin (Mirrors) -> 2. Isyarat (Signal >=3s) -> 3. Titik Buta (Head-check blind spot) -> 4. Olah Gerak (Maneuver)",
+      "1. Cermin (Mirrors) -> 2. Isyarat (Signal) -> 3. Titik Buta (Head-check blind spot) -> 4. Olah Gerak (Maneuver)",
       "1. Olah Gerak (Turn wheel) -> 2. Isyarat (Signal) -> 3. Cermin (Mirrors) -> 4. Titik Buta (Blind spot)",
       "1. Isyarat (Signal) -> 2. Olah Gerak (Turn wheel immediately) without checking mirrors or blind spot",
     ],
     optionsMs: [
-      "1. Cermin -> 2. Isyarat (>=3 saat) -> 3. Titik Buta (Toledo bahu) -> 4. Olah Gerak (Gerakkan stereng)",
+      "1. Cermin -> 2. Isyarat -> 3. Titik Buta (Toleh ke arah bahu) -> 4. Olah Gerak (Gerakkan stereng)",
       "1. Olah Gerak -> 2. Isyarat -> 3. Cermin -> 4. Titik Buta",
       "1. Isyarat -> 2. Olah Gerak serta-merta tanpa memeriksa cermin atau titik buta",
     ],
     correctIdx: 0,
     feedbackEn:
-      "C.I.T.O. ensures you assess rear traffic in your mirrors first, warn others with your indicator for at least 3 seconds, verify the side blind spot by glancing over your shoulder, and only then steer smoothly.",
+      "C.I.T.O. ensures you assess rear traffic in your mirrors first, warn others with your indicator, verify the side blind spot by glancing over your shoulder, and only then steer smoothly.",
     feedbackMs:
-      "C.I.T.O. memastikan anda menilai trafik di cermin dahulu, memberi amaran isyarat sekurang-kurangnya 3 saat, menoleh sedikit untuk memeriksa titik buta, dan barulah menggerakkan stereng dengan lancar.",
+      "C.I.T.O. memastikan anda menilai trafik di cermin dahulu, memberi isyarat yang sesuai, menoleh sedikit untuk memeriksa titik buta, dan barulah menggerakkan stereng dengan lancar.",
   },
   {
     id: "drill-under-oversteer",
@@ -292,26 +253,26 @@ const HAZARD_DRILLS: HazardDrill[] = [
   },
   {
     id: "drill-breakdown",
-    titleEn: "Expressway breakdown & MERS 999 emergency",
-    titleMs: "Kerosakan di lebuh raya & kecemasan MERS 999",
+    titleEn: "Expressway breakdown",
+    titleMs: "Kerosakan di lebuh raya",
     ref: "Kecemasan Lebuh Raya",
     scenarioEn: "Your vehicle breaks down on the expressway shoulder at night. Where must you place the red reflective warning triangle?",
     scenarioMs: "Kenderaan anda rosak di lorong kecemasan lebuh raya pada waktu malam. Di manakah segitiga amaran pantulan merah wajib diletakkan?",
     optionsEn: [
-      "At least 45 metres behind the vehicle facing oncoming traffic, with hazard lights switched on and passengers evacuated behind the guardrail",
+      "50 metres behind the vehicle",
       "Directly against the rear bumper (less than 1 metre away) while passengers sit inside the car",
       "In front of the front bonnet facing forward",
     ],
     optionsMs: [
-      "Sekurang-kurangnya 45 meter di belakang kenderaan menghadap trafik yang datang, dengan lampu kecemasan dipasang dan penumpang berlindung di belakang penghadang",
+      "50 meter di belakang kenderaan",
       "Betul-betul rapat pada bampar belakang (kurang 1 meter) sambil penumpang duduk di dalam kereta",
       "Di hadapan bonet hadapan kenderaan",
     ],
     correctIdx: 0,
     feedbackEn:
-      "Placing the red reflective triangle at least 45 metres behind the vehicle gives high-speed drivers time to react. At a crash scene, call MERS 999, never move a victim with suspected spinal injury unless there is fire hazard, and never remove a motorcyclist's helmet.",
+      "Place the warning sign 50 metres behind the vehicle, switch on your hazard lights and keep passengers away from traffic.",
     feedbackMs:
-      "Meletakkan segitiga pantulan merah sekurang-kurangnya 45 meter di belakang kenderaan memberi masa kepada pemandu lain untuk bertindak balas. Jika berlaku kemalangan, hubungi MERS 999 dan jangan tanggalkan topi keledar mangsa motosikal.",
+      "Letakkan tanda amaran 50 meter di belakang kenderaan, nyalakan lampu kecemasan dan jauhkan penumpang daripada trafik.",
   },
 ];
 
@@ -320,9 +281,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
   const [activeLab, setActiveLab] = useState<"stopping" | "hazards" | "rpk" | "crs">("stopping");
 
   // Lab 1: Stopping Distance & Following Rule
-  const [selectedSpeedIdx, setSelectedSpeedIdx] = useState<number>(4); // 90 km/h default
+  const [selectedSpeedIdx, setSelectedSpeedIdx] = useState(6); // 90 km/h default
   const [wetRoad, setWetRoad] = useState<boolean>(false);
-  const [glareSeconds, setGlareSeconds] = useState<number>(1);
 
   // Lab 2: Hazards
   const [drillAnswers, setDrillAnswers] = useState<Record<string, number>>({});
@@ -334,18 +294,13 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
   // Lab 4: CRS & Headrest
   const [crsAnswers, setCrsAnswers] = useState<Record<string, number>>({});
 
-  const speedSpec = STOPPING_SPEEDS[selectedSpeedIdx] ?? STOPPING_SPEEDS[4];
-  const brakingMeters = wetRoad ? speedSpec.brakingDryMeters * 2 : speedSpec.brakingDryMeters;
+  const speedSpec = STOPPING_SPEEDS[selectedSpeedIdx];
+  const { brakingMeters } = speedSpec;
   const totalStoppingMeters = speedSpec.thinkingMeters + brakingMeters;
-  const carLengths = (totalStoppingMeters / 4.3).toFixed(1);
   const followingRuleSeconds = wetRoad ? 4 : 2;
   const metersPerSecond = speedSpec.speedKmh / 3.6;
   const safeFollowingMeters = Math.round(metersPerSecond * followingRuleSeconds);
   const twelveSecScanMeters = Math.round(metersPerSecond * 12);
-
-  // Night glare math (1s glare = 7s recovery = 140 m at 72 km/h)
-  const recoverySeconds = glareSeconds * 7;
-  const blindDistanceMeters = Math.round(metersPerSecond * recoverySeconds);
 
   const activeTyreSpec = TYRE_DIAGNOSTICS.find((t) => t.id === selectedTyre) ?? TYRE_DIAGNOSTICS[0];
 
@@ -471,8 +426,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-semibold text-foreground">
                   {lang === "en"
-                    ? "Select travel speed (Malaysian road safety standards):"
-                    : "Pilih kelajuan pemanduan (Piawaian keselamatan jalan raya Malaysia):"}
+                    ? "Select a speed:"
+                    : "Pilih kelajuan:"}
                 </span>
                 <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted/40">
                   <button
@@ -514,7 +469,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                     }`}
                   >
                     <div className="type-figure text-base">{spec.speedKmh}</div>
-                    <div className="text-[11px] text-muted-foreground">km/h</div>
+                    <div className="text-[0.8125rem] text-muted-foreground">km/h</div>
                   </button>
                 ))}
               </div>
@@ -523,30 +478,25 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               <div className="panel p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-foreground">
-                    {lang === "en" ? speedSpec.refNoteEn : speedSpec.refNoteMs}
+                    {lang === "en" ? "Stopping distance = reaction distance + braking distance" : "Jarak berhenti = jarak berfikir + jarak membrek"}
                   </span>
-                  <span className="pill pill-neutral">1 car = 4.3 m</span>
                 </div>
 
-                <div className="w-full h-8 rounded-xl bg-muted overflow-hidden flex border border-border">
+                <div aria-hidden="true" className="w-full h-8 rounded-xl bg-muted overflow-hidden flex border border-border">
                   <div
-                    className="h-full bg-brand text-brand-foreground flex items-center justify-center text-xs font-bold transition-all duration-200 overflow-hidden whitespace-nowrap px-2"
+                    className="h-full bg-brand transition-all duration-200"
                     style={{
-                      width: `${Math.max(14, (speedSpec.thinkingMeters / 180) * 100)}%`,
+                      width: `${(speedSpec.thinkingMeters / MAX_STOPPING_METERS) * 100}%`,
                     }}
                     title={lang === "en" ? "Thinking distance" : "Jarak berfikir"}
-                  >
-                    {speedSpec.thinkingMeters} m
-                  </div>
+                  />
                   <div
-                    className="h-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs font-bold transition-all duration-200 overflow-hidden whitespace-nowrap px-2"
+                    className="h-full bg-destructive transition-all duration-200"
                     style={{
-                      width: `${Math.max(18, (brakingMeters / 180) * 100)}%`,
+                      width: `${(brakingMeters / MAX_STOPPING_METERS) * 100}%`,
                     }}
                     title={lang === "en" ? "Braking distance" : "Jarak membrek"}
-                  >
-                    {brakingMeters} m
-                  </div>
+                  />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-xs pt-1">
@@ -567,7 +517,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       {lang === "en" ? "Total stopping" : "Jumlah jarak berhenti"}
                     </span>
                     <span className="type-figure text-base">
-                      {totalStoppingMeters} m ({carLengths} cars)
+                      {totalStoppingMeters} m
                     </span>
                   </div>
                 </div>
@@ -584,7 +534,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       : `Jarak mengekori ${followingRuleSeconds} saat`}
                   </span>
                   <div className="type-figure text-2xl mt-0.5">{safeFollowingMeters} m</div>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-[0.8125rem] text-muted-foreground">
                     {lang === "en"
                       ? `At ${speedSpec.speedKmh} km/h (${wetRoad ? "Wet" : "Dry"})`
                       : `Pada ${speedSpec.speedKmh} km/j (${wetRoad ? "Basah" : "Kering"})`}
@@ -595,7 +545,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                     {lang === "en" ? "12-second horizon scan" : "Imbasan 12 saat ke hadapan"}
                   </span>
                   <div className="type-figure text-2xl mt-0.5">{twelveSecScanMeters} m</div>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-[0.8125rem] text-muted-foreground">
                     {lang === "en"
                       ? "Early hazard detection zone"
                       : "Zon pengesanan bahaya awal"}
@@ -611,28 +561,11 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       ? "Night high-beam glare recovery"
                       : "Pemulihan silau lampu tinggi malam"}
                   </span>
-                  <div className="inline-flex gap-1">
-                    {[1, 2].map((sec) => (
-                      <button
-                        key={sec}
-                        type="button"
-                        onClick={() => setGlareSeconds(sec)}
-                        aria-pressed={glareSeconds === sec}
-                        className={`px-2 py-0.5 rounded text-xs font-bold border cursor-pointer ${
-                          glareSeconds === sec
-                            ? "bg-brand text-brand-foreground border-foreground"
-                            : "bg-background text-muted-foreground border-border"
-                        }`}
-                      >
-                        {sec}s glare
-                      </button>
-                    ))}
-                  </div>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {lang === "en"
-                    ? `${glareSeconds} second(s) of oncoming high-beam glare causes ${recoverySeconds} seconds of temporary night blindness (1s glare = 7s recovery). At ${speedSpec.speedKmh} km/h, you travel ${blindDistanceMeters} metres virtually blind (140 m at 72 km/h). Look toward the left road edge and dip your own high beams within 200 m.`
-                    : `${glareSeconds} saat terkena silau lampu tinggi menyebabkan ${recoverySeconds} saat buta sementara (1s silau = 7s pemulihan). Pada ${speedSpec.speedKmh} km/j, anda bergerak sejauh ${blindDistanceMeters} meter tanpa penglihatan jelas (140 m pada 72 km/j). Pandang ke garisan kiri jalan dan rendahkan lampu tinggi dalam jarak 200 m.`}
+                    ? "In the handbook example, recovery from glare takes about seven seconds. At 70 km/h, the vehicle travels roughly 140 metres during that time. Adjust your speed when glare limits your view."
+                    : "Dalam contoh buku panduan, mata mengambil kira-kira tujuh saat untuk pulih daripada silau. Pada 70 km/j, kenderaan bergerak kira-kira 140 meter dalam tempoh itu. Sesuaikan kelajuan apabila silau mengehadkan penglihatan."}
                 </p>
               </div>
             </div>
@@ -661,7 +594,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                         {lang === "en" ? drill.titleEn : drill.titleMs}
                       </span>
                     </div>
-                    <div className="text-[11px] text-muted-foreground">{drill.ref}</div>
+                    <div className="text-[0.8125rem] text-muted-foreground">{drill.ref}</div>
                     <p className="text-sm font-semibold text-foreground leading-snug pt-1">
                       {lang === "en" ? drill.scenarioEn : drill.scenarioMs}
                     </p>
@@ -726,7 +659,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                   <h3 className="text-sm font-bold font-heading">
                     {lang === "en"
                       ? "RPK (7-min, 25 items) · Tyre wear & pressure diagnostic"
-                      : "RPK (7 minit, 25 item) · Diagnostik kehausan & tekanan tayar"}
+                      : "RPK · Pemeriksaan kehausan dan tekanan tayar"}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
@@ -734,7 +667,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       : "Pilih corak kehausan bunga tayar untuk melihat punca"}
                   </p>
                 </div>
-                <span className="pill pill-info">180-220 kPa · Min 1.6 mm TWI</span>
+                <span className="pill pill-info">{lang === "en" ? "Check pressure and tread" : "Periksa tekanan dan bunga tayar"}</span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -827,7 +760,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <h3 className="text-sm font-bold font-heading">
                   {lang === "en"
                     ? "RSM (5-min, 8 steps) · 4-stage ignition switch"
-                    : "RSM (5 minit, 8 langkah) · Suis pencucuhan 4 peringkat"}
+                    : "RSM · Suis pencucuhan"}
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   {lang === "en"

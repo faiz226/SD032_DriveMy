@@ -169,12 +169,12 @@ const VALID_CATEGORIES = new Set(["road-signs", "traffic-rules", "safety-princip
 const VALID_SET_IDS = new Set([
   "quiz-pool",
   "mock-1", "mock-2", "mock-3",
-  "quiz-a-1", "quiz-a-2", "quiz-a-3", "quiz-a-4", "quiz-a-5", "quiz-a-6",
-  "quiz-b-1", "quiz-b-2", "quiz-b-3", "quiz-b-4", "quiz-b-5", "quiz-b-6",
-  "quiz-c-da-1", "quiz-c-da-2", "quiz-c-da-3", "quiz-c-da-4", "quiz-c-da-5", "quiz-c-da-6",
-  "quiz-c-d-1", "quiz-c-d-2", "quiz-c-d-3", "quiz-c-d-4", "quiz-c-d-5", "quiz-c-d-6",
-  "mock-da-1", "mock-da-2", "mock-da-3", "mock-da-4", "mock-da-5", "mock-da-6",
-  "mock-d-1", "mock-d-2", "mock-d-3", "mock-d-4", "mock-d-5", "mock-d-6",
+  "quiz-a-1", "quiz-a-2", "quiz-a-3",
+  "quiz-b-1", "quiz-b-2", "quiz-b-3",
+  "quiz-c-da-1", "quiz-c-da-2", "quiz-c-da-3",
+  "quiz-c-d-1", "quiz-c-d-2", "quiz-c-d-3",
+  "mock-da-1", "mock-da-2", "mock-da-3",
+  "mock-d-1", "mock-d-2", "mock-d-3",
 ]);
 
 function validateQuestion(q, idx) {
@@ -221,7 +221,7 @@ async function seed() {
 
   console.log(`📊  Questions loaded: ${ALL_QUESTIONS.length} total`);
   for (const [setId, count] of Object.entries(bySets)) {
-    const expected = setId === "quiz-pool" ? null : 50;
+    const expected = setId.startsWith("mock-") ? 50 : null;
     const flag = expected && count !== expected ? " ⚠️  (expected 50)" : "";
     console.log(`     ${setId.padEnd(12)} ${count}${flag}`);
   }
@@ -243,8 +243,8 @@ async function seed() {
   // ── Verify mock sets are exactly 50 ──────────────────────────────────────
   for (const setId of [
     "mock-1", "mock-2", "mock-3",
-    "mock-da-1", "mock-da-2", "mock-da-3", "mock-da-4", "mock-da-5", "mock-da-6",
-    "mock-d-1", "mock-d-2", "mock-d-3", "mock-d-4", "mock-d-5", "mock-d-6",
+    "mock-da-1", "mock-da-2", "mock-da-3",
+    "mock-d-1", "mock-d-2", "mock-d-3",
   ]) {
     const count = ALL_QUESTIONS.filter((q) => q.set_id === setId).length;
     if (count !== 50) {

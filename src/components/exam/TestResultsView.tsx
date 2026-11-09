@@ -121,7 +121,7 @@ export function TestResultsView({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t("results.score")}</p>
-              <p className="type-display mt-2 text-[3.5rem] sm:text-[4.25rem]">
+              <p className="type-display mt-2 text-[2.25rem] sm:text-[4.25rem]">
                 {result.score.toLocaleString(language === "ms" ? "ms-MY" : "en-MY")}
                 <span className="text-[0.45em] font-semibold text-muted-foreground"> / {result.total}</span>
               </p>
@@ -134,7 +134,7 @@ export function TestResultsView({
 
           {/* Factual, in marks, never consoling. */}
           {mode === "mock" && (
-            <p className="mt-4 text-[0.9375rem]">
+            <p className="mt-4 text-base">
               {t("results.passMark", { mark: passMark, total: result.total })}{" "}
               <span className={cn("font-semibold", passed ? "text-success" : "text-destructive")}>
                 {passed
@@ -279,14 +279,7 @@ export function TestResultsView({
 
                   {isExpanded && (
                     <div className="space-y-3 border-t border-border p-4">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-sm">{qText}</p>
-                        {q.source_url && !q.source_url.startsWith("http") && (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
-                            {q.source_url}
-                          </span>
-                        )}
-                      </div>
+                      <p className="text-sm">{qText}</p>
                       {q.image_url && (
                         <div className="panel overflow-hidden">
                           <img src={q.image_url} alt="" className="mx-auto max-h-40 w-auto object-contain p-3" />

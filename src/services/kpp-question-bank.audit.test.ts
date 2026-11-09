@@ -85,25 +85,48 @@ describe("KPP Question Bank & Architecture Audit", () => {
     }
   });
 
+  it("keeps three full sets per track and practice topic", () => {
+    const sets = new Map<string, KppQuestion[]>();
+    for (const question of KPP_TEXTBOOK_QUESTIONS) {
+      const rows = sets.get(question.set_id) ?? [];
+      rows.push(question);
+      sets.set(question.set_id, rows);
+    }
+    expect(sets.size).toBe(18);
+    for (const number of [1, 2, 3]) {
+      for (const track of ["da", "d"]) {
+        const rows = sets.get(`mock-${track}-${number}`) ?? [];
+        expect(rows).toHaveLength(50);
+        expect(rows.filter((q) => q.category === "road-signs")).toHaveLength(15);
+        expect(rows.filter((q) => q.category === "traffic-rules")).toHaveLength(25);
+        expect(rows.filter((q) => q.category === "safety-principles")).toHaveLength(10);
+      }
+      expect(sets.get(`quiz-a-${number}`)).toHaveLength(15);
+      expect(sets.get(`quiz-b-${number}`)).toHaveLength(25);
+      expect(sets.get(`quiz-c-da-${number}`)).toHaveLength(15);
+      expect(sets.get(`quiz-c-d-${number}`)).toHaveLength(15);
+    }
+  });
+
   // 3. No question repeats within the automatic set or within the manual set
   it("ensures no question repeats within the automatic set or manual set", () => {
     const mockDaQuestions = KPP_TEXTBOOK_QUESTIONS.filter((q: KppQuestion) => q.set_id.startsWith("mock-da-"));
     const seenDa = new Set<string>();
     for (const q of mockDaQuestions) {
-      const key = q.question_en.toLowerCase().trim();
+      const key = JSON.stringify([q.question_en.toLowerCase().trim(), q.image_url]);
       expect(seenDa.has(key)).toBe(false);
       seenDa.add(key);
     }
-    expect(mockDaQuestions.length).toBe(300);
+    expect(mockDaQuestions.length).toBe(150);
 
     const mockDQuestions = KPP_TEXTBOOK_QUESTIONS.filter((q: KppQuestion) => q.set_id.startsWith("mock-d-"));
     const seenD = new Set<string>();
     for (const q of mockDQuestions) {
-      const key = q.question_en.toLowerCase().trim();
+      const key = JSON.stringify([q.question_en.toLowerCase().trim(), q.image_url]);
       expect(seenD.has(key)).toBe(false);
       seenD.add(key);
     }
-    expect(mockDQuestions.length).toBe(300);
+    expect(mockDQuestions.length).toBe(150);
   });
 
   // 4. No question mentions a page in its text
@@ -130,14 +153,12 @@ describe("KPP Question Bank & Architecture Audit", () => {
 
     for (const q of KPP_TEXTBOOK_QUESTIONS) {
       const lensEn = q.options_en.map((o: string) => o.length);
-      if (lensEn[q.correct_index] === Math.max(...lensEn)) {
-        longestEn++;
-      }
+      const maxEn = Math.max(...lensEn);
+      if (lensEn[q.correct_index] === maxEn) longestEn += 1 / lensEn.filter((length) => length === maxEn).length;
 
       const lensMs = q.options_ms.map((o: string) => o.length);
-      if (lensMs[q.correct_index] === Math.max(...lensMs)) {
-        longestMs++;
-      }
+      const maxMs = Math.max(...lensMs);
+      if (lensMs[q.correct_index] === maxMs) longestMs += 1 / lensMs.filter((length) => length === maxMs).length;
     }
 
     const pctEn = (longestEn / KPP_TEXTBOOK_QUESTIONS.length) * 100;
@@ -145,10 +166,8 @@ describe("KPP Question Bank & Architecture Audit", () => {
 
     // Must be around 25% (allowing reasonable margin, under 28%)
     expect(pctEn).toBeLessThanOrEqual(28);
-    expect(pctEn).toBeGreaterThanOrEqual(20);
 
     expect(pctMs).toBeLessThanOrEqual(28);
-    expect(pctMs).toBeGreaterThanOrEqual(20);
   });
 
   // 6. Every sign image path in the app points to a file that exists

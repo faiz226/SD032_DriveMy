@@ -130,7 +130,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
           <h1 className="page-title mt-1.5">
             {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockExamDesc")}
           </h1>
-          <p className="mt-3 whitespace-pre-line text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground">
+          <p className="mt-3 whitespace-pre-line text-pretty text-base leading-relaxed text-muted-foreground">
             {mode === "quiz" ? t("launch.quizInfo") : t("launch.mockInfo")}
           </p>
         </header>
@@ -167,7 +167,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                     {item.id}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-1.5 text-[0.9375rem] font-semibold leading-snug">
+                    <span className="flex items-center gap-1.5 text-base font-semibold leading-snug">
                       <Car className="h-4 w-4 shrink-0" aria-hidden />
                       {t(item.titleKey as TranslationKey)}
                     </span>
@@ -211,7 +211,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                         {sec.id}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-[0.9375rem] font-semibold leading-snug">
+                        <span className="block text-base font-semibold leading-snug">
                           {t(sec.titleKey as TranslationKey)}
                         </span>
                         <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
@@ -295,7 +295,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                       {sec.num}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[0.9375rem] font-semibold leading-snug">
+                      <span className="block text-base font-semibold leading-snug">
                         {t(sec.titleKey as TranslationKey)}
                       </span>
                       <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">

@@ -909,7 +909,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                           <div className="text-xs font-semibold text-foreground leading-snug">
                             {lang === "en" ? offence.labelEn : offence.labelMs}
                           </div>
-                          <div className="text-[11px] text-muted-foreground mt-1">{offence.ref}</div>
+                          <div className="text-[0.8125rem] text-muted-foreground mt-1">{offence.ref}</div>
                         </div>
                         <span className="pill pill-danger shrink-0">+{offence.points} pts</span>
                       </button>
@@ -1221,7 +1221,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <span className="pill pill-info">{scen.badge}</span>
-                      <span className="text-[11px] text-muted-foreground">{scen.ref}</span>
+                      <span className="text-[0.8125rem] text-muted-foreground">{scen.ref}</span>
                     </div>
                     <p className="text-sm font-semibold text-foreground leading-snug">
                       {lang === "en" ? scen.promptEn : scen.promptMs}

@@ -132,7 +132,7 @@ export function TheoryPage() {
 
   // Total signs mastered
   const totalMasteredCount = useMemo(() => {
-    return Object.values(learned).filter(Boolean).length;
+    return roadSigns.filter((sign) => learned[sign.id]).length;
   }, [learned]);
 
   // Curated Spot-The-Sign Drill Questions (drawn from JPJ road signs syllabus)
@@ -142,7 +142,6 @@ export function TheoryPage() {
         promptEn: "Which warning sign alerts you to an approaching roundabout ahead?",
         promptMs: "Papan tanda amaran manakah yang menandakan bulatan di hadapan?",
         correctImg: "/signs/warn-roundabout-ahead.svg",
-        citation: "Bahagian I — Papan Tanda Amaran",
         options: [
           { img: "/signs/warn-roundabout-ahead.svg", correct: true },
           { img: "/signs/warn-crossroads.svg", correct: false },
@@ -154,7 +153,6 @@ export function TheoryPage() {
         promptEn: "Identify the mandatory sign requiring all traffic to keep to the left of the obstacle.",
         promptMs: "Kenal pasti papan tanda mandatori yang mewajibkan semua kenderaan mengikut sebelah kiri halangan.",
         correctImg: "/signs/mand-keep-left.svg",
-        citation: "Bahagian III — Papan Tanda Wajib",
         options: [
           { img: "/signs/mand-keep-left.svg", correct: true },
           { img: "/signs/mand-keep-right.svg", correct: false },
@@ -166,7 +164,6 @@ export function TheoryPage() {
         promptEn: "Which prohibitory sign indicates that U-turns are strictly forbidden?",
         promptMs: "Papan tanda larangan manakah yang melarang pusingan U?",
         correctImg: "/signs/prohib-no-u-turn.svg",
-        citation: "Bahagian II — Papan Tanda Larangan",
         options: [
           { img: "/signs/prohib-no-u-turn.svg", correct: true },
           { img: "/signs/prohib-no-left-turn.svg", correct: false },
@@ -178,7 +175,6 @@ export function TheoryPage() {
         promptEn: "Which temporary work-zone sign warns of road narrowing on the right side?",
         promptMs: "Papan tanda zon kerja sementara manakah yang memberi amaran jalan menyempit di sebelah kanan?",
         correctImg: "/signs/temp-road-narrows.svg",
-        citation: "Bahagian V — Papan Tanda Sementara Zon Kerja",
         options: [
           { img: "/signs/temp-road-narrows.svg", correct: true },
           { img: "/signs/temp-road-works.svg", correct: false },
@@ -190,7 +186,6 @@ export function TheoryPage() {
         promptEn: "Which regulatory sign gives clear notice to yield right-of-way to oncoming cross traffic?",
         promptMs: "Papan tanda manakah yang memberi arahan supaya memberi laluan kepada trafik lintasan?",
         correctImg: "/signs/prohib-give-way.svg",
-        citation: "Bahagian II — Papan Tanda Memberi Laluan",
         options: [
           { img: "/signs/prohib-give-way.svg", correct: true },
           { img: "/signs/prohib-stop.svg", correct: false },
@@ -351,7 +346,7 @@ export function TheoryPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="pill pill-brand">
-                    {totalMasteredCount}/140{" "}
+                    {totalMasteredCount}/{roadSigns.length}{" "}
                     {lang === "en" ? "mastered" : "dikuasai"}
                   </span>
                   <button
@@ -394,7 +389,7 @@ export function TheoryPage() {
                     >
                       <div className="space-y-1">
                         <div className="flex items-center justify-between gap-1.5">
-                          <span className={`pill text-[10px] py-0.5 px-2 ${cat.swatchClass}`}>
+                          <span className={`pill text-[0.8125rem] py-0.5 px-2 ${cat.swatchClass}`}>
                             {cat.shapeEn.split(" ")[0]}
                           </span>
                           <span className="type-figure text-xs text-muted-foreground">
@@ -405,7 +400,7 @@ export function TheoryPage() {
                           {lang === "en" ? cat.labelEn : cat.labelMs}
                         </div>
                       </div>
-                      <div className="text-[11px] text-muted-foreground line-clamp-2 leading-snug">
+                      <div className="text-[0.8125rem] text-muted-foreground line-clamp-2 leading-snug">
                         {lang === "en" ? cat.colorRuleEn : cat.colorRuleMs}
                       </div>
                     </button>
@@ -429,9 +424,6 @@ export function TheoryPage() {
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-semibold text-foreground">
                     {lang === "en" ? "Score:" : "Skor:"} {drillScore}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {currentDrill.citation}
                   </span>
                 </div>
               </div>
@@ -469,13 +461,13 @@ export function TheoryPage() {
                           loading="lazy"
                         />
                         {answered && opt.correct && (
-                          <span className="text-[11px] font-bold text-success flex items-center gap-1">
+                          <span className="text-[0.8125rem] font-bold text-success flex items-center gap-1">
                             <Check size={13} aria-hidden="true" />
                             {lang === "en" ? "Correct" : "Tepat"}
                           </span>
                         )}
                         {answered && picked && !opt.correct && (
-                          <span className="text-[11px] font-bold text-destructive flex items-center gap-1">
+                          <span className="text-[0.8125rem] font-bold text-destructive flex items-center gap-1">
                             <X size={13} aria-hidden="true" />
                             {lang === "en" ? "Incorrect" : "Salah"}
                           </span>
@@ -504,15 +496,15 @@ export function TheoryPage() {
               </div>
             </div>
 
-            {/* 140-Sign Flashcard and Reference Grid */}
+            {/* Sign Flashcards and Reference Grid */}
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div>
                   <h3 className="text-base font-bold font-heading">
                     {selectedCategory === "all"
                       ? lang === "en"
-                        ? "All 140 textbook road signs & markings"
-                        : "Kesemua 140 papan tanda & penandaan jalan"
+                        ? `${roadSigns.length} road signs and markings`
+                        : `${roadSigns.length} papan tanda dan penandaan jalan`
                       : ROAD_SIGN_CATEGORIES.find((c) => c.id === selectedCategory)
                         ? lang === "en"
                           ? ROAD_SIGN_CATEGORIES.find((c) => c.id === selectedCategory)?.labelEn
@@ -635,7 +627,7 @@ export function TheoryPage() {
                           >
                             <div className="space-y-2">
                               <div className="flex items-center justify-between gap-1">
-                                <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider">
+                                <Badge variant="outline" className="text-[0.8125rem] uppercase font-bold tracking-wider">
                                   {sign.type}
                                 </Badge>
                                 <button
@@ -676,10 +668,7 @@ export function TheoryPage() {
                               </div>
                             </div>
 
-                            <div className="pt-2 border-t border-border flex items-center justify-between">
-                              <span className="text-[10px] text-muted-foreground">
-                                {sign.source}
-                              </span>
+                            <div className="pt-2 border-t border-border flex justify-end">
                               <button
                                 type="button"
                                 data-flip
@@ -694,7 +683,7 @@ export function TheoryPage() {
                                       ?.focus(),
                                   );
                                 }}
-                                className="flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline cursor-pointer"
+                                className="flex items-center gap-1 text-[0.8125rem] font-semibold text-primary hover:underline cursor-pointer"
                               >
                                 <Repeat size={12} aria-hidden="true" />
                                 {lang === "en" ? "Flip back" : "Pusing semula"}
@@ -719,8 +708,8 @@ export function TheoryPage() {
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     {lang === "en"
-                      ? "Part A quiz contains 6 distinct 10-question practice sets covering all 140 signs."
-                      : "Kuiz Bahagian A mengandungi 6 set latihan berasingan meliputi kesemua 140 papan tanda."}
+                      ? "Part A has three practice sets of 15 questions each."
+                      : "Bahagian A mempunyai tiga set latihan dengan 15 soalan setiap set."}
                   </p>
                 </div>
                 <Button
@@ -783,10 +772,7 @@ export function TheoryPage() {
                       <CardContent className="p-5 flex flex-col justify-between h-full space-y-3">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="pill pill-info text-[10px]">{rule.badge}</span>
-                            <span className="text-[11px] text-muted-foreground">
-                              {rule.source}
-                            </span>
+                            <span className="pill pill-info text-[0.8125rem]">{rule.badge}</span>
                           </div>
                           <h4 className="font-heading font-bold text-base text-foreground leading-snug">
                             {lang === "en" ? rule.title : rule.titleMs}
@@ -851,10 +837,7 @@ export function TheoryPage() {
                       <CardContent className="p-5 flex flex-col justify-between h-full space-y-3">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="pill pill-info text-[10px]">{p.badge}</span>
-                            <span className="text-[11px] text-muted-foreground">
-                              {p.source}
-                            </span>
+                            <span className="pill pill-info text-[0.8125rem]">{p.badge}</span>
                           </div>
                           <h4 className="font-heading font-bold text-base text-foreground leading-snug">
                             {lang === "en" ? p.title : p.titleMs}
