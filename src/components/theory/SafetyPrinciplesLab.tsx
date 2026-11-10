@@ -99,94 +99,55 @@ interface CrsProfile {
   ruleMs: string;
 }
 
+// KPP General, PDF viewer pages 194–195.
 const CRS_PROFILES: CrsProfile[] = [
   {
     id: "crs-infant",
-    profileEn: "Infant (Newborn to 12-15 months)",
-    profileMs: "Bayi (Baru lahir hingga 12-15 bulan)",
-    specsEn: "Weight up to 13 kg · Fragile neck & spine",
-    specsMs: "Berat sehingga 13 kg · Leher & tulang belakang masih lembut",
+    profileEn: "Installing a child restraint",
+    profileMs: "Memasang kerusi keselamatan kanak-kanak",
+    specsEn: "Use an approved seat that suits the child's age and size.",
+    specsMs: "Gunakan kerusi yang diluluskan dan sesuai dengan umur serta saiz kanak-kanak.",
     correctOptionIndex: 0,
-    optionsEn: [
-      "Group 0/0+ rear-facing infant carrier; front airbag MUST be switched OFF if placed in front",
-      "Forward-facing booster cushion with adult diagonal seatbelt",
-      "Held firmly on an adult passenger's lap in the rear seat",
-    ],
-    optionsMs: [
-      "Kerusi bayi Kumpulan 0/0+ menghadap ke belakang; beg udara hadapan WAJIB dimatikan jika dipasang di hadapan",
-      "Kusyen penggalak (booster) menghadap ke hadapan dengan tali pinggang dewasa",
-      "Dipangku dengan kemas di atas riba penumpang dewasa di tempat duduk belakang",
-    ],
-    ruleEn:
-      "Infants up to 13 kg must ride in a rear-facing carrier so deceleration forces are distributed across the back and head. Never place a rear-facing seat in front of an active SRS airbag.",
-    ruleMs:
-      "Bayi sehingga 13 kg wajib menggunakan kerusi bayi menghadap ke belakang supaya daya brek diagihkan pada belakang badan. Jangan sekali-kali meletakkan kerusi menghadap belakang di hadapan beg udara SRS aktif.",
+    optionsEn: ["Fit it in the rear as the manufacturer directs", "Fit it in front for a shorter trip", "Fit it using the previous seat's instructions"],
+    optionsMs: ["Pasang di belakang mengikut arahan pengeluar", "Pasang di hadapan untuk perjalanan singkat", "Pasang mengikut arahan kerusi lama"],
+    ruleEn: "Follow the manufacturer's fitting and adjustment instructions. The handbook directs drivers to fit child seats in the rear.",
+    ruleMs: "Ikut arahan pemasangan dan pelarasan pengeluar. Buku panduan mengarahkan pemasangan kerusi kanak-kanak di belakang.",
   },
   {
     id: "crs-toddler",
-    profileEn: "Toddler (9 kg to 18 kg · ~1 to 4 years)",
-    profileMs: "Kanak-kanak kecil (9 kg hingga 18 kg · ~1 hingga 4 tahun)",
-    specsEn: "Weight 9-18 kg · Sitting upright independently",
-    specsMs: "Berat 9-18 kg · Boleh duduk tegak sendiri",
+    profileEn: "Child seat example",
+    profileMs: "Contoh kerusi keselamatan",
+    specsEn: "About 9 months to 4 years and 9–18 kg in the handbook example.",
+    specsMs: "Kira-kira 9 bulan hingga 4 tahun dan 9–18 kg dalam contoh buku panduan.",
     correctOptionIndex: 0,
-    optionsEn: [
-      "Group I child safety seat secured via ISOFIX or seatbelt in the rear passenger seat",
-      "Standard adult 3-point seatbelt without any child seat",
-      "Standing between the two front bucket seats",
-    ],
-    optionsMs: [
-      "Kerusi keselamatan kanak-kanak Kumpulan I dengan abah-abah (ISOFIX) di tempat duduk belakang",
-      "Tali pinggang keledar dewasa 3 penjuru tanpa sebarang kerusi kanak-kanak",
-      "Berdiri di ruang tengah antara dua kerusi hadapan",
-    ],
-    ruleEn:
-      "Children weighing 9-18 kg require a Group I child seat with an integrated 5-point harness anchored securely in the rear cabin.",
-    ruleMs:
-      "Kanak-kanak seberat 9-18 kg memerlukan kerusi keselamatan Kumpulan I dengan abah-abah bersepadu yang dipasang kemas di tempat duduk belakang.",
+    optionsEn: ["A suitable child seat in the rear", "A booster without the shoulder belt", "The adult belt on its own"],
+    optionsMs: ["Kerusi kanak-kanak yang sesuai di belakang", "Tempat duduk pengalas tanpa tali pinggang bahu", "Tali pinggang dewasa sahaja"],
+    ruleEn: "The example uses a forward-facing child seat fitted in the rear. Check the restraint manufacturer's limits and instructions.",
+    ruleMs: "Contoh menggunakan kerusi menghadap ke hadapan yang dipasang di belakang. Semak had dan arahan pengeluar kerusi.",
   },
   {
     id: "crs-booster",
-    profileEn: "Older child (Under 135 cm, under 36 kg, under 12 years)",
-    profileMs: "Kanak-kanak (< 135 cm, < 36 kg, bawah 12 tahun)",
-    specsEn: "Weight 15-36 kg · Height below 135 cm",
-    specsMs: "Berat 15-36 kg · Ketinggian kurang daripada 135 cm",
+    profileEn: "Booster seat example",
+    profileMs: "Contoh tempat duduk pengalas",
+    specsEn: "About 4–11 years and 15–36 kg in the handbook example.",
+    specsMs: "Kira-kira 4–11 tahun dan 15–36 kg dalam contoh buku panduan.",
     correctOptionIndex: 0,
-    optionsEn: [
-      "Group II/III booster seat so the diagonal belt crosses the collarbone/chest and lap belt sits across the pelvis",
-      "Tuck the diagonal shoulder belt behind the child's back so it does not touch the neck",
-      "Share a single adult seatbelt between two children sitting side by side",
-    ],
-    optionsMs: [
-      "Kerusi penggalak (booster) Kumpulan II/III supaya tali pinggang melintasi tulang selangka/dada dan pelvis",
-      "Selitkan tali pinggang bahu di belakang badan kanak-kanak supaya tidak terkena leher",
-      "Kongsi satu tali pinggang keledar dewasa untuk dua orang kanak-kanak",
-    ],
-    ruleEn:
-      "Mandatory CRS rules in Malaysia cover children under 135 cm, under 36 kg, and under 12 years old. A booster elevates the child so the adult belt rests on strong pelvic and shoulder bones rather than the neck and abdomen.",
-    ruleMs:
-      "Peraturan wajib CRS di Malaysia meliputi kanak-kanak di bawah 135 cm, di bawah 36 kg, dan berumur bawah 12 tahun. Kerusi penggalak memastikan tali pinggang terletak pada tulang bahu dan pelvis, bukan pada leher atau perut.",
+    optionsEn: ["Belt across the chest and hips", "Belt across the neck and belly", "Shoulder belt behind the back"],
+    optionsMs: ["Tali pinggang merentasi dada dan pinggul", "Tali pinggang merentasi leher dan perut", "Tali pinggang bahu di belakang badan"],
+    ruleEn: "A suitable booster helps the adult belt fit across the child's chest and hips.",
+    ruleMs: "Tempat duduk pengalas yang sesuai membantu tali pinggang dewasa merentasi dada dan pinggul kanak-kanak.",
   },
   {
     id: "crs-headrest",
-    profileEn: "Adult driver & passenger headrest adjustment",
-    profileMs: "Pelarasan penyandar kepala (headrest) pemandu & penumpang dewasa",
-    specsEn: "Whiplash neck injury prevention in rear-end collisions",
-    specsMs: "Pencegahan kecederaan leher (whiplash) apabila dilanggar dari belakang",
+    profileEn: "Adjusting the head restraint",
+    profileMs: "Melaras penyandar kepala",
+    specsEn: "A correctly adjusted restraint helps protect the neck.",
+    specsMs: "Penyandar yang dilaras dengan betul membantu melindungi leher.",
     correctOptionIndex: 0,
-    optionsEn: [
-      "Centre of headrest aligned with eye/ear level; back-of-head gap <= 3.5 inches (9-10 cm)",
-      "Lowest possible position behind the shoulder blades with a 25 cm gap",
-      "Remove the headrest completely to improve rear-window visibility",
-    ],
-    optionsMs: [
-      "Bahagian tengah penyandar kepala selari dengan paras mata/telinga; jarak belakang kepala <= 3.5 inci (9-10 cm)",
-      "Kedudukan paling rendah di belakang tulang belikat dengan jarak 25 cm",
-      "Tanggalkan penyandar kepala sepenuhnya untuk meluaskan pandangan cermin belakang",
-    ],
-    ruleEn:
-      "The headrest is a safety restraint, not a pillow. Align its centre with eye/ear level and keep the gap behind your head within 3.5 inches (9-10 cm) to prevent severe neck hyperextension.",
-    ruleMs:
-      "Penyandar kepala ialah alat keselamatan, bukan bantal rehat. Laraskan bahagian tengahnya selari dengan paras mata/telinga dan pastikan jarak belakang kepala tidak melebihi 3.5 inci (9-10 cm).",
+    optionsEn: ["Centre near ear level and close behind the head", "Centre level with the shoulders", "Centre near ear level with a wide gap"],
+    optionsMs: ["Bahagian tengah separas telinga dan rapat di belakang kepala", "Bahagian tengah separas bahu", "Bahagian tengah separas telinga dengan jarak yang luas"],
+    ruleEn: "Set the middle of the restraint around ear level. The handbook uses a fist-width as a maximum gap.",
+    ruleMs: "Laraskan bahagian tengah penyandar sekitar paras telinga. Buku panduan menggunakan lebar satu genggaman sebagai jarak maksimum.",
   },
 ];
 
@@ -230,26 +191,16 @@ const HAZARD_DRILLS: HazardDrill[] = [
   },
   {
     id: "drill-under-oversteer",
-    titleEn: "Understeer vs Oversteer cornering recovery",
-    titleMs: "Pemulihan Understeer vs Oversteer di selekoh",
+    titleEn: "Speed on wet bends",
+    titleMs: "Kelajuan di selekoh basah",
     ref: "Kawalan Selekoh",
-    scenarioEn: "While cornering on a slippery road, the front tyres lose grip and push wide toward the outer kerb (Understeer). How do you recover?",
-    scenarioMs: "Semasa membelok di jalan licin, tayar hadapan hilang cengkaman dan tersasar melebar ke luar selekoh (Understeer). Bagaimanakah cara memulihkannya?",
-    optionsEn: [
-      "Ease off the accelerator smoothly to shift weight back onto the front tyres and unwind the steering slightly until grip returns",
-      "Stamp hard on the accelerator and yank the steering wheel to full lock",
-      "Pull the handbrake abruptly to lock the rear wheels",
-    ],
-    optionsMs: [
-      "Lepaskan pedal pemecut secara perlahan untuk mengembalikan beban ke tayar hadapan dan luruskan sedikit stereng sehingga cengkaman pulih",
-      "Tekan pemecut sekuat hati dan pusingkan stereng secara mengejut ke tahap maksimum",
-      "Tarik brek tangan secara mengejut untuk mengunci roda belakang",
-    ],
+    scenarioEn: "You are approaching a bend on a wet road. When should you slow down?",
+    scenarioMs: "Anda menghampiri selekoh di jalan basah. Bilakah anda patut memperlahankan kenderaan?",
+    optionsEn: ["Before entering the bend", "At the centre of the bend", "After leaving the bend"],
+    optionsMs: ["Sebelum memasuki selekoh", "Di tengah selekoh", "Selepas keluar dari selekoh"],
     correctIdx: 0,
-    feedbackEn:
-      "In Understeer (front tyres sliding wide), easing off the throttle transfers weight forward to restore front tyre grip. In Oversteer (rear tail sliding out), ease off the pedals and steer smoothly into the direction of the rear skid.",
-    feedbackMs:
-      "Bagi Understeer (tayar hadapan menggelongsor keluar), lepaskan pemecut perlahan-lahan supaya tayar hadapan kembali mencengkam. Bagi Oversteer (bahagian belakang membuang), lepaskan pedal dan pusing stereng ke arah gelinciran.",
+    feedbackEn: "Wet surfaces reduce tyre grip. Use a lower speed as you approach the bend.",
+    feedbackMs: "Permukaan basah mengurangkan cengkaman tayar. Kurangkan kelajuan apabila menghampiri selekoh.",
   },
   {
     id: "drill-breakdown",
@@ -312,33 +263,33 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
       titleEn: "1. LOCK · Steering locked & key insertion/removal",
       titleMs: "1. LOCK · Stereng dikunci & kunci dimasukkan/dicabut",
       descEn:
-        "All electrical circuits are off and the steering column is mechanically locked. If the key will not turn from LOCK, gently rock the steering wheel left and right while turning the key.",
+        "The engine is off and the steering is locked. Insert or remove the key in this position.",
       descMs:
-        "Semua litar elektrik dimatikan dan stereng dikunci secara mekanikal. Jika kunci ketat pada kedudukan LOCK, gerakkan sedikit stereng ke kiri dan kanan sambil memulas kunci.",
+        "Enjin dimatikan dan stereng dikunci. Masukkan atau keluarkan kunci pada kedudukan ini.",
     },
     ACC: {
       titleEn: "2. ACC · Accessories powered (Engine off)",
       titleMs: "2. ACC · Aksesori berfungsi (Enjin mati)",
       descEn:
-        "Unlocks the steering wheel and powers low-draw accessories such as the radio, clock, and power sockets without energizing the ignition coil.",
+        "Accessories can be used with the engine off.",
       descMs:
-        "Membuka kunci stereng dan menghidupkan aksesori seperti radio dan soket kuasa tanpa menghidupkan sistem pencucuhan enjin.",
+        "Aksesori boleh digunakan semasa enjin dimatikan.",
     },
     ON: {
-      titleEn: "3. ON · Dashboard warning lamps & fuel pump active",
-      titleMs: "3. ON · Lampu amaran meter & sistem pencucuhan aktif",
+      titleEn: "3. ON · Check the instrument panel",
+      titleMs: "3. ON · Semak panel instrumen",
       descEn:
-        "All dashboard warning indicators (oil pressure, battery, brake, ABS, temperature) illuminate for self-check. The key returns to ON automatically while driving.",
+        "Pause at ON to check that the indicators work. The key returns to ON when released from START.",
       descMs:
-        "Semua lampu amaran pada panel meter menyala untuk semakan kendiri. Kunci kembali ke kedudukan ON secara automatik semasa enjin hidup.",
+        "Berhenti seketika pada ON untuk menyemak penunjuk. Kunci kembali ke ON apabila dilepaskan dari START.",
     },
     START: {
       titleEn: "4. START · Crank starter motor for 1 to 4 seconds max",
       titleMs: "4. START · Hidupkan motor penghidup selama 1 hingga 4 saat sahaja",
       descEn:
-        "Hold at START for 1-4 seconds and release immediately once the engine fires. If it fails to start, wait 10 seconds before re-cranking so the starter motor does not overheat.",
+        "Hold at START for 1-4 seconds and release immediately once the engine fires. If it does not start, release the key and wait briefly before trying again.",
       descMs:
-        "Pulas ke START selama 1-4 saat dan lepaskan kunci serta-merta sebaik sahaja enjin hidup. Jika gagal hidup, tunggu 10 saat sebelum mencuba semula.",
+        "Pulas ke START selama 1-4 saat dan lepaskan kunci serta-merta sebaik sahaja enjin hidup. Jika enjin tidak hidup, lepaskan kunci dan tunggu seketika sebelum mencuba semula.",
     },
   };
 
@@ -542,7 +493,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 </div>
                 <div className="p-3 rounded-xl bg-muted/50 border border-border">
                   <span className="text-xs text-muted-foreground block">
-                    {lang === "en" ? "12-second horizon scan" : "Imbasan 12 saat ke hadapan"}
+                    {lang === "en" ? "12-second scan before overtaking" : "Imbasan 12 saat sebelum memotong"}
                   </span>
                   <div className="type-figure text-2xl mt-0.5">{twelveSecScanMeters} m</div>
                   <span className="text-[0.8125rem] text-muted-foreground">
@@ -658,7 +609,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <div>
                   <h3 className="text-sm font-bold font-heading">
                     {lang === "en"
-                      ? "RPK (7-min, 25 items) · Tyre wear & pressure diagnostic"
+                      ? "RPK · Tyre wear and pressure checks"
                       : "RPK · Pemeriksaan kehausan dan tekanan tayar"}
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -759,7 +710,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               <div>
                 <h3 className="text-sm font-bold font-heading">
                   {lang === "en"
-                    ? "RSM (5-min, 8 steps) · 4-stage ignition switch"
+                    ? "RSM · Ignition switch"
                     : "RSM · Suis pencucuhan"}
                 </h3>
                 <p className="text-xs text-muted-foreground">

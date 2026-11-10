@@ -1670,19 +1670,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-1",
     "order_index": 20,
-    "question_en": "Besides giving you more time to brake, how does leaving a safe gap help?",
-    "question_ms": "Selain memberi lebih masa untuk membrek, bagaimana jarak mengekori yang selamat membantu?",
+    "question_en": "What changes when you drop back from a tall vehicle you are following?",
+    "question_ms": "Apakah yang berubah apabila anda menambah jarak di belakang kenderaan tinggi?",
     "options_en": [
-      "You can see more of the road ahead",
-      "You can turn without checking mirrors",
-      "You can match the lead car more closely",
-      "You can pass with a shorter sight line"
+      "More of the road ahead comes into view",
+      "The vehicle ahead fills more of the view",
+      "The view ahead stays the same",
+      "Less of the road ahead can be seen"
     ],
     "options_ms": [
-      "Anda dapat melihat lebih banyak laluan di hadapan",
-      "Anda boleh membelok tanpa memeriksa cermin",
-      "Anda boleh mengekori kereta hadapan dengan lebih rapat",
-      "Anda boleh memotong dengan pandangan lebih pendek"
+      "Lebih banyak jalan di hadapan dapat dilihat",
+      "Kenderaan di hadapan memenuhi lebih banyak pandangan",
+      "Pandangan di hadapan kekal sama",
+      "Kurang jalan di hadapan dapat dilihat"
     ],
     "correct_index": 0,
     "explanation_en": "With more space, the vehicle ahead blocks less of your view.",
@@ -1748,19 +1748,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-1",
     "order_index": 23,
-    "question_en": "While passing, why leave space beside the other vehicle?",
-    "question_ms": "Semasa memotong, mengapa perlu meninggalkan ruang di sisi kenderaan lain?",
+    "question_en": "You are already alongside a vehicle you are passing. Which gap still matters?",
+    "question_ms": "Anda sudah berada di sebelah kenderaan yang dipotong. Jarak manakah masih perlu dijaga?",
     "options_en": [
-      "To keep clearance while passing",
-      "To move back into the lane earlier",
-      "To make the other driver slow down",
-      "To shorten the time spent alongside"
+      "The gap between the sides of both vehicles",
+      "The gap behind the vehicle being passed",
+      "The gap to the centre line only",
+      "The gap to the vehicle behind you"
     ],
     "options_ms": [
-      "Untuk menjaga jarak sisi ketika memotong",
-      "Untuk kembali ke lorong lebih awal",
-      "Untuk meminta pemandu lain memperlahankan kenderaan",
-      "Untuk memendekkan masa berada di sebelah"
+      "Jarak antara sisi kedua-dua kenderaan",
+      "Jarak di belakang kenderaan yang dipotong",
+      "Jarak ke garisan tengah sahaja",
+      "Jarak ke kenderaan di belakang anda"
     ],
     "correct_index": 0,
     "explanation_en": "Keep a safe lateral gap throughout the pass.",
@@ -2112,19 +2112,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 12,
-    "question_en": "A traffic officer gives a hand signal to stop. What should you do?",
-    "question_ms": "Pegawai trafik memberi isyarat tangan supaya berhenti. Apakah tindakan anda?",
+    "question_en": "A traffic officer faces your lane with an upright palm. What does the signal mean?",
+    "question_ms": "Pegawai trafik menghadap lorong anda dengan tapak tangan tegak. Apakah maksud isyarat itu?",
     "options_en": [
-      "Stop as directed",
-      "Slow and continue",
-      "Follow the car ahead",
-      "Wait for a second signal"
+      "Stop and wait",
+      "Slow and proceed",
+      "Move to the right",
+      "Move to the left"
     ],
     "options_ms": [
-      "Berhenti mengikut arahan",
+      "Berhenti dan tunggu",
       "Perlahankan dan teruskan",
-      "Ikut kereta di hadapan",
-      "Tunggu isyarat kedua"
+      "Bergerak ke kanan",
+      "Bergerak ke kiri"
     ],
     "correct_index": 0,
     "explanation_en": "The raised-hand signal tells drivers to stop.",
@@ -2424,19 +2424,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 24,
-    "question_en": "Before driving at night, what should you check about the headlights?",
-    "question_ms": "Sebelum memandu pada waktu malam, apakah yang perlu diperiksa pada lampu hadapan?",
+    "question_en": "During a headlight check before a night trip, what should you verify besides whether the lights turn on?",
+    "question_ms": "Semasa memeriksa lampu hadapan sebelum perjalanan malam, apakah yang perlu diperiksa selain sama ada lampu menyala?",
     "options_en": [
-      "They work and are aimed correctly",
-      "They match the cabin light colour",
-      "They stay on when the engine stops",
-      "They flash with the direction indicators"
+      "The beams are aimed correctly",
+      "The beams point as high as possible",
+      "The beams reach the same height as the mirrors",
+      "The beams illuminate the bonnet evenly"
     ],
     "options_ms": [
-      "Lampu berfungsi dan dilaras dengan betul",
-      "Warnanya sama seperti lampu kabin",
-      "Lampu kekal menyala apabila enjin berhenti",
-      "Lampu berkelip bersama lampu isyarat"
+      "Pancaran dilaras dengan betul",
+      "Pancaran dihalakan setinggi mungkin",
+      "Pancaran mencapai paras cermin sisi",
+      "Pancaran menyinari bonet secara sekata"
     ],
     "correct_index": 0,
     "explanation_en": "Check that the lights work and are adjusted before setting off at night.",
@@ -2450,19 +2450,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 25,
-    "question_en": "What separates the tyres from the road during aquaplaning?",
-    "question_ms": "Apakah yang memisahkan tayar daripada permukaan jalan semasa akuaplaning?",
+    "question_en": "After hitting standing water, a driver briefly loses steering response. What can cause this?",
+    "question_ms": "Selepas meredah air bertakung, stereng tidak memberi tindak balas seketika. Apakah puncanya?",
     "options_en": [
-      "Water under the tyres",
-      "Mud in the tread",
-      "Air leaking from the tyre",
-      "Oil on the brake discs"
+      "A layer of water lifts the tyres off the road",
+      "Water covers the outside of the tyres",
+      "Wet tread grips more strongly on one side",
+      "Water cools the tyre and improves its grip"
     ],
     "options_ms": [
-      "Air di bawah tayar",
-      "Lumpur dalam bunga tayar",
-      "Angin yang bocor daripada tayar",
-      "Minyak pada cakera brek"
+      "Lapisan air mengangkat tayar dari jalan",
+      "Air meliputi permukaan luar tayar",
+      "Bunga basah lebih mencengkam di satu sisi",
+      "Air menyejukkan tayar dan menambah cengkaman"
     ],
     "correct_index": 0,
     "explanation_en": "Water collects under the tyres. As they lose grip, steering and braking become less effective.",
@@ -2632,19 +2632,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-3",
     "order_index": 7,
-    "question_en": "Where should you avoid pulling over to wait for a passenger?",
-    "question_ms": "Di manakah anda patut mengelakkan daripada berhenti untuk menunggu penumpang?",
+    "question_en": "Which location should you avoid when picking up a passenger?",
+    "question_ms": "Lokasi manakah patut dielakkan ketika mengambil penumpang?",
     "options_en": [
-      "At a bus stop",
-      "In a marked pickup bay",
-      "In a legal lay-by",
-      "In a public car park"
+      "A stop marked for buses",
+      "A bay marked for pickups",
+      "An open public car park",
+      "A lay-by open to cars"
     ],
     "options_ms": [
-      "Di perhentian bas",
-      "Di petak mengambil penumpang",
-      "Di ruang berhenti yang dibenarkan",
-      "Di tempat letak kereta awam"
+      "Perhentian bertanda untuk bas",
+      "Petak bertanda untuk mengambil penumpang",
+      "Tempat letak kereta awam yang dibuka",
+      "Ruang berhenti yang terbuka kepada kereta"
     ],
     "correct_index": 0,
     "explanation_en": "The stopping lesson lists bends, junctions, fire hydrants and bus stops as places to avoid.",
@@ -3048,19 +3048,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-3",
     "order_index": 23,
-    "question_en": "Whose risk must the basic motor policy cover before the vehicle is used on the road?",
-    "question_ms": "Risiko pihak manakah yang mesti dilindungi oleh polisi motor asas sebelum kenderaan digunakan di jalan raya?",
+    "question_en": "A car is about to be used on a public road. What must its minimum policy provide?",
+    "question_ms": "Kereta akan digunakan di jalan awam. Apakah perlindungan minimum yang mesti diberikan oleh polisinya?",
     "options_en": [
-      "Other road users",
-      "Only the registered owner",
-      "Only the regular driver",
-      "Only the vehicle seller"
+      "Cover for third-party injury",
+      "Cover for wear and tear",
+      "Cover for theft of luggage",
+      "Cover for engine breakdown"
     ],
     "options_ms": [
-      "Pengguna jalan raya lain",
-      "Pemilik berdaftar sahaja",
-      "Pemandu tetap sahaja",
-      "Penjual kenderaan sahaja"
+      "Perlindungan kecederaan pihak ketiga",
+      "Perlindungan kehausan biasa",
+      "Perlindungan kecurian bagasi",
+      "Perlindungan kerosakan enjin"
     ],
     "correct_index": 0,
     "explanation_en": "The curriculum lists using a vehicle without cover under the provisions for third-party risks.",
@@ -3074,23 +3074,23 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-3",
     "order_index": 24,
-    "question_en": "A roadside restriction explicitly bars micromobility vehicles. What should an e-scooter rider do?",
-    "question_ms": "Papan tanda melarang kenderaan mikromobiliti. Apakah tindakan penunggang skuter elektrik?",
+    "question_en": "A route restriction lists bicycles and micromobility vehicles. Which road user is also covered by that restriction?",
+    "question_ms": "Sekatan laluan menyenaraikan basikal dan kenderaan mikromobiliti. Pengguna jalan raya manakah turut tertakluk pada sekatan itu?",
     "options_en": [
-      "Use another route",
-      "Continue along the shoulder",
-      "Continue at walking speed",
-      "Continue behind a bicycle"
+      "An e-scooter rider",
+      "A passenger in a car",
+      "A driver in a light van",
+      "A bus passenger"
     ],
     "options_ms": [
-      "Gunakan laluan lain",
-      "Teruskan di bahu jalan",
-      "Teruskan pada kelajuan berjalan",
-      "Teruskan di belakang basikal"
+      "Penunggang skuter elektrik",
+      "Penumpang kereta",
+      "Pemandu van ringan",
+      "Penumpang bas"
     ],
     "correct_index": 0,
-    "explanation_en": "A route restriction that covers micromobility vehicles also applies to the rider of an e-scooter.",
-    "explanation_ms": "Larangan laluan terhadap kenderaan mikromobiliti turut terpakai kepada penunggang skuter elektrik.",
+    "explanation_en": "An e-scooter is a micromobility vehicle. Its rider must use an allowed route.",
+    "explanation_ms": "Skuter elektrik ialah kenderaan mikromobiliti. Penunggang mesti menggunakan laluan yang dibenarkan.",
     "image_url": null,
     "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-08T00:00:00Z"
@@ -3204,19 +3204,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-1",
     "order_index": 4,
-    "question_en": "Which vocational category covers carrying goods by motorcycle?",
-    "question_ms": "Kategori vokasional manakah meliputi pengangkutan barangan dengan motosikal?",
+    "question_en": "Which vocational endorsement applies to a rider delivering parcels for work?",
+    "question_ms": "Lesen vokasional manakah digunakan oleh penunggang yang menghantar bungkusan untuk kerja?",
     "options_en": [
-      "Goods Driving Licence",
-      "Public Service Vehicle licence",
-      "Bus conductor licence",
-      "Learner’s Driving Licence"
+      "GDL",
+      "PSV",
+      "Conductor licence",
+      "No vocational endorsement"
     ],
     "options_ms": [
-      "Lesen Kenderaan Barangan",
-      "Lesen Kenderaan Perkhidmatan Awam",
-      "Lesen Konduktor Bas",
-      "Lesen Belajar Memandu"
+      "GDL",
+      "PSV",
+      "Lesen konduktor",
+      "Tiada lesen vokasional"
     ],
     "correct_index": 0,
     "explanation_en": "The vocational categories list goods vehicle licensing, including motorcycles, under GDL.",
@@ -3880,19 +3880,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-2",
     "order_index": 15,
-    "question_en": "What does selecting L do as the car gathers speed?",
-    "question_ms": "Apakah kesan memilih L apabila kereta bertambah laju?",
+    "question_en": "With the selector in L, which behaviour should you expect?",
+    "question_ms": "Dengan pemilih gear pada L, apakah tindak balas yang patut dijangka?",
     "options_en": [
-      "Keeps the car in low gear",
-      "Allows an early upshift",
-      "Selects the highest gear",
-      "Lets the car coast in neutral"
+      "The transmission stays in its lowest range",
+      "The transmission steps through the forward ranges",
+      "The transmission disengages drive",
+      "The transmission shifts straight into top gear"
     ],
     "options_ms": [
-      "Mengekalkan gear rendah",
-      "Membenarkan gear naik lebih awal",
-      "Memilih gear tertinggi",
-      "Membiarkan kereta meluncur dalam neutral"
+      "Transmisi kekal dalam julat terendah",
+      "Transmisi bertukar melalui julat hadapan",
+      "Transmisi memutuskan pacuan",
+      "Transmisi terus menukar ke gear tertinggi"
     ],
     "correct_index": 0,
     "explanation_en": "L holds the transmission in low gear. The book uses it for very steep slopes.",
@@ -3984,19 +3984,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-3",
     "order_index": 4,
-    "question_en": "Which ability is required for interpreting the colours of traffic signals?",
-    "question_ms": "Apakah keupayaan yang diperlukan untuk mentafsir warna lampu isyarat?",
+    "question_en": "Which specific vision check appears in the handbook’s eligibility requirements?",
+    "question_ms": "Pemeriksaan penglihatan khusus manakah dinyatakan dalam syarat kelayakan buku panduan?",
     "options_en": [
-      "Distinguishing colours",
-      "Reading small print",
-      "Judging a moving gap",
-      "Recognising common shapes"
+      "Colour vision",
+      "Peripheral vision",
+      "Night vision",
+      "Depth perception"
     ],
     "options_ms": [
-      "Membezakan warna",
-      "Membaca tulisan kecil",
-      "Menilai jarak kenderaan bergerak",
-      "Mengenal bentuk biasa"
+      "Penglihatan warna",
+      "Penglihatan sisi",
+      "Penglihatan malam",
+      "Persepsi kedalaman"
     ],
     "correct_index": 0,
     "explanation_en": "Eligibility includes being able to see ahead for 23 metres and not being colour blind.",
@@ -4088,8 +4088,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-3",
     "order_index": 8,
-    "question_en": "In this KEJARA schedule, how long is the first suspension after the second 20-point threshold?",
-    "question_ms": "Dalam jadual KEJARA ini, berapa lamakah penggantungan pertama selepas ambang 20 mata kali kedua?",
+    "question_en": "A competent licence holder has already received one KEJARA warning and reaches another 20 points. What suspension range applies in the handbook table?",
+    "question_ms": "Pemegang lesen kompeten telah menerima satu amaran KEJARA dan mencapai 20 mata lagi. Apakah julat penggantungan dalam jadual buku panduan?",
     "options_en": [
       "6–8 months",
       "4–6 months",
@@ -4114,21 +4114,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-3",
     "order_index": 9,
-    "question_en": "What suspension does this KEJARA schedule show for the third 20-point threshold?",
-    "question_ms": "Apakah tempoh penggantungan dalam jadual KEJARA ini bagi ambang 20 mata kali ketiga?",
+    "question_en": "A competent licence holder receives a second suspension under the handbook KEJARA schedule. Which range applies?",
+    "question_ms": "Pemegang lesen kompeten menerima penggantungan kali kedua mengikut jadual KEJARA. Apakah julatnya?",
     "options_en": [
-      "4–6 months",
       "8–10 months",
+      "4–6 months",
       "6–8 months",
       "10–12 months"
     ],
     "options_ms": [
-      "4–6 bulan",
       "8–10 bulan",
+      "4–6 bulan",
       "6–8 bulan",
       "10–12 bulan"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "The third threshold in the table can result in a suspension of eight to ten months.",
     "explanation_ms": "Ambang kali ketiga dalam jadual boleh menyebabkan penggantungan lapan hingga sepuluh bulan.",
     "image_url": null,
@@ -4192,19 +4192,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-3",
     "order_index": 12,
-    "question_en": "What is the job of the selector lock button on the automatic gear lever?",
-    "question_ms": "Apakah fungsi butang pengunci pada tombol gear automatik?",
+    "question_en": "Why does the automatic selector have a button you must press for some movements?",
+    "question_ms": "Mengapa pemilih gear automatik mempunyai butang yang perlu ditekan bagi sesetengah pergerakan?",
     "options_en": [
-      "Prevents unintended gear selection",
-      "Applies the parking brake",
-      "Holds the current engine speed",
-      "Changes the dashboard display"
+      "To stop certain shifts happening by accident",
+      "To help the selector move more quickly",
+      "To make selected gears easier to read",
+      "To let the driver skip every other position"
     ],
     "options_ms": [
-      "Menghalang pertukaran gear tidak sengaja",
-      "Mengaktifkan brek tangan",
-      "Mengekalkan kelajuan enjin",
-      "Menukar paparan papan pemuka"
+      "Untuk mengelakkan pertukaran tertentu secara tidak sengaja",
+      "Untuk membantu tuil bergerak lebih pantas",
+      "Untuk memudahkan bacaan gear terpilih",
+      "Untuk membolehkan pemandu melangkau kedudukan tertentu"
     ],
     "correct_index": 0,
     "explanation_en": "The lock helps prevent accidental selection of positions that need extra care.",
@@ -4244,21 +4244,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-3",
     "order_index": 14,
-    "question_en": "Where should you confirm which automatic gear position you selected?",
-    "question_ms": "Di manakah anda perlu mengesahkan kedudukan gear automatik yang dipilih?",
+    "question_en": "You move the selector while stopped. Which readout confirms the transmission is in the intended range?",
+    "question_ms": "Anda menggerakkan pemilih semasa berhenti. Paparan manakah mengesahkan transmisi berada dalam julat yang dimaksudkan?",
     "options_en": [
-      "The marking on the gear lever",
+      "The P/R/N/D indicator",
+      "The engine speed reading",
       "The speedometer reading",
-      "The gear position display",
-      "The engine speed reading"
+      "The parking brake warning lamp"
     ],
     "options_ms": [
-      "Tanda pada tombol gear",
+      "Penunjuk P/R/N/D",
+      "Bacaan putaran enjin",
       "Bacaan meter laju",
-      "Paparan kedudukan gear",
-      "Bacaan kelajuan enjin"
+      "Lampu amaran brek parkir"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "Check the gear position on the instrument display. Avoid looking down at the gear lever while driving.",
     "explanation_ms": "Semak kedudukan gear pada paparan panel meter. Elakkan melihat ke bawah pada tombol gear semasa memandu.",
     "image_url": null,
@@ -4374,19 +4374,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-1",
     "order_index": 4,
-    "question_en": "Which vocational category covers carrying goods by motorcycle?",
-    "question_ms": "Kategori vokasional manakah meliputi pengangkutan barangan dengan motosikal?",
+    "question_en": "Which vocational endorsement applies to a rider delivering parcels for work?",
+    "question_ms": "Lesen vokasional manakah digunakan oleh penunggang yang menghantar bungkusan untuk kerja?",
     "options_en": [
-      "Goods Driving Licence",
-      "Public Service Vehicle licence",
-      "Bus conductor licence",
-      "Learner’s Driving Licence"
+      "GDL",
+      "PSV",
+      "Conductor licence",
+      "No vocational endorsement"
     ],
     "options_ms": [
-      "Lesen Kenderaan Barangan",
-      "Lesen Kenderaan Perkhidmatan Awam",
-      "Lesen Konduktor Bas",
-      "Lesen Belajar Memandu"
+      "GDL",
+      "PSV",
+      "Lesen konduktor",
+      "Tiada lesen vokasional"
     ],
     "correct_index": 0,
     "explanation_en": "The vocational categories list goods vehicle licensing, including motorcycles, under GDL.",
@@ -5154,19 +5154,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-3",
     "order_index": 4,
-    "question_en": "Which ability is required for interpreting the colours of traffic signals?",
-    "question_ms": "Apakah keupayaan yang diperlukan untuk mentafsir warna lampu isyarat?",
+    "question_en": "Which specific vision check appears in the handbook’s eligibility requirements?",
+    "question_ms": "Pemeriksaan penglihatan khusus manakah dinyatakan dalam syarat kelayakan buku panduan?",
     "options_en": [
-      "Distinguishing colours",
-      "Reading small print",
-      "Judging a moving gap",
-      "Recognising common shapes"
+      "Colour vision",
+      "Peripheral vision",
+      "Night vision",
+      "Depth perception"
     ],
     "options_ms": [
-      "Membezakan warna",
-      "Membaca tulisan kecil",
-      "Menilai jarak kenderaan bergerak",
-      "Mengenal bentuk biasa"
+      "Penglihatan warna",
+      "Penglihatan sisi",
+      "Penglihatan malam",
+      "Persepsi kedalaman"
     ],
     "correct_index": 0,
     "explanation_en": "Eligibility includes being able to see ahead for 23 metres and not being colour blind.",
@@ -5258,8 +5258,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-3",
     "order_index": 8,
-    "question_en": "In this KEJARA schedule, how long is the first suspension after the second 20-point threshold?",
-    "question_ms": "Dalam jadual KEJARA ini, berapa lamakah penggantungan pertama selepas ambang 20 mata kali kedua?",
+    "question_en": "A competent licence holder has already received one KEJARA warning and reaches another 20 points. What suspension range applies in the handbook table?",
+    "question_ms": "Pemegang lesen kompeten telah menerima satu amaran KEJARA dan mencapai 20 mata lagi. Apakah julat penggantungan dalam jadual buku panduan?",
     "options_en": [
       "6–8 months",
       "4–6 months",
@@ -5284,21 +5284,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-3",
     "order_index": 9,
-    "question_en": "What suspension does this KEJARA schedule show for the third 20-point threshold?",
-    "question_ms": "Apakah tempoh penggantungan dalam jadual KEJARA ini bagi ambang 20 mata kali ketiga?",
+    "question_en": "A competent licence holder receives a second suspension under the handbook KEJARA schedule. Which range applies?",
+    "question_ms": "Pemegang lesen kompeten menerima penggantungan kali kedua mengikut jadual KEJARA. Apakah julatnya?",
     "options_en": [
-      "4–6 months",
       "8–10 months",
+      "4–6 months",
       "6–8 months",
       "10–12 months"
     ],
     "options_ms": [
-      "4–6 bulan",
       "8–10 bulan",
+      "4–6 bulan",
       "6–8 bulan",
       "10–12 bulan"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "The third threshold in the table can result in a suspension of eight to ten months.",
     "explanation_ms": "Ambang kali ketiga dalam jadual boleh menyebabkan penggantungan lapan hingga sepuluh bulan.",
     "image_url": null,
@@ -6116,21 +6116,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-1",
     "order_index": 26,
-    "question_en": "Which steering technique should you use through a tight Z-bend?",
-    "question_ms": "Teknik stereng manakah yang patut digunakan di selekoh Z yang sempit?",
+    "question_en": "At the first turn of a tight Z-bend, how should your hands move on the steering wheel?",
+    "question_ms": "Pada belokan pertama dalam selekoh Z yang sempit, bagaimana tangan patut bergerak pada stereng?",
     "options_en": [
-      "Turn the wheel with one hand",
-      "Steer using push and pull",
-      "Cross your arms on each turn",
-      "Let the wheel slide between turns"
+      "One hand pulls while the other slides",
+      "Both hands pull down together",
+      "One hand holds while the other crosses over",
+      "Both hands let the wheel slide freely"
     ],
     "options_ms": [
-      "Pusing stereng dengan sebelah tangan",
-      "Kawal stereng secara tarik dan tolak",
-      "Silangkan tangan pada setiap belokan",
-      "Biarkan stereng meluncur antara belokan"
+      "Sebelah tangan menarik sementara yang lain melurut",
+      "Kedua-dua tangan menarik ke bawah serentak",
+      "Sebelah tangan memegang sementara yang lain menyilang",
+      "Kedua-dua tangan membiarkan stereng melurut bebas"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "Use controlled push-and-pull movements to steer continuously through the narrow path.",
     "explanation_ms": "Gunakan teknik tarik dan tolak secara terkawal untuk memandu secara berterusan di laluan sempit.",
     "image_url": null,
@@ -6194,21 +6194,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-1",
     "order_index": 29,
-    "question_en": "An injured person asks for something to drink while help is on the way. What should you do?",
-    "question_ms": "Orang yang cedera meminta minuman sementara bantuan dalam perjalanan. Apakah tindakan anda?",
+    "question_en": "An injured person is conscious and asks for a drink. Which action follows the handbook guidance?",
+    "question_ms": "Mangsa yang sedar meminta minuman. Tindakan manakah mengikut panduan buku?",
     "options_en": [
-      "Offer a small sip of water",
-      "Ask them to wait for help",
-      "Give them water once they sit up",
-      "Offer a drink if they can speak clearly"
+      "Ask them to wait for medical help",
+      "Offer water if there is no visible injury",
+      "Give water after they sit up",
+      "Offer water if the trip to hospital is long"
     ],
     "options_ms": [
-      "Beri sedikit air untuk diminum",
-      "Minta mereka tunggu bantuan",
-      "Beri air selepas mereka duduk",
-      "Beri minuman jika mereka boleh bercakap dengan jelas"
+      "Minta mangsa menunggu bantuan perubatan",
+      "Beri air jika tiada kecederaan kelihatan",
+      "Beri air selepas mangsa duduk",
+      "Beri air jika perjalanan ke hospital panjang"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "Do not give a road-crash casualty food or drink at the scene.",
     "explanation_ms": "Jangan beri makanan atau minuman kepada mangsa kemalangan di tempat kejadian.",
     "image_url": null,
@@ -6298,19 +6298,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-1",
     "order_index": 33,
-    "question_en": "You pass parked cars on a residential street. What hidden hazard should you look for?",
-    "question_ms": "Anda melalui kereta yang diletakkan di jalan perumahan. Apakah bahaya terlindung yang patut diperhatikan?",
+    "question_en": "You pass parked cars in a housing estate. Which situation calls for more room and a lower speed?",
+    "question_ms": "Anda melalui kereta yang diletakkan di kawasan perumahan. Keadaan manakah memerlukan ruang tambahan dan kelajuan lebih rendah?",
     "options_en": [
-      "A child stepping out between cars",
-      "A queue visible in front of you",
-      "A car already driving away",
-      "A pedestrian walking on a clear pavement"
+      "Children playing near the parked cars",
+      "A resident watering a garden behind a fence",
+      "A car parked fully inside a driveway",
+      "People waiting inside a building"
     ],
     "options_ms": [
-      "Kanak-kanak keluar di celah kereta",
-      "Barisan kereta yang kelihatan di hadapan",
-      "Kereta yang sudah bergerak menjauh",
-      "Pejalan kaki di laluan yang jelas"
+      "Kanak-kanak bermain berhampiran kereta",
+      "Penduduk menyiram kebun di sebalik pagar",
+      "Kereta diletakkan sepenuhnya di laluan masuk",
+      "Orang menunggu di dalam bangunan"
     ],
     "correct_index": 0,
     "explanation_en": "Children can suddenly enter the road in residential areas. Drive at a speed that gives you time to react.",
@@ -6532,21 +6532,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-1",
     "order_index": 42,
-    "question_en": "For PSV bus applicants, which assessment must be passed before the practical test?",
-    "question_ms": "Bagi pemohon PSV bas, penilaian manakah perlu diluluskan sebelum ujian amali?",
+    "question_en": "A PSV bus applicant has completed the course and wants to book the practical test. Which result is needed first?",
+    "question_ms": "Pemohon PSV bas telah mengikuti kursus dan ingin menempah ujian amali. Keputusan manakah diperlukan dahulu?",
     "options_en": [
-      "The practical road test",
-      "The learner permit check",
-      "The vocational theory test",
-      "The vocational road test"
+      "A pass in vocational theory",
+      "A pass in the motorcar theory test alone",
+      "A pass in the ordinary road test",
+      "A pass in a driving institute trial run"
     ],
     "options_ms": [
-      "Ujian amali jalan raya",
-      "Semakan lesen belajar",
-      "Ujian teori vokasional",
-      "Ujian jalan raya vokasional"
+      "Lulus ujian teori vokasional",
+      "Lulus ujian teori motokar sahaja",
+      "Lulus ujian jalan raya biasa",
+      "Lulus percubaan di institut memandu"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "Vocational practical tests take place after a theory pass. PSV bus applicants are one of the groups required to take a practical test.",
     "explanation_ms": "Ujian amali lesen vokasional dijalankan selepas lulus ujian teori. Pemohon PSV bas ialah antara kumpulan yang perlu menjalani ujian amali.",
     "image_url": null,
@@ -6636,21 +6636,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-1",
     "order_index": 46,
-    "question_en": "Which learner record does the driving institute provide for a practical test booking?",
-    "question_ms": "Rekod pelajar manakah yang diserahkan oleh institut memandu semasa tempahan ujian amali?",
+    "question_en": "Which form records the training the institute confirms for a practical test booking?",
+    "question_ms": "Borang manakah merekodkan latihan yang disahkan oleh institut untuk tempahan ujian amali?",
     "options_en": [
-      "The final test score sheet",
-      "The car maintenance log",
-      "The SM4 training record",
-      "The probationary licence"
+      "SM4",
+      "A copy of the LDL",
+      "The theory test result sheet",
+      "The practical test booking slip"
     ],
     "options_ms": [
-      "Borang markah ujian akhir",
-      "Rekod penyelenggaraan kereta",
-      "Rekod latihan SM4",
-      "Lesen memandu percubaan"
+      "SM4",
+      "Salinan LDL",
+      "Slip keputusan ujian teori",
+      "Slip tempahan ujian amali"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "The booking requirements include a copy of the learner licence and the SM4 driving training record.",
     "explanation_ms": "Syarat tempahan termasuk salinan lesen belajar memandu dan rekod latihan memandu SM4.",
     "image_url": null,
@@ -6662,21 +6662,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-1",
     "order_index": 47,
-    "question_en": "Who verifies the medical fitness form for a licence applicant with a disability?",
-    "question_ms": "Siapakah yang mengesahkan borang kesihatan bagi pemohon lesen orang kurang upaya?",
+    "question_en": "Where does a licence applicant with a disability obtain the medical verification specified in the handbook?",
+    "question_ms": "Di manakah pemohon lesen yang mempunyai ketidakupayaan mendapatkan pengesahan kesihatan yang dinyatakan dalam buku panduan?",
     "options_en": [
-      "A driving school instructor",
-      "An eyesight test shop assistant",
-      "A JPJ practical test examiner",
-      "A government clinic medical officer"
+      "A government clinic",
+      "The driving institute",
+      "A JPJ testing centre",
+      "An optical shop"
     ],
     "options_ms": [
-      "Pengajar sekolah memandu",
-      "Pembantu kedai ujian mata",
-      "Pemeriksa ujian amali JPJ",
-      "Pegawai perubatan klinik kerajaan"
+      "Klinik kerajaan",
+      "Institut memandu",
+      "Pusat ujian JPJ",
+      "Kedai optik"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "The curriculum requires medical verification by a medical officer at a government health clinic.",
     "explanation_ms": "Kurikulum memerlukan pengesahan oleh pegawai perubatan di klinik kesihatan kerajaan.",
     "image_url": null,
@@ -7234,19 +7234,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-2",
     "order_index": 19,
-    "question_en": "Which control keeps a rear passenger door from opening from inside?",
-    "question_ms": "Kawalan manakah menghalang pintu penumpang belakang daripada dibuka dari dalam?",
+    "question_en": "A rear passenger pulls the handle from inside, but the door still opens from outside. Which control is engaged?",
+    "question_ms": "Penumpang belakang menarik pemegang dari dalam tetapi pintu masih boleh dibuka dari luar. Kawalan manakah sedang digunakan?",
     "options_en": [
-      "Rear-door child lock",
-      "Driver’s window lock",
-      "Front passenger door lock",
-      "Rear window switch"
+      "The child lock",
+      "The central locking switch",
+      "The window lock",
+      "The seat belt latch"
     ],
     "options_ms": [
-      "Kunci kanak-kanak pintu belakang",
-      "Kunci tingkap pemandu",
-      "Kunci pintu penumpang hadapan",
-      "Suis tingkap belakang"
+      "Kunci kanak-kanak",
+      "Suis kunci pusat",
+      "Kunci tingkap",
+      "Kancing tali pinggang"
     ],
     "correct_index": 0,
     "explanation_en": "Use the child lock, if fitted, to help prevent a child from opening the door while travelling.",
@@ -7520,19 +7520,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-2",
     "order_index": 30,
-    "question_en": "Which preparation helps reduce glare from bright sunlight on the windscreen?",
-    "question_ms": "Persediaan manakah membantu mengurangkan silau cahaya matahari pada cermin hadapan?",
+    "question_en": "Bright sunlight is scattering across the glass in front of you. What preparation helps reduce it?",
+    "question_ms": "Cahaya matahari terang berselerak pada kaca di hadapan anda. Persediaan apakah membantu mengurangkannya?",
     "options_en": [
-      "Clean the windscreen",
-      "Dry the wiper blades",
-      "Clean the door mirrors",
-      "Open a side window"
+      "Remove dirt from the glass",
+      "Raise the rear-view mirror",
+      "Move the visor up",
+      "Close both side windows"
     ],
     "options_ms": [
-      "Bersihkan cermin hadapan",
-      "Keringkan bilah pengelap",
-      "Bersihkan cermin sisi",
-      "Buka tingkap sisi"
+      "Bersihkan kotoran pada kaca",
+      "Naikkan cermin pandang belakang",
+      "Naikkan pengadang matahari",
+      "Tutup kedua-dua tingkap sisi"
     ],
     "correct_index": 0,
     "explanation_en": "Remove dirt from the windscreen and keep enough washer fluid to clean it as needed.",
@@ -7754,21 +7754,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-2",
     "order_index": 39,
-    "question_en": "Heavy rain is so intense that you can no longer see far enough to drive safely. Where should you stop?",
-    "question_ms": "Hujan terlalu lebat sehingga anda tidak lagi dapat melihat cukup jauh untuk memandu dengan selamat. Di manakah anda patut berhenti?",
+    "question_en": "Rain becomes so heavy that you can no longer see far enough to drive. What should you do next?",
+    "question_ms": "Hujan terlalu lebat sehingga anda tidak dapat melihat cukup jauh untuk memandu. Apakah tindakan seterusnya?",
     "options_en": [
-      "In the current traffic lane",
-      "Just after a blind bend",
-      "At the next safe stopping place",
-      "In the next marked overtaking lane"
+      "Pull off at a suitable stopping place",
+      "Keep going behind another vehicle",
+      "Slow and stay in the live lane",
+      "Continue until visibility improves"
     ],
     "options_ms": [
-      "Di lorong trafik semasa",
-      "Sejurus selepas selekoh terlindung",
-      "Di tempat berhenti yang selamat",
-      "Di lorong memotong seterusnya"
+      "Berhenti di tempat yang sesuai di luar aliran trafik",
+      "Teruskan di belakang kenderaan lain",
+      "Perlahankan dan kekal di lorong trafik",
+      "Teruskan sehingga penglihatan bertambah baik"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "When visibility becomes too poor to proceed safely, stop at the nearest suitable place away from moving traffic.",
     "explanation_ms": "Apabila penglihatan terlalu terhad untuk meneruskan perjalanan dengan selamat, berhenti di tempat sesuai yang terdekat, jauh daripada trafik bergerak.",
     "image_url": null,
@@ -7910,21 +7910,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-2",
     "order_index": 45,
-    "question_en": "May a driver use a different vehicle while their driving licence is suspended?",
-    "question_ms": "Bolehkah seseorang menggunakan kenderaan lain apabila lesen memandunya digantung?",
+    "question_en": "Which plan is allowed while your driving licence is suspended?",
+    "question_ms": "Rancangan manakah dibenarkan ketika lesen memandu anda digantung?",
     "options_en": [
-      "Yes, with the owner’s consent",
-      "Yes, in another vehicle class",
-      "No, the driver may not drive",
-      "Yes, for a work journey"
+      "Ask someone else to drive you",
+      "Drive a borrowed car to work",
+      "Ride a different vehicle class",
+      "Take a short drive for essentials"
     ],
     "options_ms": [
-      "Ya, dengan izin pemilik",
-      "Ya, dalam kelas kenderaan lain",
-      "Tidak, pemandu dilarang memandu",
-      "Ya, bagi perjalanan kerja"
+      "Minta orang lain memandu anda",
+      "Pandu kereta pinjaman ke tempat kerja",
+      "Tunggang kenderaan kelas lain",
+      "Pandu sekejap untuk urusan penting"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "Suspension prevents the person from driving. Changing vehicles does not remove the restriction.",
     "explanation_ms": "Penggantungan melarang orang itu daripada memandu. Menukar kenderaan tidak menamatkan larangan tersebut.",
     "image_url": null,
@@ -8014,21 +8014,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-2",
     "order_index": 49,
-    "question_en": "Which selector position is used to drive forward off the automatic ramp after stopping?",
-    "question_ms": "Kedudukan gear manakah digunakan untuk bergerak ke hadapan keluar dari tanjakan automatik selepas berhenti?",
+    "question_en": "The automatic car has stopped on the marked ramp line and is ready to move off uphill. Which position should you select?",
+    "question_ms": "Kereta automatik telah berhenti di garisan tanjakan dan sedia bergerak mendaki. Kedudukan manakah patut dipilih?",
     "options_en": [
-      "Neutral (N)",
-      "Drive (D)",
-      "Reverse (R)",
-      "Park (P)"
+      "D",
+      "N",
+      "P",
+      "R"
     ],
     "options_ms": [
-      "Bebas (N)",
-      "Pandu (D)",
-      "Undur (R)",
-      "Parkir (P)"
+      "D",
+      "N",
+      "P",
+      "R"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "Select D and release the brakes as instructed, then press the accelerator gently to leave the ramp.",
     "explanation_ms": "Pilih D dan lepaskan brek mengikut langkah yang diterangkan, kemudian tekan pemecut perlahan-lahan untuk keluar dari tanjakan.",
     "image_url": null,
@@ -8560,21 +8560,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-3",
     "order_index": 20,
-    "question_en": "Why should you arrange another driver after drinking alcohol?",
-    "question_ms": "Mengapakah anda perlu meminta orang lain memandu selepas mengambil alkohol?",
+    "question_en": "Which driving ability can alcohol impair even when you can still operate the pedals?",
+    "question_ms": "Keupayaan memandu manakah boleh terjejas oleh alkohol walaupun anda masih boleh menggunakan pedal?",
     "options_en": [
-      "It makes the accelerator harder to press",
-      "It affects attention and anticipation",
-      "It reduces the range of the headlights",
-      "It makes the steering respond faster"
+      "Anticipating changes in traffic",
+      "Reading the fuel level when parked",
+      "Reaching the direction indicator",
+      "Recognising the gear lever positions"
     ],
     "options_ms": [
-      "Pedal pemecut menjadi lebih sukar ditekan",
-      "Tumpuan dan jangkaan terjejas",
-      "Jarak suluhan lampu hadapan berkurang",
-      "Stereng bertindak balas dengan lebih cepat"
+      "Menjangka perubahan trafik",
+      "Membaca paras bahan api ketika parkir",
+      "Mencapai suis isyarat",
+      "Mengenal kedudukan tuil gear"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "Alcohol impairs your concentration and ability to anticipate hazards. Arrange a sober driver.",
     "explanation_ms": "Alkohol menjejaskan tumpuan dan keupayaan menjangka bahaya. Minta pemandu yang tidak mengambil alkohol untuk memandu.",
     "image_url": null,
@@ -8586,21 +8586,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-3",
     "order_index": 21,
-    "question_en": "You cannot attend your booked practical test. What should you do about the appointment?",
-    "question_ms": "Anda tidak dapat menghadiri ujian amali yang telah ditempah. Apakah tindakan anda terhadap tempahan itu?",
+    "question_en": "You cannot attend your practical test appointment. What should you arrange?",
+    "question_ms": "Anda tidak dapat menghadiri janji temu ujian amali. Apakah yang perlu diatur?",
     "options_en": [
-      "Attend another day without booking",
-      "Use another candidate’s appointment",
-      "Request a different test date",
-      "Wait for the licence to renew itself"
+      "An approved change of date",
+      "A walk-in at another testing site",
+      "A replacement theory appointment",
+      "A switch with another candidate"
     ],
     "options_ms": [
-      "Hadir pada hari lain tanpa tempahan",
-      "Guna tempahan calon lain",
-      "Mohon tarikh ujian yang lain",
-      "Tunggu lesen diperbaharui secara automatik"
+      "Pertukaran tarikh yang diluluskan",
+      "Hadir tanpa tempahan di pusat lain",
+      "Janji temu ujian teori gantian",
+      "Pertukaran dengan calon lain"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "If you cannot attend on the booked date, apply to change it within the permitted period.",
     "explanation_ms": "Jika anda tidak dapat hadir pada tarikh yang ditempah, mohon untuk memindanya dalam tempoh yang dibenarkan.",
     "image_url": null,
@@ -8950,21 +8950,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-3",
     "order_index": 35,
-    "question_en": "A roadworks controller signals you to stop even though the open lane looks clear. What should you do?",
-    "question_ms": "Petugas di kawasan kerja jalan memberi isyarat supaya anda berhenti walaupun lorong yang dibuka kelihatan lapang. Apakah tindakan anda?",
+    "question_en": "At roadworks, the controller displays the stop side of a paddle. The temporary lane is empty. What should you do?",
+    "question_ms": "Di zon kerja jalan, pengawal menunjukkan sisi berhenti pada papan. Lorong sementara lapang. Apakah tindakan anda?",
     "options_en": [
-      "Continue if the lane looks empty",
-      "Continue behind the vehicle ahead",
-      "Pass at walking speed",
-      "Stop and wait for the next signal"
+      "Wait for the controller to release you",
+      "Follow the last car through",
+      "Enter slowly and watch the controller",
+      "Move into the lane and wait there"
     ],
     "options_ms": [
-      "Teruskan jika lorong kelihatan kosong",
-      "Teruskan di belakang kenderaan di hadapan",
-      "Lalu pada kelajuan berjalan kaki",
-      "Berhenti dan tunggu isyarat seterusnya"
+      "Tunggu arahan pengawal untuk bergerak",
+      "Ikut kereta terakhir yang melalui lorong",
+      "Masuk perlahan sambil memerhati pengawal",
+      "Masuk ke lorong dan tunggu di situ"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "Follow the instructions of the person controlling traffic through the roadworks. Stop when directed.",
     "explanation_ms": "Patuhi arahan petugas yang mengawal trafik di kawasan kerja jalan. Berhenti apabila diarahkan.",
     "image_url": null,
@@ -8976,21 +8976,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-3",
     "order_index": 36,
-    "question_en": "You need to pick up a passenger on a road with a marked bus-and-taxi lane. Where should you stop?",
-    "question_ms": "Anda perlu mengambil penumpang di jalan yang mempunyai lorong bas dan teksi. Di manakah anda patut berhenti?",
+    "question_en": "A passenger wants to be picked up beside a reserved bus-and-taxi lane. Which location should you use?",
+    "question_ms": "Penumpang mahu diambil berhampiran lorong khas bas dan teksi. Lokasi manakah patut digunakan?",
     "options_en": [
-      "In the marked lane briefly",
-      "At the start of the marked lane",
-      "At a permitted pickup point",
-      "In the marked lane if it is empty"
+      "A permitted pickup point",
+      "The bus stop inside the reserved lane",
+      "The live lane beside the reserved lane",
+      "The line where the reserved lane starts"
     ],
     "options_ms": [
-      "Di lorong bertanda untuk seketika",
-      "Di permulaan lorong bertanda",
-      "Di tempat yang dibenarkan",
-      "Di lorong bertanda jika kosong"
+      "Tempat mengambil penumpang yang dibenarkan",
+      "Perhentian bas dalam lorong khas",
+      "Lorong trafik di sebelah lorong khas",
+      "Garisan permulaan lorong khas"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "The bus-and-taxi lane is reserved. A private car should use a permitted pickup point outside it.",
     "explanation_ms": "Lorong bas dan teksi dikhaskan untuk pengangkutan awam. Kereta persendirian perlu menggunakan tempat mengambil penumpang yang dibenarkan di luar lorong itu.",
     "image_url": null,
@@ -9028,21 +9028,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-3",
     "order_index": 38,
-    "question_en": "A no-U-turn sign is posted at a junction, but the road is empty. What should you do if you need to turn back?",
-    "question_ms": "Tanda larangan pusingan U dipasang di persimpangan, tetapi jalan kosong. Apakah tindakan jika anda perlu berpatah balik?",
+    "question_en": "You miss your turn and the next junction displays a no-U-turn sign. How should you get back?",
+    "question_ms": "Anda terlepas belokan dan simpang seterusnya memaparkan tanda larangan pusingan U. Bagaimanakah anda patut kembali?",
     "options_en": [
-      "Make the turn before anyone arrives",
-      "Turn back from the left lane",
       "Continue to a permitted turning point",
-      "Turn when the signal changes to green"
+      "Use the junction when no one is coming",
+      "Use the gap at the junction before the lights",
+      "Wait for a green signal at that junction"
     ],
     "options_ms": [
-      "Buat pusingan sebelum kenderaan lain tiba",
-      "Patah balik dari lorong kiri",
-      "Teruskan ke tempat yang membenarkan pusingan",
-      "Pusing apabila lampu bertukar hijau"
+      "Teruskan ke tempat berpusing yang dibenarkan",
+      "Gunakan simpang apabila tiada trafik datang",
+      "Gunakan ruang di simpang sebelum lampu isyarat",
+      "Tunggu lampu hijau di simpang itu"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "The prohibition still applies when the road is empty. Turn back only where it is permitted and safe.",
     "explanation_ms": "Larangan masih terpakai walaupun jalan kosong. Patah balik hanya di tempat yang dibenarkan dan selamat.",
     "image_url": null,
@@ -9080,21 +9080,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-3",
     "order_index": 40,
-    "question_en": "The two exit branches are separated by a painted chevron area. You realise you need the other branch too late. What should you do?",
-    "question_ms": "Dua cabang susur keluar dipisahkan oleh kawasan bercorak chevron. Anda terlewat menyedari bahawa anda perlu menggunakan cabang lain. Apakah tindakan anda?",
+    "question_en": "You are already committed to one exit lane and a painted chevron area separates it from the branch you want. Where should you go?",
+    "question_ms": "Anda sudah berada di lorong keluar dan kawasan chevron memisahkannya daripada cabang yang dikehendaki. Ke manakah anda patut pergi?",
     "options_en": [
-      "Stop on the chevrons until clear",
-      "Continue in your current lane",
-      "Cross at the widest part of the markings",
-      "Move along the painted area until it ends"
+      "Follow your current exit and reroute",
+      "Stop before the chevrons and wait",
+      "Merge across the marked area slowly",
+      "Reverse to the split when it is clear"
     ],
     "options_ms": [
-      "Berhenti di atas chevron sehingga laluan lapang",
-      "Teruskan perjalanan di lorong semasa",
-      "Lintas di bahagian garisan yang paling lebar",
-      "Bergerak di kawasan bercorak itu sehingga berakhir"
+      "Ikut susur semasa dan cari laluan lain",
+      "Berhenti sebelum chevron dan tunggu",
+      "Masuk perlahan merentasi kawasan bertanda",
+      "Undur ke percabangan apabila lapang"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "Do not enter the chevron-marked area. Stay in your lane and change your route safely later.",
     "explanation_ms": "Jangan masuk ke kawasan bercorak chevron. Kekal di lorong anda dan ubah laluan dengan selamat kemudian.",
     "image_url": null,
@@ -9236,19 +9236,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-3",
     "order_index": 46,
-    "question_en": "Before a long drive, what can you check on the windscreen washer reservoir?",
-    "question_ms": "Sebelum memandu jauh, apakah yang boleh diperiksa pada takungan pencuci cermin hadapan?",
+    "question_en": "The washer reservoir is accessible under the bonnet. Which check can you do there?",
+    "question_ms": "Takungan pencuci boleh dicapai di bawah bonet. Pemeriksaan manakah boleh dibuat di situ?",
     "options_en": [
-      "How much fluid is left",
-      "How far the nozzles spray",
-      "How quickly the pump runs",
-      "How worn the wiper blades are"
+      "Check whether fluid needs topping up",
+      "Check whether fluid reaches the glass",
+      "Check how far the fluid sprays",
+      "Check which spray jet is blocked"
     ],
     "options_ms": [
-      "Jumlah cecair yang masih ada",
-      "Sejauh mana muncung menyembur",
-      "Kelajuan pam beroperasi",
-      "Tahap kehausan bilah pengelap"
+      "Semak sama ada cecair perlu ditambah",
+      "Semak sama ada cecair sampai ke kaca",
+      "Semak sejauh mana cecair menyembur",
+      "Semak muncung semburan yang tersumbat"
     ],
     "correct_index": 0,
     "explanation_en": "Check that the washer reservoir contains enough fluid.",
@@ -9288,19 +9288,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-3",
     "order_index": 48,
-    "question_en": "What tool should be available in the boot to release the fasteners when fitting the spare tyre?",
-    "question_ms": "Alat manakah patut ada di dalam but untuk melonggarkan pengikat ketika memasang tayar ganti?",
+    "question_en": "When replacing a tyre, which tool loosens the nuts before you remove the wheel?",
+    "question_ms": "Ketika mengganti tayar, alat manakah melonggarkan nat sebelum roda ditanggalkan?",
     "options_en": [
-      "A wheel-nut wrench",
-      "A spark plug wrench",
-      "A jack handle alone",
-      "A pair of pliers"
+      "A wheel brace",
+      "A tyre lever",
+      "A pressure gauge",
+      "A tow hook"
     ],
     "options_ms": [
-      "Pembuka nat roda",
-      "Sepana palam pencucuh",
-      "Pemutar jek sahaja",
-      "Sepasang playar"
+      "Sepana roda",
+      "Tuil tayar",
+      "Tolok tekanan",
+      "Cangkuk tunda"
     ],
     "correct_index": 0,
     "explanation_en": "The book includes a wheel-nut wrench among the emergency tools to check in the boot.",
@@ -9756,21 +9756,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-1",
     "order_index": 16,
-    "question_en": "Mirrors look clear before you move right. What check is left?",
-    "question_ms": "Cermin kelihatan jelas sebelum anda bergerak ke kanan. Apakah semakan yang masih perlu dibuat?",
+    "question_en": "Your mirrors are clear before you move into the next lane. What final check covers the area beside the car?",
+    "question_ms": "Cermin menunjukkan laluan lapang sebelum anda berpindah ke lorong sebelah. Apakah semakan terakhir meliputi kawasan di sisi kereta?",
     "options_en": [
-      "Recheck the interior mirror",
-      "Look over your left shoulder",
-      "Look over your right shoulder",
-      "Recheck the speedometer"
+      "Glance over the shoulder toward that lane",
+      "Look again in the interior mirror",
+      "Check the centre of the windscreen",
+      "Watch the car immediately ahead"
     ],
     "options_ms": [
-      "Semak semula cermin tengah",
-      "Jenguk melepasi bahu kiri",
-      "Jenguk melepasi bahu kanan",
-      "Semak semula meter kelajuan"
+      "Toleh ke bahu menghala ke lorong itu",
+      "Lihat semula cermin pandang belakang",
+      "Periksa bahagian tengah cermin hadapan",
+      "Perhatikan kereta tepat di hadapan"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "A vehicle on the right can be hidden from both mirrors. Check that area directly before moving.",
     "explanation_ms": "Kenderaan di kanan boleh terlindung daripada kedua-dua cermin. Periksa kawasan itu secara langsung sebelum bergerak.",
     "image_url": null,
@@ -10432,21 +10432,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-1",
     "order_index": 42,
-    "question_en": "For PSV bus applicants, which assessment must be passed before the practical test?",
-    "question_ms": "Bagi pemohon PSV bas, penilaian manakah perlu diluluskan sebelum ujian amali?",
+    "question_en": "A PSV bus applicant has completed the course and wants to book the practical test. Which result is needed first?",
+    "question_ms": "Pemohon PSV bas telah mengikuti kursus dan ingin menempah ujian amali. Keputusan manakah diperlukan dahulu?",
     "options_en": [
-      "The practical road test",
-      "The learner permit check",
-      "The vocational theory test",
-      "The vocational road test"
+      "A pass in vocational theory",
+      "A pass in the motorcar theory test alone",
+      "A pass in the ordinary road test",
+      "A pass in a driving institute trial run"
     ],
     "options_ms": [
-      "Ujian amali jalan raya",
-      "Semakan lesen belajar",
-      "Ujian teori vokasional",
-      "Ujian jalan raya vokasional"
+      "Lulus ujian teori vokasional",
+      "Lulus ujian teori motokar sahaja",
+      "Lulus ujian jalan raya biasa",
+      "Lulus percubaan di institut memandu"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "Vocational practical tests take place after a theory pass. PSV bus applicants are one of the groups required to take a practical test.",
     "explanation_ms": "Ujian amali lesen vokasional dijalankan selepas lulus ujian teori. Pemohon PSV bas ialah antara kumpulan yang perlu menjalani ujian amali.",
     "image_url": null,
@@ -10536,21 +10536,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-1",
     "order_index": 46,
-    "question_en": "Which learner record does the driving institute provide for a practical test booking?",
-    "question_ms": "Rekod pelajar manakah yang diserahkan oleh institut memandu semasa tempahan ujian amali?",
+    "question_en": "Which form records the training the institute confirms for a practical test booking?",
+    "question_ms": "Borang manakah merekodkan latihan yang disahkan oleh institut untuk tempahan ujian amali?",
     "options_en": [
-      "The final test score sheet",
-      "The car maintenance log",
-      "The SM4 training record",
-      "The probationary licence"
+      "SM4",
+      "A copy of the LDL",
+      "The theory test result sheet",
+      "The practical test booking slip"
     ],
     "options_ms": [
-      "Borang markah ujian akhir",
-      "Rekod penyelenggaraan kereta",
-      "Rekod latihan SM4",
-      "Lesen memandu percubaan"
+      "SM4",
+      "Salinan LDL",
+      "Slip keputusan ujian teori",
+      "Slip tempahan ujian amali"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "The booking requirements include a copy of the learner licence and the SM4 driving training record.",
     "explanation_ms": "Syarat tempahan termasuk salinan lesen belajar memandu dan rekod latihan memandu SM4.",
     "image_url": null,
@@ -10562,21 +10562,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-1",
     "order_index": 47,
-    "question_en": "Who verifies the medical fitness form for a licence applicant with a disability?",
-    "question_ms": "Siapakah yang mengesahkan borang kesihatan bagi pemohon lesen orang kurang upaya?",
+    "question_en": "Where does a licence applicant with a disability obtain the medical verification specified in the handbook?",
+    "question_ms": "Di manakah pemohon lesen yang mempunyai ketidakupayaan mendapatkan pengesahan kesihatan yang dinyatakan dalam buku panduan?",
     "options_en": [
-      "A driving school instructor",
-      "An eyesight test shop assistant",
-      "A JPJ practical test examiner",
-      "A government clinic medical officer"
+      "A government clinic",
+      "The driving institute",
+      "A JPJ testing centre",
+      "An optical shop"
     ],
     "options_ms": [
-      "Pengajar sekolah memandu",
-      "Pembantu kedai ujian mata",
-      "Pemeriksa ujian amali JPJ",
-      "Pegawai perubatan klinik kerajaan"
+      "Klinik kerajaan",
+      "Institut memandu",
+      "Pusat ujian JPJ",
+      "Kedai optik"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "The curriculum requires medical verification by a medical officer at a government health clinic.",
     "explanation_ms": "Kurikulum memerlukan pengesahan oleh pegawai perubatan di klinik kesihatan kerajaan.",
     "image_url": null,
@@ -10640,21 +10640,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-1",
     "order_index": 50,
-    "question_en": "What should guide a gear change in a manual car?",
-    "question_ms": "Apakah yang perlu dijadikan panduan semasa menukar gear kereta manual?",
+    "question_en": "You are choosing a gear after the traffic ahead slows. What should guide your choice?",
+    "question_ms": "Anda memilih gear selepas trafik di hadapan memperlahankan kenderaan. Apakah yang patut menentukan pilihan anda?",
     "options_en": [
-      "Road width and lane count",
-      "Tyre pressure and vehicle age",
-      "Vehicle speed and power needed",
-      "Gear lever position and time"
+      "Current speed and power needed",
+      "The posted limit and gear last used",
+      "The number of lanes and road width",
+      "The gear used by the car ahead"
     ],
     "options_ms": [
-      "Lebar jalan dan bilangan lorong",
-      "Tekanan tayar dan usia kereta",
-      "Kelajuan dan kuasa diperlukan",
-      "Kedudukan tombol dan masa"
+      "Kelajuan semasa dan kuasa diperlukan",
+      "Had tertera dan gear terakhir digunakan",
+      "Bilangan lorong dan lebar jalan",
+      "Gear yang digunakan oleh kereta di hadapan"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "The book says to change gear according to vehicle speed and the power needed.",
     "explanation_ms": "Buku menyatakan gear perlu ditukar mengikut kelajuan dan kuasa yang diperlukan.",
     "image_url": null,
@@ -11056,19 +11056,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-2",
     "order_index": 16,
-    "question_en": "You pass parked cars on a residential street. What hidden hazard should you look for?",
-    "question_ms": "Anda melalui kereta yang diletakkan di jalan perumahan. Apakah bahaya terlindung yang patut diperhatikan?",
+    "question_en": "You pass parked cars in a housing estate. Which situation calls for more room and a lower speed?",
+    "question_ms": "Anda melalui kereta yang diletakkan di kawasan perumahan. Keadaan manakah memerlukan ruang tambahan dan kelajuan lebih rendah?",
     "options_en": [
-      "A child stepping out between cars",
-      "A queue visible in front of you",
-      "A car already driving away",
-      "A pedestrian walking on a clear pavement"
+      "Children playing near the parked cars",
+      "A resident watering a garden behind a fence",
+      "A car parked fully inside a driveway",
+      "People waiting inside a building"
     ],
     "options_ms": [
-      "Kanak-kanak keluar di celah kereta",
-      "Barisan kereta yang kelihatan di hadapan",
-      "Kereta yang sudah bergerak menjauh",
-      "Pejalan kaki di laluan yang jelas"
+      "Kanak-kanak bermain berhampiran kereta",
+      "Penduduk menyiram kebun di sebalik pagar",
+      "Kereta diletakkan sepenuhnya di laluan masuk",
+      "Orang menunggu di dalam bangunan"
     ],
     "correct_index": 0,
     "explanation_en": "Children can appear suddenly between homes and vehicles.",
@@ -11238,21 +11238,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-2",
     "order_index": 23,
-    "question_en": "In CITO, what tells other road users you plan to turn?",
-    "question_ms": "Dalam CITO, apakah yang memberitahu pengguna jalan raya lain bahawa anda hendak membelok?",
+    "question_en": "Which CITO step communicates your intention to nearby road users?",
+    "question_ms": "Langkah CITO manakah menyampaikan niat anda kepada pengguna jalan raya berhampiran?",
     "options_en": [
-      "Your mirror check",
-      "Your turn signal",
-      "Your shoulder check",
-      "Your lane position alone"
+      "Isyarat",
+      "Cermin",
+      "Titik buta",
+      "Olah gerak"
     ],
     "options_ms": [
-      "Pemeriksaan cermin anda",
-      "Lampu isyarat membelok",
-      "Pemeriksaan melepasi bahu",
-      "Kedudukan lorong anda sahaja"
+      "Isyarat",
+      "Cermin",
+      "Titik buta",
+      "Olah gerak"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "The signal communicates your intention. It does not replace checking the mirrors and blind spot.",
     "explanation_ms": "Isyarat menyampaikan niat anda. Cermin dan titik buta masih perlu diperiksa.",
     "image_url": null,
@@ -11654,19 +11654,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-2",
     "order_index": 39,
-    "question_en": "Traffic is barely moving on an expressway. When should you use the lane beside the shoulder?",
-    "question_ms": "Trafik bergerak perlahan di lebuh raya. Bilakah anda patut menggunakan lorong di sebelah bahu jalan?",
+    "question_en": "Traffic queues on an expressway. Which situation justifies moving into the marked shoulder lane?",
+    "question_ms": "Trafik beratur di lebuh raya. Keadaan manakah membolehkan anda masuk ke lorong bahu yang bertanda?",
     "options_en": [
-      "When your vehicle breaks down",
-      "When you need to pass the queue",
-      "When your exit is just ahead",
-      "When you need a short rest"
+      "Your vehicle has broken down",
+      "Your exit is just ahead",
+      "A passenger is late",
+      "You need a short rest"
     ],
     "options_ms": [
-      "Apabila kenderaan anda rosak",
-      "Apabila perlu memotong barisan",
-      "Apabila susur keluar hampir tiba",
-      "Apabila anda perlu berehat sebentar"
+      "Kenderaan anda rosak",
+      "Susur keluar hampir tiba",
+      "Penumpang anda lewat",
+      "Anda perlu berehat sebentar"
     ],
     "correct_index": 0,
     "explanation_en": "A slow queue is not an emergency. Stay in the traffic lanes.",
@@ -11680,21 +11680,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-2",
     "order_index": 40,
-    "question_en": "What routine check can reduce windscreen glare in sunlight?",
-    "question_ms": "Apakah pemeriksaan rutin yang dapat mengurangkan silau pada cermin hadapan ketika cahaya matahari terang?",
+    "question_en": "Bright sunlight is scattering across the glass in front of you. What preparation helps reduce it?",
+    "question_ms": "Cahaya matahari terang berselerak pada kaca di hadapan anda. Persediaan apakah membantu mengurangkannya?",
     "options_en": [
-      "Check the side mirrors are folded",
-      "Check the cabin light is off",
-      "Check the rear demister is on",
-      "Check the windscreen is clean"
+      "Remove dirt from the glass",
+      "Raise the rear-view mirror",
+      "Move the visor up",
+      "Close both side windows"
     ],
     "options_ms": [
-      "Pastikan cermin sisi dilipat",
-      "Pastikan lampu kabin dipadamkan",
-      "Pastikan penyahkabus belakang dihidupkan",
-      "Pastikan cermin hadapan bersih"
+      "Bersihkan kotoran pada kaca",
+      "Naikkan cermin pandang belakang",
+      "Naikkan pengadang matahari",
+      "Tutup kedua-dua tingkap sisi"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "Clean glass helps reduce glare. Keep enough washer fluid to clean it when needed.",
     "explanation_ms": "Cermin yang bersih membantu mengurangkan silau. Pastikan cecair pencuci mencukupi.",
     "image_url": null,
@@ -11810,21 +11810,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-2",
     "order_index": 45,
-    "question_en": "May a driver use a different vehicle while their driving licence is suspended?",
-    "question_ms": "Bolehkah seseorang menggunakan kenderaan lain apabila lesen memandunya digantung?",
+    "question_en": "Which plan is allowed while your driving licence is suspended?",
+    "question_ms": "Rancangan manakah dibenarkan ketika lesen memandu anda digantung?",
     "options_en": [
-      "Yes, with the owner’s consent",
-      "Yes, in another vehicle class",
-      "No, the driver may not drive",
-      "Yes, for a work journey"
+      "Ask someone else to drive you",
+      "Drive a borrowed car to work",
+      "Ride a different vehicle class",
+      "Take a short drive for essentials"
     ],
     "options_ms": [
-      "Ya, dengan izin pemilik",
-      "Ya, dalam kelas kenderaan lain",
-      "Tidak, pemandu dilarang memandu",
-      "Ya, bagi perjalanan kerja"
+      "Minta orang lain memandu anda",
+      "Pandu kereta pinjaman ke tempat kerja",
+      "Tunggang kenderaan kelas lain",
+      "Pandu sekejap untuk urusan penting"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "Suspension prevents the person from driving. Changing vehicles does not remove the restriction.",
     "explanation_ms": "Penggantungan melarang orang itu daripada memandu. Menukar kenderaan tidak menamatkan larangan tersebut.",
     "image_url": null,
@@ -12824,21 +12824,21 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-3",
     "order_index": 34,
-    "question_en": "What is the radiator there to help control?",
-    "question_ms": "Apakah yang dibantu oleh radiator untuk dikawal?",
+    "question_en": "Which condition is the cooling system, including the radiator, designed to prevent?",
+    "question_ms": "Keadaan manakah yang direka untuk dicegah oleh sistem penyejukan, termasuk radiator?",
     "options_en": [
-      "Engine oil pressure",
-      "Engine temperature",
-      "Windscreen washer flow",
-      "Battery charging rate"
+      "The engine overheating",
+      "The engine oil running low",
+      "The fuel supply running low",
+      "The battery losing its charge"
     ],
     "options_ms": [
-      "Tekanan minyak enjin",
-      "Suhu enjin",
-      "Aliran pencuci cermin",
-      "Kadar pengecasan bateri"
+      "Enjin terlalu panas",
+      "Minyak enjin berkurang",
+      "Bekalan bahan api berkurang",
+      "Bateri kehilangan cas"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "The radiator is part of the cooling system that regulates engine temperature.",
     "explanation_ms": "Radiator ialah sebahagian daripada sistem penyejuk yang mengawal suhu enjin.",
     "image_url": null,
@@ -13136,19 +13136,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-3",
     "order_index": 46,
-    "question_en": "Before a long drive, what can you check on the windscreen washer reservoir?",
-    "question_ms": "Sebelum memandu jauh, apakah yang boleh diperiksa pada takungan pencuci cermin hadapan?",
+    "question_en": "The washer reservoir is accessible under the bonnet. Which check can you do there?",
+    "question_ms": "Takungan pencuci boleh dicapai di bawah bonet. Pemeriksaan manakah boleh dibuat di situ?",
     "options_en": [
-      "How much fluid is left",
-      "How far the nozzles spray",
-      "How quickly the pump runs",
-      "How worn the wiper blades are"
+      "Check whether fluid needs topping up",
+      "Check whether fluid reaches the glass",
+      "Check how far the fluid sprays",
+      "Check which spray jet is blocked"
     ],
     "options_ms": [
-      "Jumlah cecair yang masih ada",
-      "Sejauh mana muncung menyembur",
-      "Kelajuan pam beroperasi",
-      "Tahap kehausan bilah pengelap"
+      "Semak sama ada cecair perlu ditambah",
+      "Semak sama ada cecair sampai ke kaca",
+      "Semak sejauh mana cecair menyembur",
+      "Semak muncung semburan yang tersumbat"
     ],
     "correct_index": 0,
     "explanation_en": "Check that the washer reservoir contains enough fluid.",
@@ -13188,19 +13188,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-3",
     "order_index": 48,
-    "question_en": "What tool should be available in the boot to release the fasteners when fitting the spare tyre?",
-    "question_ms": "Alat manakah patut ada di dalam but untuk melonggarkan pengikat ketika memasang tayar ganti?",
+    "question_en": "When replacing a tyre, which tool loosens the nuts before you remove the wheel?",
+    "question_ms": "Ketika mengganti tayar, alat manakah melonggarkan nat sebelum roda ditanggalkan?",
     "options_en": [
-      "A wheel-nut wrench",
-      "A spark plug wrench",
-      "A jack handle alone",
-      "A pair of pliers"
+      "A wheel brace",
+      "A tyre lever",
+      "A pressure gauge",
+      "A tow hook"
     ],
     "options_ms": [
-      "Pembuka nat roda",
-      "Sepana palam pencucuh",
-      "Pemutar jek sahaja",
-      "Sepasang playar"
+      "Sepana roda",
+      "Tuil tayar",
+      "Tolok tekanan",
+      "Cangkuk tunda"
     ],
     "correct_index": 0,
     "explanation_en": "The book includes a wheel-nut wrench among the emergency tools to check in the boot.",

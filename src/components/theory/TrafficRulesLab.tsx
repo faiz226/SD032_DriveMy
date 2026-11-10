@@ -58,9 +58,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "left",
     correctSignal: "none-entry-left-exit",
     ruleEn:
-      "Approach in the left lane (or right lane if clear), do not signal on entry, then switch on the left signal after passing the 9 o'clock exit.",
+      "When the left lane is clear, approach in that lane, stay in it and signal left after passing the first exit.",
     ruleMs:
-      "Dekati di lorong kiri, jangan beri isyarat semasa masuk, kemudian pasang isyarat kiri selepas melepasi simpang pukul 9.",
+      "Jika lorong kiri lapang, masuk dan kekal di lorong itu. Beri isyarat kiri selepas melepasi susur keluar pertama.",
     svgPath: "M 108 188 L 108 145 A 45 45 0 0 1 108 62 L 108 20",
     exitCoord: { x: 108, y: 24 },
   },
@@ -96,73 +96,12 @@ const EXIT_SPECS: ExitSpec[] = [
   },
 ];
 
-interface KejaraOffence {
-  id: string;
-  points: number;
-  labelEn: string;
-  labelMs: string;
-  ref: string;
-  pdlOnly?: boolean;
-}
-
-const KEJARA_OFFENCES: KejaraOffence[] = [
-  {
-    id: "speed-over-40",
-    points: 10,
-    labelEn: "Exceeding speed limit by more than 40 km/h",
-    labelMs: "Melebihi had laju lebih daripada 40 km/j",
-    ref: "Mata Demerit KEJARA",
-  },
-  {
-    id: "red-light",
-    points: 10,
-    labelEn: "Failing to obey red traffic light signal",
-    labelMs: "Gagal mematuhi lampu isyarat merah",
-    ref: "Mata Demerit KEJARA",
-  },
-  {
-    id: "p-plate",
-    points: 10,
-    labelEn: "Failing to display 'P' plates front and rear (PDL holder)",
-    labelMs: "Gagal mempamerkan plat 'P' di hadapan dan belakang (pemegang PDL)",
-    ref: "Syarat Lesen Percubaan (PDL)",
-    pdlOnly: true,
-  },
-  {
-    id: "speed-26-40",
-    points: 8,
-    labelEn: "Exceeding speed limit by 26 km/h to 40 km/h",
-    labelMs: "Melebihi had laju antara 26 km/j hingga 40 km/j",
-    ref: "Mata Demerit KEJARA",
-  },
-  {
-    id: "double-line",
-    points: 8,
-    labelEn: "Overtaking on a double continuous white line",
-    labelMs: "Memotong di garisan putih berkembar bersambung",
-    ref: "Garisan Berkembar Bersambung",
-  },
-  {
-    id: "phone-driving",
-    points: 8,
-    labelEn: "Using a hand-held mobile phone while driving",
-    labelMs: "Menggunakan telefon bimbit tanpa alat bebas tangan semasa memandu",
-    ref: "Larangan Telefon Bimbit",
-  },
-  {
-    id: "speed-1-25",
-    points: 6,
-    labelEn: "Exceeding speed limit by 1 km/h to 25 km/h",
-    labelMs: "Melebihi had laju antara 1 km/j hingga 25 km/j",
-    ref: "Mata Demerit KEJARA",
-  },
-  {
-    id: "bald-tyre",
-    points: 5,
-    labelEn: "Driving with bald tyres (<1.6 mm tread) or without seatbelt",
-    labelMs: "Memandu dengan tayar botak (<1.6 mm bunga) atau tanpa tali pinggang keledar",
-    ref: "Syarat Kelayakan Kenderaan",
-  },
+// KPP General, PDF viewer page 95.
+const KEJARA_ACTIONS = [
+  { en: "Warning", ms: "Amaran" },
+  { en: "Suspension for 6–8 months", ms: "Penggantungan selama 6–8 bulan" },
+  { en: "Suspension for 8–10 months", ms: "Penggantungan selama 8–10 bulan" },
+  { en: "Suspension for 10–12 months", ms: "Penggantungan selama 10–12 bulan" },
 ];
 
 interface RuleScenario {
@@ -230,20 +169,20 @@ const RULE_SCENARIOS: RuleScenario[] = [
     promptEn: "Your traffic light turns green at a yellow criss-cross box junction, but traffic ahead in your exit lane is stationary. What is the legal action?",
     promptMs: "Lampu isyarat anda bertukar hijau di petak kuning bersilang, tetapi trafik di lorong keluar anda sedang berhenti. Apakah tindakan yang sah?",
     optionsEn: [
-      "Wait behind the stop line before the yellow box until your exit lane is completely clear (unless turning right and only blocked by oncoming traffic)",
+      "Wait behind the stop line before the yellow box until your exit lane is completely clear",
       "Drive into the middle of the yellow box immediately while the light is green so you do not miss your turn",
       "Enter the yellow box and sound your horn continuously to clear the lane ahead",
     ],
     optionsMs: [
-      "Tunggu di belakang garisan berhenti sebelum petak kuning sehingga lorong keluar anda lapang sepenuhnya (kecuali membelok kanan dan hanya terhalang oleh trafik bertentangan)",
+      "Tunggu di belakang garisan berhenti sebelum petak kuning sehingga lorong keluar anda lapang sepenuhnya",
       "Pandu masuk ke tengah petak kuning serta-merta semasa lampu hijau supaya tidak terlepas giliran",
       "Masuk ke petak kuning dan bunyikan hon secara berterusan untuk mengosongkan lorong di hadapan",
     ],
     correctIndex: 0,
     explanationEn:
-      "Stopping on a yellow box junction obstructs cross-traffic and is a traffic offence. Never enter unless your exit road is clear, except when waiting to turn right and prevented only by oncoming traffic.",
+      "Stopping on a yellow box junction obstructs cross-traffic and is a traffic offence. Never enter unless your exit road is clear.",
     explanationMs:
-      "Berhenti di atas petak kuning menghalang trafik lintasan dan merupakan kesalahan jalan raya. Jangan masuk melainkan lorong keluar anda lapang sepenuhnya, kecuali ketika menunggu untuk membelok ke kanan.",
+      "Berhenti di atas petak kuning menghalang trafik lintasan dan merupakan kesalahan jalan raya. Jangan masuk melainkan lorong keluar anda lapang sepenuhnya.",
   },
   {
     id: "scen-centre-line",
@@ -280,16 +219,10 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
   const [roundaboutChecked, setRoundaboutChecked] = useState(false);
   const [solvedExits, setSolvedExits] = useState<Record<string, boolean>>({});
 
-  // Lab 2: KEJARA & Compound state
-  const [driverType, setDriverType] = useState<"pdl" | "cdl">("pdl");
-  const [vehicleCategory, setVehicleCategory] = useState<"car" | "commercial">("car");
-  const [paymentTier, setPaymentTier] = useState<"1-15" | "16-30" | "31-60">("1-15");
-  const [selectedOffences, setSelectedOffences] = useState<string[]>(["speed-26-40"]);
+  const [kejaraStage, setKejaraStage] = useState(0);
 
   // Lab 3: Transmission (DA vs D) state
   const [transTrack, setTransTrack] = useState<"DA" | "D">("DA");
-  const [autoGear, setAutoGear] = useState<"P" | "R" | "N" | "D" | "3" | "2" | "1">("P");
-  const [manualSpeedIndex, setManualSpeedIndex] = useState<number>(0);
 
   // Lab 4: Scenarios state
   const [scenarioAnswers, setScenarioAnswers] = useState<Record<string, number>>({});
@@ -305,139 +238,6 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
       onScenarioSolved?.(`roundabout-${selectedExit}`);
     }
   };
-
-  const toggleOffence = (id: string) => {
-    setSelectedOffences((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
-  };
-
-  const activeOffences = KEJARA_OFFENCES.filter(
-    (o) => selectedOffences.includes(o.id) && (!o.pdlOnly || driverType === "pdl"),
-  );
-  const totalPoints = activeOffences.reduce((sum, item) => sum + item.points, 0);
-  const baseCompound = paymentTier === "1-15" ? 150 : paymentTier === "16-30" ? 200 : 300;
-  const perOffenceCompound = vehicleCategory === "commercial" ? Math.min(300, baseCompound + 50) : baseCompound;
-
-  const AUTO_GEAR_DETAILS: Record<
-    "P" | "R" | "N" | "D" | "3" | "2" | "1",
-    {
-      nameEn: string;
-      nameMs: string;
-      shiftLockEn: string;
-      shiftLockMs: string;
-      usageEn: string;
-      usageMs: string;
-      speedCap: string;
-    }
-  > = {
-    P: {
-      nameEn: "P · Park (Transmission locked)",
-      nameMs: "P · Parkir (Transmisi dikunci)",
-      shiftLockEn: "Foot brake + Shift-lock release button required",
-      shiftLockMs: "Brek kaki + butang pelepas Shift-lock diperlukan",
-      usageEn: "Used when parked with handbrake engaged. Engine can be started safely in P.",
-      usageMs: "Digunakan semasa parkir dengan brek tangan ditarik. Enjin boleh dihidupkan dalam P.",
-      speedCap: "0 km/h (Stationary only)",
-    },
-    R: {
-      nameEn: "R · Reverse",
-      nameMs: "R · Undur",
-      shiftLockEn: "Complete stop + Shift-lock release button required",
-      shiftLockMs: "Berhenti sepenuhnya + butang Shift-lock diperlukan",
-      usageEn: "Reverses the car. Activates white reverse lights and reverse buzzer.",
-      usageMs: "Mengundurkan kereta. Mengaktifkan lampu undur putih dan pembaz undur.",
-      speedCap: "Reverse maneuvering only",
-    },
-    N: {
-      nameEn: "N · Neutral (Freewheel)",
-      nameMs: "N · Neutral (Bebas)",
-      shiftLockEn: "No engine power transmitted to wheels",
-      shiftLockMs: "Tiada kuasa enjin dihantar ke roda",
-      usageEn: "Used at long traffic stops with handbrake, or if engine restarts while rolling.",
-      usageMs: "Digunakan semasa berhenti lama dengan brek tangan, atau menghidupkan semula enjin.",
-      speedCap: "Never coast downhill in N",
-    },
-    D: {
-      nameEn: "D · Drive (Normal forward 1st-4th)",
-      nameMs: "D · Pemanduan normal ke hadapan",
-      shiftLockEn: "Shift freely between N and D",
-      shiftLockMs: "Anjakan bebas antara N dan D",
-      usageEn: "Standard forward driving on level roads and expressways; shifts automatically across all ratios.",
-      usageMs: "Pemanduan normal di jalan rata dan lebuh raya; menukar gear secara automatik.",
-      speedCap: "Up to statutory speed limit (110 km/h)",
-    },
-    "3": {
-      nameEn: "3 · Moderate gradient / overtaking",
-      nameMs: "3 · Bukit sederhana / memotong",
-      shiftLockEn: "Engine braking locks out 4th overdrive gear",
-      shiftLockMs: "Brek enjin menghalang gear ke-4",
-      usageEn: "Provides stronger pulling power on moderate hills and engine braking on gentle descents.",
-      usageMs: "Memberi kuasa tarikan di bukit sederhana dan brek enjin semasa menuruni curam sederhana.",
-      speedCap: "Max ~60 km/h",
-    },
-    "2": {
-      nameEn: "2 · Steep hill climb & descent",
-      nameMs: "2 · Mendaki & menuruni bukit curam",
-      shiftLockEn: "Shift-lock button required when shifting down to 2",
-      shiftLockMs: "Butang Shift-lock diperlukan apabila turun ke 2",
-      usageEn: "Keeps transmission in 2nd gear for steep hills so brakes do not overheat.",
-      usageMs: "Mengekalkan gear ke-2 di bukit curam supaya brek kaki tidak menjadi terlalu panas.",
-      speedCap: "Max 40 km/h",
-    },
-    "1": {
-      nameEn: "1 / L · Extreme gradient low gear",
-      nameMs: "1 / L · Gear rendah kecuraman melampau",
-      shiftLockEn: "Shift-lock button required; maximum engine braking",
-      shiftLockMs: "Butang Shift-lock diperlukan; brek enjin maksimum",
-      usageEn: "Locks transmission in 1st gear for very steep climbs, deep mud, or severe descents.",
-      usageMs: "Mengunci transmisi dalam gear 1 untuk pendakian atau penurunan yang sangat curam.",
-      speedCap: "Max 10-20 km/h",
-    },
-  };
-
-  const MANUAL_SPEED_BANDS = [
-    {
-      band: "0 - 20 km/h",
-      gear: "Gear 1",
-      torqueEn: "Maximum torque · Move off from stationary & steep hill climb",
-      torqueMs: "Kuasa tarikan maksimum · Mula bergerak dari pegun & mendaki bukit curam",
-      pedalRuleEn: "Left foot controls clutch to biting point (titik pergerakan); right foot applies gentle accelerator.",
-      pedalRuleMs: "Kaki kiri mengawal cekam ke titik pergerakan; kaki kanan menekan pemecut secara lembut.",
-    },
-    {
-      band: "15 - 35 km/h",
-      gear: "Gear 2",
-      torqueEn: "Low-speed turning, junctions & steep hill descent",
-      torqueMs: "Membelok kelajuan rendah, persimpangan & menuruni bukit curam",
-      pedalRuleEn: "Release accelerator, press clutch fully with left foot, shift to 2nd, release clutch smoothly.",
-      pedalRuleMs: "Lepaskan pemecut, tekan cekam sepenuhnya dengan kaki kiri, tukar ke Gear 2, lepas cekam perlahan.",
-    },
-    {
-      band: "30 - 45 km/h",
-      gear: "Gear 3",
-      torqueEn: "Urban traffic flow, gentle gradients & overtaking at moderate speed",
-      torqueMs: "Aliran trafik bandar, bukit landai & memotong pada kelajuan sederhana",
-      pedalRuleEn: "Keep left foot off the clutch pedal (rest on floor) once gear is engaged.",
-      pedalRuleMs: "Jauhkan kaki kiri daripada pedal cekam (letak di lantai) sebaik sahaja gear masuk.",
-    },
-    {
-      band: "40 - 65 km/h",
-      gear: "Gear 4",
-      torqueEn: "Steady arterial road cruising on level terrain",
-      torqueMs: "Pemanduan lancar di jalan utama yang rata",
-      pedalRuleEn: "Smooth progression; downshift to Gear 3 if speed drops below 35 km/h.",
-      pedalRuleMs: "Pertukaran lancar; turun ke Gear 3 jika kelajuan jatuh di bawah 35 km/j.",
-    },
-    {
-      band: "60 km/h and above",
-      gear: "Gear 5",
-      torqueEn: "Highway & expressway cruising · Fuel-saving overdrive ratio",
-      torqueMs: "Pemanduan lebuh raya · Nisbah penjimatan bahan api",
-      pedalRuleEn: "Used on trunk roads (90 km/h) and expressways (110 km/h) for low engine RPM.",
-      pedalRuleMs: "Digunakan di jalan persekutuan (90 km/j) dan lebuh raya (110 km/j) untuk RPM rendah.",
-    },
-  ];
 
   return (
     <div className="space-y-6">
@@ -472,8 +272,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
               {
                 id: "kejara" as const,
                 icon: ShieldWarning,
-                labelEn: "2. KEJARA & compound",
-                labelMs: "2. KEJARA & kompaun",
+                labelEn: "2. KEJARA actions",
+                labelMs: "2. Tindakan KEJARA",
               },
               {
                 id: "transmission" as const,
@@ -788,421 +588,68 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
 
         {/* LAB 2: SISTEM KEJARA & APJ 1987 COMPOUND CALCULATOR */}
         {activeLab === "kejara" && (
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
-            className="pt-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
-          >
-            <div className="lg:col-span-7 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <div className="space-y-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground block">
-                    {lang === "en" ? "Licence status" : "Status lesen"}
-                  </span>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {(["pdl", "cdl"] as const).map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setDriverType(type)}
-                        aria-pressed={driverType === type}
-                        className={`px-2.5 py-2 rounded-lg text-xs font-bold border cursor-pointer ${
-                          driverType === type
-                            ? "bg-brand text-brand-foreground border-foreground"
-                            : "bg-background text-foreground border-border"
-                        }`}
-                      >
-                        {type === "pdl" ? "PDL ('P')" : "CDL"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground block">
-                    {lang === "en" ? "Vehicle category" : "Kategori kenderaan"}
-                  </span>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {(["car", "commercial"] as const).map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setVehicleCategory(cat)}
-                        aria-pressed={vehicleCategory === cat}
-                        className={`px-2.5 py-2 rounded-lg text-xs font-bold border cursor-pointer ${
-                          vehicleCategory === cat
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-background text-foreground border-border"
-                        }`}
-                      >
-                        {cat === "car"
-                          ? lang === "en"
-                            ? "Car / Bike"
-                            : "Kereta / Moto"
-                          : lang === "en"
-                            ? "Lorry / Bus"
-                            : "Lori / Bas"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground block">
-                    {lang === "en" ? "Payment window" : "Tempoh bayaran"}
-                  </span>
-                  <div className="grid grid-cols-3 gap-1">
-                    {(["1-15", "16-30", "31-60"] as const).map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        onClick={() => setPaymentTier(tier)}
-                        aria-pressed={paymentTier === tier}
-                        className={`px-2 py-2 rounded-lg text-xs font-bold border cursor-pointer ${
-                          paymentTier === tier
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-background text-foreground border-border"
-                        }`}
-                      >
-                        {tier}d
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">
-                    {lang === "en"
-                      ? "Toggle scheduled offences to simulate KEJARA demerit points"
-                      : "Pilih kesalahan terjadual untuk mengira mata demerit KEJARA"}
-                  </span>
-                  {selectedOffences.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setSelectedOffences([])}
-                      className="text-xs font-semibold text-primary hover:underline cursor-pointer"
-                    >
-                      {lang === "en" ? "Reset offences" : "Set semula"}
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {KEJARA_OFFENCES.map((offence) => {
-                    const disabled = offence.pdlOnly && driverType !== "pdl";
-                    const checked = selectedOffences.includes(offence.id) && !disabled;
-                    return (
-                      <button
-                        key={offence.id}
-                        type="button"
-                        disabled={disabled}
-                        onClick={() => toggleOffence(offence.id)}
-                        aria-pressed={checked}
-                        className={`tile p-3 text-left flex items-start justify-between gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
-                          checked ? "tile-selected" : ""
-                        }`}
-                      >
-                        <div>
-                          <div className="text-xs font-semibold text-foreground leading-snug">
-                            {lang === "en" ? offence.labelEn : offence.labelMs}
-                          </div>
-                          <div className="text-[0.8125rem] text-muted-foreground mt-1">{offence.ref}</div>
-                        </div>
-                        <span className="pill pill-danger shrink-0">+{offence.points} pts</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* KEJARA Live Meter & Legal Consequence */}
-            <div className="lg:col-span-5 panel p-4 sm:p-5 space-y-4">
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <span className="text-xs font-semibold text-muted-foreground block">
-                    {lang === "en" ? "Accumulated KEJARA points" : "Jumlah mata demerit KEJARA"}
-                  </span>
-                  <div className="type-figure text-3xl mt-1">
-                    {totalPoints}{" "}
-                    <span className="text-base font-normal text-muted-foreground">/ 20 pts</span>
-                  </div>
-                </div>
-                <span
-                  className={`pill ${
-                    totalPoints >= 20
-                      ? "pill-danger"
-                      : totalPoints >= 10
-                        ? "pill-warning"
-                        : "pill-success"
-                  }`}
+          <div className="panel space-y-4 p-4 sm:p-5">
+            <h3 className="font-heading text-base font-bold">
+              {lang === "en" ? "KEJARA for competent licence holders" : "KEJARA bagi pemegang lesen kompeten"}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {lang === "en"
+                ? "Choose how many times the driver has reached the 20-point threshold."
+                : "Pilih bilangan kali pemandu mencapai ambang 20 mata."}
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {KEJARA_ACTIONS.map((action, index) => (
+                <Button
+                  key={action.en}
+                  type="button"
+                  variant={kejaraStage === index ? "default" : "outline"}
+                  aria-pressed={kejaraStage === index}
+                  onClick={() => setKejaraStage(index)}
                 >
-                  {totalPoints >= 20
-                    ? driverType === "pdl"
-                      ? lang === "en"
-                        ? "PDL revoked!"
-                        : "PDL dibatalkan!"
-                      : lang === "en"
-                        ? "CDL suspended!"
-                        : "CDL digantung!"
-                    : lang === "en"
-                      ? "Below 20-pt threshold"
-                      : "Di bawah had 20 mata"}
-                </span>
-              </div>
-
-              <div className="w-full h-3 rounded-full bg-muted overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-200 ${
-                    totalPoints >= 20
-                      ? "bg-destructive"
-                      : totalPoints >= 10
-                        ? "bg-warning"
-                        : "bg-success"
-                  }`}
-                  style={{ width: `${Math.min(100, (totalPoints / 20) * 100)}%` }}
-                />
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-muted/50 border border-border space-y-2 text-xs leading-relaxed">
-                <div className="font-bold text-foreground">
-                  {driverType === "pdl"
-                    ? lang === "en"
-                      ? "Probationary ('P') driver rule (20 points):"
-                      : "Peraturan pemandu Percubaan ('P') (20 mata):"
-                    : lang === "en"
-                      ? "Competent (CDL) driver rule (20-point blocks):"
-                      : "Peraturan pemandu Kompeten (CDL) (blok 20 mata):"}
-                </div>
-                <p className="text-muted-foreground">
-                  {driverType === "pdl"
-                    ? lang === "en"
-                      ? "Accumulating 20 or more demerit points during the 2-year probationary period results in immediate licence revocation and a 12-month disqualification from driving."
-                      : "Mengumpul 20 mata demerit atau lebih dalam tempoh percubaan 2 tahun menyebabkan lesen PDL dibatalkan serta-merta dan dilarang memandu selama 12 bulan."
-                    : lang === "en"
-                      ? "1st 20 points: 6-8 months suspension. 2nd 20 points: 8-10 months suspension. 3rd 20 points within 5 years: 10-12 months suspension + notice of licence revocation. Bonus: 24 clean months deducts 7 points."
-                      : "20 mata pertama: gantung 6-8 bulan. 20 mata kedua: gantung 8-10 bulan. 20 mata ketiga dalam 5 tahun: gantung 10-12 bulan + notis pembatalan lesen. Bonus: 24 bulan bersih menolak 7 mata."}
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-muted/30 border border-border flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-semibold text-muted-foreground block">
-                    {lang === "en"
-                      ? `APJ 1987 compound rate (Days ${paymentTier})`
-                      : `Kadar kompaun APJ 1987 (Hari ${paymentTier})`}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {vehicleCategory === "commercial"
-                      ? lang === "en"
-                        ? "Includes +RM50 commercial vehicle surcharge (capped at RM300)"
-                        : "Termasuk surcaj +RM50 kenderaan perdagangan (maksimum RM300)"
-                      : lang === "en"
-                        ? "Standard motorcar / motorcycle rate"
-                        : "Kadar standard motokar / motosikal"}
-                  </span>
-                </div>
-                <div className="type-figure text-xl text-foreground">RM{perOffenceCompound}</div>
-              </div>
+                  {lang === "en" ? `Time ${index + 1}` : `Kali ke-${index + 1}`}
+                </Button>
+              ))}
             </div>
-          </motion.div>
+            <p className="text-base font-semibold" aria-live="polite">
+              {KEJARA_ACTIONS[kejaraStage][lang === "en" ? "en" : "ms"]}
+            </p>
+          </div>
         )}
 
-        {/* LAB 3: CLASS DA (AUTOMATIC) VS CLASS D (MANUAL) TRANSMISSION WORKBENCH */}
         {activeLab === "transmission" && (
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
-            className="pt-4 space-y-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="inline-flex rounded-xl border border-border p-1 bg-muted/40">
-                <button
+          <div className="panel space-y-4 p-4 sm:p-5">
+            <div className="flex flex-wrap gap-2">
+              {(["DA", "D"] as const).map((track) => (
+                <Button
+                  key={track}
                   type="button"
-                  onClick={() => setTransTrack("DA")}
-                  aria-pressed={transTrack === "DA"}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${
-                    transTrack === "DA"
-                      ? "bg-brand text-brand-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  variant={transTrack === track ? "default" : "outline"}
+                  aria-pressed={transTrack === track}
+                  onClick={() => setTransTrack(track)}
                 >
-                  {lang === "en"
-                    ? "Class DA · Automatic (No clutch pedal)"
-                    : "Kelas DA · Automatik (Tanpa pedal cekam)"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTransTrack("D")}
-                  aria-pressed={transTrack === "D"}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${
-                    transTrack === "D"
-                      ? "bg-brand text-brand-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {lang === "en"
-                    ? "Class D · Manual (With clutch pedal)"
-                    : "Kelas D · Manual (Dengan pedal cekam)"}
-                </button>
-              </div>
-              <span className="pill pill-neutral">
-                {transTrack === "DA"
-                  ? (lang === "en" ? "Class DA Automatic Syllabus" : "Sukatan Automatik Kelas DA")
-                  : (lang === "en" ? "Class D Manual Syllabus" : "Sukatan Manual Kelas D")}
-              </span>
+                  {lang === "en" ? `Class ${track}` : `Kelas ${track}`}
+                </Button>
+              ))}
             </div>
-
-            {transTrack === "DA" ? (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                <div className="lg:col-span-5 panel p-4 space-y-3">
-                  <div className="text-xs font-semibold text-muted-foreground">
-                    {lang === "en"
-                      ? "Select an automatic selector position to inspect its speed cap & shift-lock rule:"
-                      : "Pilih kedudukan tuil gear automatik untuk melihat had kelajuan & peraturan Shift-lock:"}
-                  </div>
-                  <div className="grid grid-cols-7 gap-1.5">
-                    {(["P", "R", "N", "D", "3", "2", "1"] as const).map((pos) => (
-                      <button
-                        key={pos}
-                        type="button"
-                        onClick={() => setAutoGear(pos)}
-                        aria-pressed={autoGear === pos}
-                        className={`h-12 rounded-xl font-heading font-bold text-base border cursor-pointer transition-colors ${
-                          autoGear === pos
-                            ? "bg-brand text-brand-foreground border-foreground"
-                            : "bg-background text-foreground border-border hover:border-foreground/40"
-                        }`}
-                      >
-                        {pos === "1" ? "1/L" : pos}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-1.5 text-xs">
-                    <div className="font-bold text-foreground">
-                      {lang === "en"
-                        ? "Right-foot-only pedal discipline:"
-                        : "Disiplin kaki kanan sahaja:"}
-                    </div>
-                    <p className="text-muted-foreground">
-                      {lang === "en"
-                        ? "A Class DA automatic car has only 2 foot pedals (foot brake on the left, accelerator on the right). Both pedals must be operated exclusively with the RIGHT foot; the left foot rests on the footrest at all times."
-                        : "Kereta automatik Kelas DA hanya mempunyai 2 pedal kaki (brek kaki di kiri, pemecut di kanan). Kedua-dua pedal wajib dikendalikan oleh KAKI KANAN sahaja; kaki kiri direhatkan di lantai sepanjang masa."}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-7 panel p-4 sm:p-5 space-y-3">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <h3 className="text-base font-bold font-heading">
-                      {lang === "en"
-                        ? AUTO_GEAR_DETAILS[autoGear].nameEn
-                        : AUTO_GEAR_DETAILS[autoGear].nameMs}
-                    </h3>
-                    <span className="pill pill-info">{AUTO_GEAR_DETAILS[autoGear].speedCap}</span>
-                  </div>
-                  <p className="text-sm text-foreground/90 leading-relaxed">
-                    {lang === "en"
-                      ? AUTO_GEAR_DETAILS[autoGear].usageEn
-                      : AUTO_GEAR_DETAILS[autoGear].usageMs}
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs">
-                      <span className="font-semibold text-foreground block">
-                        {lang === "en" ? "Shift-lock requirement:" : "Keperluan Shift-lock:"}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {lang === "en"
-                          ? AUTO_GEAR_DETAILS[autoGear].shiftLockEn
-                          : AUTO_GEAR_DETAILS[autoGear].shiftLockMs}
-                      </span>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs">
-                      <span className="font-semibold text-foreground block">
-                        {lang === "en" ? "Class DA Tanjakan (Ramp) test:" : "Ujian Tanjakan Kelas DA:"}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {lang === "en"
-                          ? "Stop with front wheels on the yellow line on the ramp, apply the handbrake firmly and select N or P. To move off, select D, apply gentle accelerator pressure while releasing the handbrake smoothly so the car moves forward without rolling back."
-                          : "Berhenti dengan roda hadapan di atas garisan kuning tanjakan, tarik brek tangan dengan kemas dan pilih N atau P. Untuk bergerak, pilih D, tekan pemecut secara terkawal sambil melepaskan brek tangan dengan lancar supaya kenderaan mendaki tanpa berundur."}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                <div className="lg:col-span-5 panel p-4 space-y-3">
-                  <div className="text-xs font-semibold text-muted-foreground">
-                    {lang === "en"
-                      ? "Select a road speed band to match the Class D manual gear:"
-                      : "Pilih julat kelajuan untuk memadankan gear manual Kelas D:"}
-                  </div>
-                  <div className="grid grid-cols-1 gap-1.5">
-                    {MANUAL_SPEED_BANDS.map((band, idx) => (
-                      <button
-                        key={band.band}
-                        type="button"
-                        onClick={() => setManualSpeedIndex(idx)}
-                        aria-pressed={manualSpeedIndex === idx}
-                        className={`tile p-2.5 px-3 text-left flex items-center justify-between cursor-pointer ${
-                          manualSpeedIndex === idx ? "tile-selected" : ""
-                        }`}
-                      >
-                        <span className="type-figure text-sm">{band.band}</span>
-                        <span className="pill pill-brand">{band.gear}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="lg:col-span-7 panel p-4 sm:p-5 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-base font-bold font-heading">
-                      {MANUAL_SPEED_BANDS[manualSpeedIndex].gear} ·{" "}
-                      {MANUAL_SPEED_BANDS[manualSpeedIndex].band}
-                    </h3>
-                    <span className="pill pill-info">5-Speed H-Pattern</span>
-                  </div>
-                  <p className="text-sm text-foreground/90">
-                    {lang === "en"
-                      ? MANUAL_SPEED_BANDS[manualSpeedIndex].torqueEn
-                      : MANUAL_SPEED_BANDS[manualSpeedIndex].torqueMs}
-                  </p>
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs space-y-1">
-                    <span className="font-semibold text-foreground block">
-                      {lang === "en" ? "3-pedal coordination:" : "Koordinasi 3 pedal:"}
-                    </span>
-                    <p className="text-muted-foreground">
-                      {lang === "en"
-                        ? MANUAL_SPEED_BANDS[manualSpeedIndex].pedalRuleEn
-                        : MANUAL_SPEED_BANDS[manualSpeedIndex].pedalRuleMs}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border text-xs space-y-1">
-                    <span className="font-semibold text-foreground block">
-                      {lang === "en"
-                        ? "Class D Tanjakan (Hill-start) test:"
-                        : "Ujian Tanjakan Kelas D:"}
-                    </span>
-                    <p className="text-muted-foreground">
-                      {lang === "en"
-                        ? "3-minute time limit on the ramp. Stop with front tyres on the yellow line and apply the handbrake firmly. Select Gear 1, build engine RPM, raise the clutch smoothly to the biting point (titik pergerakan) until the engine note deepens, then release the handbrake so the car moves forward without rolling back."
-                        : "Had masa 3 minit di tanjakan. Berhenti dengan tayar hadapan di atas garisan kuning dan tarik brek tangan dengan kemas. Pilih Gear 1, tingkatkan RPM enjin, lepaskan cekam perlahan-lahan ke titik pergerakan sehingga bunyi enjin berubah, kemudian lepaskan brek tangan supaya kenderaan mendaki ke hadapan tanpa berundur."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </motion.div>
+            <div className="space-y-2" aria-live="polite">
+              <h3 className="font-heading text-base font-bold">
+                {transTrack === "DA"
+                  ? lang === "en" ? "Automatic selector" : "Pemilih gear automatik"
+                  : lang === "en" ? "Manual clutch and gears" : "Cekam dan gear manual"}
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {transTrack === "DA"
+                  ? lang === "en"
+                    ? "Use your right foot for the brake and accelerator. Select P to park, R to reverse, N for neutral or D to drive forward. Stop before selecting reverse."
+                    : "Gunakan kaki kanan untuk brek dan pemecut. Pilih P untuk parkir, R untuk mengundur, N untuk neutral atau D untuk bergerak ke hadapan. Berhenti sebelum memilih gear undur."
+                  : lang === "en"
+                    ? "Use your left foot on the clutch. Press it fully to select first gear, then release it gradually to the biting point when moving off."
+                    : "Gunakan kaki kiri pada pedal cekam. Tekan cekam sepenuhnya untuk memilih gear pertama, kemudian lepaskan beransur-ansur hingga ke titik pergerakan ketika mula bergerak."}
+              </p>
+            </div>
+          </div>
         )}
 
-        {/* LAB 4: ROAD LAW SCENARIO JUDGE */}
         {activeLab === "scenarios" && (
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
