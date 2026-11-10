@@ -108,34 +108,6 @@ export const ROAD_SIGN_CATEGORIES: {
 
 export const roadSigns: RoadSignItem[] = [
   {
-    "id": "warn-uneven-road",
-    "type": "warning",
-    "name": "Uneven road surface",
-    "nameMs": "Permukaan jalan tidak rata",
-    "desc": "Uneven road surface. Slow before the uneven stretch to avoid a jolt or loss of control.",
-    "descMs": "Permukaan jalan tidak rata. Perlahankan kenderaan sebelum melalui bahagian tidak rata supaya kenderaan tidak tersentak atau hilang kawalan.",
-    "meaning": "Uneven road surface",
-    "meaningMs": "Permukaan jalan tidak rata",
-    "action": "Slow before the uneven stretch to avoid a jolt or loss of control.",
-    "actionMs": "Perlahankan kenderaan sebelum melalui bahagian tidak rata supaya kenderaan tidak tersentak atau hilang kawalan.",
-    "source": "KPP General PDF page 40",
-    "img": "/signs/warn-uneven-road.svg"
-  },
-  {
-    "id": "warn-road-hump",
-    "type": "warning",
-    "name": "Road hump ahead",
-    "nameMs": "Bonggol jalan di hadapan",
-    "desc": "Road hump ahead. Slow down before reaching the hump.",
-    "descMs": "Bonggol jalan di hadapan. Perlahankan kenderaan sebelum sampai di bonggol.",
-    "meaning": "Road hump ahead",
-    "meaningMs": "Bonggol jalan di hadapan",
-    "action": "Slow down before reaching the hump.",
-    "actionMs": "Perlahankan kenderaan sebelum sampai di bonggol.",
-    "source": "KPP General PDF page 40",
-    "img": "/signs/warn-road-hump.svg"
-  },
-  {
     "id": "warn-crossroads",
     "type": "warning",
     "name": "Four-way intersection",
@@ -147,63 +119,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Look for vehicles approaching from both sides before proceeding.",
     "actionMs": "Perhatikan kenderaan yang datang dari kedua-dua sisi sebelum meneruskan perjalanan.",
     "source": "KPP General PDF page 40",
-    "img": "/signs/warn-crossroads.svg"
-  },
-  {
-    "id": "warn-speed-zone-ahead",
-    "type": "warning",
-    "name": "Speed limit zone ahead",
-    "nameMs": "Zon had laju di hadapan",
-    "desc": "Speed limit zone ahead. Adjust your speed and watch for the hazard.",
-    "descMs": "Zon had laju di hadapan. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Speed limit zone ahead",
-    "meaningMs": "Zon had laju di hadapan",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 41",
-    "img": "/signs/warn-speed-zone-ahead.svg"
-  },
-  {
-    "id": "warn-staggered-junction-lr",
-    "type": "warning",
-    "name": "Staggered junction ahead",
-    "nameMs": "Simpang yang diatur di hadapan",
-    "desc": "Staggered junction ahead. Look out for traffic entering and leaving the two side roads.",
-    "descMs": "Simpang yang diatur di hadapan. Perhatikan kenderaan yang masuk dan keluar dari kedua-dua jalan simpang.",
-    "meaning": "Staggered junction ahead",
-    "meaningMs": "Simpang yang diatur di hadapan",
-    "action": "Look out for traffic entering and leaving the two side roads.",
-    "actionMs": "Perhatikan kenderaan yang masuk dan keluar dari kedua-dua jalan simpang.",
-    "source": "KPP General PDF page 41",
-    "img": "/signs/warn-staggered-junction-lr.svg"
-  },
-  {
-    "id": "warn-oblique-side-road-right",
-    "type": "warning",
-    "name": "Angled branch to the right",
-    "nameMs": "Simpang serong di sebelah kanan",
-    "desc": "Angled branch to the right. Adjust your speed and watch for the hazard.",
-    "descMs": "Simpang serong di sebelah kanan. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Angled branch to the right",
-    "meaningMs": "Simpang serong di sebelah kanan",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 43",
-    "img": "/signs/warn-oblique-side-road-right.svg"
-  },
-  {
-    "id": "warn-oblique-side-road-left",
-    "type": "warning",
-    "name": "Angled branch to the left",
-    "nameMs": "Simpang serong di sebelah kiri",
-    "desc": "Angled branch to the left. Adjust your speed and watch for the hazard.",
-    "descMs": "Simpang serong di sebelah kiri. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Angled branch to the left",
-    "meaningMs": "Simpang serong di sebelah kiri",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 43",
-    "img": "/signs/warn-oblique-side-road-left.svg"
+    "img": "/signs/4a3491aff2749365.svg"
   },
   {
     "id": "warn-side-road-left",
@@ -217,7 +133,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 42",
-    "img": "/signs/warn-side-road-left.svg"
+    "img": "/signs/e22292f492beec26.svg"
   },
   {
     "id": "warn-side-road-right",
@@ -231,7 +147,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 42",
-    "img": "/signs/warn-side-road-right.svg"
+    "img": "/signs/12e8b0d727c5bdf1.svg"
   },
   {
     "id": "warn-t-junction",
@@ -245,21 +161,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Slow down, signal your turn and stop at the junction before proceeding safely.",
     "actionMs": "Perlahankan kenderaan, beri isyarat membelok dan berhenti di persimpangan sebelum meneruskan perjalanan dengan selamat.",
     "source": "KPP General PDF page 42",
-    "img": "/signs/warn-t-junction.svg"
-  },
-  {
-    "id": "warn-y-junction",
-    "type": "warning",
-    "name": "Y-junction ahead",
-    "nameMs": "Persimpangan Y di hadapan",
-    "desc": "Y-junction ahead. Signal for the branch you intend to take and position your vehicle accordingly.",
-    "descMs": "Persimpangan Y di hadapan. Beri isyarat untuk simpang yang hendak diambil dan letakkan kenderaan di laluan yang sesuai.",
-    "meaning": "Y-junction ahead",
-    "meaningMs": "Persimpangan Y di hadapan",
-    "action": "Signal for the branch you intend to take and position your vehicle accordingly.",
-    "actionMs": "Beri isyarat untuk simpang yang hendak diambil dan letakkan kenderaan di laluan yang sesuai.",
-    "source": "KPP General PDF page 43",
-    "img": "/signs/warn-y-junction.svg"
+    "img": "/signs/e3ccd470b3c6bc8e.svg"
   },
   {
     "id": "warn-double-arrow-split",
@@ -273,49 +175,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Choose a lane that leads where you intend to go and keep within it.",
     "actionMs": "Pilih lorong yang menuju ke arah destinasi dan kekal dalam lorong itu.",
     "source": "KPP General PDF page 44",
-    "img": "/signs/warn-double-arrow-split.svg"
-  },
-  {
-    "id": "warn-obstacle-marker",
-    "type": "warning",
-    "name": "Obstacle at the divider",
-    "nameMs": "Halangan di pembahagi jalan",
-    "desc": "Obstacle at the divider. Slow down so you have time to steer clear of the divider.",
-    "descMs": "Halangan di pembahagi jalan. Perlahankan kenderaan supaya sempat mengelak pembahagi jalan.",
-    "meaning": "Obstacle at the divider",
-    "meaningMs": "Halangan di pembahagi jalan",
-    "action": "Slow down so you have time to steer clear of the divider.",
-    "actionMs": "Perlahankan kenderaan supaya sempat mengelak pembahagi jalan.",
-    "source": "KPP General PDF page 44",
-    "img": "/signs/warn-obstacle-marker.svg"
-  },
-  {
-    "id": "warn-clearance-marker",
-    "type": "warning",
-    "name": "Limited clearance ahead",
-    "nameMs": "Kelegaan laluan terhad di hadapan",
-    "desc": "Limited clearance ahead. Check that there is enough room before driving between the markers.",
-    "descMs": "Kelegaan laluan terhad di hadapan. Pastikan ruang mencukupi sebelum memandu di antara penanda.",
-    "meaning": "Limited clearance ahead",
-    "meaningMs": "Kelegaan laluan terhad di hadapan",
-    "action": "Check that there is enough room before driving between the markers.",
-    "actionMs": "Pastikan ruang mencukupi sebelum memandu di antara penanda.",
-    "source": "KPP General PDF page 44",
-    "img": "/signs/warn-clearance-marker.svg"
-  },
-  {
-    "id": "warn-winding-road",
-    "type": "warning",
-    "name": "Winding road ahead",
-    "nameMs": "Jalan bengkang-bengkok di hadapan",
-    "desc": "Winding road ahead. Slow down before the bends and avoid overtaking on the winding stretch.",
-    "descMs": "Jalan bengkang-bengkok di hadapan. Perlahankan kenderaan sebelum selekoh dan elakkan memotong di laluan berliku.",
-    "meaning": "Winding road ahead",
-    "meaningMs": "Jalan bengkang-bengkok di hadapan",
-    "action": "Slow down before the bends and avoid overtaking on the winding stretch.",
-    "actionMs": "Perlahankan kenderaan sebelum selekoh dan elakkan memotong di laluan berliku.",
-    "source": "KPP General PDF page 45",
-    "img": "/signs/warn-winding-road.svg"
+    "img": "/signs/322e269754adeff6.svg"
   },
   {
     "id": "warn-curve-left",
@@ -329,7 +189,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 47",
-    "img": "/signs/warn-curve-left.svg"
+    "img": "/signs/194637442da016e5.svg"
   },
   {
     "id": "warn-curve-right",
@@ -343,7 +203,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 47",
-    "img": "/signs/warn-curve-right.svg"
+    "img": "/signs/8c4124b32afd3704.svg"
   },
   {
     "id": "warn-chevron-curve",
@@ -357,35 +217,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 47",
-    "img": "/signs/warn-chevron-curve.svg"
-  },
-  {
-    "id": "warn-double-curve-left",
-    "type": "warning",
-    "name": "Double bend, left first",
-    "nameMs": "Dua selekoh, mula ke kiri",
-    "desc": "Double bend, left first. Adjust your speed and watch for the hazard.",
-    "descMs": "Dua selekoh, mula ke kiri. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Double bend, left first",
-    "meaningMs": "Dua selekoh, mula ke kiri",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 46",
-    "img": "/signs/warn-double-curve-left.svg"
-  },
-  {
-    "id": "warn-double-curve-right",
-    "type": "warning",
-    "name": "Double bend, right first",
-    "nameMs": "Dua selekoh, mula ke kanan",
-    "desc": "Double bend, right first. Adjust your speed and watch for the hazard.",
-    "descMs": "Dua selekoh, mula ke kanan. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Double bend, right first",
-    "meaningMs": "Dua selekoh, mula ke kanan",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 45",
-    "img": "/signs/warn-double-curve-right.svg"
+    "img": "/signs/b716cb9e685088a5.svg"
   },
   {
     "id": "warn-dual-carriageway-ends",
@@ -399,7 +231,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Watch for vehicles coming the other way once the divider ends.",
     "actionMs": "Awasi kenderaan dari arah bertentangan selepas pembahagi jalan tamat.",
     "source": "KPP General PDF page 48",
-    "img": "/signs/warn-dual-carriageway-ends.svg"
+    "img": "/signs/b12139221efc15b6.svg"
   },
   {
     "id": "warn-divided-highway-ahead",
@@ -413,7 +245,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Stay on the correct side as the divider separates the two streams of traffic.",
     "actionMs": "Kekal di sebelah yang betul apabila pembahagi jalan memisahkan dua aliran trafik.",
     "source": "KPP General PDF page 48",
-    "img": "/signs/warn-divided-highway-ahead.svg"
+    "img": "/signs/788d475c2d05336c.svg"
   },
   {
     "id": "warn-roundabout-ahead",
@@ -427,7 +259,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Pick the appropriate approach lane and yield to traffic already in the roundabout.",
     "actionMs": "Pilih lorong masuk yang sesuai dan beri laluan kepada kenderaan yang sudah berada dalam bulatan.",
     "source": "KPP General PDF page 48",
-    "img": "/signs/warn-roundabout-ahead.svg"
+    "img": "/signs/d26a8ccc75c5a905.svg"
   },
   {
     "id": "warn-two-way-traffic",
@@ -441,35 +273,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Expect oncoming vehicles on the same road and check carefully before overtaking.",
     "actionMs": "Jangkakan kenderaan dari arah bertentangan di jalan yang sama dan periksa keadaan sebelum memotong.",
     "source": "KPP General PDF page 49",
-    "img": "/signs/warn-two-way-traffic.svg"
-  },
-  {
-    "id": "warn-climbing-lane",
-    "type": "warning",
-    "name": "Extra uphill lane",
-    "nameMs": "Lorong tambahan untuk mendaki",
-    "desc": "Extra uphill lane. Adjust your speed and watch for the hazard.",
-    "descMs": "Lorong tambahan untuk mendaki. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Extra uphill lane",
-    "meaningMs": "Lorong tambahan untuk mendaki",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 49",
-    "img": "/signs/warn-climbing-lane.svg"
-  },
-  {
-    "id": "warn-descending-lane",
-    "type": "warning",
-    "name": "Extra downhill lane",
-    "nameMs": "Lorong tambahan untuk menurun",
-    "desc": "Extra downhill lane. Adjust your speed and watch for the hazard.",
-    "descMs": "Lorong tambahan untuk menurun. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Extra downhill lane",
-    "meaningMs": "Lorong tambahan untuk menurun",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 49",
-    "img": "/signs/warn-descending-lane.svg"
+    "img": "/signs/ea082fc0b4c65733.svg"
   },
   {
     "id": "warn-road-narrows-both",
@@ -483,7 +287,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 50",
-    "img": "/signs/warn-road-narrows-both.svg"
+    "img": "/signs/ce68f8896451a2c9.svg"
   },
   {
     "id": "warn-road-narrows-left",
@@ -497,7 +301,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 50",
-    "img": "/signs/warn-road-narrows-left.svg"
+    "img": "/signs/2be93e13645351ef.svg"
   },
   {
     "id": "warn-road-narrows-right",
@@ -511,7 +315,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 50",
-    "img": "/signs/warn-road-narrows-right.svg"
+    "img": "/signs/e08ca85fb4d9816f.svg"
   },
   {
     "id": "warn-steep-ascent",
@@ -525,7 +329,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Select a lower gear to get the power needed to climb.",
     "actionMs": "Gunakan gear rendah untuk mendapatkan kuasa yang diperlukan semasa mendaki.",
     "source": "KPP General PDF page 50",
-    "img": "/signs/warn-steep-ascent.svg"
+    "img": "/signs/fa01479a3e275ae3.svg"
   },
   {
     "id": "warn-steep-descent",
@@ -539,7 +343,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Select a lower gear to help control your speed on the descent.",
     "actionMs": "Gunakan gear rendah untuk membantu mengawal kelajuan semasa menurun.",
     "source": "KPP General PDF page 50",
-    "img": "/signs/warn-steep-descent.svg"
+    "img": "/signs/eb9c555ec03577f6.svg"
   },
   {
     "id": "warn-narrow-bridge",
@@ -553,7 +357,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Slow down and give way if a vehicle coming the other way is closer to the bridge.",
     "actionMs": "Perlahankan kenderaan dan beri laluan jika kenderaan dari arah bertentangan lebih hampir dengan jambatan.",
     "source": "KPP General PDF page 51",
-    "img": "/signs/warn-narrow-bridge.svg"
+    "img": "/signs/d1e9a6d6aab128b3.svg"
   },
   {
     "id": "warn-slippery-road",
@@ -567,35 +371,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Slow smoothly, avoid hard braking and leave a safe gap.",
     "actionMs": "Perlahankan kenderaan dengan lancar, elakkan brek mengejut dan kekalkan jarak selamat.",
     "source": "KPP General PDF page 51",
-    "img": "/signs/warn-slippery-road.svg"
-  },
-  {
-    "id": "warn-soft-shoulder",
-    "type": "warning",
-    "name": "Soft road shoulder",
-    "nameMs": "Bahu jalan lembut",
-    "desc": "Soft road shoulder. Take extra care near the edge because the shoulder can be soft.",
-    "descMs": "Bahu jalan lembut. Berhati-hati ketika menghampiri tepi jalan kerana bahu jalan mungkin lembut.",
-    "meaning": "Soft road shoulder",
-    "meaningMs": "Bahu jalan lembut",
-    "action": "Take extra care near the edge because the shoulder can be soft.",
-    "actionMs": "Berhati-hati ketika menghampiri tepi jalan kerana bahu jalan mungkin lembut.",
-    "source": "KPP General PDF page 51",
-    "img": "/signs/warn-soft-shoulder.svg"
-  },
-  {
-    "id": "warn-traffic-lights",
-    "type": "warning",
-    "name": "Traffic lights ahead",
-    "nameMs": "Lampu isyarat di hadapan",
-    "desc": "Traffic lights ahead. Adjust your speed and watch for the hazard.",
-    "descMs": "Lampu isyarat di hadapan. Laraskan kelajuan dan awasi bahaya.",
-    "meaning": "Traffic lights ahead",
-    "meaningMs": "Lampu isyarat di hadapan",
-    "action": "Adjust your speed and watch for the hazard.",
-    "actionMs": "Laraskan kelajuan dan awasi bahaya.",
-    "source": "KPP General PDF page 52",
-    "img": "/signs/warn-traffic-lights.svg"
+    "img": "/signs/9702f462c37241a4.svg"
   },
   {
     "id": "warn-stop-ahead",
@@ -609,7 +385,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Slow down early and be ready to come to a complete stop at the actual stop sign.",
     "actionMs": "Perlahankan kenderaan awal dan bersedia untuk berhenti sepenuhnya di tanda berhenti sebenar.",
     "source": "KPP General PDF page 52",
-    "img": "/signs/warn-stop-ahead.svg"
+    "img": "/signs/add368369889404d.svg"
   },
   {
     "id": "warn-other-danger",
@@ -623,21 +399,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Adjust your speed and watch for the hazard.",
     "actionMs": "Laraskan kelajuan dan awasi bahaya.",
     "source": "KPP General PDF page 52",
-    "img": "/signs/warn-other-danger.svg"
-  },
-  {
-    "id": "warn-give-way-ahead",
-    "type": "warning",
-    "name": "Give-way sign ahead",
-    "nameMs": "Tanda beri laluan di hadapan",
-    "desc": "Give-way sign ahead. Slow down and be ready to stop to let priority traffic pass.",
-    "descMs": "Tanda beri laluan di hadapan. Perlahankan kenderaan dan bersedia untuk berhenti bagi memberi laluan kepada trafik yang diutamakan.",
-    "meaning": "Give-way sign ahead",
-    "meaningMs": "Tanda beri laluan di hadapan",
-    "action": "Slow down and be ready to stop to let priority traffic pass.",
-    "actionMs": "Perlahankan kenderaan dan bersedia untuk berhenti bagi memberi laluan kepada trafik yang diutamakan.",
-    "source": "KPP General PDF page 53",
-    "img": "/signs/warn-give-way-ahead.svg"
+    "img": "/signs/3f13bbd2ffe5c466.svg"
   },
   {
     "id": "warn-falling-rocks",
@@ -651,49 +413,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Watch the road for fallen material before continuing.",
     "actionMs": "Perhatikan bahan runtuhan di jalan sebelum meneruskan perjalanan.",
     "source": "KPP General PDF page 53",
-    "img": "/signs/warn-falling-rocks.svg"
-  },
-  {
-    "id": "warn-cattle-crossing",
-    "type": "warning",
-    "name": "Livestock may cross",
-    "nameMs": "Ternakan mungkin melintas",
-    "desc": "Livestock may cross. Slow down and be prepared to stop if livestock enter the road.",
-    "descMs": "Ternakan mungkin melintas. Perlahankan kenderaan dan bersedia untuk berhenti jika ternakan masuk ke jalan.",
-    "meaning": "Livestock may cross",
-    "meaningMs": "Ternakan mungkin melintas",
-    "action": "Slow down and be prepared to stop if livestock enter the road.",
-    "actionMs": "Perlahankan kenderaan dan bersedia untuk berhenti jika ternakan masuk ke jalan.",
-    "source": "KPP General PDF page 53",
-    "img": "/signs/warn-cattle-crossing.svg"
-  },
-  {
-    "id": "warn-wildlife-crossing",
-    "type": "warning",
-    "name": "Wild animals may cross",
-    "nameMs": "Haiwan liar mungkin melintas",
-    "desc": "Wild animals may cross. Slow down and be prepared to stop if an animal enters the road.",
-    "descMs": "Haiwan liar mungkin melintas. Perlahankan kenderaan dan bersedia untuk berhenti jika haiwan masuk ke jalan.",
-    "meaning": "Wild animals may cross",
-    "meaningMs": "Haiwan liar mungkin melintas",
-    "action": "Slow down and be prepared to stop if an animal enters the road.",
-    "actionMs": "Perlahankan kenderaan dan bersedia untuk berhenti jika haiwan masuk ke jalan.",
-    "source": "KPP General PDF page 54",
-    "img": "/signs/warn-wildlife-crossing.svg"
-  },
-  {
-    "id": "warn-playground",
-    "type": "warning",
-    "name": "Playground nearby",
-    "nameMs": "Taman permainan berhampiran",
-    "desc": "Playground nearby. Watch for children near the road and be ready to stop.",
-    "descMs": "Taman permainan berhampiran. Awasi kanak-kanak berhampiran jalan dan bersedia untuk berhenti.",
-    "meaning": "Playground nearby",
-    "meaningMs": "Taman permainan berhampiran",
-    "action": "Watch for children near the road and be ready to stop.",
-    "actionMs": "Awasi kanak-kanak berhampiran jalan dan bersedia untuk berhenti.",
-    "source": "KPP General PDF page 54",
-    "img": "/signs/warn-playground.svg"
+    "img": "/signs/adc5145404e740b4.svg"
   },
   {
     "id": "warn-blind-crossing",
@@ -707,77 +427,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Slow down, give people time to cross and avoid sounding the horn.",
     "actionMs": "Perlahankan kenderaan, beri masa untuk orang melintas dan elakkan membunyikan hon.",
     "source": "KPP General PDF page 54",
-    "img": "/signs/warn-blind-crossing.svg"
-  },
-  {
-    "id": "warn-oku-crossing",
-    "type": "warning",
-    "name": "People with disabilities may cross",
-    "nameMs": "Orang kurang upaya mungkin melintas",
-    "desc": "People with disabilities may cross. Slow down and give people time to cross safely.",
-    "descMs": "Orang kurang upaya mungkin melintas. Perlahankan kenderaan dan beri masa untuk orang melintas dengan selamat.",
-    "meaning": "People with disabilities may cross",
-    "meaningMs": "Orang kurang upaya mungkin melintas",
-    "action": "Slow down and give people time to cross safely.",
-    "actionMs": "Perlahankan kenderaan dan beri masa untuk orang melintas dengan selamat.",
-    "source": "KPP General PDF page 54",
-    "img": "/signs/warn-oku-crossing.svg"
-  },
-  {
-    "id": "warn-school-crossing",
-    "type": "warning",
-    "name": "Schoolchildren may cross",
-    "nameMs": "Murid sekolah mungkin melintas",
-    "desc": "Schoolchildren may cross. Slow down and be ready to stop for pupils crossing the road.",
-    "descMs": "Murid sekolah mungkin melintas. Perlahankan kenderaan dan bersedia untuk berhenti bagi murid yang sedang melintas.",
-    "meaning": "Schoolchildren may cross",
-    "meaningMs": "Murid sekolah mungkin melintas",
-    "action": "Slow down and be ready to stop for pupils crossing the road.",
-    "actionMs": "Perlahankan kenderaan dan bersedia untuk berhenti bagi murid yang sedang melintas.",
-    "source": "KPP General PDF page 55",
-    "img": "/signs/warn-school-crossing.svg"
-  },
-  {
-    "id": "warn-tow-zone",
-    "type": "warning",
-    "name": "Tow-away zone",
-    "nameMs": "Zon tunda",
-    "desc": "Tow-away zone. Do not park in the marked area.",
-    "descMs": "Zon tunda. Jangan letak kenderaan di kawasan bertanda.",
-    "meaning": "Tow-away zone",
-    "meaningMs": "Zon tunda",
-    "action": "Do not park in the marked area.",
-    "actionMs": "Jangan letak kenderaan di kawasan bertanda.",
-    "source": "KPP General PDF page 55",
-    "img": "/signs/warn-tow-zone.svg"
-  },
-  {
-    "id": "warn-railway-ungated",
-    "type": "warning",
-    "name": "Rail crossing without gates",
-    "nameMs": "Lintasan kereta api tanpa pagar",
-    "desc": "Rail crossing without gates. Slow down, stop and check that no train is approaching before crossing.",
-    "descMs": "Lintasan kereta api tanpa pagar. Perlahankan kenderaan, berhenti dan pastikan tiada kereta api menghampiri sebelum melintas.",
-    "meaning": "Rail crossing without gates",
-    "meaningMs": "Lintasan kereta api tanpa pagar",
-    "action": "Slow down, stop and check that no train is approaching before crossing.",
-    "actionMs": "Perlahankan kenderaan, berhenti dan pastikan tiada kereta api menghampiri sebelum melintas.",
-    "source": "KPP General PDF page 55",
-    "img": "/signs/warn-railway-ungated.svg"
-  },
-  {
-    "id": "warn-pedestrian-crossing",
-    "type": "warning",
-    "name": "Pedestrian crossing ahead",
-    "nameMs": "Lintasan pejalan kaki di hadapan",
-    "desc": "Pedestrian crossing ahead. Slow down and give way to people crossing.",
-    "descMs": "Lintasan pejalan kaki di hadapan. Perlahankan kenderaan dan beri laluan kepada orang yang sedang melintas.",
-    "meaning": "Pedestrian crossing ahead",
-    "meaningMs": "Lintasan pejalan kaki di hadapan",
-    "action": "Slow down and give way to people crossing.",
-    "actionMs": "Perlahankan kenderaan dan beri laluan kepada orang yang sedang melintas.",
-    "source": "KPP General PDF page 56",
-    "img": "/signs/warn-pedestrian-crossing.svg"
+    "img": "/signs/f986766e1fca4c02.svg"
   },
   {
     "id": "warn-railway-gated",
@@ -791,21 +441,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Stop and wait for the gate to open before proceeding carefully.",
     "actionMs": "Berhenti dan tunggu pagar dibuka sebelum meneruskan perjalanan dengan berhati-hati.",
     "source": "KPP General PDF page 56",
-    "img": "/signs/warn-railway-gated.svg"
-  },
-  {
-    "id": "warn-railway-auto-gate",
-    "type": "warning",
-    "name": "Rail crossing with automatic gates",
-    "nameMs": "Lintasan kereta api berpagar automatik",
-    "desc": "Rail crossing with automatic gates. Stop and wait for the gates to open.",
-    "descMs": "Lintasan kereta api berpagar automatik. Berhenti dan tunggu sehingga pagar dibuka.",
-    "meaning": "Rail crossing with automatic gates",
-    "meaningMs": "Lintasan kereta api berpagar automatik",
-    "action": "Stop and wait for the gates to open.",
-    "actionMs": "Berhenti dan tunggu sehingga pagar dibuka.",
-    "source": "KPP General PDF page 56",
-    "img": "/signs/warn-railway-auto-gate.svg"
+    "img": "/signs/e846f69e41c180a7.svg"
   },
   {
     "id": "prohib-no-overtaking",
@@ -819,21 +455,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-no-overtaking.svg"
-  },
-  {
-    "id": "prohib-heavy-no-overtaking",
-    "type": "prohibitory",
-    "name": "Heavy vehicles must not overtake",
-    "nameMs": "Kenderaan berat dilarang memotong",
-    "desc": "Heavy vehicles must not overtake. Plan your route so you can obey this restriction.",
-    "descMs": "Kenderaan berat dilarang memotong. Rancang laluan supaya anda dapat mematuhi larangan ini.",
-    "meaning": "Heavy vehicles must not overtake",
-    "meaningMs": "Kenderaan berat dilarang memotong",
-    "action": "Plan your route so you can obey this restriction.",
-    "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
-    "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-heavy-no-overtaking.svg"
+    "img": "/signs/2f019822b1b9e39f.svg"
   },
   {
     "id": "prohib-no-horn",
@@ -847,7 +469,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-no-horn.svg"
+    "img": "/signs/ce55b86645694f5d.svg"
   },
   {
     "id": "prohib-no-entry",
@@ -861,7 +483,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-no-entry.svg"
+    "img": "/signs/9a316a4baac9f49a.svg"
   },
   {
     "id": "prohib-no-left-turn",
@@ -875,7 +497,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-no-left-turn.svg"
+    "img": "/signs/ef495735d6870ce2.svg"
   },
   {
     "id": "prohib-no-right-turn",
@@ -889,21 +511,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Use another route if you need to turn right.",
     "actionMs": "Gunakan laluan lain jika anda perlu membelok ke kanan.",
     "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-no-right-turn.svg"
-  },
-  {
-    "id": "prohib-no-left-right-turn",
-    "type": "prohibitory",
-    "name": "No left or right turn",
-    "nameMs": "Dilarang membelok ke kiri atau kanan",
-    "desc": "No left or right turn. Continue without turning at this junction.",
-    "descMs": "Dilarang membelok ke kiri atau kanan. Teruskan perjalanan tanpa membelok di persimpangan ini.",
-    "meaning": "No left or right turn",
-    "meaningMs": "Dilarang membelok ke kiri atau kanan",
-    "action": "Continue without turning at this junction.",
-    "actionMs": "Teruskan perjalanan tanpa membelok di persimpangan ini.",
-    "source": "KPP General PDF page 57",
-    "img": "/signs/prohib-no-left-right-turn.svg"
+    "img": "/signs/2eee15e55fa0ef48.svg"
   },
   {
     "id": "prohib-no-u-turn",
@@ -917,7 +525,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 58",
-    "img": "/signs/prohib-no-u-turn.svg"
+    "img": "/signs/a299aef5bccc0fca.svg"
   },
   {
     "id": "prohib-no-motorcycles",
@@ -931,21 +539,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Choose an alternative route if riding a motorcycle.",
     "actionMs": "Pilih laluan lain jika menunggang motosikal.",
     "source": "KPP General PDF page 58",
-    "img": "/signs/prohib-no-motorcycles.svg"
-  },
-  {
-    "id": "prohib-no-bicycles",
-    "type": "prohibitory",
-    "name": "No bicycle entry",
-    "nameMs": "Basikal dilarang masuk",
-    "desc": "No bicycle entry. Choose an alternative route if riding a bicycle.",
-    "descMs": "Basikal dilarang masuk. Pilih laluan lain jika menunggang basikal.",
-    "meaning": "No bicycle entry",
-    "meaningMs": "Basikal dilarang masuk",
-    "action": "Choose an alternative route if riding a bicycle.",
-    "actionMs": "Pilih laluan lain jika menunggang basikal.",
-    "source": "KPP General PDF page 58",
-    "img": "/signs/prohib-no-bicycles.svg"
+    "img": "/signs/efd2fb23c0d0e1ac.svg"
   },
   {
     "id": "prohib-no-parking",
@@ -959,7 +553,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 58",
-    "img": "/signs/prohib-no-parking.svg"
+    "img": "/signs/fbd415b24ab21b44.svg"
   },
   {
     "id": "prohib-no-stopping",
@@ -973,7 +567,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Plan your route so you can obey this restriction.",
     "actionMs": "Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "source": "KPP General PDF page 59",
-    "img": "/signs/prohib-no-stopping.svg"
+    "img": "/signs/ecd3d648f3d4a187.svg"
   },
   {
     "id": "prohib-stop",
@@ -987,7 +581,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Stop before the line, check both directions and continue only when safe.",
     "actionMs": "Berhenti sebelum garisan, periksa kedua-dua arah dan teruskan hanya apabila selamat.",
     "source": "KPP General PDF page 59",
-    "img": "/signs/prohib-stop.svg"
+    "img": "/signs/8cd2c7d525ad7c21.svg"
   },
   {
     "id": "prohib-children-crossing-stop",
@@ -1001,49 +595,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Wait for children to clear the crossing before moving off.",
     "actionMs": "Tunggu sehingga kanak-kanak selesai melintas sebelum bergerak.",
     "source": "KPP General PDF page 59",
-    "img": "/signs/prohib-children-crossing-stop.svg"
-  },
-  {
-    "id": "prohib-speed-limit-50",
-    "type": "prohibitory",
-    "name": "Maximum 50 km/h",
-    "nameMs": "Had maksimum 50 km/j",
-    "desc": "Maximum 50 km/h. Stay at or below the posted speed.",
-    "descMs": "Had maksimum 50 km/j. Jangan melebihi had laju yang dipaparkan.",
-    "meaning": "Maximum 50 km/h",
-    "meaningMs": "Had maksimum 50 km/j",
-    "action": "Stay at or below the posted speed.",
-    "actionMs": "Jangan melebihi had laju yang dipaparkan.",
-    "source": "KPP General PDF page 60",
-    "img": "/signs/prohib-speed-limit-50.svg"
-  },
-  {
-    "id": "prohib-speed-limit-90",
-    "type": "prohibitory",
-    "name": "Maximum 90 km/h",
-    "nameMs": "Had maksimum 90 km/j",
-    "desc": "Maximum 90 km/h. Stay at or below the posted speed.",
-    "descMs": "Had maksimum 90 km/j. Jangan melebihi had laju yang dipaparkan.",
-    "meaning": "Maximum 90 km/h",
-    "meaningMs": "Had maksimum 90 km/j",
-    "action": "Stay at or below the posted speed.",
-    "actionMs": "Jangan melebihi had laju yang dipaparkan.",
-    "source": "KPP General PDF page 60",
-    "img": "/signs/prohib-speed-limit-90.svg"
-  },
-  {
-    "id": "prohib-speed-limit-110",
-    "type": "prohibitory",
-    "name": "Maximum 110 km/h",
-    "nameMs": "Had maksimum 110 km/j",
-    "desc": "Maximum 110 km/h. Obey the speed limit and keep to the proper lane.",
-    "descMs": "Had maksimum 110 km/j. Patuhi had laju dan gunakan lorong yang betul.",
-    "meaning": "Maximum 110 km/h",
-    "meaningMs": "Had maksimum 110 km/j",
-    "action": "Obey the speed limit and keep to the proper lane.",
-    "actionMs": "Patuhi had laju dan gunakan lorong yang betul.",
-    "source": "KPP General PDF page 61",
-    "img": "/signs/prohib-speed-limit-110.svg"
+    "img": "/signs/e22b17f982a5ee46.svg"
   },
   {
     "id": "prohib-speed-limit-ends",
@@ -1057,35 +609,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the next applicable speed limit.",
     "actionMs": "Patuhi had laju seterusnya yang berkuat kuasa.",
     "source": "KPP General PDF page 60",
-    "img": "/signs/prohib-speed-limit-ends.svg"
-  },
-  {
-    "id": "prohib-width-limit",
-    "type": "prohibitory",
-    "name": "No entry over 2.5 m wide",
-    "nameMs": "Kenderaan melebihi lebar 2.5 m dilarang masuk",
-    "desc": "No entry over 2.5 m wide. Use another route if your vehicle exceeds the width shown.",
-    "descMs": "Kenderaan melebihi lebar 2.5 m dilarang masuk. Gunakan laluan lain jika kenderaan melebihi lebar yang dipaparkan.",
-    "meaning": "No entry over 2.5 m wide",
-    "meaningMs": "Kenderaan melebihi lebar 2.5 m dilarang masuk",
-    "action": "Use another route if your vehicle exceeds the width shown.",
-    "actionMs": "Gunakan laluan lain jika kenderaan melebihi lebar yang dipaparkan.",
-    "source": "KPP General PDF page 61",
-    "img": "/signs/prohib-width-limit.svg"
-  },
-  {
-    "id": "prohib-height-limit",
-    "type": "prohibitory",
-    "name": "No entry over 3.5 m high",
-    "nameMs": "Kenderaan melebihi tinggi 3.5 m dilarang masuk",
-    "desc": "No entry over 3.5 m high. Check the height of the vehicle and any load before proceeding.",
-    "descMs": "Kenderaan melebihi tinggi 3.5 m dilarang masuk. Periksa tinggi kenderaan dan muatannya sebelum meneruskan perjalanan.",
-    "meaning": "No entry over 3.5 m high",
-    "meaningMs": "Kenderaan melebihi tinggi 3.5 m dilarang masuk",
-    "action": "Check the height of the vehicle and any load before proceeding.",
-    "actionMs": "Periksa tinggi kenderaan dan muatannya sebelum meneruskan perjalanan.",
-    "source": "KPP General PDF page 62",
-    "img": "/signs/prohib-height-limit.svg"
+    "img": "/signs/63b26ca2bbf8dc2b.png"
   },
   {
     "id": "prohib-weight-limit",
@@ -1099,7 +623,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Use another route if your vehicle exceeds the weight shown.",
     "actionMs": "Gunakan laluan lain jika kenderaan melebihi berat yang dipaparkan.",
     "source": "KPP General PDF page 62",
-    "img": "/signs/prohib-weight-limit.svg"
+    "img": "/signs/ed63604f3712ca41.svg"
   },
   {
     "id": "mand-one-way",
@@ -1113,21 +637,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the direction of the arrow.",
     "actionMs": "Ikut arah anak panah.",
     "source": "KPP General PDF page 63",
-    "img": "/signs/mand-one-way.svg"
-  },
-  {
-    "id": "mand-ahead-only",
-    "type": "mandatory",
-    "name": "Straight ahead only",
-    "nameMs": "Terus sahaja",
-    "desc": "Straight ahead only. Continue in the direction shown.",
-    "descMs": "Terus sahaja. Teruskan mengikut arah yang ditunjukkan.",
-    "meaning": "Straight ahead only",
-    "meaningMs": "Terus sahaja",
-    "action": "Continue in the direction shown.",
-    "actionMs": "Teruskan mengikut arah yang ditunjukkan.",
-    "source": "KPP General PDF page 63",
-    "img": "/signs/mand-ahead-only.svg"
+    "img": "/signs/396a58e1a26f5557.svg"
   },
   {
     "id": "mand-turn-left-only",
@@ -1141,7 +651,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the required direction.",
     "actionMs": "Ikut arah yang diwajibkan.",
     "source": "KPP General PDF page 63",
-    "img": "/signs/mand-turn-left-only.svg"
+    "img": "/signs/57708bf453b84a72.svg"
   },
   {
     "id": "mand-turn-right-only",
@@ -1155,21 +665,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the required direction.",
     "actionMs": "Ikut arah yang diwajibkan.",
     "source": "KPP General PDF page 63",
-    "img": "/signs/mand-turn-right-only.svg"
-  },
-  {
-    "id": "mand-turn-left-ahead",
-    "type": "mandatory",
-    "name": "Compulsory left turn",
-    "nameMs": "Wajib belok ke kiri",
-    "desc": "Compulsory left turn. Follow the required direction.",
-    "descMs": "Wajib belok ke kiri. Ikut arah yang diwajibkan.",
-    "meaning": "Compulsory left turn",
-    "meaningMs": "Wajib belok ke kiri",
-    "action": "Follow the required direction.",
-    "actionMs": "Ikut arah yang diwajibkan.",
-    "source": "KPP General PDF page 63",
-    "img": "/signs/mand-turn-left-ahead.svg"
+    "img": "/signs/cbae8fe06ab6d6f0.svg"
   },
   {
     "id": "mand-turn-right-ahead",
@@ -1183,7 +679,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the required direction.",
     "actionMs": "Ikut arah yang diwajibkan.",
     "source": "KPP General PDF page 63",
-    "img": "/signs/mand-turn-right-ahead.svg"
+    "img": "/signs/c70027b1fa8b10e9.svg"
   },
   {
     "id": "mand-keep-left",
@@ -1197,7 +693,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the instruction shown on the sign.",
     "actionMs": "Patuhi arahan pada papan tanda.",
     "source": "KPP General PDF page 64",
-    "img": "/signs/mand-keep-left.svg"
+    "img": "/signs/24dc89f9e7127cca.svg"
   },
   {
     "id": "mand-keep-right",
@@ -1211,7 +707,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the instruction shown on the sign.",
     "actionMs": "Patuhi arahan pada papan tanda.",
     "source": "KPP General PDF page 64",
-    "img": "/signs/mand-keep-right.svg"
+    "img": "/signs/a50c8dd8a202a25e.svg"
   },
   {
     "id": "mand-pass-either-side",
@@ -1225,21 +721,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the instruction shown on the sign.",
     "actionMs": "Patuhi arahan pada papan tanda.",
     "source": "KPP General PDF page 64",
-    "img": "/signs/mand-pass-either-side.svg"
-  },
-  {
-    "id": "mand-keep-left-unless-overtaking",
-    "type": "mandatory",
-    "name": "Keep left unless overtaking",
-    "nameMs": "Ikut kiri kecuali memotong",
-    "desc": "Keep left unless overtaking. Follow the instruction shown on the sign.",
-    "descMs": "Ikut kiri kecuali memotong. Patuhi arahan pada papan tanda.",
-    "meaning": "Keep left unless overtaking",
-    "meaningMs": "Ikut kiri kecuali memotong",
-    "action": "Follow the instruction shown on the sign.",
-    "actionMs": "Patuhi arahan pada papan tanda.",
-    "source": "KPP General PDF page 64",
-    "img": "/signs/mand-keep-left-unless-overtaking.svg"
+    "img": "/signs/6103dff69316bf86.svg"
   },
   {
     "id": "mand-motorcycle-track",
@@ -1253,7 +735,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the instruction shown on the sign.",
     "actionMs": "Patuhi arahan pada papan tanda.",
     "source": "KPP General PDF page 65",
-    "img": "/signs/mand-motorcycle-track.svg"
+    "img": "/signs/e0389a069e72ed52.png"
   },
   {
     "id": "mand-bicycle-track",
@@ -1267,7 +749,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the instruction shown on the sign.",
     "actionMs": "Patuhi arahan pada papan tanda.",
     "source": "KPP General PDF page 65",
-    "img": "/signs/mand-bicycle-track.svg"
+    "img": "/signs/e86785fec1877d75.png"
   },
   {
     "id": "mand-trishaw-track",
@@ -1281,63 +763,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Follow the instruction shown on the sign.",
     "actionMs": "Patuhi arahan pada papan tanda.",
     "source": "KPP General PDF page 65",
-    "img": "/signs/mand-trishaw-track.svg"
-  },
-  {
-    "id": "mand-bus-lane",
-    "type": "mandatory",
-    "name": "Lane for buses",
-    "nameMs": "Lorong untuk bas",
-    "desc": "Lane for buses. Follow the instruction shown on the sign.",
-    "descMs": "Lorong untuk bas. Patuhi arahan pada papan tanda.",
-    "meaning": "Lane for buses",
-    "meaningMs": "Lorong untuk bas",
-    "action": "Follow the instruction shown on the sign.",
-    "actionMs": "Patuhi arahan pada papan tanda.",
-    "source": "KPP General PDF page 66",
-    "img": "/signs/mand-bus-lane.svg"
-  },
-  {
-    "id": "mand-taxi-lane",
-    "type": "mandatory",
-    "name": "Lane for taxis",
-    "nameMs": "Lorong untuk teksi",
-    "desc": "Lane for taxis. Follow the instruction shown on the sign.",
-    "descMs": "Lorong untuk teksi. Patuhi arahan pada papan tanda.",
-    "meaning": "Lane for taxis",
-    "meaningMs": "Lorong untuk teksi",
-    "action": "Follow the instruction shown on the sign.",
-    "actionMs": "Patuhi arahan pada papan tanda.",
-    "source": "KPP General PDF page 65",
-    "img": "/signs/mand-taxi-lane.svg"
-  },
-  {
-    "id": "mand-oku-parking",
-    "type": "mandatory",
-    "name": "Accessible parking bays",
-    "nameMs": "Petak parkir orang kurang upaya",
-    "desc": "Accessible parking bays. Use a different bay unless you have permission to park here.",
-    "descMs": "Petak parkir orang kurang upaya. Gunakan petak lain kecuali jika anda mempunyai kebenaran untuk meletak kenderaan di sini.",
-    "meaning": "Accessible parking bays",
-    "meaningMs": "Petak parkir orang kurang upaya",
-    "action": "Use a different bay unless you have permission to park here.",
-    "actionMs": "Gunakan petak lain kecuali jika anda mempunyai kebenaran untuk meletak kenderaan di sini.",
-    "source": "KPP General PDF page 66",
-    "img": "/signs/mand-oku-parking.svg"
-  },
-  {
-    "id": "info-telephone",
-    "type": "informational",
-    "name": "Public telephone",
-    "nameMs": "Telefon awam",
-    "desc": "Public telephone. If you need to use it, signal and pull over only where safe and permitted.",
-    "descMs": "Telefon awam. Jika perlu menggunakannya, beri isyarat dan berhenti di tempat yang selamat serta dibenarkan.",
-    "meaning": "Public telephone",
-    "meaningMs": "Telefon awam",
-    "action": "If you need to use it, signal and pull over only where safe and permitted.",
-    "actionMs": "Jika perlu menggunakannya, beri isyarat dan berhenti di tempat yang selamat serta dibenarkan.",
-    "source": "KPP General PDF page 67",
-    "img": "/signs/info-telephone.svg"
+    "img": "/signs/fad437bbc08b75fa.png"
   },
   {
     "id": "info-hospital",
@@ -1351,21 +777,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Use this information to plan your next move safely.",
     "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
     "source": "KPP General PDF page 67",
-    "img": "/signs/info-hospital.svg"
-  },
-  {
-    "id": "info-clinic",
-    "type": "informational",
-    "name": "Medical clinic",
-    "nameMs": "Klinik perubatan",
-    "desc": "Medical clinic. Use this information to plan your next move safely.",
-    "descMs": "Klinik perubatan. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Medical clinic",
-    "meaningMs": "Klinik perubatan",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 67",
-    "img": "/signs/info-clinic.svg"
+    "img": "/signs/dde5874c6044c5f3.svg"
   },
   {
     "id": "info-parking",
@@ -1379,35 +791,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Use this information to plan your next move safely.",
     "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
     "source": "KPP General PDF page 67",
-    "img": "/signs/info-parking.svg"
-  },
-  {
-    "id": "info-petrol-station",
-    "type": "informational",
-    "name": "Fuel station",
-    "nameMs": "Stesen minyak",
-    "desc": "Fuel station. Use this information to plan your next move safely.",
-    "descMs": "Stesen minyak. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Fuel station",
-    "meaningMs": "Stesen minyak",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 68",
-    "img": "/signs/info-petrol-station.svg"
-  },
-  {
-    "id": "info-bus-stop",
-    "type": "informational",
-    "name": "Bus stop",
-    "nameMs": "Perhentian bas",
-    "desc": "Bus stop. Use this information to plan your next move safely.",
-    "descMs": "Perhentian bas. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Bus stop",
-    "meaningMs": "Perhentian bas",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 68",
-    "img": "/signs/info-bus-stop.svg"
+    "img": "/signs/f6459f68e216bc5d.svg"
   },
   {
     "id": "info-dead-end",
@@ -1421,7 +805,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "The road does not continue through to another route.",
     "actionMs": "Jalan itu tidak bersambung dengan laluan lain.",
     "source": "KPP General PDF page 68",
-    "img": "/signs/info-dead-end.svg"
+    "img": "/signs/082877f6ec086be6.svg"
   },
   {
     "id": "info-u-turn",
@@ -1435,203 +819,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "It marks a place to turn around. Give way to oncoming traffic before turning.",
     "actionMs": "Tanda ini menunjukkan tempat untuk berpatah balik. Beri laluan kepada trafik dari arah bertentangan sebelum membelok.",
     "source": "KPP General PDF page 69",
-    "img": "/signs/info-u-turn.svg"
-  },
-  {
-    "id": "info-p-turn",
-    "type": "informational",
-    "name": "Designated P-turn",
-    "nameMs": "Tempat pusingan P",
-    "desc": "Designated P-turn. It marks a P-turn facility. Slow down and watch for oncoming traffic when using it.",
-    "descMs": "Tempat pusingan P. Tanda ini menunjukkan tempat pusingan P. Perlahankan kenderaan dan awasi trafik dari arah bertentangan semasa menggunakannya.",
-    "meaning": "Designated P-turn",
-    "meaningMs": "Tempat pusingan P",
-    "action": "It marks a P-turn facility. Slow down and watch for oncoming traffic when using it.",
-    "actionMs": "Tanda ini menunjukkan tempat pusingan P. Perlahankan kenderaan dan awasi trafik dari arah bertentangan semasa menggunakannya.",
-    "source": "KPP General PDF page 69",
-    "img": "/signs/info-p-turn.svg"
-  },
-  {
-    "id": "info-jpj-station",
-    "type": "informational",
-    "name": "JPJ weighing station",
-    "nameMs": "Stesen timbang JPJ",
-    "desc": "JPJ weighing station. Use this information to plan your next move safely.",
-    "descMs": "Stesen timbang JPJ. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "JPJ weighing station",
-    "meaningMs": "Stesen timbang JPJ",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 69",
-    "img": "/signs/info-jpj-station.svg"
-  },
-  {
-    "id": "info-ev-charging",
-    "type": "informational",
-    "name": "Electric vehicle charging station",
-    "nameMs": "Stesen cas kenderaan elektrik",
-    "desc": "Electric vehicle charging station. Use this information to plan your next move safely.",
-    "descMs": "Stesen cas kenderaan elektrik. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Electric vehicle charging station",
-    "meaningMs": "Stesen cas kenderaan elektrik",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 69",
-    "img": "/signs/info-ev-charging.svg"
-  },
-  {
-    "id": "info-highway-exit",
-    "type": "informational",
-    "name": "Direction to a destination exit",
-    "nameMs": "Arah ke susur keluar destinasi",
-    "desc": "Direction to a destination exit. Move into the correct lane in good time if you intend to take the exit.",
-    "descMs": "Arah ke susur keluar destinasi. Masuk ke lorong yang betul lebih awal jika anda hendak menggunakan susur keluar.",
-    "meaning": "Direction to a destination exit",
-    "meaningMs": "Arah ke susur keluar destinasi",
-    "action": "Move into the correct lane in good time if you intend to take the exit.",
-    "actionMs": "Masuk ke lorong yang betul lebih awal jika anda hendak menggunakan susur keluar.",
-    "source": "KPP General PDF page 70",
-    "img": "/signs/info-highway-exit.svg"
-  },
-  {
-    "id": "info-roundabout-direction",
-    "type": "informational",
-    "name": "Destinations via roundabout exits",
-    "nameMs": "Destinasi melalui susur keluar bulatan",
-    "desc": "Destinations via roundabout exits. Use this information to plan your next move safely.",
-    "descMs": "Destinasi melalui susur keluar bulatan. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Destinations via roundabout exits",
-    "meaningMs": "Destinasi melalui susur keluar bulatan",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 71",
-    "img": "/signs/info-roundabout-direction.svg"
-  },
-  {
-    "id": "info-distance-board",
-    "type": "informational",
-    "name": "Distances to upcoming destinations",
-    "nameMs": "Jarak ke destinasi seterusnya",
-    "desc": "Distances to upcoming destinations. Use this information to plan your next move safely.",
-    "descMs": "Jarak ke destinasi seterusnya. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Distances to upcoming destinations",
-    "meaningMs": "Jarak ke destinasi seterusnya",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 70",
-    "img": "/signs/info-distance-board.svg"
-  },
-  {
-    "id": "info-junction-direction",
-    "type": "informational",
-    "name": "Directions at a junction ahead",
-    "nameMs": "Arah di simpang yang akan datang",
-    "desc": "Directions at a junction ahead. Use this information to plan your next move safely.",
-    "descMs": "Arah di simpang yang akan datang. Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "meaning": "Directions at a junction ahead",
-    "meaningMs": "Arah di simpang yang akan datang",
-    "action": "Use this information to plan your next move safely.",
-    "actionMs": "Gunakan maklumat ini untuk merancang pergerakan seterusnya dengan selamat.",
-    "source": "KPP General PDF page 70",
-    "img": "/signs/info-junction-direction.svg"
-  },
-  {
-    "id": "temp-road-works",
-    "type": "temporary",
-    "name": "Road repairs ahead",
-    "nameMs": "Kerja pembaikan jalan di hadapan",
-    "desc": "Road repairs ahead. Slow down and follow the temporary road instructions.",
-    "descMs": "Kerja pembaikan jalan di hadapan. Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "meaning": "Road repairs ahead",
-    "meaningMs": "Kerja pembaikan jalan di hadapan",
-    "action": "Slow down and follow the temporary road instructions.",
-    "actionMs": "Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "source": "KPP General PDF page 73",
-    "img": "/signs/temp-road-works.svg"
-  },
-  {
-    "id": "temp-flagman-ahead",
-    "type": "temporary",
-    "name": "Flag controller ahead",
-    "nameMs": "Pengawal berbendera di hadapan",
-    "desc": "Flag controller ahead. Slow down and follow the flag controller's signals.",
-    "descMs": "Pengawal berbendera di hadapan. Perlahankan kenderaan dan patuhi isyarat pengawal berbendera.",
-    "meaning": "Flag controller ahead",
-    "meaningMs": "Pengawal berbendera di hadapan",
-    "action": "Slow down and follow the flag controller's signals.",
-    "actionMs": "Perlahankan kenderaan dan patuhi isyarat pengawal berbendera.",
-    "source": "KPP General PDF page 77",
-    "img": "/signs/temp-flagman-ahead.svg"
-  },
-  {
-    "id": "temp-speed-limit",
-    "type": "temporary",
-    "name": "Work-zone speed limit",
-    "nameMs": "Had laju di zon kerja",
-    "desc": "Work-zone speed limit. Reduce speed before entering the work zone and stay within the posted limit.",
-    "descMs": "Had laju di zon kerja. Kurangkan kelajuan sebelum memasuki zon kerja dan patuhi had laju yang dipaparkan.",
-    "meaning": "Work-zone speed limit",
-    "meaningMs": "Had laju di zon kerja",
-    "action": "Reduce speed before entering the work zone and stay within the posted limit.",
-    "actionMs": "Kurangkan kelajuan sebelum memasuki zon kerja dan patuhi had laju yang dipaparkan.",
-    "source": "KPP General PDF page 74",
-    "img": "/signs/temp-speed-limit.svg"
-  },
-  {
-    "id": "temp-lane-diversion",
-    "type": "temporary",
-    "name": "Traffic shifts lanes ahead",
-    "nameMs": "Lencongan lorong di hadapan",
-    "desc": "Traffic shifts lanes ahead. Follow the temporary lane alignment and avoid overtaking through the diversion.",
-    "descMs": "Lencongan lorong di hadapan. Ikut jajaran lorong sementara dan elakkan memotong semasa melalui lencongan.",
-    "meaning": "Traffic shifts lanes ahead",
-    "meaningMs": "Lencongan lorong di hadapan",
-    "action": "Follow the temporary lane alignment and avoid overtaking through the diversion.",
-    "actionMs": "Ikut jajaran lorong sementara dan elakkan memotong semasa melalui lencongan.",
-    "source": "KPP General PDF page 74",
-    "img": "/signs/temp-lane-diversion.svg"
-  },
-  {
-    "id": "temp-right-lane-closed",
-    "type": "temporary",
-    "name": "Right lane closed ahead",
-    "nameMs": "Lorong kanan ditutup di hadapan",
-    "desc": "Right lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "descMs": "Lorong kanan ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "meaning": "Right lane closed ahead",
-    "meaningMs": "Lorong kanan ditutup di hadapan",
-    "action": "Signal and move into an open lane once there is a safe gap.",
-    "actionMs": "Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "source": "KPP General PDF page 75",
-    "img": "/signs/temp-right-lane-closed.svg"
-  },
-  {
-    "id": "temp-center-lane-closed",
-    "type": "temporary",
-    "name": "Middle lane closed ahead",
-    "nameMs": "Lorong tengah ditutup di hadapan",
-    "desc": "Middle lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "descMs": "Lorong tengah ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "meaning": "Middle lane closed ahead",
-    "meaningMs": "Lorong tengah ditutup di hadapan",
-    "action": "Signal and move into an open lane once there is a safe gap.",
-    "actionMs": "Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "source": "KPP General PDF page 75",
-    "img": "/signs/temp-center-lane-closed.svg"
-  },
-  {
-    "id": "temp-left-lane-closed",
-    "type": "temporary",
-    "name": "Left lane closed ahead",
-    "nameMs": "Lorong kiri ditutup di hadapan",
-    "desc": "Left lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "descMs": "Lorong kiri ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "meaning": "Left lane closed ahead",
-    "meaningMs": "Lorong kiri ditutup di hadapan",
-    "action": "Signal and move into an open lane once there is a safe gap.",
-    "actionMs": "Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "source": "KPP General PDF page 75",
-    "img": "/signs/temp-left-lane-closed.svg"
+    "img": "/signs/8956fe8a103938b3.svg"
   },
   {
     "id": "temp-chevron-diversion",
@@ -1645,63 +833,7 @@ export const roadSigns: RoadSignItem[] = [
     "action": "Slow down and follow the temporary road instructions.",
     "actionMs": "Perlahankan kenderaan dan patuhi arahan jalan sementara.",
     "source": "KPP General PDF page 76",
-    "img": "/signs/temp-chevron-diversion.svg"
-  },
-  {
-    "id": "temp-work-zone-danger",
-    "type": "temporary",
-    "name": "Hazard within the work zone",
-    "nameMs": "Bahaya dalam zon kerja",
-    "desc": "Hazard within the work zone. Slow down and follow the temporary road instructions.",
-    "descMs": "Bahaya dalam zon kerja. Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "meaning": "Hazard within the work zone",
-    "meaningMs": "Bahaya dalam zon kerja",
-    "action": "Slow down and follow the temporary road instructions.",
-    "actionMs": "Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "source": "KPP General PDF page 78",
-    "img": "/signs/temp-work-zone-danger.svg"
-  },
-  {
-    "id": "temp-vertical-panel",
-    "type": "temporary",
-    "name": "Narrow clearance in work zone",
-    "nameMs": "Kelegaan terhad di zon kerja",
-    "desc": "Narrow clearance in work zone. The stripes show the side to pass on. Follow the side to which the stripes slope down.",
-    "descMs": "Kelegaan terhad di zon kerja. Jalur menunjukkan sisi untuk dilalui. Ikut sisi yang ditunjukkan oleh arah jalur yang menurun.",
-    "meaning": "Narrow clearance in work zone",
-    "meaningMs": "Kelegaan terhad di zon kerja",
-    "action": "The stripes show the side to pass on. Follow the side to which the stripes slope down.",
-    "actionMs": "Jalur menunjukkan sisi untuk dilalui. Ikut sisi yang ditunjukkan oleh arah jalur yang menurun.",
-    "source": "KPP General PDF page 78",
-    "img": "/signs/temp-vertical-panel.svg"
-  },
-  {
-    "id": "temp-curve-left",
-    "type": "temporary",
-    "name": "Left bend in work zone",
-    "nameMs": "Selekoh kiri di zon kerja",
-    "desc": "Left bend in work zone. Slow down and follow the temporary road instructions.",
-    "descMs": "Selekoh kiri di zon kerja. Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "meaning": "Left bend in work zone",
-    "meaningMs": "Selekoh kiri di zon kerja",
-    "action": "Slow down and follow the temporary road instructions.",
-    "actionMs": "Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "source": "KPP General PDF page 77",
-    "img": "/signs/temp-curve-left.svg"
-  },
-  {
-    "id": "temp-curve-right",
-    "type": "temporary",
-    "name": "Right bend in work zone",
-    "nameMs": "Selekoh kanan di zon kerja",
-    "desc": "Right bend in work zone. Slow down and follow the temporary road instructions.",
-    "descMs": "Selekoh kanan di zon kerja. Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "meaning": "Right bend in work zone",
-    "meaningMs": "Selekoh kanan di zon kerja",
-    "action": "Slow down and follow the temporary road instructions.",
-    "actionMs": "Perlahankan kenderaan dan patuhi arahan jalan sementara.",
-    "source": "KPP General PDF page 77",
-    "img": "/signs/temp-curve-right.svg"
+    "img": "/signs/263bc825012bcc83.svg"
   }
 ];
 

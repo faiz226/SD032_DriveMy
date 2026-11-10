@@ -135,73 +135,21 @@ export function TheoryPage() {
     return roadSigns.filter((sign) => learned[sign.id]).length;
   }, [learned]);
 
-  // Curated Spot-The-Sign Drill Questions (drawn from JPJ road signs syllabus)
-  const SPOT_DRILL_QUESTIONS = useMemo(() => {
-    return [
-      {
-        promptEn: "Which warning sign alerts you to an approaching roundabout ahead?",
-        promptMs: "Papan tanda amaran manakah yang menandakan bulatan di hadapan?",
-        correctImg: "/signs/warn-roundabout-ahead.svg",
-        options: [
-          { img: "/signs/warn-roundabout-ahead.svg", correct: true },
-          { img: "/signs/warn-crossroads.svg", correct: false },
-          { img: "/signs/mand-turn-left-ahead.svg", correct: false },
-          { img: "/signs/prohib-no-entry.svg", correct: false },
-        ],
-      },
-      {
-        promptEn: "Identify the mandatory sign requiring all traffic to keep to the left of the obstacle.",
-        promptMs: "Kenal pasti papan tanda mandatori yang mewajibkan semua kenderaan mengikut sebelah kiri halangan.",
-        correctImg: "/signs/mand-keep-left.svg",
-        options: [
-          { img: "/signs/mand-keep-left.svg", correct: true },
-          { img: "/signs/mand-keep-right.svg", correct: false },
-          { img: "/signs/mand-pass-either-side.svg", correct: false },
-          { img: "/signs/warn-road-narrows-left.svg", correct: false },
-        ],
-      },
-      {
-        promptEn: "Which prohibitory sign indicates that U-turns are strictly forbidden?",
-        promptMs: "Papan tanda larangan manakah yang melarang pusingan U?",
-        correctImg: "/signs/prohib-no-u-turn.svg",
-        options: [
-          { img: "/signs/prohib-no-u-turn.svg", correct: true },
-          { img: "/signs/prohib-no-left-turn.svg", correct: false },
-          { img: "/signs/prohib-no-overtaking.svg", correct: false },
-          { img: "/signs/warn-chevron-curve.svg", correct: false },
-        ],
-      },
-      {
-        promptEn: "Which temporary work-zone sign warns of road narrowing on the right side?",
-        promptMs: "Papan tanda zon kerja sementara manakah yang memberi amaran jalan menyempit di sebelah kanan?",
-        correctImg: "/signs/temp-road-narrows.svg",
-        options: [
-          { img: "/signs/temp-road-narrows.svg", correct: true },
-          { img: "/signs/temp-road-works.svg", correct: false },
-          { img: "/signs/temp-vertical-panel.svg", correct: false },
-          { img: "/signs/warn-road-narrows-right.svg", correct: false },
-        ],
-      },
-      {
-        promptEn: "Which regulatory sign gives clear notice to yield right-of-way to oncoming cross traffic?",
-        promptMs: "Papan tanda manakah yang memberi arahan supaya memberi laluan kepada trafik lintasan?",
-        correctImg: "/signs/prohib-give-way.svg",
-        options: [
-          { img: "/signs/prohib-give-way.svg", correct: true },
-          { img: "/signs/prohib-stop.svg", correct: false },
-          { img: "/signs/warn-give-way-ahead.svg", correct: false },
-          { img: "/signs/prohib-speed-limit-60.svg", correct: false },
-        ],
-      },
-    ];
-  }, []);
-
-  const currentDrill = SPOT_DRILL_QUESTIONS[drillIndex % SPOT_DRILL_QUESTIONS.length];
+  const drillNumber = drillIndex % roadSigns.length;
+  const drillSign = roadSigns[drillNumber];
+  const correctSlot = drillNumber % 4;
+  const drillOptions = Array.from({ length: 4 }, (_, slot) => {
+    const offset = (slot - correctSlot + 4) % 4;
+    return {
+      img: roadSigns[(drillNumber + offset) % roadSigns.length].img,
+      correct: offset === 0,
+    };
+  });
 
   const handlePickDrill = (index: number) => {
     if (drillPicked !== null) return;
     setDrillPicked(index);
-    if (currentDrill.options[index]?.correct) {
+    if (drillOptions[index]?.correct) {
       setDrillScore((s) => s + 1);
     }
   };
@@ -417,8 +365,8 @@ export function TheoryPage() {
                     {lang === "en" ? "Interactive knowledge drill" : "Latihan uji minda pantas"}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {lang === "en" ? "Question" : "Soalan"} {(drillIndex % SPOT_DRILL_QUESTIONS.length) + 1} of{" "}
-                    {SPOT_DRILL_QUESTIONS.length}
+                    {lang === "en" ? "Question" : "Soalan"} {drillNumber + 1} of{" "}
+                    {roadSigns.length}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -430,12 +378,12 @@ export function TheoryPage() {
 
               <div className="mt-4 space-y-4">
                 <p className="text-sm sm:text-base font-semibold text-foreground leading-snug">
-                  {lang === "en" ? currentDrill.promptEn : currentDrill.promptMs}
+                  {lang === "en" ? `Which sign means “${drillSign.meaning}”?` : `Papan tanda manakah bermaksud “${drillSign.meaningMs}”?`}
                 </p>
 
-                {/* 4 SVG Sign Options */}
+                {/* Four sourced sign options */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {currentDrill.options.map((opt, idx) => {
+                  {drillOptions.map((opt, idx) => {
                     const picked = drillPicked === idx;
                     const answered = drillPicked !== null;
                     let stateClass = "";
@@ -480,7 +428,7 @@ export function TheoryPage() {
                 {drillPicked !== null && (
                   <div className="flex items-center justify-between gap-3 pt-2">
                     <p className="text-xs text-muted-foreground">
-                      {currentDrill.options[drillPicked]?.correct
+                      {drillOptions[drillPicked]?.correct
                         ? lang === "en"
                           ? "Great eye! Verified against the official KPP curriculum."
                           : "Tepat sekali! Disahkan mengikut kurikulum rasmi KPP."

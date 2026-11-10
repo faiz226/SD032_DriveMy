@@ -1,58 +1,4 @@
-/** Active bilingual KPP question bank: 18 sets, 510 questions. */
-
 export const KPP_TEXTBOOK_QUESTIONS = [
-  {
-    "id": "b99e51e7-7833-54aa-8aed-ebc58becb807",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 1,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Uneven road surface",
-      "Narrow bridge ahead",
-      "Road hump ahead",
-      "Slippery road surface"
-    ],
-    "options_ms": [
-      "Permukaan jalan tidak rata",
-      "Jambatan sempit di hadapan",
-      "Bonggol jalan di hadapan",
-      "Permukaan jalan licin"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means uneven road surface. Slow before the uneven stretch to avoid a jolt or loss of control.",
-    "explanation_ms": "Papan tanda ini bermaksud permukaan jalan tidak rata. Perlahankan kenderaan sebelum melalui bahagian tidak rata supaya kenderaan tidak tersentak atau hilang kawalan.",
-    "image_url": "/signs/warn-uneven-road.svg",
-    "source_url": "KPP General PDF page 40",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "525575f8-d72c-5b55-b9f4-b07c6ea74366",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 2,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Uneven road surface",
-      "Road hump ahead",
-      "Narrow bridge ahead",
-      "Slippery road surface"
-    ],
-    "options_ms": [
-      "Permukaan jalan tidak rata",
-      "Bonggol jalan di hadapan",
-      "Jambatan sempit di hadapan",
-      "Permukaan jalan licin"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means road hump ahead. Slow down before reaching the hump.",
-    "explanation_ms": "Papan tanda ini bermaksud bonggol jalan di hadapan. Perlahankan kenderaan sebelum sampai di bonggol.",
-    "image_url": "/signs/warn-road-hump.svg",
-    "source_url": "KPP General PDF page 40",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
   {
     "id": "ee618bef-ff90-55c9-b380-fb17b9e98690",
     "category": "road-signs",
@@ -75,138 +21,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means four-way intersection. Look for vehicles approaching from both sides before proceeding.",
     "explanation_ms": "Papan tanda ini bermaksud persimpangan empat hala. Perhatikan kenderaan yang datang dari kedua-dua sisi sebelum meneruskan perjalanan.",
-    "image_url": "/signs/warn-crossroads.svg",
+    "image_url": "/signs/4a3491aff2749365.svg",
     "source_url": "KPP General PDF page 40",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "b8d905ed-dbde-535d-84f8-00c2c9e2bbef",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 4,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Traffic lights ahead",
-      "Give-way sign ahead",
-      "Stop sign ahead",
-      "Speed limit zone ahead"
-    ],
-    "options_ms": [
-      "Lampu isyarat di hadapan",
-      "Tanda beri laluan di hadapan",
-      "Tanda berhenti di hadapan",
-      "Zon had laju di hadapan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means speed limit zone ahead.",
-    "explanation_ms": "Papan tanda ini bermaksud zon had laju di hadapan.",
-    "image_url": "/signs/warn-speed-zone-ahead.svg",
-    "source_url": "KPP General PDF page 41",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "a5749af6-2ad1-582b-a222-1c304e3e6289",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Schoolchildren may cross",
-      "Pedestrian crossing ahead",
-      "Blind pedestrians may cross",
-      "Playground nearby"
-    ],
-    "options_ms": [
-      "Murid sekolah mungkin melintas",
-      "Lintasan pejalan kaki di hadapan",
-      "Orang buta mungkin melintas",
-      "Taman permainan berhampiran"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means schoolchildren may cross. Slow down and be ready to stop for pupils crossing the road.",
-    "explanation_ms": "Papan tanda ini bermaksud murid sekolah mungkin melintas. Perlahankan kenderaan dan bersedia untuk berhenti bagi murid yang sedang melintas.",
-    "image_url": "/signs/warn-school-crossing.svg",
-    "source_url": "KPP General PDF page 55",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "9572774e-c000-5a9c-b12a-49ccc3ab82ac",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Four-way intersection",
-      "Staggered junction ahead",
-      "Side road to the left",
-      "Roundabout ahead"
-    ],
-    "options_ms": [
-      "Persimpangan empat hala",
-      "Simpang yang diatur di hadapan",
-      "Simpang jalan di sebelah kiri",
-      "Bulatan di hadapan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means staggered junction ahead. Look out for traffic entering and leaving the two side roads.",
-    "explanation_ms": "Papan tanda ini bermaksud simpang yang diatur di hadapan. Perhatikan kenderaan yang masuk dan keluar dari kedua-dua jalan simpang.",
-    "image_url": "/signs/warn-staggered-junction-lr.svg",
-    "source_url": "KPP General PDF page 41",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "d3e6aad1-def7-52ae-9d6c-1f025791dddf",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 7,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Angled branch to the left",
-      "Staggered junction ahead",
-      "Angled branch to the right",
-      "Side road to the right"
-    ],
-    "options_ms": [
-      "Simpang serong di sebelah kiri",
-      "Simpang yang diatur di hadapan",
-      "Simpang serong di sebelah kanan",
-      "Simpang jalan di sebelah kanan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means angled branch to the right.",
-    "explanation_ms": "Papan tanda ini bermaksud simpang serong di sebelah kanan.",
-    "image_url": "/signs/warn-oblique-side-road-right.svg",
-    "source_url": "KPP General PDF page 43",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "0f358d2d-3904-5176-b2e3-62e22f613709",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 8,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Staggered junction ahead",
-      "Angled branch to the right",
-      "Side road to the right",
-      "Angled branch to the left"
-    ],
-    "options_ms": [
-      "Simpang yang diatur di hadapan",
-      "Simpang serong di sebelah kanan",
-      "Simpang jalan di sebelah kanan",
-      "Simpang serong di sebelah kiri"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means angled branch to the left.",
-    "explanation_ms": "Papan tanda ini bermaksud simpang serong di sebelah kiri.",
-    "image_url": "/signs/warn-oblique-side-road-left.svg",
-    "source_url": "KPP General PDF page 43",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -231,7 +47,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means side road to the left.",
     "explanation_ms": "Papan tanda ini bermaksud simpang jalan di sebelah kiri.",
-    "image_url": "/signs/warn-side-road-left.svg",
+    "image_url": "/signs/e22292f492beec26.svg",
     "source_url": "KPP General PDF page 42",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -257,7 +73,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means side road to the right.",
     "explanation_ms": "Papan tanda ini bermaksud simpang jalan di sebelah kanan.",
-    "image_url": "/signs/warn-side-road-right.svg",
+    "image_url": "/signs/12e8b0d727c5bdf1.svg",
     "source_url": "KPP General PDF page 42",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -283,34 +99,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means t-junction ahead. Slow down, signal your turn and stop at the junction before proceeding safely.",
     "explanation_ms": "Papan tanda ini bermaksud persimpangan T di hadapan. Perlahankan kenderaan, beri isyarat membelok dan berhenti di persimpangan sebelum meneruskan perjalanan dengan selamat.",
-    "image_url": "/signs/warn-t-junction.svg",
+    "image_url": "/signs/e3ccd470b3c6bc8e.svg",
     "source_url": "KPP General PDF page 42",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "9c1d721e-b1dc-5ff7-bc33-5058f9063d1a",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "T-junction ahead",
-      "Four-way intersection",
-      "Roundabout ahead",
-      "Y-junction ahead"
-    ],
-    "options_ms": [
-      "Persimpangan T di hadapan",
-      "Persimpangan empat hala",
-      "Bulatan di hadapan",
-      "Persimpangan Y di hadapan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means y-junction ahead. Signal for the branch you intend to take and position your vehicle accordingly.",
-    "explanation_ms": "Papan tanda ini bermaksud persimpangan Y di hadapan. Beri isyarat untuk simpang yang hendak diambil dan letakkan kenderaan di laluan yang sesuai.",
-    "image_url": "/signs/warn-y-junction.svg",
-    "source_url": "KPP General PDF page 43",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -335,86 +125,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means pass either side of the island. Choose a lane that leads where you intend to go and keep within it.",
     "explanation_ms": "Papan tanda ini bermaksud lalui pulau dari mana-mana sisi. Pilih lorong yang menuju ke arah destinasi dan kekal dalam lorong itu.",
-    "image_url": "/signs/warn-double-arrow-split.svg",
+    "image_url": "/signs/322e269754adeff6.svg",
     "source_url": "KPP General PDF page 44",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "804d5dea-b687-5307-91a9-1339669bf870",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 14,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Limited clearance ahead",
-      "Obstacle at the divider",
-      "Risk of falling rocks",
-      "Other hazard ahead"
-    ],
-    "options_ms": [
-      "Kelegaan laluan terhad di hadapan",
-      "Halangan di pembahagi jalan",
-      "Risiko runtuhan batu",
-      "Bahaya lain di hadapan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means obstacle at the divider. Slow down so you have time to steer clear of the divider.",
-    "explanation_ms": "Papan tanda ini bermaksud halangan di pembahagi jalan. Perlahankan kenderaan supaya sempat mengelak pembahagi jalan.",
-    "image_url": "/signs/warn-obstacle-marker.svg",
-    "source_url": "KPP General PDF page 44",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "fe4f1cf0-1c55-5640-9e75-2a305339609d",
-    "category": "road-signs",
-    "set_id": "quiz-a-1",
-    "order_index": 15,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Obstacle at the divider",
-      "Pass either side of the island",
-      "Limited clearance ahead",
-      "Risk of falling rocks"
-    ],
-    "options_ms": [
-      "Halangan di pembahagi jalan",
-      "Lalui pulau dari mana-mana sisi",
-      "Kelegaan laluan terhad di hadapan",
-      "Risiko runtuhan batu"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means limited clearance ahead. Check that there is enough room before driving between the markers.",
-    "explanation_ms": "Papan tanda ini bermaksud kelegaan laluan terhad di hadapan. Pastikan ruang mencukupi sebelum memandu di antara penanda.",
-    "image_url": "/signs/warn-clearance-marker.svg",
-    "source_url": "KPP General PDF page 44",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "58d2838f-1100-5e2d-9ef3-fb0167e896b5",
-    "category": "road-signs",
-    "set_id": "quiz-a-2",
-    "order_index": 1,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Double bend, left first",
-      "Double bend, right first",
-      "Sharp right bend",
-      "Winding road ahead"
-    ],
-    "options_ms": [
-      "Dua selekoh, mula ke kiri",
-      "Dua selekoh, mula ke kanan",
-      "Selekoh tajam ke kanan",
-      "Jalan bengkang-bengkok di hadapan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means winding road ahead. Slow down before the bends and avoid overtaking on the winding stretch.",
-    "explanation_ms": "Papan tanda ini bermaksud jalan bengkang-bengkok di hadapan. Perlahankan kenderaan sebelum selekoh dan elakkan memotong di laluan berliku.",
-    "image_url": "/signs/warn-winding-road.svg",
-    "source_url": "KPP General PDF page 45",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -439,7 +151,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means sharp left bend.",
     "explanation_ms": "Papan tanda ini bermaksud selekoh tajam ke kiri.",
-    "image_url": "/signs/warn-curve-left.svg",
+    "image_url": "/signs/194637442da016e5.svg",
     "source_url": "KPP General PDF page 47",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -465,7 +177,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means sharp right bend.",
     "explanation_ms": "Papan tanda ini bermaksud selekoh tajam ke kanan.",
-    "image_url": "/signs/warn-curve-right.svg",
+    "image_url": "/signs/8c4124b32afd3704.svg",
     "source_url": "KPP General PDF page 47",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -491,60 +203,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means direction of a sharp bend.",
     "explanation_ms": "Papan tanda ini bermaksud arah selekoh yang tajam.",
-    "image_url": "/signs/warn-chevron-curve.svg",
+    "image_url": "/signs/b716cb9e685088a5.svg",
     "source_url": "KPP General PDF page 47",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "4285bacf-059e-56f1-b2d6-501ce08336c7",
-    "category": "road-signs",
-    "set_id": "quiz-a-2",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Double bend, right first",
-      "Direction of a sharp bend",
-      "Sharp right bend",
-      "Double bend, left first"
-    ],
-    "options_ms": [
-      "Dua selekoh, mula ke kanan",
-      "Arah selekoh yang tajam",
-      "Selekoh tajam ke kanan",
-      "Dua selekoh, mula ke kiri"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means double bend, left first.",
-    "explanation_ms": "Papan tanda ini bermaksud dua selekoh, mula ke kiri.",
-    "image_url": "/signs/warn-double-curve-left.svg",
-    "source_url": "KPP General PDF page 46",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "fd331afa-59cc-5117-b031-6a00db174b02",
-    "category": "road-signs",
-    "set_id": "quiz-a-2",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Double bend, right first",
-      "Double bend, left first",
-      "Direction of a sharp bend",
-      "Sharp right bend"
-    ],
-    "options_ms": [
-      "Dua selekoh, mula ke kanan",
-      "Dua selekoh, mula ke kiri",
-      "Arah selekoh yang tajam",
-      "Selekoh tajam ke kanan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means double bend, right first.",
-    "explanation_ms": "Papan tanda ini bermaksud dua selekoh, mula ke kanan.",
-    "image_url": "/signs/warn-double-curve-right.svg",
-    "source_url": "KPP General PDF page 45",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -569,7 +229,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means divided road ends. Watch for vehicles coming the other way once the divider ends.",
     "explanation_ms": "Papan tanda ini bermaksud jalan terbahagi dua tamat. Awasi kenderaan dari arah bertentangan selepas pembahagi jalan tamat.",
-    "image_url": "/signs/warn-dual-carriageway-ends.svg",
+    "image_url": "/signs/b12139221efc15b6.svg",
     "source_url": "KPP General PDF page 48",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -595,7 +255,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means divided road begins. Stay on the correct side as the divider separates the two streams of traffic.",
     "explanation_ms": "Papan tanda ini bermaksud jalan terbahagi dua bermula. Kekal di sebelah yang betul apabila pembahagi jalan memisahkan dua aliran trafik.",
-    "image_url": "/signs/warn-divided-highway-ahead.svg",
+    "image_url": "/signs/788d475c2d05336c.svg",
     "source_url": "KPP General PDF page 48",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -621,7 +281,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means roundabout ahead. Pick the appropriate approach lane and yield to traffic already in the roundabout.",
     "explanation_ms": "Papan tanda ini bermaksud bulatan di hadapan. Pilih lorong masuk yang sesuai dan beri laluan kepada kenderaan yang sudah berada dalam bulatan.",
-    "image_url": "/signs/warn-roundabout-ahead.svg",
+    "image_url": "/signs/d26a8ccc75c5a905.svg",
     "source_url": "KPP General PDF page 48",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -647,59 +307,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means two-way traffic ahead. Expect oncoming vehicles on the same road and check carefully before overtaking.",
     "explanation_ms": "Papan tanda ini bermaksud lalu lintas dua hala di hadapan. Jangkakan kenderaan dari arah bertentangan di jalan yang sama dan periksa keadaan sebelum memotong.",
-    "image_url": "/signs/warn-two-way-traffic.svg",
-    "source_url": "KPP General PDF page 49",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "58716913-0d17-57f1-8295-76cefe84f159",
-    "category": "road-signs",
-    "set_id": "quiz-a-2",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Extra downhill lane",
-      "Extra uphill lane",
-      "Divided road ends",
-      "Divided road begins"
-    ],
-    "options_ms": [
-      "Lorong tambahan untuk menurun",
-      "Lorong tambahan untuk mendaki",
-      "Jalan terbahagi dua tamat",
-      "Jalan terbahagi dua bermula"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means extra uphill lane.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong tambahan untuk mendaki.",
-    "image_url": "/signs/warn-climbing-lane.svg",
-    "source_url": "KPP General PDF page 49",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "6e486c8c-bfe4-53d4-a0fa-2e9035299aa6",
-    "category": "road-signs",
-    "set_id": "quiz-a-2",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Divided road begins",
-      "Extra uphill lane",
-      "Extra downhill lane",
-      "Two-way traffic ahead"
-    ],
-    "options_ms": [
-      "Jalan terbahagi dua bermula",
-      "Lorong tambahan untuk mendaki",
-      "Lorong tambahan untuk menurun",
-      "Lalu lintas dua hala di hadapan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means extra downhill lane.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong tambahan untuk menurun.",
-    "image_url": "/signs/warn-descending-lane.svg",
+    "image_url": "/signs/ea082fc0b4c65733.svg",
     "source_url": "KPP General PDF page 49",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -725,7 +333,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means road narrows on both sides.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menyempit di kedua-dua sisi.",
-    "image_url": "/signs/warn-road-narrows-both.svg",
+    "image_url": "/signs/ce68f8896451a2c9.svg",
     "source_url": "KPP General PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -751,7 +359,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means road narrows on the left.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menyempit di sebelah kiri.",
-    "image_url": "/signs/warn-road-narrows-left.svg",
+    "image_url": "/signs/2be93e13645351ef.svg",
     "source_url": "KPP General PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -777,7 +385,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means road narrows on the right.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menyempit di sebelah kanan.",
-    "image_url": "/signs/warn-road-narrows-right.svg",
+    "image_url": "/signs/e08ca85fb4d9816f.svg",
     "source_url": "KPP General PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -803,7 +411,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means steep uphill stretch. Select a lower gear to get the power needed to climb.",
     "explanation_ms": "Papan tanda ini bermaksud jalan mendaki dengan curam. Gunakan gear rendah untuk mendapatkan kuasa yang diperlukan semasa mendaki.",
-    "image_url": "/signs/warn-steep-ascent.svg",
+    "image_url": "/signs/fa01479a3e275ae3.svg",
     "source_url": "KPP General PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -829,7 +437,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means steep downhill stretch. Select a lower gear to help control your speed on the descent.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menurun dengan curam. Gunakan gear rendah untuk membantu mengawal kelajuan semasa menurun.",
-    "image_url": "/signs/warn-steep-descent.svg",
+    "image_url": "/signs/eb9c555ec03577f6.svg",
     "source_url": "KPP General PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -855,7 +463,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means narrow bridge ahead. Slow down and give way if a vehicle coming the other way is closer to the bridge.",
     "explanation_ms": "Papan tanda ini bermaksud jambatan sempit di hadapan. Perlahankan kenderaan dan beri laluan jika kenderaan dari arah bertentangan lebih hampir dengan jambatan.",
-    "image_url": "/signs/warn-narrow-bridge.svg",
+    "image_url": "/signs/d1e9a6d6aab128b3.svg",
     "source_url": "KPP General PDF page 51",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -881,60 +489,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means slippery road surface. Slow smoothly, avoid hard braking and leave a safe gap.",
     "explanation_ms": "Papan tanda ini bermaksud permukaan jalan licin. Perlahankan kenderaan dengan lancar, elakkan brek mengejut dan kekalkan jarak selamat.",
-    "image_url": "/signs/warn-slippery-road.svg",
+    "image_url": "/signs/9702f462c37241a4.svg",
     "source_url": "KPP General PDF page 51",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "42e90137-d7d1-5490-a456-475922a95585",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Slippery road surface",
-      "Uneven road surface",
-      "Soft road shoulder",
-      "Road hump ahead"
-    ],
-    "options_ms": [
-      "Permukaan jalan licin",
-      "Permukaan jalan tidak rata",
-      "Bahu jalan lembut",
-      "Bonggol jalan di hadapan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means soft road shoulder. Take extra care near the edge because the shoulder can be soft.",
-    "explanation_ms": "Papan tanda ini bermaksud bahu jalan lembut. Berhati-hati ketika menghampiri tepi jalan kerana bahu jalan mungkin lembut.",
-    "image_url": "/signs/warn-soft-shoulder.svg",
-    "source_url": "KPP General PDF page 51",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "886f98dc-d231-5953-9bff-fd93fc8301a7",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Speed limit zone ahead",
-      "Give-way sign ahead",
-      "Stop sign ahead",
-      "Traffic lights ahead"
-    ],
-    "options_ms": [
-      "Zon had laju di hadapan",
-      "Tanda beri laluan di hadapan",
-      "Tanda berhenti di hadapan",
-      "Lampu isyarat di hadapan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means traffic lights ahead.",
-    "explanation_ms": "Papan tanda ini bermaksud lampu isyarat di hadapan.",
-    "image_url": "/signs/warn-traffic-lights.svg",
-    "source_url": "KPP General PDF page 52",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -959,7 +515,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means stop sign ahead. Slow down early and be ready to come to a complete stop at the actual stop sign.",
     "explanation_ms": "Papan tanda ini bermaksud tanda berhenti di hadapan. Perlahankan kenderaan awal dan bersedia untuk berhenti sepenuhnya di tanda berhenti sebenar.",
-    "image_url": "/signs/warn-stop-ahead.svg",
+    "image_url": "/signs/add368369889404d.svg",
     "source_url": "KPP General PDF page 52",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -985,34 +541,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means other hazard ahead.",
     "explanation_ms": "Papan tanda ini bermaksud bahaya lain di hadapan.",
-    "image_url": "/signs/warn-other-danger.svg",
+    "image_url": "/signs/3f13bbd2ffe5c466.svg",
     "source_url": "KPP General PDF page 52",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "557c41b3-e0bd-5901-8cbb-3714df3bc3b0",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 9,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Traffic lights ahead",
-      "Stop sign ahead",
-      "Give-way sign ahead",
-      "Speed limit zone ahead"
-    ],
-    "options_ms": [
-      "Lampu isyarat di hadapan",
-      "Tanda berhenti di hadapan",
-      "Tanda beri laluan di hadapan",
-      "Zon had laju di hadapan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means give-way sign ahead. Slow down and be ready to stop to let priority traffic pass.",
-    "explanation_ms": "Papan tanda ini bermaksud tanda beri laluan di hadapan. Perlahankan kenderaan dan bersedia untuk berhenti bagi memberi laluan kepada trafik yang diutamakan.",
-    "image_url": "/signs/warn-give-way-ahead.svg",
-    "source_url": "KPP General PDF page 53",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1037,86 +567,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means risk of falling rocks. Watch the road for fallen material before continuing.",
     "explanation_ms": "Papan tanda ini bermaksud risiko runtuhan batu. Perhatikan bahan runtuhan di jalan sebelum meneruskan perjalanan.",
-    "image_url": "/signs/warn-falling-rocks.svg",
+    "image_url": "/signs/adc5145404e740b4.svg",
     "source_url": "KPP General PDF page 53",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "312093fa-ae4f-54b5-8f21-7d0dcf4bcba8",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Livestock may cross",
-      "Playground nearby",
-      "Wild animals may cross",
-      "Rail crossing with gates"
-    ],
-    "options_ms": [
-      "Ternakan mungkin melintas",
-      "Taman permainan berhampiran",
-      "Haiwan liar mungkin melintas",
-      "Lintasan kereta api berpagar"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means livestock may cross. Slow down and be prepared to stop if livestock enter the road.",
-    "explanation_ms": "Papan tanda ini bermaksud ternakan mungkin melintas. Perlahankan kenderaan dan bersedia untuk berhenti jika ternakan masuk ke jalan.",
-    "image_url": "/signs/warn-cattle-crossing.svg",
-    "source_url": "KPP General PDF page 53",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "6f1194cd-df2a-59c5-a5c0-b08dd2f6b14f",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Rail crossing with gates",
-      "Wild animals may cross",
-      "Schoolchildren may cross",
-      "Livestock may cross"
-    ],
-    "options_ms": [
-      "Lintasan kereta api berpagar",
-      "Haiwan liar mungkin melintas",
-      "Murid sekolah mungkin melintas",
-      "Ternakan mungkin melintas"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means wild animals may cross. Slow down and be prepared to stop if an animal enters the road.",
-    "explanation_ms": "Papan tanda ini bermaksud haiwan liar mungkin melintas. Perlahankan kenderaan dan bersedia untuk berhenti jika haiwan masuk ke jalan.",
-    "image_url": "/signs/warn-wildlife-crossing.svg",
-    "source_url": "KPP General PDF page 54",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "82919798-5924-5ead-8952-21d0661f40d6",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 13,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Livestock may cross",
-      "Wild animals may cross",
-      "Playground nearby",
-      "Rail crossing with gates"
-    ],
-    "options_ms": [
-      "Ternakan mungkin melintas",
-      "Haiwan liar mungkin melintas",
-      "Taman permainan berhampiran",
-      "Lintasan kereta api berpagar"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means playground nearby. Watch for children near the road and be ready to stop.",
-    "explanation_ms": "Papan tanda ini bermaksud taman permainan berhampiran. Awasi kanak-kanak berhampiran jalan dan bersedia untuk berhenti.",
-    "image_url": "/signs/warn-playground.svg",
-    "source_url": "KPP General PDF page 54",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1141,33 +593,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means blind pedestrians may cross. Slow down, give people time to cross and avoid sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud orang buta mungkin melintas. Perlahankan kenderaan, beri masa untuk orang melintas dan elakkan membunyikan hon.",
-    "image_url": "/signs/warn-blind-crossing.svg",
-    "source_url": "KPP General PDF page 54",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "7acdd895-2a6f-59fe-ab82-fe62a74d6c5c",
-    "category": "road-signs",
-    "set_id": "quiz-a-3",
-    "order_index": 15,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "People with disabilities may cross",
-      "Pedestrian crossing ahead",
-      "Schoolchildren may cross",
-      "Playground nearby"
-    ],
-    "options_ms": [
-      "Orang kurang upaya mungkin melintas",
-      "Lintasan pejalan kaki di hadapan",
-      "Murid sekolah mungkin melintas",
-      "Taman permainan berhampiran"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means people with disabilities may cross. Slow down and give people time to cross safely.",
-    "explanation_ms": "Papan tanda ini bermaksud orang kurang upaya mungkin melintas. Perlahankan kenderaan dan beri masa untuk orang melintas dengan selamat.",
-    "image_url": "/signs/warn-oku-crossing.svg",
+    "image_url": "/signs/f986766e1fca4c02.svg",
     "source_url": "KPP General PDF page 54",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5483,7 +4909,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means pass on the left.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kiri.",
-    "image_url": "/signs/mand-keep-left.svg",
+    "image_url": "/signs/24dc89f9e7127cca.svg",
     "source_url": "KPP General PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5509,7 +4935,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means pass on the right.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kanan.",
-    "image_url": "/signs/mand-keep-right.svg",
+    "image_url": "/signs/a50c8dd8a202a25e.svg",
     "source_url": "KPP General PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5535,33 +4961,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means pass on either side.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di mana-mana sisi.",
-    "image_url": "/signs/mand-pass-either-side.svg",
-    "source_url": "KPP General PDF page 64",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "cc27a23c-fd6c-567b-a482-65c9654f7575",
-    "category": "road-signs",
-    "set_id": "mock-da-1",
-    "order_index": 4,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Pass on either side",
-      "Keep left unless overtaking",
-      "Pass on the right",
-      "Pass on the left"
-    ],
-    "options_ms": [
-      "Lalu di mana-mana sisi",
-      "Ikut kiri kecuali memotong",
-      "Lalu di sebelah kanan",
-      "Lalu di sebelah kiri"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means keep left unless overtaking.",
-    "explanation_ms": "Papan tanda ini bermaksud ikut kiri kecuali memotong.",
-    "image_url": "/signs/mand-keep-left-unless-overtaking.svg",
+    "image_url": "/signs/6103dff69316bf86.svg",
     "source_url": "KPP General PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5587,7 +4987,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means lane for motorcycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk motosikal.",
-    "image_url": "/signs/mand-motorcycle-track.svg",
+    "image_url": "/signs/e0389a069e72ed52.png",
     "source_url": "KPP General PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5613,7 +5013,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means lane for bicycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk basikal.",
-    "image_url": "/signs/mand-bicycle-track.svg",
+    "image_url": "/signs/e86785fec1877d75.png",
     "source_url": "KPP General PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5639,7 +5039,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means no overtaking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang memotong.",
-    "image_url": "/signs/prohib-no-overtaking.svg",
+    "image_url": "/signs/2f019822b1b9e39f.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5665,112 +5065,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means lane for trishaws.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk beca.",
-    "image_url": "/signs/mand-trishaw-track.svg",
+    "image_url": "/signs/fad437bbc08b75fa.png",
     "source_url": "KPP General PDF page 65",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "2fdc5a03-533b-58b1-8423-5745bf25f57b",
-    "category": "road-signs",
-    "set_id": "mock-da-1",
-    "order_index": 9,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Lane for taxis",
-      "Lane for trishaws",
-      "Lane for buses",
-      "Lane for bicycles"
-    ],
-    "options_ms": [
-      "Lorong untuk teksi",
-      "Lorong untuk beca",
-      "Lorong untuk bas",
-      "Lorong untuk basikal"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means lane for buses.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong untuk bas.",
-    "image_url": "/signs/mand-bus-lane.svg",
-    "source_url": "KPP General PDF page 66",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "5663a8c5-f466-5c50-9ff3-061f336ff77b",
-    "category": "road-signs",
-    "set_id": "mock-da-1",
-    "order_index": 10,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Lane for buses",
-      "Lane for trishaws",
-      "Lane for bicycles",
-      "Lane for taxis"
-    ],
-    "options_ms": [
-      "Lorong untuk bas",
-      "Lorong untuk beca",
-      "Lorong untuk basikal",
-      "Lorong untuk teksi"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means lane for taxis.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong untuk teksi.",
-    "image_url": "/signs/mand-taxi-lane.svg",
-    "source_url": "KPP General PDF page 65",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "0cfd2eeb-dc71-533c-9db1-a5aa28d31699",
-    "category": "road-signs",
-    "set_id": "mock-da-1",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Accessible parking bays",
-      "Electric vehicle charging station",
-      "JPJ weighing station",
-      "Vehicle parking"
-    ],
-    "options_ms": [
-      "Petak parkir orang kurang upaya",
-      "Stesen cas kenderaan elektrik",
-      "Stesen timbang JPJ",
-      "Tempat letak kenderaan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means accessible parking bays. Use a different bay unless you have permission to park here.",
-    "explanation_ms": "Papan tanda ini bermaksud petak parkir orang kurang upaya. Gunakan petak lain kecuali jika anda mempunyai kebenaran untuk meletak kenderaan di sini.",
-    "image_url": "/signs/mand-oku-parking.svg",
-    "source_url": "KPP General PDF page 66",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "dc40ed7e-d852-59b8-9d75-f8972859d71f",
-    "category": "road-signs",
-    "set_id": "mock-da-1",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Fuel station",
-      "Public telephone",
-      "Medical clinic",
-      "Bus stop"
-    ],
-    "options_ms": [
-      "Stesen minyak",
-      "Telefon awam",
-      "Klinik perubatan",
-      "Perhentian bas"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means public telephone. If you need to use it, signal and pull over only where safe and permitted.",
-    "explanation_ms": "Papan tanda ini bermaksud telefon awam. Jika perlu menggunakannya, beri isyarat dan berhenti di tempat yang selamat serta dibenarkan.",
-    "image_url": "/signs/info-telephone.svg",
-    "source_url": "KPP General PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5795,33 +5091,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means hospital.",
     "explanation_ms": "Papan tanda ini bermaksud hospital.",
-    "image_url": "/signs/info-hospital.svg",
-    "source_url": "KPP General PDF page 67",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "fd94ff46-8aa4-5d48-a08d-77172797c0df",
-    "category": "road-signs",
-    "set_id": "mock-da-1",
-    "order_index": 14,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Hospital",
-      "Public telephone",
-      "Bus stop",
-      "Medical clinic"
-    ],
-    "options_ms": [
-      "Hospital",
-      "Telefon awam",
-      "Perhentian bas",
-      "Klinik perubatan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means medical clinic.",
-    "explanation_ms": "Papan tanda ini bermaksud klinik perubatan.",
-    "image_url": "/signs/info-clinic.svg",
+    "image_url": "/signs/dde5874c6044c5f3.svg",
     "source_url": "KPP General PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5847,7 +5117,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means vehicle parking.",
     "explanation_ms": "Papan tanda ini bermaksud tempat letak kenderaan.",
-    "image_url": "/signs/info-parking.svg",
+    "image_url": "/signs/f6459f68e216bc5d.svg",
     "source_url": "KPP General PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -6762,58 +6032,6 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
-    "id": "be67291f-b6c7-5233-a9e6-75ebf7eca018",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 1,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Public telephone",
-      "Fuel station",
-      "Medical clinic",
-      "Bus stop"
-    ],
-    "options_ms": [
-      "Telefon awam",
-      "Stesen minyak",
-      "Klinik perubatan",
-      "Perhentian bas"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means fuel station.",
-    "explanation_ms": "Papan tanda ini bermaksud stesen minyak.",
-    "image_url": "/signs/info-petrol-station.svg",
-    "source_url": "KPP General PDF page 68",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "1ce74a11-3e6b-5c16-9767-e08ea01caff6",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 2,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Fuel station",
-      "Hospital",
-      "Bus stop",
-      "Medical clinic"
-    ],
-    "options_ms": [
-      "Stesen minyak",
-      "Hospital",
-      "Perhentian bas",
-      "Klinik perubatan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means bus stop.",
-    "explanation_ms": "Papan tanda ini bermaksud perhentian bas.",
-    "image_url": "/signs/info-bus-stop.svg",
-    "source_url": "KPP General PDF page 68",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
     "id": "aec53c70-e504-581e-ba99-f2f81faa6db8",
     "category": "road-signs",
     "set_id": "mock-da-2",
@@ -6835,7 +6053,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means road with no through access. The road does not continue through to another route.",
     "explanation_ms": "Papan tanda ini bermaksud jalan buntu di hadapan. Jalan itu tidak bersambung dengan laluan lain.",
-    "image_url": "/signs/info-dead-end.svg",
+    "image_url": "/signs/082877f6ec086be6.svg",
     "source_url": "KPP General PDF page 68",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -6861,85 +6079,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means designated U-turn. It marks a place to turn around. Give way to oncoming traffic before turning.",
     "explanation_ms": "Papan tanda ini bermaksud tempat pusingan U. Tanda ini menunjukkan tempat untuk berpatah balik. Beri laluan kepada trafik dari arah bertentangan sebelum membelok.",
-    "image_url": "/signs/info-u-turn.svg",
-    "source_url": "KPP General PDF page 69",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "5f4bd466-64dc-55ff-98b4-fdb3a57b5f40",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Designated U-turn",
-      "Designated P-turn",
-      "Road with no through access",
-      "Directions at a junction ahead"
-    ],
-    "options_ms": [
-      "Tempat pusingan U",
-      "Tempat pusingan P",
-      "Jalan buntu di hadapan",
-      "Arah di simpang yang akan datang"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means designated P-turn. It marks a P-turn facility. Slow down and watch for oncoming traffic when using it.",
-    "explanation_ms": "Papan tanda ini bermaksud tempat pusingan P. Tanda ini menunjukkan tempat pusingan P. Perlahankan kenderaan dan awasi trafik dari arah bertentangan semasa menggunakannya.",
-    "image_url": "/signs/info-p-turn.svg",
-    "source_url": "KPP General PDF page 69",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "dc9e944a-d35c-52cd-8445-fc6fc80d63c1",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Medical clinic",
-      "Vehicle parking",
-      "JPJ weighing station",
-      "Public telephone"
-    ],
-    "options_ms": [
-      "Klinik perubatan",
-      "Tempat letak kenderaan",
-      "Stesen timbang JPJ",
-      "Telefon awam"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means jPJ weighing station.",
-    "explanation_ms": "Papan tanda ini bermaksud stesen timbang JPJ.",
-    "image_url": "/signs/info-jpj-station.svg",
-    "source_url": "KPP General PDF page 69",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "7ed41cf5-2b95-5bae-a4d4-6bd64bb07c00",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 7,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Accessible parking bays",
-      "JPJ weighing station",
-      "Vehicle parking",
-      "Electric vehicle charging station"
-    ],
-    "options_ms": [
-      "Petak parkir orang kurang upaya",
-      "Stesen timbang JPJ",
-      "Tempat letak kenderaan",
-      "Stesen cas kenderaan elektrik"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means electric vehicle charging station.",
-    "explanation_ms": "Papan tanda ini bermaksud stesen cas kenderaan elektrik.",
-    "image_url": "/signs/info-ev-charging.svg",
+    "image_url": "/signs/8956fe8a103938b3.svg",
     "source_url": "KPP General PDF page 69",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -6965,7 +6105,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means no vehicle entry.",
     "explanation_ms": "Papan tanda ini bermaksud kenderaan dilarang masuk.",
-    "image_url": "/signs/prohib-no-entry.svg",
+    "image_url": "/signs/9a316a4baac9f49a.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -6991,112 +6131,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means no U-turn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membuat pusingan U.",
-    "image_url": "/signs/prohib-no-u-turn.svg",
+    "image_url": "/signs/a299aef5bccc0fca.svg",
     "source_url": "KPP General PDF page 58",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "421df5f7-dd01-51ed-8fe6-eab3349420c2",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 10,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Directions at a junction ahead",
-      "Distances to upcoming destinations",
-      "Direction to a destination exit",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Arah di simpang yang akan datang",
-      "Jarak ke destinasi seterusnya",
-      "Arah ke susur keluar destinasi",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "The sign points to a destination exit. Move into the correct lane in good time if you intend to take the exit.",
-    "explanation_ms": "Papan tanda ini menunjukkan arah ke susur keluar destinasi. Masuk ke lorong yang betul lebih awal jika anda hendak menggunakan susur keluar.",
-    "image_url": "/signs/info-highway-exit.svg",
-    "source_url": "KPP General PDF page 70",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "d222ea94-1a30-587a-b5e0-4fde48af618c",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Directions at a junction ahead",
-      "Distance to a destination exit",
-      "Distances to upcoming destinations",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Arah di simpang yang akan datang",
-      "Jarak ke susur keluar destinasi",
-      "Jarak ke destinasi seterusnya",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means destinations via roundabout exits.",
-    "explanation_ms": "Papan tanda ini bermaksud destinasi melalui susur keluar bulatan.",
-    "image_url": "/signs/info-roundabout-direction.svg",
-    "source_url": "KPP General PDF page 71",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "b4e7c983-6922-5553-a9f5-993322230347",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Distances to upcoming destinations",
-      "Distance to a destination exit",
-      "Directions at a junction ahead",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Jarak ke destinasi seterusnya",
-      "Jarak ke susur keluar destinasi",
-      "Arah di simpang yang akan datang",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means distances to upcoming destinations.",
-    "explanation_ms": "Papan tanda ini bermaksud jarak ke destinasi seterusnya.",
-    "image_url": "/signs/info-distance-board.svg",
-    "source_url": "KPP General PDF page 70",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "385cb6aa-2d20-5634-905b-47ce9b4ef060",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 13,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Distance to a destination exit",
-      "Directions at a junction ahead",
-      "Distances to upcoming destinations",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Jarak ke susur keluar destinasi",
-      "Arah di simpang yang akan datang",
-      "Jarak ke destinasi seterusnya",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means directions at a junction ahead.",
-    "explanation_ms": "Papan tanda ini bermaksud arah di simpang yang akan datang.",
-    "image_url": "/signs/info-junction-direction.svg",
-    "source_url": "KPP General PDF page 70",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7121,34 +6157,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "You must use a route that does not require turning left here.",
     "explanation_ms": "Gunakan laluan yang tidak memerlukan anda membelok ke kiri di sini.",
-    "image_url": "/signs/prohib-no-left-turn.svg",
+    "image_url": "/signs/ef495735d6870ce2.svg",
     "source_url": "KPP General PDF page 57",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "eec6ce9b-5b8f-5af6-a075-6bea34f060d2",
-    "category": "road-signs",
-    "set_id": "mock-da-2",
-    "order_index": 15,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Flag controller ahead",
-      "Right lane closed ahead",
-      "Middle lane closed ahead",
-      "Road repairs ahead"
-    ],
-    "options_ms": [
-      "Pengawal berbendera di hadapan",
-      "Lorong kanan ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan",
-      "Kerja pembaikan jalan di hadapan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means road repairs ahead.",
-    "explanation_ms": "Papan tanda ini bermaksud kerja pembaikan jalan di hadapan.",
-    "image_url": "/signs/temp-road-works.svg",
-    "source_url": "KPP General PDF page 73",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8062,84 +7072,6 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
-    "id": "7261b8d2-008b-5dcc-8b40-a99f3627ea76",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 1,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Flag controller ahead",
-      "Left lane closed ahead",
-      "Right lane closed ahead",
-      "Road repairs ahead"
-    ],
-    "options_ms": [
-      "Pengawal berbendera di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Lorong kanan ditutup di hadapan",
-      "Kerja pembaikan jalan di hadapan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means flag controller ahead. Slow down and follow the flag controller's signals.",
-    "explanation_ms": "Papan tanda ini bermaksud pengawal berbendera di hadapan. Perlahankan kenderaan dan patuhi isyarat pengawal berbendera.",
-    "image_url": "/signs/temp-flagman-ahead.svg",
-    "source_url": "KPP General PDF page 77",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "7b6a5bb8-6206-5bab-a7a3-5ec5564bbdff",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 2,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Construction zone ahead",
-      "Work-zone speed limit",
-      "Left bend in work zone",
-      "Hazard within the work zone"
-    ],
-    "options_ms": [
-      "Zon pembinaan di hadapan",
-      "Had laju di zon kerja",
-      "Selekoh kiri di zon kerja",
-      "Bahaya dalam zon kerja"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means work-zone speed limit. Reduce speed before entering the work zone and stay within the posted limit.",
-    "explanation_ms": "Papan tanda ini bermaksud had laju di zon kerja. Kurangkan kelajuan sebelum memasuki zon kerja dan patuhi had laju yang dipaparkan.",
-    "image_url": "/signs/temp-speed-limit.svg",
-    "source_url": "KPP General PDF page 74",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "f8d3e531-702a-50d2-9134-a8d61cdd330b",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 3,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Sharp work-zone diversion",
-      "Narrow clearance in work zone",
-      "Traffic shifts lanes ahead",
-      "Right bend in work zone"
-    ],
-    "options_ms": [
-      "Lencongan tajam di zon kerja",
-      "Kelegaan terhad di zon kerja",
-      "Lencongan lorong di hadapan",
-      "Selekoh kanan di zon kerja"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means traffic shifts lanes ahead. Follow the temporary lane alignment and avoid overtaking through the diversion.",
-    "explanation_ms": "Papan tanda ini bermaksud lencongan lorong di hadapan. Ikut jajaran lorong sementara dan elakkan memotong semasa melalui lencongan.",
-    "image_url": "/signs/temp-lane-diversion.svg",
-    "source_url": "KPP General PDF page 74",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
     "id": "48a575e9-9091-52e2-bdee-42db98d3c1fb",
     "category": "road-signs",
     "set_id": "mock-da-3",
@@ -8161,86 +7093,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means no parking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang meletak kenderaan.",
-    "image_url": "/signs/prohib-no-parking.svg",
+    "image_url": "/signs/fbd415b24ab21b44.svg",
     "source_url": "KPP General PDF page 58",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "149987d3-4a32-54c0-915a-5e6851c08ba3",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Right lane closed ahead",
-      "Middle lane closed ahead",
-      "Left lane closed ahead",
-      "Flag controller ahead"
-    ],
-    "options_ms": [
-      "Lorong kanan ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Pengawal berbendera di hadapan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means right lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong kanan ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "image_url": "/signs/temp-right-lane-closed.svg",
-    "source_url": "KPP General PDF page 75",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "9def2885-f17a-56b4-83d7-5afd8432e0fe",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Right lane closed ahead",
-      "Middle lane closed ahead",
-      "Left lane closed ahead",
-      "Flag controller ahead"
-    ],
-    "options_ms": [
-      "Lorong kanan ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Pengawal berbendera di hadapan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means middle lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong tengah ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "image_url": "/signs/temp-center-lane-closed.svg",
-    "source_url": "KPP General PDF page 75",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "a9a5b462-b5e6-5763-ba8f-bd70ba3f78f8",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 7,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Flag controller ahead",
-      "Right lane closed ahead",
-      "Left lane closed ahead",
-      "Middle lane closed ahead"
-    ],
-    "options_ms": [
-      "Pengawal berbendera di hadapan",
-      "Lorong kanan ditutup di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means left lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong kiri ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "image_url": "/signs/temp-left-lane-closed.svg",
-    "source_url": "KPP General PDF page 75",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8265,112 +7119,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means sharp work-zone diversion.",
     "explanation_ms": "Papan tanda ini bermaksud lencongan tajam di zon kerja.",
-    "image_url": "/signs/temp-chevron-diversion.svg",
+    "image_url": "/signs/263bc825012bcc83.svg",
     "source_url": "KPP General PDF page 76",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "0407b107-dbd7-5874-916e-cce50eae7862",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 9,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Hazard within the work zone",
-      "Construction zone ahead",
-      "Traffic shifts lanes ahead",
-      "Work-zone speed limit"
-    ],
-    "options_ms": [
-      "Bahaya dalam zon kerja",
-      "Zon pembinaan di hadapan",
-      "Lencongan lorong di hadapan",
-      "Had laju di zon kerja"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means hazard within the work zone.",
-    "explanation_ms": "Papan tanda ini bermaksud bahaya dalam zon kerja.",
-    "image_url": "/signs/temp-work-zone-danger.svg",
-    "source_url": "KPP General PDF page 78",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "0e0a5454-7ff7-5789-9efb-5e7a797bfcec",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 10,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Traffic shifts lanes ahead",
-      "Narrow clearance in work zone",
-      "Sharp work-zone diversion",
-      "Hazard within the work zone"
-    ],
-    "options_ms": [
-      "Lencongan lorong di hadapan",
-      "Kelegaan terhad di zon kerja",
-      "Lencongan tajam di zon kerja",
-      "Bahaya dalam zon kerja"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means narrow clearance in work zone. The stripes show the side to pass on. Follow the side to which the stripes slope down.",
-    "explanation_ms": "Papan tanda ini bermaksud kelegaan terhad di zon kerja. Jalur menunjukkan sisi untuk dilalui. Ikut sisi yang ditunjukkan oleh arah jalur yang menurun.",
-    "image_url": "/signs/temp-vertical-panel.svg",
-    "source_url": "KPP General PDF page 78",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "9cc8a4e7-bd5b-596c-8fe3-d1cb4fe4c142",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Construction zone ahead",
-      "Right bend in work zone",
-      "Left bend in work zone",
-      "Work-zone speed limit"
-    ],
-    "options_ms": [
-      "Zon pembinaan di hadapan",
-      "Selekoh kanan di zon kerja",
-      "Selekoh kiri di zon kerja",
-      "Had laju di zon kerja"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means left bend in work zone.",
-    "explanation_ms": "Papan tanda ini bermaksud selekoh kiri di zon kerja.",
-    "image_url": "/signs/temp-curve-left.svg",
-    "source_url": "KPP General PDF page 77",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "f6a93bf0-a42d-59a1-8ae7-b7a71e744ded",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Construction zone ahead",
-      "Left bend in work zone",
-      "Traffic shifts lanes ahead",
-      "Right bend in work zone"
-    ],
-    "options_ms": [
-      "Zon pembinaan di hadapan",
-      "Selekoh kiri di zon kerja",
-      "Lencongan lorong di hadapan",
-      "Selekoh kanan di zon kerja"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means right bend in work zone.",
-    "explanation_ms": "Papan tanda ini bermaksud selekoh kanan di zon kerja.",
-    "image_url": "/signs/temp-curve-right.svg",
-    "source_url": "KPP General PDF page 77",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8395,7 +7145,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means no stopping.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang berhenti.",
-    "image_url": "/signs/prohib-no-stopping.svg",
+    "image_url": "/signs/ecd3d648f3d4a187.svg",
     "source_url": "KPP General PDF page 59",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -8421,33 +7171,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means no sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membunyikan hon.",
-    "image_url": "/signs/prohib-no-horn.svg",
-    "source_url": "KPP General PDF page 57",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "b3a1e469-83ad-57ee-9e6b-0769146dadce",
-    "category": "road-signs",
-    "set_id": "mock-da-3",
-    "order_index": 15,
-    "question_en": "What does this sign prohibit?",
-    "question_ms": "Apakah larangan pada papan tanda ini?",
-    "options_en": [
-      "No sounding the horn",
-      "Heavy vehicles must not overtake",
-      "No vehicle entry",
-      "No right turn"
-    ],
-    "options_ms": [
-      "Dilarang membunyikan hon",
-      "Kenderaan berat dilarang memotong",
-      "Kenderaan dilarang masuk",
-      "Dilarang membelok ke kanan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means heavy vehicles must not overtake.",
-    "explanation_ms": "Papan tanda ini bermaksud kenderaan berat dilarang memotong.",
-    "image_url": "/signs/prohib-heavy-no-overtaking.svg",
+    "image_url": "/signs/ce55b86645694f5d.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9383,7 +8107,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means pass on the left.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kiri.",
-    "image_url": "/signs/mand-keep-left.svg",
+    "image_url": "/signs/24dc89f9e7127cca.svg",
     "source_url": "KPP General PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9409,7 +8133,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means pass on the right.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kanan.",
-    "image_url": "/signs/mand-keep-right.svg",
+    "image_url": "/signs/a50c8dd8a202a25e.svg",
     "source_url": "KPP General PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9435,33 +8159,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means pass on either side.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di mana-mana sisi.",
-    "image_url": "/signs/mand-pass-either-side.svg",
-    "source_url": "KPP General PDF page 64",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "0dbd213b-5024-5234-86a8-fc946c133707",
-    "category": "road-signs",
-    "set_id": "mock-d-1",
-    "order_index": 4,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Pass on either side",
-      "Keep left unless overtaking",
-      "Pass on the right",
-      "Pass on the left"
-    ],
-    "options_ms": [
-      "Lalu di mana-mana sisi",
-      "Ikut kiri kecuali memotong",
-      "Lalu di sebelah kanan",
-      "Lalu di sebelah kiri"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means keep left unless overtaking.",
-    "explanation_ms": "Papan tanda ini bermaksud ikut kiri kecuali memotong.",
-    "image_url": "/signs/mand-keep-left-unless-overtaking.svg",
+    "image_url": "/signs/6103dff69316bf86.svg",
     "source_url": "KPP General PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9487,7 +8185,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means lane for motorcycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk motosikal.",
-    "image_url": "/signs/mand-motorcycle-track.svg",
+    "image_url": "/signs/e0389a069e72ed52.png",
     "source_url": "KPP General PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9513,7 +8211,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means lane for bicycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk basikal.",
-    "image_url": "/signs/mand-bicycle-track.svg",
+    "image_url": "/signs/e86785fec1877d75.png",
     "source_url": "KPP General PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9539,7 +8237,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means no overtaking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang memotong.",
-    "image_url": "/signs/prohib-no-overtaking.svg",
+    "image_url": "/signs/2f019822b1b9e39f.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9565,112 +8263,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means lane for trishaws.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk beca.",
-    "image_url": "/signs/mand-trishaw-track.svg",
+    "image_url": "/signs/fad437bbc08b75fa.png",
     "source_url": "KPP General PDF page 65",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "35cb3243-4c9b-5b79-b8ba-9cfc1d7592a0",
-    "category": "road-signs",
-    "set_id": "mock-d-1",
-    "order_index": 9,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Lane for taxis",
-      "Lane for trishaws",
-      "Lane for buses",
-      "Lane for bicycles"
-    ],
-    "options_ms": [
-      "Lorong untuk teksi",
-      "Lorong untuk beca",
-      "Lorong untuk bas",
-      "Lorong untuk basikal"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means lane for buses.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong untuk bas.",
-    "image_url": "/signs/mand-bus-lane.svg",
-    "source_url": "KPP General PDF page 66",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "da61ef77-264a-5846-a910-47b02704ad33",
-    "category": "road-signs",
-    "set_id": "mock-d-1",
-    "order_index": 10,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Lane for buses",
-      "Lane for trishaws",
-      "Lane for bicycles",
-      "Lane for taxis"
-    ],
-    "options_ms": [
-      "Lorong untuk bas",
-      "Lorong untuk beca",
-      "Lorong untuk basikal",
-      "Lorong untuk teksi"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means lane for taxis.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong untuk teksi.",
-    "image_url": "/signs/mand-taxi-lane.svg",
-    "source_url": "KPP General PDF page 65",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "62dc5d84-50a2-5898-a633-eeaaf1e52641",
-    "category": "road-signs",
-    "set_id": "mock-d-1",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Accessible parking bays",
-      "Electric vehicle charging station",
-      "JPJ weighing station",
-      "Vehicle parking"
-    ],
-    "options_ms": [
-      "Petak parkir orang kurang upaya",
-      "Stesen cas kenderaan elektrik",
-      "Stesen timbang JPJ",
-      "Tempat letak kenderaan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means accessible parking bays. Use a different bay unless you have permission to park here.",
-    "explanation_ms": "Papan tanda ini bermaksud petak parkir orang kurang upaya. Gunakan petak lain kecuali jika anda mempunyai kebenaran untuk meletak kenderaan di sini.",
-    "image_url": "/signs/mand-oku-parking.svg",
-    "source_url": "KPP General PDF page 66",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "e29a696b-f235-5c3b-8141-fdf14edb44d1",
-    "category": "road-signs",
-    "set_id": "mock-d-1",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Fuel station",
-      "Public telephone",
-      "Medical clinic",
-      "Bus stop"
-    ],
-    "options_ms": [
-      "Stesen minyak",
-      "Telefon awam",
-      "Klinik perubatan",
-      "Perhentian bas"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means public telephone. If you need to use it, signal and pull over only where safe and permitted.",
-    "explanation_ms": "Papan tanda ini bermaksud telefon awam. Jika perlu menggunakannya, beri isyarat dan berhenti di tempat yang selamat serta dibenarkan.",
-    "image_url": "/signs/info-telephone.svg",
-    "source_url": "KPP General PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9695,33 +8289,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 2,
     "explanation_en": "This sign means hospital.",
     "explanation_ms": "Papan tanda ini bermaksud hospital.",
-    "image_url": "/signs/info-hospital.svg",
-    "source_url": "KPP General PDF page 67",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "8942a800-139d-5afa-969c-c61d6fb6199c",
-    "category": "road-signs",
-    "set_id": "mock-d-1",
-    "order_index": 14,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Hospital",
-      "Public telephone",
-      "Bus stop",
-      "Medical clinic"
-    ],
-    "options_ms": [
-      "Hospital",
-      "Telefon awam",
-      "Perhentian bas",
-      "Klinik perubatan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means medical clinic.",
-    "explanation_ms": "Papan tanda ini bermaksud klinik perubatan.",
-    "image_url": "/signs/info-clinic.svg",
+    "image_url": "/signs/dde5874c6044c5f3.svg",
     "source_url": "KPP General PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9747,7 +8315,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means vehicle parking.",
     "explanation_ms": "Papan tanda ini bermaksud tempat letak kenderaan.",
-    "image_url": "/signs/info-parking.svg",
+    "image_url": "/signs/f6459f68e216bc5d.svg",
     "source_url": "KPP General PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -10662,58 +9230,6 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
-    "id": "696bbca2-828d-5868-89cb-dda548f083fc",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 1,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Public telephone",
-      "Fuel station",
-      "Medical clinic",
-      "Bus stop"
-    ],
-    "options_ms": [
-      "Telefon awam",
-      "Stesen minyak",
-      "Klinik perubatan",
-      "Perhentian bas"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means fuel station.",
-    "explanation_ms": "Papan tanda ini bermaksud stesen minyak.",
-    "image_url": "/signs/info-petrol-station.svg",
-    "source_url": "KPP General PDF page 68",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "827a7d0d-275e-5d73-b8f4-62ce2a992bb0",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 2,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Fuel station",
-      "Hospital",
-      "Bus stop",
-      "Medical clinic"
-    ],
-    "options_ms": [
-      "Stesen minyak",
-      "Hospital",
-      "Perhentian bas",
-      "Klinik perubatan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means bus stop.",
-    "explanation_ms": "Papan tanda ini bermaksud perhentian bas.",
-    "image_url": "/signs/info-bus-stop.svg",
-    "source_url": "KPP General PDF page 68",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
     "id": "f052ca3f-a5dd-5a8a-b2ff-1f6cf59b1b59",
     "category": "road-signs",
     "set_id": "mock-d-2",
@@ -10735,7 +9251,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means road with no through access. The road does not continue through to another route.",
     "explanation_ms": "Papan tanda ini bermaksud jalan buntu di hadapan. Jalan itu tidak bersambung dengan laluan lain.",
-    "image_url": "/signs/info-dead-end.svg",
+    "image_url": "/signs/082877f6ec086be6.svg",
     "source_url": "KPP General PDF page 68",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -10761,85 +9277,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means designated U-turn. It marks a place to turn around. Give way to oncoming traffic before turning.",
     "explanation_ms": "Papan tanda ini bermaksud tempat pusingan U. Tanda ini menunjukkan tempat untuk berpatah balik. Beri laluan kepada trafik dari arah bertentangan sebelum membelok.",
-    "image_url": "/signs/info-u-turn.svg",
-    "source_url": "KPP General PDF page 69",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "f0420be1-f33a-5d45-bba4-2a199c29baf4",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Designated U-turn",
-      "Designated P-turn",
-      "Road with no through access",
-      "Directions at a junction ahead"
-    ],
-    "options_ms": [
-      "Tempat pusingan U",
-      "Tempat pusingan P",
-      "Jalan buntu di hadapan",
-      "Arah di simpang yang akan datang"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means designated P-turn. It marks a P-turn facility. Slow down and watch for oncoming traffic when using it.",
-    "explanation_ms": "Papan tanda ini bermaksud tempat pusingan P. Tanda ini menunjukkan tempat pusingan P. Perlahankan kenderaan dan awasi trafik dari arah bertentangan semasa menggunakannya.",
-    "image_url": "/signs/info-p-turn.svg",
-    "source_url": "KPP General PDF page 69",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "986e13e0-ef2f-56d2-9402-3384940b740d",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Medical clinic",
-      "Vehicle parking",
-      "JPJ weighing station",
-      "Public telephone"
-    ],
-    "options_ms": [
-      "Klinik perubatan",
-      "Tempat letak kenderaan",
-      "Stesen timbang JPJ",
-      "Telefon awam"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means jPJ weighing station.",
-    "explanation_ms": "Papan tanda ini bermaksud stesen timbang JPJ.",
-    "image_url": "/signs/info-jpj-station.svg",
-    "source_url": "KPP General PDF page 69",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "de74f21f-d5f5-5f47-8914-c61f4e121495",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 7,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Accessible parking bays",
-      "JPJ weighing station",
-      "Vehicle parking",
-      "Electric vehicle charging station"
-    ],
-    "options_ms": [
-      "Petak parkir orang kurang upaya",
-      "Stesen timbang JPJ",
-      "Tempat letak kenderaan",
-      "Stesen cas kenderaan elektrik"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means electric vehicle charging station.",
-    "explanation_ms": "Papan tanda ini bermaksud stesen cas kenderaan elektrik.",
-    "image_url": "/signs/info-ev-charging.svg",
+    "image_url": "/signs/8956fe8a103938b3.svg",
     "source_url": "KPP General PDF page 69",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -10865,7 +9303,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means no vehicle entry.",
     "explanation_ms": "Papan tanda ini bermaksud kenderaan dilarang masuk.",
-    "image_url": "/signs/prohib-no-entry.svg",
+    "image_url": "/signs/9a316a4baac9f49a.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -10891,112 +9329,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means no U-turn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membuat pusingan U.",
-    "image_url": "/signs/prohib-no-u-turn.svg",
+    "image_url": "/signs/a299aef5bccc0fca.svg",
     "source_url": "KPP General PDF page 58",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "ec1529b5-03a4-596d-ae7c-6edd3e279660",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 10,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Directions at a junction ahead",
-      "Distances to upcoming destinations",
-      "Direction to a destination exit",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Arah di simpang yang akan datang",
-      "Jarak ke destinasi seterusnya",
-      "Arah ke susur keluar destinasi",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "The sign points to a destination exit. Move into the correct lane in good time if you intend to take the exit.",
-    "explanation_ms": "Papan tanda ini menunjukkan arah ke susur keluar destinasi. Masuk ke lorong yang betul lebih awal jika anda hendak menggunakan susur keluar.",
-    "image_url": "/signs/info-highway-exit.svg",
-    "source_url": "KPP General PDF page 70",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "05c56f04-7720-5b4d-acfd-8e18efcd74d5",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Directions at a junction ahead",
-      "Distance to a destination exit",
-      "Distances to upcoming destinations",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Arah di simpang yang akan datang",
-      "Jarak ke susur keluar destinasi",
-      "Jarak ke destinasi seterusnya",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means destinations via roundabout exits.",
-    "explanation_ms": "Papan tanda ini bermaksud destinasi melalui susur keluar bulatan.",
-    "image_url": "/signs/info-roundabout-direction.svg",
-    "source_url": "KPP General PDF page 71",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "bedd821e-6bac-59af-9112-8330bc94a2a5",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Distances to upcoming destinations",
-      "Distance to a destination exit",
-      "Directions at a junction ahead",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Jarak ke destinasi seterusnya",
-      "Jarak ke susur keluar destinasi",
-      "Arah di simpang yang akan datang",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means distances to upcoming destinations.",
-    "explanation_ms": "Papan tanda ini bermaksud jarak ke destinasi seterusnya.",
-    "image_url": "/signs/info-distance-board.svg",
-    "source_url": "KPP General PDF page 70",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "a3c5bea3-64e9-5f3d-b12f-65a4336a9b97",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 13,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Distance to a destination exit",
-      "Directions at a junction ahead",
-      "Distances to upcoming destinations",
-      "Destinations via roundabout exits"
-    ],
-    "options_ms": [
-      "Jarak ke susur keluar destinasi",
-      "Arah di simpang yang akan datang",
-      "Jarak ke destinasi seterusnya",
-      "Destinasi melalui susur keluar bulatan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means directions at a junction ahead.",
-    "explanation_ms": "Papan tanda ini bermaksud arah di simpang yang akan datang.",
-    "image_url": "/signs/info-junction-direction.svg",
-    "source_url": "KPP General PDF page 70",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -11021,34 +9355,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "You must use a route that does not require turning left here.",
     "explanation_ms": "Gunakan laluan yang tidak memerlukan anda membelok ke kiri di sini.",
-    "image_url": "/signs/prohib-no-left-turn.svg",
+    "image_url": "/signs/ef495735d6870ce2.svg",
     "source_url": "KPP General PDF page 57",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "efd04401-7453-56c6-8dd7-e65fac2b9b7f",
-    "category": "road-signs",
-    "set_id": "mock-d-2",
-    "order_index": 15,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Flag controller ahead",
-      "Right lane closed ahead",
-      "Middle lane closed ahead",
-      "Road repairs ahead"
-    ],
-    "options_ms": [
-      "Pengawal berbendera di hadapan",
-      "Lorong kanan ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan",
-      "Kerja pembaikan jalan di hadapan"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means road repairs ahead.",
-    "explanation_ms": "Papan tanda ini bermaksud kerja pembaikan jalan di hadapan.",
-    "image_url": "/signs/temp-road-works.svg",
-    "source_url": "KPP General PDF page 73",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -11962,84 +10270,6 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
-    "id": "c2b188aa-151d-5114-8604-e3a387767b1f",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 1,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Flag controller ahead",
-      "Left lane closed ahead",
-      "Right lane closed ahead",
-      "Road repairs ahead"
-    ],
-    "options_ms": [
-      "Pengawal berbendera di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Lorong kanan ditutup di hadapan",
-      "Kerja pembaikan jalan di hadapan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means flag controller ahead. Slow down and follow the flag controller's signals.",
-    "explanation_ms": "Papan tanda ini bermaksud pengawal berbendera di hadapan. Perlahankan kenderaan dan patuhi isyarat pengawal berbendera.",
-    "image_url": "/signs/temp-flagman-ahead.svg",
-    "source_url": "KPP General PDF page 77",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "a359f076-b8b7-54e7-af01-3bdce338b876",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 2,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Construction zone ahead",
-      "Work-zone speed limit",
-      "Left bend in work zone",
-      "Hazard within the work zone"
-    ],
-    "options_ms": [
-      "Zon pembinaan di hadapan",
-      "Had laju di zon kerja",
-      "Selekoh kiri di zon kerja",
-      "Bahaya dalam zon kerja"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means work-zone speed limit. Reduce speed before entering the work zone and stay within the posted limit.",
-    "explanation_ms": "Papan tanda ini bermaksud had laju di zon kerja. Kurangkan kelajuan sebelum memasuki zon kerja dan patuhi had laju yang dipaparkan.",
-    "image_url": "/signs/temp-speed-limit.svg",
-    "source_url": "KPP General PDF page 74",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "19a21857-070b-5109-91e5-caf5f24bf661",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 3,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Sharp work-zone diversion",
-      "Narrow clearance in work zone",
-      "Traffic shifts lanes ahead",
-      "Right bend in work zone"
-    ],
-    "options_ms": [
-      "Lencongan tajam di zon kerja",
-      "Kelegaan terhad di zon kerja",
-      "Lencongan lorong di hadapan",
-      "Selekoh kanan di zon kerja"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means traffic shifts lanes ahead. Follow the temporary lane alignment and avoid overtaking through the diversion.",
-    "explanation_ms": "Papan tanda ini bermaksud lencongan lorong di hadapan. Ikut jajaran lorong sementara dan elakkan memotong semasa melalui lencongan.",
-    "image_url": "/signs/temp-lane-diversion.svg",
-    "source_url": "KPP General PDF page 74",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
     "id": "5bcdb033-14df-503d-977b-02192f80cc63",
     "category": "road-signs",
     "set_id": "mock-d-3",
@@ -12061,86 +10291,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means no parking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang meletak kenderaan.",
-    "image_url": "/signs/prohib-no-parking.svg",
+    "image_url": "/signs/fbd415b24ab21b44.svg",
     "source_url": "KPP General PDF page 58",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "49b74137-b05d-5044-81d0-8459e9283878",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 5,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Right lane closed ahead",
-      "Middle lane closed ahead",
-      "Left lane closed ahead",
-      "Flag controller ahead"
-    ],
-    "options_ms": [
-      "Lorong kanan ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Pengawal berbendera di hadapan"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means right lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong kanan ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "image_url": "/signs/temp-right-lane-closed.svg",
-    "source_url": "KPP General PDF page 75",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "2766534e-0608-56a5-8df2-2070b0ee341e",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 6,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Right lane closed ahead",
-      "Middle lane closed ahead",
-      "Left lane closed ahead",
-      "Flag controller ahead"
-    ],
-    "options_ms": [
-      "Lorong kanan ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Pengawal berbendera di hadapan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means middle lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong tengah ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "image_url": "/signs/temp-center-lane-closed.svg",
-    "source_url": "KPP General PDF page 75",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "c33207fc-83a2-5ceb-8fbd-addce2d50864",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 7,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Flag controller ahead",
-      "Right lane closed ahead",
-      "Left lane closed ahead",
-      "Middle lane closed ahead"
-    ],
-    "options_ms": [
-      "Pengawal berbendera di hadapan",
-      "Lorong kanan ditutup di hadapan",
-      "Lorong kiri ditutup di hadapan",
-      "Lorong tengah ditutup di hadapan"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means left lane closed ahead. Signal and move into an open lane once there is a safe gap.",
-    "explanation_ms": "Papan tanda ini bermaksud lorong kiri ditutup di hadapan. Beri isyarat dan masuk ke lorong yang masih dibuka apabila ada ruang yang selamat.",
-    "image_url": "/signs/temp-left-lane-closed.svg",
-    "source_url": "KPP General PDF page 75",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12165,112 +10317,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 3,
     "explanation_en": "This sign means sharp work-zone diversion.",
     "explanation_ms": "Papan tanda ini bermaksud lencongan tajam di zon kerja.",
-    "image_url": "/signs/temp-chevron-diversion.svg",
+    "image_url": "/signs/263bc825012bcc83.svg",
     "source_url": "KPP General PDF page 76",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "d6fb1a46-0c44-55b2-8900-8d6ad628c6cd",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 9,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Hazard within the work zone",
-      "Construction zone ahead",
-      "Traffic shifts lanes ahead",
-      "Work-zone speed limit"
-    ],
-    "options_ms": [
-      "Bahaya dalam zon kerja",
-      "Zon pembinaan di hadapan",
-      "Lencongan lorong di hadapan",
-      "Had laju di zon kerja"
-    ],
-    "correct_index": 0,
-    "explanation_en": "This sign means hazard within the work zone.",
-    "explanation_ms": "Papan tanda ini bermaksud bahaya dalam zon kerja.",
-    "image_url": "/signs/temp-work-zone-danger.svg",
-    "source_url": "KPP General PDF page 78",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "be85e530-83ed-5bb9-9f9e-520492c7f6e3",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 10,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Traffic shifts lanes ahead",
-      "Narrow clearance in work zone",
-      "Sharp work-zone diversion",
-      "Hazard within the work zone"
-    ],
-    "options_ms": [
-      "Lencongan lorong di hadapan",
-      "Kelegaan terhad di zon kerja",
-      "Lencongan tajam di zon kerja",
-      "Bahaya dalam zon kerja"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means narrow clearance in work zone. The stripes show the side to pass on. Follow the side to which the stripes slope down.",
-    "explanation_ms": "Papan tanda ini bermaksud kelegaan terhad di zon kerja. Jalur menunjukkan sisi untuk dilalui. Ikut sisi yang ditunjukkan oleh arah jalur yang menurun.",
-    "image_url": "/signs/temp-vertical-panel.svg",
-    "source_url": "KPP General PDF page 78",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "5f41f663-1bdc-502f-9c17-4eec2f46ff4e",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 11,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Construction zone ahead",
-      "Right bend in work zone",
-      "Left bend in work zone",
-      "Work-zone speed limit"
-    ],
-    "options_ms": [
-      "Zon pembinaan di hadapan",
-      "Selekoh kanan di zon kerja",
-      "Selekoh kiri di zon kerja",
-      "Had laju di zon kerja"
-    ],
-    "correct_index": 2,
-    "explanation_en": "This sign means left bend in work zone.",
-    "explanation_ms": "Papan tanda ini bermaksud selekoh kiri di zon kerja.",
-    "image_url": "/signs/temp-curve-left.svg",
-    "source_url": "KPP General PDF page 77",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "29b406a9-8344-5662-afc1-e6d0121b3256",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 12,
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
-    "options_en": [
-      "Construction zone ahead",
-      "Left bend in work zone",
-      "Traffic shifts lanes ahead",
-      "Right bend in work zone"
-    ],
-    "options_ms": [
-      "Zon pembinaan di hadapan",
-      "Selekoh kiri di zon kerja",
-      "Lencongan lorong di hadapan",
-      "Selekoh kanan di zon kerja"
-    ],
-    "correct_index": 3,
-    "explanation_en": "This sign means right bend in work zone.",
-    "explanation_ms": "Papan tanda ini bermaksud selekoh kanan di zon kerja.",
-    "image_url": "/signs/temp-curve-right.svg",
-    "source_url": "KPP General PDF page 77",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12295,7 +10343,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 0,
     "explanation_en": "This sign means no stopping.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang berhenti.",
-    "image_url": "/signs/prohib-no-stopping.svg",
+    "image_url": "/signs/ecd3d648f3d4a187.svg",
     "source_url": "KPP General PDF page 59",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -12321,33 +10369,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "correct_index": 1,
     "explanation_en": "This sign means no sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membunyikan hon.",
-    "image_url": "/signs/prohib-no-horn.svg",
-    "source_url": "KPP General PDF page 57",
-    "created_at": "2026-11-08T00:00:00Z"
-  },
-  {
-    "id": "d2121ea1-80b6-5fb4-a762-394e216a2be1",
-    "category": "road-signs",
-    "set_id": "mock-d-3",
-    "order_index": 15,
-    "question_en": "What does this sign prohibit?",
-    "question_ms": "Apakah larangan pada papan tanda ini?",
-    "options_en": [
-      "No sounding the horn",
-      "Heavy vehicles must not overtake",
-      "No vehicle entry",
-      "No right turn"
-    ],
-    "options_ms": [
-      "Dilarang membunyikan hon",
-      "Kenderaan berat dilarang memotong",
-      "Kenderaan dilarang masuk",
-      "Dilarang membelok ke kanan"
-    ],
-    "correct_index": 1,
-    "explanation_en": "This sign means heavy vehicles must not overtake.",
-    "explanation_ms": "Papan tanda ini bermaksud kenderaan berat dilarang memotong.",
-    "image_url": "/signs/prohib-heavy-no-overtaking.svg",
+    "image_url": "/signs/ce55b86645694f5d.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },

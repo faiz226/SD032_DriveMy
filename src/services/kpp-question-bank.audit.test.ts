@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { KppQuestion } from "@/types/database";
@@ -195,7 +196,7 @@ describe("KPP Question Bank & Architecture Audit", () => {
     }
 
     const files = getSourceFiles(path.join(ROOT, "src"));
-    const signRegex = /\/signs\/[a-zA-Z0-9_.-]+\.svg/g;
+    const signRegex = /\/signs\/[a-zA-Z0-9_.-]+\.(?:svg|png|jpe?g|webp)/g;
 
     for (const file of files) {
       const content = fs.readFileSync(file, "utf8");
@@ -204,6 +205,32 @@ describe("KPP Question Bank & Architecture Audit", () => {
         const signRel = match[0];
         const signFull = path.join(ROOT, "public", signRel);
         expect(fs.existsSync(signFull)).toBe(true);
+      }
+    }
+  });
+
+  it("ships only neutral, attributed sign assets without SVG metadata", () => {
+    const directory = path.join(ROOT, "public/signs");
+    const sources = fs.readFileSync(path.join(ROOT, "docs/sign-sources.md"), "utf8");
+    const files = fs.readdirSync(directory);
+    expect(files.length).toBeGreaterThan(0);
+    for (const question of KPP_TEXTBOOK_QUESTIONS) {
+      if (question.image_url?.startsWith("/signs/")) {
+        expect(files).toContain(question.image_url.slice("/signs/".length));
+      }
+    }
+
+    for (const file of files) {
+      expect(file).toMatch(/^[a-f0-9]{16}\.(?:svg|png|jpe?g|webp)$/);
+      const contents = fs.readFileSync(path.join(directory, file));
+      expect(file.split(".")[0]).toBe(createHash("sha256").update(contents).digest("hex").slice(0, 16));
+      const attribution = sources.split("\n").find((line) => line.includes(`\`${file}\``));
+      expect(attribution?.match(/https?:\/\/[^\s)]+/g)?.length).toBeGreaterThanOrEqual(2);
+
+      if (file.endsWith(".svg")) {
+        expect(contents.toString("utf8")).not.toMatch(
+          /<!--|<!DOCTYPE|<(?:[\w-]+:)?(?:title|desc|metadata|script|foreignObject)\b|\s(?:id|on[\w-]+|[\w-]+:[\w-]+)\s*=/i,
+        );
       }
     }
   });
