@@ -33,7 +33,6 @@ const KPP_SECTIONS = [
 const MOCK_NUMBERS = [
   { num: 1, titleKey: "launch.mock1", descKey: "launch.mockDesc" },
   { num: 2, titleKey: "launch.mock2", descKey: "launch.mockDesc" },
-  { num: 3, titleKey: "launch.mock3", descKey: "launch.mockDesc" },
 ] as const;
 
 function buildQuizSetId(part: string, setNum: number, track: LicenseTrack): string {
@@ -43,7 +42,7 @@ function buildQuizSetId(part: string, setNum: number, track: LicenseTrack): stri
 }
 
 function buildMockSetId(setNum: number, track: LicenseTrack): string {
-  return track === "D" ? `mock-d-${setNum}` : `mock-da-${setNum}`;
+  return track === "D" ? `mock-d-combined-${setNum}` : `mock-da-combined-${setNum}`;
 }
 
 export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {

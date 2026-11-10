@@ -67,7 +67,7 @@ describe("KPP Question Bank & Architecture Audit", () => {
 
   // 2. Every question has 4 options and a valid correct index (0-3)
   it("ensures every question has exactly 4 options and valid correct_index", () => {
-    expect(KPP_TEXTBOOK_QUESTIONS.length).toBe(510);
+    expect(KPP_TEXTBOOK_QUESTIONS.length).toBe(490);
 
     for (const q of KPP_TEXTBOOK_QUESTIONS) {
       expect(Array.isArray(q.options_en)).toBe(true);
@@ -86,21 +86,22 @@ describe("KPP Question Bank & Architecture Audit", () => {
     }
   });
 
-  it("keeps three full sets per track and practice topic", () => {
+  it("keeps two full mocks per track and three practice sets per topic", () => {
     const sets = new Map<string, KppQuestion[]>();
     for (const question of KPP_TEXTBOOK_QUESTIONS) {
       const rows = sets.get(question.set_id) ?? [];
       rows.push(question);
       sets.set(question.set_id, rows);
     }
-    expect(sets.size).toBe(18);
+    expect(sets.size).toBe(16);
     for (const number of [1, 2, 3]) {
       for (const track of ["da", "d"]) {
-        const rows = sets.get(`mock-${track}-${number}`) ?? [];
-        expect(rows).toHaveLength(50);
-        expect(rows.filter((q) => q.category === "road-signs")).toHaveLength(15);
-        expect(rows.filter((q) => q.category === "traffic-rules")).toHaveLength(25);
-        expect(rows.filter((q) => q.category === "safety-principles")).toHaveLength(10);
+        if (number > 2) continue;
+        const rows = sets.get(`mock-${track}-combined-${number}`) ?? [];
+        expect(rows).toHaveLength(70);
+        expect(rows.filter((q) => q.category === "road-signs")).toHaveLength(21);
+        expect(rows.filter((q) => q.category === "traffic-rules")).toHaveLength(35);
+        expect(rows.filter((q) => q.category === "safety-principles")).toHaveLength(14);
       }
       expect(sets.get(`quiz-a-${number}`)).toHaveLength(15);
       expect(sets.get(`quiz-b-${number}`)).toHaveLength(25);
@@ -118,7 +119,7 @@ describe("KPP Question Bank & Architecture Audit", () => {
       expect(seenDa.has(key)).toBe(false);
       seenDa.add(key);
     }
-    expect(mockDaQuestions.length).toBe(150);
+    expect(mockDaQuestions.length).toBe(140);
 
     const mockDQuestions = KPP_TEXTBOOK_QUESTIONS.filter((q: KppQuestion) => q.set_id.startsWith("mock-d-"));
     const seenD = new Set<string>();
@@ -127,7 +128,7 @@ describe("KPP Question Bank & Architecture Audit", () => {
       expect(seenD.has(key)).toBe(false);
       seenD.add(key);
     }
-    expect(mockDQuestions.length).toBe(150);
+    expect(mockDQuestions.length).toBe(140);
   });
 
   // 4. No question mentions a page in its text

@@ -1,3 +1,4 @@
+import { mockPassMark } from "@/lib/constants";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { ExamResult } from "@/lib/exam/scoring";
@@ -56,7 +57,7 @@ export function generatePDF({ result, language, mode, setId }: GeneratePDFOption
   doc.text(scoreText, pageWidth / 2, 65, { align: "center" });
 
   doc.setFontSize(14);
-  const passed = mode === "mock" ? (result.passed ?? result.percentage >= 84) : result.percentage >= 70;
+  const passed = mode === "mock" ? (result.passed ?? result.score >= mockPassMark(result.total)) : result.percentage >= 70;
   doc.setTextColor(passed ? 34 : 220, passed ? 139 : 53, passed ? 34 : 69);
   doc.text(passed ? t("exam.pdf.passed") : t("exam.pdf.failed"), pageWidth / 2, 75, { align: "center" });
   doc.setTextColor(0);

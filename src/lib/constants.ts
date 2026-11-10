@@ -48,9 +48,17 @@ export const QUESTIONS_BY_CATEGORY = (category: string) => [...QUERY_KEYS.QUESTI
 
 // ── Exam configuration ────────────────────────────────────────────────────────
 export const QUIZ_QUESTION_COUNT = 10;
-export const MOCK_TIME_LIMIT = 2700;             // 45 minutes in seconds
-export const MOCK_PASS_MARK = 42;
-export const MOCK_TOTAL_QUESTIONS = 50;
+export const MOCK_TIME_LIMIT = 4500;             // 75 minutes in seconds
+export const MOCK_PASS_MARK = 56;
+export const MOCK_TOTAL_QUESTIONS = 70;
+export const LEGACY_MOCK_TOTAL = 50;
+export const LEGACY_MOCK_PASS_MARK = 42;
+export const LEGACY_MOCK_TIME_LIMIT = 45 * 60;
+
+export function mockPassMark(total: number): number {
+  return total === LEGACY_MOCK_TOTAL ? LEGACY_MOCK_PASS_MARK : MOCK_PASS_MARK;
+}
+
 export const MOCK_WARNING_TIME = 300;            // 5 minutes in seconds
 
 // ── Simulation configuration ──────────────────────────────────────────────────

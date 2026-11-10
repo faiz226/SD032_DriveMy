@@ -1,3 +1,4 @@
+import { mockPassMark } from "@/lib/constants";
 import { SpeechControl } from "@/components/shared/SpeechControl";
 
 import { useState, useMemo } from "react";
@@ -42,10 +43,10 @@ export function TestResultsView({
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
 
-  const passMark = Math.ceil(result.total * 0.84);
+  const passMark = mockPassMark(result.total);
   const reviewAvailable = result.questions.length > 0;
   const passed = mode === "mock"
-    ? (result.passed ?? result.percentage >= 84)
+    ? (result.passed ?? result.score >= mockPassMark(result.total))
     : result.percentage >= 70;
 
   // Category breakdown
@@ -180,7 +181,7 @@ export function TestResultsView({
 
       {!reviewAvailable && <p role="status">{t("exam.reviewUnavailable")}</p>}
       {reviewAvailable && <>
-      {/* Category breakdown: cobalt below the 84% line, green at or above it.
+      {/* Category breakdown: cobalt below the pass line, green at or above it.
           The hairline marks the line itself. */}
       <div className="panel space-y-5 p-6 sm:p-7">
         <h3 className="text-base font-semibold">{t("results.categoryBreakdown")}</h3>
@@ -196,10 +197,10 @@ export function TestResultsView({
                 </div>
                 <div className="relative h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className={cn("h-full rounded-full transition-[width] duration-700 ease-out", pct >= 84 ? "bg-success" : "bg-brand")}
+                    className={cn("h-full rounded-full transition-[width] duration-700 ease-out", pct >= (100 * passMark) / result.total ? "bg-success" : "bg-brand")}
                     style={{ width: `${pct}%` }}
                   />
-                  <span aria-hidden className="absolute inset-y-0 w-px bg-foreground/40" style={{ left: "84%" }} />
+                  <span aria-hidden className="absolute inset-y-0 w-px bg-foreground/40" style={{ left: `${(100 * passMark) / result.total}%` }} />
                 </div>
               </div>
             );

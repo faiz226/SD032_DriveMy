@@ -5,7 +5,7 @@ import { Warning } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
-import { MOCK_TIME_LIMIT, QUESTIONS_BY_SET } from "@/lib/constants";
+import { LEGACY_MOCK_TIME_LIMIT, LEGACY_MOCK_TOTAL, MOCK_TIME_LIMIT, QUESTIONS_BY_SET } from "@/lib/constants";
 import { fetchMockQuestionsBySet, fetchMockAnswerKey } from "@/services/questions.service";
 import { applyAnswerKey, hasCompleteAnswerKey } from "@/lib/exam/scoring";
 import { PROGRESS_SCOPES } from "@/lib/testProgress";
@@ -27,7 +27,7 @@ export function MockTestPage() {
 
   const [phase, setPhase] = useState<Phase>("launch");
   const [examLang, setExamLang] = useState<"en" | "ms">(globalLang);
-  const [selectedSet, setSelectedSet] = useState("mock-da-1");
+  const [selectedSet, setSelectedSet] = useState("mock-da-combined-1");
   const [submissionStatus, setSubmissionStatus] = useState<"queued" | "failed" | null>(null);
   const [result, setResult] = useState<ExamResult | null>(null);
 
@@ -53,6 +53,7 @@ export function MockTestPage() {
         queryFn: () => fetchMockQuestionsBySet(targetSet),
       });
       if (data && data.length > 0) {
+        if (data[0].set_id === "mock-1") toast.info(t("mock.legacyFormat"));
         setPhase("testing");
       } else {
         toast.error("No questions found for this set.");
@@ -185,7 +186,7 @@ export function MockTestPage() {
         <ExamShell
           questions={questions}
           language={examLang}
-          timeLimit={MOCK_TIME_LIMIT}
+          timeLimit={questions.length === LEGACY_MOCK_TOTAL ? LEGACY_MOCK_TIME_LIMIT : MOCK_TIME_LIMIT}
           mode="mock"
           t={t}
           onComplete={handleComplete}

@@ -173,8 +173,8 @@ const VALID_SET_IDS = new Set([
   "quiz-b-1", "quiz-b-2", "quiz-b-3",
   "quiz-c-da-1", "quiz-c-da-2", "quiz-c-da-3",
   "quiz-c-d-1", "quiz-c-d-2", "quiz-c-d-3",
-  "mock-da-1", "mock-da-2", "mock-da-3",
-  "mock-d-1", "mock-d-2", "mock-d-3",
+  "mock-da-combined-1", "mock-da-combined-2",
+  "mock-d-combined-1", "mock-d-combined-2",
 ]);
 
 function validateQuestion(q, idx) {
@@ -221,7 +221,7 @@ async function seed() {
 
   console.log(`📊  Questions loaded: ${ALL_QUESTIONS.length} total`);
   for (const [setId, count] of Object.entries(bySets)) {
-    const expected = setId.startsWith("mock-") ? 50 : null;
+    const expected = setId.includes("-combined-") ? 70 : setId.startsWith("mock-") ? 50 : null;
     const flag = expected && count !== expected ? " ⚠️  (expected 50)" : "";
     console.log(`     ${setId.padEnd(12)} ${count}${flag}`);
   }
@@ -243,12 +243,13 @@ async function seed() {
   // ── Verify mock sets are exactly 50 ──────────────────────────────────────
   for (const setId of [
     "mock-1", "mock-2", "mock-3",
-    "mock-da-1", "mock-da-2", "mock-da-3",
-    "mock-d-1", "mock-d-2", "mock-d-3",
+    "mock-da-combined-1", "mock-da-combined-2",
+    "mock-d-combined-1", "mock-d-combined-2",
   ]) {
     const count = ALL_QUESTIONS.filter((q) => q.set_id === setId).length;
-    if (count !== 50) {
-      console.error(`❌  ${setId} has ${count} questions — expected exactly 50.`);
+    const expected = setId.includes("-combined-") ? 70 : 50;
+    if (count !== expected) {
+      console.error(`❌  ${setId} has ${count} questions — expected exactly ${expected}.`);
       process.exit(1);
     }
   }
