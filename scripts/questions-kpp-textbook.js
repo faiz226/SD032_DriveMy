@@ -5468,18 +5468,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Pass on the right",
-      "Pass on either side",
       "Pass on the left",
-      "Keep left unless overtaking"
+      "Pass on the right",
+      "Use the left lane ahead",
+      "Turn left at the junction"
     ],
     "options_ms": [
-      "Lalu di sebelah kanan",
-      "Lalu di mana-mana sisi",
       "Lalu di sebelah kiri",
-      "Ikut kiri kecuali memotong"
+      "Lalu di sebelah kanan",
+      "Gunakan lorong kiri di hadapan",
+      "Belok kiri di persimpangan"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "This sign means pass on the left.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kiri.",
     "image_url": "/signs/24dc89f9e7127cca.svg",
@@ -5494,18 +5494,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
+      "Pass on the right",
       "Pass on the left",
-      "Pass on either side",
-      "Keep left unless overtaking",
-      "Pass on the right"
+      "Turn right ahead",
+      "Keep to the right lane"
     ],
     "options_ms": [
+      "Lalu di sebelah kanan",
       "Lalu di sebelah kiri",
-      "Lalu di mana-mana sisi",
-      "Ikut kiri kecuali memotong",
-      "Lalu di sebelah kanan"
+      "Belok kanan di hadapan",
+      "Kekal di lorong kanan"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "This sign means pass on the right.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kanan.",
     "image_url": "/signs/a50c8dd8a202a25e.svg",
@@ -5521,15 +5521,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Pass on either side",
-      "Pass on the right",
       "Pass on the left",
-      "Keep left unless overtaking"
+      "Keep to the centre",
+      "Use the left branch only"
     ],
     "options_ms": [
       "Lalu di mana-mana sisi",
-      "Lalu di sebelah kanan",
       "Lalu di sebelah kiri",
-      "Ikut kiri kecuali memotong"
+      "Kekal di tengah",
+      "Gunakan cabang kiri sahaja"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means pass on either side.",
@@ -5546,18 +5546,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Lane for bicycles",
-      "Lane for trishaws",
       "Lane for motorcycles",
-      "Lane for taxis"
+      "Lane for bicycles",
+      "Lane for taxis",
+      "Lane for buses"
     ],
     "options_ms": [
-      "Lorong untuk basikal",
-      "Lorong untuk beca",
       "Lorong untuk motosikal",
-      "Lorong untuk teksi"
+      "Lorong untuk basikal",
+      "Lorong untuk teksi",
+      "Lorong untuk bas"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "This sign means lane for motorcycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk motosikal.",
     "image_url": "/signs/e0389a069e72ed52.png",
@@ -5572,18 +5572,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Lane for trishaws",
+      "Lane for bicycles",
       "Lane for motorcycles",
-      "Lane for taxis",
-      "Lane for bicycles"
+      "Lane for trishaws",
+      "Lane for pedestrians"
     ],
     "options_ms": [
-      "Lorong untuk beca",
+      "Lorong untuk basikal",
       "Lorong untuk motosikal",
-      "Lorong untuk teksi",
-      "Lorong untuk basikal"
+      "Lorong untuk beca",
+      "Lorong untuk pejalan kaki"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "This sign means lane for bicycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk basikal.",
     "image_url": "/signs/e86785fec1877d75.png",
@@ -5755,15 +5755,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
       "No vehicle entry",
-      "No sounding the horn",
-      "No left turn",
-      "No right turn"
+      "No overtaking",
+      "No stopping",
+      "No through road"
     ],
     "options_ms": [
       "Kenderaan dilarang masuk",
-      "Dilarang membunyikan hon",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Dilarang memotong",
+      "Dilarang berhenti",
+      "Jalan buntu"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no vehicle entry.",
@@ -5780,18 +5780,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign prohibit?",
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
-      "No parking",
       "No U-turn",
+      "No right turn",
       "No left turn",
-      "No right turn"
+      "Right turn only"
     ],
     "options_ms": [
-      "Dilarang meletak kenderaan",
       "Dilarang membuat pusingan U",
+      "Dilarang membelok ke kanan",
       "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Belok kanan sahaja"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "This sign means no U-turn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membuat pusingan U.",
     "image_url": "/signs/a299aef5bccc0fca.svg",
@@ -5832,18 +5832,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign prohibit?",
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
-      "No U-turn",
-      "No left turn",
-      "No right turn",
-      "No parking"
+      "No parking",
+      "No stopping",
+      "No entry",
+      "No waiting at the junction"
     ],
     "options_ms": [
-      "Dilarang membuat pusingan U",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan",
-      "Dilarang meletak kenderaan"
+      "Dilarang meletak kenderaan",
+      "Dilarang berhenti",
+      "Dilarang masuk",
+      "Dilarang menunggu di persimpangan"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "This sign means no parking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang meletak kenderaan.",
     "image_url": "/signs/fbd415b24ab21b44.svg",
@@ -5910,18 +5910,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign prohibit?",
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
-      "No vehicle entry",
       "No sounding the horn",
-      "No left turn",
-      "No right turn"
+      "No stopping",
+      "No motor vehicle entry",
+      "No overtaking"
     ],
     "options_ms": [
-      "Kenderaan dilarang masuk",
       "Dilarang membunyikan hon",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Dilarang berhenti",
+      "Kenderaan bermotor dilarang masuk",
+      "Dilarang memotong"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "This sign means no sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membunyikan hon.",
     "image_url": "/signs/ce55b86645694f5d.svg",
@@ -6275,15 +6275,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Pemandu di belakang mengekori anda terlalu rapat. Apakah jarak masa yang diajar untuk ruang di hadapan?",
     "options_en": [
       "Four seconds",
-      "One second",
       "Two seconds",
-      "Three seconds"
+      "Three seconds",
+      "Five seconds"
     ],
     "options_ms": [
       "Empat saat",
-      "Satu saat",
       "Dua saat",
-      "Tiga saat"
+      "Tiga saat",
+      "Lima saat"
     ],
     "correct_index": 0,
     "explanation_en": "Increase the gap in front so you have more time to slow without braking abruptly.",
@@ -6869,25 +6869,25 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-combined-1",
     "order_index": 55,
-    "question_en": "Which following-gap rule is taught for slippery or sandy roads?",
-    "question_ms": "Apakah peraturan jarak mengekor yang diajar untuk jalan licin atau berpasir?",
+    "question_en": "What is an airbag designed to do in a collision?",
+    "question_ms": "Apakah tujuan beg udara apabila berlaku perlanggaran?",
     "options_en": [
-      "Two seconds",
-      "One second",
-      "Four seconds",
-      "Three seconds"
+      "Keep the doors from unlocking",
+      "Stop the tyres from skidding",
+      "Hold the steering wheel straight",
+      "Reduce the force on occupants"
     ],
     "options_ms": [
-      "Dua saat",
-      "Satu saat",
-      "Empat saat",
-      "Tiga saat"
+      "Menghalang pintu daripada terbuka kunci",
+      "Menghalang tayar daripada tergelincir",
+      "Memastikan stereng kekal lurus",
+      "Mengurangkan daya pada penumpang"
     ],
-    "correct_index": 2,
-    "explanation_en": "The longer gap gives more time and room to stop when grip is reduced.",
-    "explanation_ms": "Jarak yang lebih panjang memberi lebih banyak masa dan ruang untuk berhenti apabila cengkaman berkurangan.",
+    "correct_index": 3,
+    "explanation_en": "The airbag cushions occupants against the impact of a collision.",
+    "explanation_ms": "Beg udara membantu mengurangkan kesan hentaman perlanggaran pada penghuni kenderaan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 103",
+    "source_url": "KPP_D_Manual.pdf PDF page 160",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7313,15 +7313,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Pass either side of the island",
-      "Road narrows on both sides",
-      "Road narrows on the left",
-      "Road narrows on the right"
+      "Pass the island on the left",
+      "Pass the island on the right",
+      "Merge into a single lane"
     ],
     "options_ms": [
       "Lalui pulau dari mana-mana sisi",
-      "Jalan menyempit di kedua-dua sisi",
-      "Jalan menyempit di sebelah kiri",
-      "Jalan menyempit di sebelah kanan"
+      "Lalui pulau di sebelah kiri",
+      "Lalui pulau di sebelah kanan",
+      "Bercantum ke satu lorong"
     ],
     "correct_index": 0,
     "explanation_en": "Pass either side of the island. Choose a lane that leads where you intend to go and keep within it.",
@@ -7443,15 +7443,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Divided road begins",
-      "Narrow bridge ahead",
-      "Gated rail crossing",
-      "Steep uphill stretch"
+      "Divided road ends",
+      "Two-way traffic ahead",
+      "Road narrows on both sides"
     ],
     "options_ms": [
       "Jalan terbahagi dua bermula",
-      "Jambatan sempit di hadapan",
-      "Lintasan kereta api berpagar",
-      "Jalan mendaki dengan curam"
+      "Jalan terbahagi dua tamat",
+      "Lalu lintas dua hala di hadapan",
+      "Jalan menyempit di kedua-dua sisi"
     ],
     "correct_index": 0,
     "explanation_en": "Divided road begins. Stay on the correct side as the divider separates the two streams of traffic.",
@@ -7521,15 +7521,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Road narrows on both sides",
-      "Road narrows on the right",
       "Road narrows on the left",
-      "Pass either side of the island"
+      "Road narrows on the right",
+      "A divided road begins"
     ],
     "options_ms": [
       "Jalan menyempit di kedua-dua sisi",
-      "Jalan menyempit di sebelah kanan",
       "Jalan menyempit di sebelah kiri",
-      "Lalui pulau dari mana-mana sisi"
+      "Jalan menyempit di sebelah kanan",
+      "Jalan terbahagi dua bermula"
     ],
     "correct_index": 0,
     "explanation_en": "Road narrows on both sides. Adjust your speed and watch for the hazard.",
@@ -7651,15 +7651,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Narrow bridge ahead",
-      "Divided road begins",
-      "Steep uphill stretch",
-      "Gated rail crossing"
+      "A steep descent ahead",
+      "Road narrows on the left",
+      "Road narrows on the right"
     ],
     "options_ms": [
       "Jambatan sempit di hadapan",
-      "Jalan terbahagi dua bermula",
-      "Jalan mendaki dengan curam",
-      "Lintasan kereta api berpagar"
+      "Jalan menurun curam di hadapan",
+      "Jalan menyempit di sebelah kiri",
+      "Jalan menyempit di sebelah kanan"
     ],
     "correct_index": 0,
     "explanation_en": "Narrow bridge ahead. Slow down and give way if a vehicle coming the other way is closer to the bridge.",
@@ -7677,15 +7677,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Slippery road surface",
-      "Risk of falling rocks",
-      "Four-way intersection",
-      "Other hazard ahead"
+      "Uneven road ahead",
+      "Winding road ahead",
+      "Soft road shoulder"
     ],
     "options_ms": [
       "Permukaan jalan licin",
-      "Risiko runtuhan batu",
-      "Persimpangan empat hala",
-      "Bahaya lain di hadapan"
+      "Jalan tidak rata di hadapan",
+      "Jalan berliku di hadapan",
+      "Bahu jalan lembut"
     ],
     "correct_index": 0,
     "explanation_en": "Slippery road surface. Slow smoothly, avoid hard braking and leave a safe gap.",
@@ -7755,15 +7755,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Risk of falling rocks",
-      "Slippery road surface",
-      "Four-way intersection",
-      "Other hazard ahead"
+      "Steep slope ahead",
+      "Soft road shoulder",
+      "Loose surface ahead"
     ],
     "options_ms": [
       "Risiko runtuhan batu",
-      "Permukaan jalan licin",
-      "Persimpangan empat hala",
-      "Bahaya lain di hadapan"
+      "Cerun curam di hadapan",
+      "Bahu jalan lembut",
+      "Permukaan longgar di hadapan"
     ],
     "correct_index": 0,
     "explanation_en": "Risk of falling rocks. Watch the road for fallen material before continuing.",
@@ -9108,18 +9108,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Pass on the right",
-      "Pass on either side",
       "Pass on the left",
-      "Keep left unless overtaking"
+      "Pass on the right",
+      "Use the left lane ahead",
+      "Turn left at the junction"
     ],
     "options_ms": [
-      "Lalu di sebelah kanan",
-      "Lalu di mana-mana sisi",
       "Lalu di sebelah kiri",
-      "Ikut kiri kecuali memotong"
+      "Lalu di sebelah kanan",
+      "Gunakan lorong kiri di hadapan",
+      "Belok kiri di persimpangan"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "This sign means pass on the left.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kiri.",
     "image_url": "/signs/24dc89f9e7127cca.svg",
@@ -9134,18 +9134,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
+      "Pass on the right",
       "Pass on the left",
-      "Pass on either side",
-      "Keep left unless overtaking",
-      "Pass on the right"
+      "Turn right ahead",
+      "Keep to the right lane"
     ],
     "options_ms": [
+      "Lalu di sebelah kanan",
       "Lalu di sebelah kiri",
-      "Lalu di mana-mana sisi",
-      "Ikut kiri kecuali memotong",
-      "Lalu di sebelah kanan"
+      "Belok kanan di hadapan",
+      "Kekal di lorong kanan"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "This sign means pass on the right.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kanan.",
     "image_url": "/signs/a50c8dd8a202a25e.svg",
@@ -9161,15 +9161,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Pass on either side",
-      "Pass on the right",
       "Pass on the left",
-      "Keep left unless overtaking"
+      "Keep to the centre",
+      "Use the left branch only"
     ],
     "options_ms": [
       "Lalu di mana-mana sisi",
-      "Lalu di sebelah kanan",
       "Lalu di sebelah kiri",
-      "Ikut kiri kecuali memotong"
+      "Kekal di tengah",
+      "Gunakan cabang kiri sahaja"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means pass on either side.",
@@ -9186,18 +9186,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Lane for bicycles",
-      "Lane for trishaws",
       "Lane for motorcycles",
-      "Lane for taxis"
+      "Lane for bicycles",
+      "Lane for taxis",
+      "Lane for buses"
     ],
     "options_ms": [
-      "Lorong untuk basikal",
-      "Lorong untuk beca",
       "Lorong untuk motosikal",
-      "Lorong untuk teksi"
+      "Lorong untuk basikal",
+      "Lorong untuk teksi",
+      "Lorong untuk bas"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "This sign means lane for motorcycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk motosikal.",
     "image_url": "/signs/e0389a069e72ed52.png",
@@ -9212,18 +9212,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Lane for trishaws",
+      "Lane for bicycles",
       "Lane for motorcycles",
-      "Lane for taxis",
-      "Lane for bicycles"
+      "Lane for trishaws",
+      "Lane for pedestrians"
     ],
     "options_ms": [
-      "Lorong untuk beca",
+      "Lorong untuk basikal",
       "Lorong untuk motosikal",
-      "Lorong untuk teksi",
-      "Lorong untuk basikal"
+      "Lorong untuk beca",
+      "Lorong untuk pejalan kaki"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "This sign means lane for bicycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk basikal.",
     "image_url": "/signs/e86785fec1877d75.png",
@@ -9395,15 +9395,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
       "No vehicle entry",
-      "No sounding the horn",
-      "No left turn",
-      "No right turn"
+      "No overtaking",
+      "No stopping",
+      "No through road"
     ],
     "options_ms": [
       "Kenderaan dilarang masuk",
-      "Dilarang membunyikan hon",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Dilarang memotong",
+      "Dilarang berhenti",
+      "Jalan buntu"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no vehicle entry.",
@@ -9420,18 +9420,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign prohibit?",
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
-      "No parking",
       "No U-turn",
+      "No right turn",
       "No left turn",
-      "No right turn"
+      "Right turn only"
     ],
     "options_ms": [
-      "Dilarang meletak kenderaan",
       "Dilarang membuat pusingan U",
+      "Dilarang membelok ke kanan",
       "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Belok kanan sahaja"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "This sign means no U-turn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membuat pusingan U.",
     "image_url": "/signs/a299aef5bccc0fca.svg",
@@ -9472,18 +9472,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign prohibit?",
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
-      "No U-turn",
-      "No left turn",
-      "No right turn",
-      "No parking"
+      "No parking",
+      "No stopping",
+      "No entry",
+      "No waiting at the junction"
     ],
     "options_ms": [
-      "Dilarang membuat pusingan U",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan",
-      "Dilarang meletak kenderaan"
+      "Dilarang meletak kenderaan",
+      "Dilarang berhenti",
+      "Dilarang masuk",
+      "Dilarang menunggu di persimpangan"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "This sign means no parking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang meletak kenderaan.",
     "image_url": "/signs/fbd415b24ab21b44.svg",
@@ -9550,18 +9550,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign prohibit?",
     "question_ms": "Apakah larangan pada papan tanda ini?",
     "options_en": [
-      "No vehicle entry",
       "No sounding the horn",
-      "No left turn",
-      "No right turn"
+      "No stopping",
+      "No motor vehicle entry",
+      "No overtaking"
     ],
     "options_ms": [
-      "Kenderaan dilarang masuk",
       "Dilarang membunyikan hon",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Dilarang berhenti",
+      "Kenderaan bermotor dilarang masuk",
+      "Dilarang memotong"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "This sign means no sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membunyikan hon.",
     "image_url": "/signs/ce55b86645694f5d.svg",
@@ -9784,18 +9784,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "The driver ahead raises their right hand upright outside the window and holds it still. What are they signalling?",
     "question_ms": "Pemandu di hadapan menegakkan tangan kanan di luar tingkap tanpa menggerakkannya. Apakah isyarat itu?",
     "options_en": [
-      "Turning left",
+      "Stopping",
       "Slowing down",
       "Turning right",
-      "Stopping"
+      "Allowing you to pass"
     ],
     "options_ms": [
-      "Belok kiri",
-      "Perlahankan kenderaan",
-      "Belok kanan",
-      "Berhenti"
+      "Berhenti",
+      "Memperlahankan kenderaan",
+      "Membelok ke kanan",
+      "Membenarkan anda memotong"
     ],
-    "correct_index": 3,
+    "correct_index": 0,
     "explanation_en": "The upright hand signals a stop. Leave enough space to respond.",
     "explanation_ms": "Tangan yang ditegakkan menandakan berhenti. Tinggalkan ruang yang cukup untuk bertindak.",
     "image_url": null,
@@ -9810,18 +9810,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "The driver ahead is moving their right arm in a circle outside the window. What does that signal mean?",
     "question_ms": "Pemandu di hadapan menggerakkan lengan kanan secara membulat di luar tingkap. Apakah maksud isyarat itu?",
     "options_en": [
-      "Slowing down",
       "Turning left",
+      "Turning right",
       "Stopping",
-      "Turning right"
+      "Moving off from the shoulder"
     ],
     "options_ms": [
-      "Perlahankan kenderaan",
       "Belok kiri",
+      "Membelok ke kanan",
       "Berhenti",
-      "Belok kanan"
+      "Bergerak dari bahu jalan"
     ],
-    "correct_index": 1,
+    "correct_index": 0,
     "explanation_en": "A circular movement of the right arm indicates a left turn.",
     "explanation_ms": "Gerakan membulat lengan kanan menandakan belok kiri.",
     "image_url": null,
@@ -10953,15 +10953,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Pass either side of the island",
-      "Road narrows on both sides",
-      "Road narrows on the left",
-      "Road narrows on the right"
+      "Pass the island on the left",
+      "Pass the island on the right",
+      "Merge into a single lane"
     ],
     "options_ms": [
       "Lalui pulau dari mana-mana sisi",
-      "Jalan menyempit di kedua-dua sisi",
-      "Jalan menyempit di sebelah kiri",
-      "Jalan menyempit di sebelah kanan"
+      "Lalui pulau di sebelah kiri",
+      "Lalui pulau di sebelah kanan",
+      "Bercantum ke satu lorong"
     ],
     "correct_index": 0,
     "explanation_en": "Pass either side of the island. Choose a lane that leads where you intend to go and keep within it.",
@@ -11083,15 +11083,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Divided road begins",
-      "Narrow bridge ahead",
-      "Gated rail crossing",
-      "Steep uphill stretch"
+      "Divided road ends",
+      "Two-way traffic ahead",
+      "Road narrows on both sides"
     ],
     "options_ms": [
       "Jalan terbahagi dua bermula",
-      "Jambatan sempit di hadapan",
-      "Lintasan kereta api berpagar",
-      "Jalan mendaki dengan curam"
+      "Jalan terbahagi dua tamat",
+      "Lalu lintas dua hala di hadapan",
+      "Jalan menyempit di kedua-dua sisi"
     ],
     "correct_index": 0,
     "explanation_en": "Divided road begins. Stay on the correct side as the divider separates the two streams of traffic.",
@@ -11161,15 +11161,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Road narrows on both sides",
-      "Road narrows on the right",
       "Road narrows on the left",
-      "Pass either side of the island"
+      "Road narrows on the right",
+      "A divided road begins"
     ],
     "options_ms": [
       "Jalan menyempit di kedua-dua sisi",
-      "Jalan menyempit di sebelah kanan",
       "Jalan menyempit di sebelah kiri",
-      "Lalui pulau dari mana-mana sisi"
+      "Jalan menyempit di sebelah kanan",
+      "Jalan terbahagi dua bermula"
     ],
     "correct_index": 0,
     "explanation_en": "Road narrows on both sides. Adjust your speed and watch for the hazard.",
@@ -11291,15 +11291,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Narrow bridge ahead",
-      "Divided road begins",
-      "Steep uphill stretch",
-      "Gated rail crossing"
+      "A steep descent ahead",
+      "Road narrows on the left",
+      "Road narrows on the right"
     ],
     "options_ms": [
       "Jambatan sempit di hadapan",
-      "Jalan terbahagi dua bermula",
-      "Jalan mendaki dengan curam",
-      "Lintasan kereta api berpagar"
+      "Jalan menurun curam di hadapan",
+      "Jalan menyempit di sebelah kiri",
+      "Jalan menyempit di sebelah kanan"
     ],
     "correct_index": 0,
     "explanation_en": "Narrow bridge ahead. Slow down and give way if a vehicle coming the other way is closer to the bridge.",
@@ -11317,15 +11317,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Slippery road surface",
-      "Risk of falling rocks",
-      "Four-way intersection",
-      "Other hazard ahead"
+      "Uneven road ahead",
+      "Winding road ahead",
+      "Soft road shoulder"
     ],
     "options_ms": [
       "Permukaan jalan licin",
-      "Risiko runtuhan batu",
-      "Persimpangan empat hala",
-      "Bahaya lain di hadapan"
+      "Jalan tidak rata di hadapan",
+      "Jalan berliku di hadapan",
+      "Bahu jalan lembut"
     ],
     "correct_index": 0,
     "explanation_en": "Slippery road surface. Slow smoothly, avoid hard braking and leave a safe gap.",
@@ -11395,15 +11395,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Risk of falling rocks",
-      "Slippery road surface",
-      "Four-way intersection",
-      "Other hazard ahead"
+      "Steep slope ahead",
+      "Soft road shoulder",
+      "Loose surface ahead"
     ],
     "options_ms": [
       "Risiko runtuhan batu",
-      "Permukaan jalan licin",
-      "Persimpangan empat hala",
-      "Bahaya lain di hadapan"
+      "Cerun curam di hadapan",
+      "Bahu jalan lembut",
+      "Permukaan longgar di hadapan"
     ],
     "correct_index": 0,
     "explanation_en": "Risk of falling rocks. Watch the road for fallen material before continuing.",

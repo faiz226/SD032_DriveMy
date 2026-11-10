@@ -110,6 +110,19 @@ describe("KPP Question Bank & Architecture Audit", () => {
     }
   });
 
+  it("uses a different four-option set for every question within each mock", () => {
+    const seen = new Set<string>();
+    for (const question of KPP_TEXTBOOK_QUESTIONS) {
+      if (!question.set_id.startsWith("mock-")) continue;
+      for (const language of ["options_en", "options_ms"] as const) {
+        const choices = question[language].map((option) => option.trim().toLowerCase()).sort();
+        const key = JSON.stringify([question.set_id, language, choices]);
+        expect(seen.has(key), `${question.set_id} question ${question.order_index} ${language}`).toBe(false);
+        seen.add(key);
+      }
+    }
+  });
+
   // 3. No question repeats within the automatic set or within the manual set
   it("ensures no question repeats within the automatic set or manual set", () => {
     const mockDaQuestions = KPP_TEXTBOOK_QUESTIONS.filter((q: KppQuestion) => q.set_id.startsWith("mock-da-"));
