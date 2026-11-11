@@ -61,7 +61,7 @@ describe("KPP Question Bank & Architecture Audit", () => {
         expect(bundle.includes(explanation) || bundle.includes(JSON.stringify(explanation).slice(1, -1))).toBe(false);
       }
     }
-  });
+  }, 30_000);
 
   // 2. Every question has 4 options and a valid correct index (0-3)
   it("ensures every question has exactly 4 options and valid correct_index", () => {

@@ -32,16 +32,16 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "You see this sign while following a slower vehicle. What should you do?",
     "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
     "options_en": [
-      "Stay behind the vehicle",
-      "Pass if the lane is clear",
-      "Pass after sounding your horn",
-      "Pass if the vehicle slows down"
+      "Stay behind at a safe gap",
+      "Follow closely until a gap opens",
+      "Move right and wait beside it",
+      "Pass if the other driver signals"
     ],
     "options_ms": [
-      "Kekal di belakang kenderaan",
-      "Potong jika lorong lapang",
-      "Potong selepas membunyikan hon",
-      "Potong jika kenderaan memperlahankan kelajuan"
+      "Kekal di belakang dengan jarak selamat",
+      "Ikut rapat sehingga ada ruang",
+      "Beralih ke kanan dan tunggu di sisinya",
+      "Potong jika pemandu itu memberi isyarat"
     ],
     "correct_index": 0,
     "explanation_en": "No overtaking. Plan your route so you can obey this restriction.",
@@ -5598,16 +5598,16 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "You see this sign while following a slower vehicle. What should you do?",
     "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
     "options_en": [
-      "Stay behind the vehicle",
-      "Pass if the lane is clear",
-      "Pass after sounding your horn",
-      "Pass if the vehicle slows down"
+      "Stay behind at a safe gap",
+      "Follow closely until a gap opens",
+      "Move right and wait beside it",
+      "Pass if the other driver signals"
     ],
     "options_ms": [
-      "Kekal di belakang kenderaan",
-      "Potong jika lorong lapang",
-      "Potong selepas membunyikan hon",
-      "Potong jika kenderaan memperlahankan kelajuan"
+      "Kekal di belakang dengan jarak selamat",
+      "Ikut rapat sehingga ada ruang",
+      "Beralih ke kanan dan tunggu di sisinya",
+      "Potong jika pemandu itu memberi isyarat"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no overtaking.",
@@ -5858,16 +5858,16 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Traffic shifts lanes ahead",
+      "Left lane closes ahead",
       "Narrow clearance in work zone",
       "Temporary detour ends",
-      "Sharp work-zone diversion"
+      "Sharp diversion to the right"
     ],
     "options_ms": [
-      "Lencongan lorong di hadapan",
+      "Lorong kiri ditutup di hadapan",
       "Kelegaan terhad di zon kerja",
       "Lencongan sementara tamat",
-      "Lencongan tajam di zon kerja"
+      "Lencongan tajam ke kanan"
     ],
     "correct_index": 3,
     "explanation_en": "This sign means sharp work-zone diversion.",
@@ -9238,16 +9238,16 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "You see this sign while following a slower vehicle. What should you do?",
     "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
     "options_en": [
-      "Stay behind the vehicle",
-      "Pass if the lane is clear",
-      "Pass after sounding your horn",
-      "Pass if the vehicle slows down"
+      "Stay behind at a safe gap",
+      "Follow closely until a gap opens",
+      "Move right and wait beside it",
+      "Pass if the other driver signals"
     ],
     "options_ms": [
-      "Kekal di belakang kenderaan",
-      "Potong jika lorong lapang",
-      "Potong selepas membunyikan hon",
-      "Potong jika kenderaan memperlahankan kelajuan"
+      "Kekal di belakang dengan jarak selamat",
+      "Ikut rapat sehingga ada ruang",
+      "Beralih ke kanan dan tunggu di sisinya",
+      "Potong jika pemandu itu memberi isyarat"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no overtaking.",
@@ -9498,16 +9498,16 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Traffic shifts lanes ahead",
+      "Left lane closes ahead",
       "Narrow clearance in work zone",
       "Temporary detour ends",
-      "Sharp work-zone diversion"
+      "Sharp diversion to the right"
     ],
     "options_ms": [
-      "Lencongan lorong di hadapan",
+      "Lorong kiri ditutup di hadapan",
       "Kelegaan terhad di zon kerja",
       "Lencongan sementara tamat",
-      "Lencongan tajam di zon kerja"
+      "Lencongan tajam ke kanan"
     ],
     "correct_index": 3,
     "explanation_en": "This sign means sharp work-zone diversion.",
