@@ -780,3 +780,14 @@ alone both stopped 0.6 m short of the pole, held 2 s, saw it slide to the wall, 
 east road, cleared with no fault; the practice drill then offered Next station. `check.py` passes (41 checks) and
 the ramp's tests with it.
 
+
+## 12 Nov: the car's textures on the live site
+
+The owner's screenshot of the deployed simulator: blank dials, a blank screen and white specks over the dash and
+the wheel. The car's textures travel inside its model file; three.js hands each one to the browser as a `blob:`
+address and, in Chrome, fetches it, and the site's Content-Security-Policy (`vercel.json`) allowed no `blob:` in
+`connect-src`, so every one was refused and drew white. Locally the dev server sends no such header, which is why
+it never showed there. `connect-src` now allows `blob:` (addresses the page makes itself). Checked with the
+production build under the live header, sent through the browser: refused textures before, the full dash after.
+Also deployed since 11 Nov: the service worker updates itself (`registerType: "autoUpdate"`), so a new deploy no
+longer waits for a click on Reload, which had kept the sign-in return on the previous version.
