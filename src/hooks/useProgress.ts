@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getTheoryProgress, updateTheoryProgress } from "@/services/progress.service";
 import { learnerKeys, invalidateLearnerData } from "@/lib/queryKeys";
 
-export function useTheoryProgress(userId: string) {
+export function useTheoryProgressRows(userId: string) {
   return useQuery({
     queryKey: learnerKeys.theoryRows(userId),
     queryFn: () => getTheoryProgress(userId),

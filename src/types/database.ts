@@ -208,3 +208,27 @@ export type InsertMockTestResult = Database["public"]["Tables"]["mock_test_resul
 export type InsertSimulationResult = Database["public"]["Tables"]["simulation_results"]["Insert"];
 export type InsertTheoryProgress = Database["public"]["Tables"]["theory_progress"]["Insert"];
 export type InsertColorblindResult = Database["public"]["Tables"]["colorblind_results"]["Insert"];
+
+/**
+ * A question as delivered during an exam — no answer key attached.
+ *
+ * The key fields are optional rather than absent so a fully-populated
+ * KppQuestion remains assignable here. Practice quizzes still fetch the key up
+ * front, because immediate feedback is the point of practice.
+ */
+export type ExamQuestion = Omit<
+  KppQuestion,
+  "correct_index" | "explanation_en" | "explanation_ms"
+> & {
+  correct_index?: number;
+  explanation_en?: string | null;
+  explanation_ms?: string | null;
+};
+
+/** The answer key for one question, fetched only after submission. */
+export interface AnswerKeyEntry {
+  id: string;
+  correct_index: number;
+  explanation_en: string | null;
+  explanation_ms: string | null;
+}

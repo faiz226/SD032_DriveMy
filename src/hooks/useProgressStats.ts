@@ -8,6 +8,7 @@ import {
   getMockStats,
   getSimStats,
   getTheoryProgressStats,
+  getBestColorVisionScore,
 } from "@/services/analytics.service";
 
 export function useQuizStats(dateRange?: number) {
@@ -37,12 +38,22 @@ export function useSimStats(dateRange?: number) {
   });
 }
 
-export function useTheoryProgress() {
+export function useTheoryProgressStats() {
   const { user } = useAuthStore();
   return useQuery({
     queryKey: learnerKeys.theoryStats(user?.id),
     queryFn: () => getTheoryProgressStats(user!.id),
     enabled: !!user,
+  });
+}
+
+export function useBestColorVisionScore() {
+  const { user } = useAuthStore();
+  return useQuery({
+    queryKey: learnerKeys.profileBest("color", user?.id),
+    queryFn: () => getBestColorVisionScore(user!.id),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

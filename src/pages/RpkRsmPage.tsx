@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CheckCircle, CaretRight, Info } from "@/components/ui/icons";
 import { RPK_TOPICS, countRpkCompleted } from "@/content/rpk-rsm";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useTheoryProgress, useUpdateTheoryProgress } from "@/hooks/useProgress";
+import { useTheoryProgressRows, useUpdateTheoryProgress } from "@/hooks/useProgress";
 import { useAuthStore } from "@/stores/authStore";
 import { Panel, Divider } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export function RpkRsmPage() {
   const { language, t } = useLanguage();
   const user = useAuthStore(s => s.user);
-  const progress = useTheoryProgress(user?.id ?? "");
+  const progress = useTheoryProgressRows(user?.id ?? "");
   const save = useUpdateTheoryProgress();
   const [selected, setSelected] = useState<string | null>(null);
   const [reviewed, setReviewed] = useState(false);
