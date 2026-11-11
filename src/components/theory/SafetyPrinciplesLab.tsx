@@ -13,6 +13,7 @@ interface SafetyPrinciplesLabProps {
   onScenarioSolved?: (id: string) => void;
 }
 
+// KPP Automatic, viewer pages 100–102, 105, 146 and 264.
 const STOPPING_SPEEDS = [
   { speedKmh: 20, thinkingMeters: 6, brakingMeters: 3 },
   { speedKmh: 30, thinkingMeters: 9, brakingMeters: 6 },
@@ -28,7 +29,7 @@ const MAX_STOPPING_METERS = Math.max(
 );
 
 interface TyreDiagnostic {
-  id: "normal" | "over" | "under" | "alignment";
+  id: "normal" | "over" | "under";
   titleEn: string;
   titleMs: string;
   wearPatternEn: string;
@@ -39,17 +40,18 @@ interface TyreDiagnostic {
   fixMs: string;
 }
 
+// KPP Automatic, viewer page 266.
 const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
   {
     id: "normal",
     titleEn: "Even tread wear across full width",
     titleMs: "Kehausan bunga tayar sekata",
-    wearPatternEn: "Uniform tread depth >= 1.6 mm across centre and both shoulders",
-    wearPatternMs: "Kedalaman bunga sekata >= 1.6 mm di bahagian tengah dan kedua-dua bahu tayar",
-    causeEn: "Tyres inflated to the recommended pressure and wheels correctly aligned.",
-    causeMs: "Tekanan angin tayar mengikut cadangan dan penjajaran roda yang betul.",
-    fixEn: "Check tyre pressure and inspect the tread.",
-    fixMs: "Periksa tekanan angin dan keadaan bunga tayar.",
+    wearPatternEn: "The tread wear indicators sit below the tread surface",
+    wearPatternMs: "Penunjuk kehausan berada di bawah permukaan bunga tayar",
+    causeEn: "Check the tyre pressure against the vehicle’s specification.",
+    causeMs: "Semak tekanan angin tayar mengikut spesifikasi kenderaan.",
+    fixEn: "Replace a tyre when the tread reaches its wear indicators.",
+    fixMs: "Gantikan tayar apabila bunga mencapai aras penunjuk kehausan.",
   },
   {
     id: "over",
@@ -57,10 +59,10 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Bunga tayar haus di bahagian tengah sahaja",
     wearPatternEn: "Centre strip is smooth while both outer edges still have deep tread",
     wearPatternMs: "Jalur tengah haus licin manakala kedua-dua bahu luar masih tebal",
-    causeEn: "Over-inflation (terlalu banyak angin). Excess air pressure crowns the centre of the tyre.",
-    causeMs: "Tekanan angin berlebihan (over-inflation) menyebabkan bahagian tengah tayar membonjol.",
-    fixEn: "Bleed air down to the manufacturer's recommended cold kPa/psi specification on the door-jamb placard.",
-    fixMs: "Kurangkan tekanan angin mengikut spesifikasi kPa/psi pengeluar pada pelekat tiang pintu.",
+    causeEn: "Excess pressure can wear down the centre of the tread.",
+    causeMs: "Tekanan angin berlebihan boleh menghauskan bahagian tengah bunga tayar.",
+    fixEn: "Adjust pressure to the value on the vehicle’s tyre placard.",
+    fixMs: "Laraskan tekanan mengikut nilai pada pelekat spesifikasi tayar kenderaan.",
   },
   {
     id: "under",
@@ -68,22 +70,12 @@ const TYRE_DIAGNOSTICS: TyreDiagnostic[] = [
     titleMs: "Kedua-dua bahagian tepi (bahu) tayar haus",
     wearPatternEn: "Left and right edges are worn smooth while the centre remains deeper",
     wearPatternMs: "Bahu kiri dan kanan haus manakala bahagian tengah masih mempunyai bunga",
-    causeEn: "Under-inflation (kurang tekanan angin). Low pressure causes the tyre sidewalls to flex and load the shoulders.",
-    causeMs: "Kekurangan tekanan angin (under-inflation) menyebabkan beban tertumpu pada kedua-dua bahu tayar.",
+    causeEn: "Low pressure can wear down both outer shoulders.",
+    causeMs: "Tekanan angin yang rendah boleh menghauskan kedua-dua bahu tayar.",
     fixEn: "Inflate the tyres to the manufacturer’s recommended pressure.",
     fixMs: "Pam tayar mengikut tekanan yang disyorkan oleh pengeluar.",
   },
-  {
-    id: "alignment",
-    titleEn: "One side (inner or outer edge) feathered",
-    titleMs: "Haus pada sebelah bahagian tepi sahaja",
-    wearPatternEn: "Only one shoulder is worn down unevenly",
-    wearPatternMs: "Hanya sebelah bahu tayar sahaja yang haus tidak sekata",
-    causeEn: "Faulty wheel alignment (camber/toe misalignment) or worn suspension ball-joints.",
-    causeMs: "Penjajaran roda (wheel alignment) lari atau komponen gantungan/stereng longgar.",
-    fixEn: "Perform computerised wheel alignment and suspension inspection before fitting a replacement tyre.",
-    fixMs: "Lakukan penjajaran roda berkomputer dan pemeriksaan gantungan sebelum menukar tayar baharu.",
-  },
+
 ];
 
 interface CrsProfile {
@@ -165,6 +157,7 @@ interface HazardDrill {
   feedbackMs: string;
 }
 
+// KPP Automatic, viewer pages 105, 128 and 146.
 const HAZARD_DRILLS: HazardDrill[] = [
   {
     id: "drill-cito",
@@ -207,23 +200,23 @@ const HAZARD_DRILLS: HazardDrill[] = [
     titleEn: "Expressway breakdown",
     titleMs: "Kerosakan di lebuh raya",
     ref: "Kecemasan Lebuh Raya",
-    scenarioEn: "Your vehicle breaks down on the expressway shoulder at night. Where must you place the red reflective warning triangle?",
-    scenarioMs: "Kenderaan anda rosak di lorong kecemasan lebuh raya pada waktu malam. Di manakah segitiga amaran pantulan merah wajib diletakkan?",
+    scenarioEn: "Your vehicle breaks down on the expressway shoulder at night. Where should you place the warning triangle?",
+    scenarioMs: "Kenderaan anda rosak di lorong kecemasan lebuh raya pada waktu malam. Di manakah tanda amaran patut diletakkan?",
     optionsEn: [
-      "50 metres behind the vehicle",
+      "Within 50 metres behind the vehicle",
       "Directly against the rear bumper (less than 1 metre away) while passengers sit inside the car",
       "In front of the front bonnet facing forward",
     ],
     optionsMs: [
-      "50 meter di belakang kenderaan",
+      "Dalam jarak 50 meter di belakang kenderaan",
       "Betul-betul rapat pada bampar belakang (kurang 1 meter) sambil penumpang duduk di dalam kereta",
       "Di hadapan bonet hadapan kenderaan",
     ],
     correctIdx: 0,
     feedbackEn:
-      "Place the warning sign 50 metres behind the vehicle, switch on your hazard lights and keep passengers away from traffic.",
+      "Place the warning sign within 50 metres behind the vehicle, switch on your hazard lights and keep passengers away from traffic.",
     feedbackMs:
-      "Letakkan tanda amaran 50 meter di belakang kenderaan, nyalakan lampu kecemasan dan jauhkan penumpang daripada trafik.",
+      "Letakkan tanda amaran dalam jarak 50 meter di belakang kenderaan, nyalakan lampu kecemasan dan jauhkan penumpang daripada trafik.",
   },
 ];
 
@@ -239,7 +232,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
   const [drillAnswers, setDrillAnswers] = useState<Record<string, number>>({});
 
   // Lab 3: RPK & RSM Diagnostic Bay
-  const [selectedTyre, setSelectedTyre] = useState<"normal" | "over" | "under" | "alignment">("normal");
+  const [selectedTyre, setSelectedTyre] = useState<"normal" | "over" | "under">("normal");
   const [ignitionStep, setIgnitionStep] = useState<"LOCK" | "ACC" | "ON" | "START">("LOCK");
 
   // Lab 4: CRS & Headrest
@@ -255,6 +248,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
   const activeTyreSpec = TYRE_DIAGNOSTICS.find((t) => t.id === selectedTyre) ?? TYRE_DIAGNOSTICS[0];
 
+  // KPP Automatic, viewer page 200.
   const IGNITION_SPECS: Record<
     "LOCK" | "ACC" | "ON" | "START",
     { titleEn: string; titleMs: string; descEn: string; descMs: string }
@@ -271,9 +265,9 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
       titleEn: "2. ACC · Accessories powered (Engine off)",
       titleMs: "2. ACC · Aksesori berfungsi (Enjin mati)",
       descEn:
-        "Accessories can be used with the engine off.",
+        "Use accessories other than air conditioning with the engine off.",
       descMs:
-        "Aksesori boleh digunakan semasa enjin dimatikan.",
+        "Gunakan aksesori selain penyaman udara semasa enjin dimatikan.",
     },
     ON: {
       titleEn: "3. ON · Check the instrument panel",
@@ -429,9 +423,15 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               <div className="panel p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-foreground">
-                    {lang === "en" ? "Stopping distance = reaction distance + braking distance" : "Jarak berhenti = jarak berfikir + jarak membrek"}
+                    {lang === "en" ? "Handbook example: reaction distance + braking distance" : "Contoh buku panduan: jarak reaksi + jarak membrek"}
                   </span>
                 </div>
+
+                <p className="text-xs text-muted-foreground">
+                  {lang === "en"
+                    ? "Wet roads need more stopping distance. The road setting changes the following-gap estimate."
+                    : "Jarak berhenti lebih jauh di jalan basah. Tetapan jalan mengubah anggaran jarak mengekori."}
+                </p>
 
                 <div aria-hidden="true" className="w-full h-8 rounded-xl bg-muted overflow-hidden flex border border-border">
                   <div
@@ -509,8 +509,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                   <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <Headlights size={15} aria-hidden="true" />
                     {lang === "en"
-                      ? "Night high-beam glare recovery"
-                      : "Pemulihan silau lampu tinggi malam"}
+                      ? "Glare and visibility"
+                      : "Silau dan jarak penglihatan"}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
@@ -523,7 +523,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
           </motion.div>
         )}
 
-        {/* LAB 2: C.I.T.O., SKID RECOVERY & BREAKDOWN DRILLS */}
+        {/* LAB 2: C.I.T.O., WET BENDS & BREAKDOWN DRILLS */}
         {activeLab === "hazards" && (
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
@@ -621,7 +621,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <span className="pill pill-info">{lang === "en" ? "Check pressure and tread" : "Periksa tekanan dan bunga tayar"}</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {TYRE_DIAGNOSTICS.map((item) => (
                   <button
                     key={item.id}
@@ -641,13 +641,9 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                           ? lang === "en"
                             ? "Centre worn"
                             : "Haus tengah"
-                          : item.id === "under"
-                            ? lang === "en"
-                              ? "Both edges worn"
-                              : "Haus dua tepi"
-                            : lang === "en"
-                              ? "One side worn"
-                              : "Haus sebelah"}
+                          : lang === "en"
+                            ? "Both edges worn"
+                            : "Haus dua tepi"}
                     </div>
                   </button>
                 ))}
@@ -683,26 +679,11 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="p-2.5 rounded-lg bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block">
-                    {lang === "en" ? "Engine oil interval" : "Minyak enjin"}
-                  </span>
-                  <span className="type-figure text-sm">5,000 km</span>
-                </div>
-                <div className="p-2.5 rounded-lg bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block">
-                    {lang === "en" ? "Gearbox oil interval" : "Minyak kotak gear"}
-                  </span>
-                  <span className="type-figure text-sm">20k-30k km</span>
-                </div>
-                <div className="p-2.5 rounded-lg bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block">
-                    {lang === "en" ? "Fan belt deflection" : "Tali sawat kipas"}
-                  </span>
-                  <span className="type-figure text-sm">0.5-1.0 cm</span>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                {lang === "en"
+                  ? "Follow the vehicle manufacturer’s schedule for engine and gearbox oil."
+                  : "Ikut jadual pengeluar kenderaan untuk penukaran minyak enjin dan kotak gear."}
+              </p>
             </div>
 
             {/* Right: RSM Ignition Switch Sequencer */}
@@ -753,11 +734,11 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
               <div className="p-3 rounded-xl bg-muted/30 border border-border text-xs text-muted-foreground">
                 <span className="font-semibold text-foreground block mb-1">
-                  {lang === "en" ? "8-step RSM cabin order:" : "Urutan 8 langkah RSM di kabin:"}
+                  {lang === "en" ? "Automatic-car pre-drive routine" : "Rutin sebelum memandu kereta automatik"}
                 </span>
                 {lang === "en"
-                  ? "1. Handbrake on -> 2. Seat posture -> 3. Steering (9 & 3 or 10 & 2) -> 4. Mirrors -> 5. Dashboard gauges (ON) -> 6. Gear in N/P -> 7. Start engine -> 8. Test signals, horn, wipers & seatbelt."
-                  : "1. Brek tangan -> 2. Kerusi pemandu -> 3. Stereng (9 & 3 atau 10 & 2) -> 4. Cermin -> 5. Meter (ON) -> 6. Gear N/P -> 7. Hidupkan enjin -> 8. Uji isyarat, hon, pengelap & tali pinggang keledar."}
+                  ? "1. Apply the parking brake. 2. Adjust the seat and head restraint. 3. Adjust the mirrors. 4. Fasten the seat belt. 5. Check the instrument panel. 6. Select P. 7. Start without pressing the accelerator. 8. Check that the accessory switches work."
+                  : "1. Tarik brek tangan. 2. Laraskan tempat duduk dan penyandar kepala. 3. Laraskan cermin. 4. Pakai tali pinggang keledar. 5. Semak panel instrumen. 6. Pilih P. 7. Hidupkan enjin tanpa menekan pemecut. 8. Semak fungsi suis peralatan."}
               </div>
             </div>
           </motion.div>

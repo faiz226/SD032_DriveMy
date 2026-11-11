@@ -694,8 +694,8 @@ export function TheoryPage() {
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "10 structured modules covering the complete JPJ rules syllabus"
-                      : "10 modul berstruktur merangkumi sukatan undang-undang JPJ"}
+                      ? "Lessons on licensing, road markings and driving rules"
+                      : "Pelajaran tentang lesen, tanda jalan dan peraturan pemanduan"}
                   </p>
                 </div>
                 <span className="pill pill-neutral">

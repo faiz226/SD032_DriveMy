@@ -33,6 +33,7 @@ interface ExitSpec {
   exitCoord: { x: number; y: number };
 }
 
+// KPP Automatic, viewer pages 257–259.
 const EXIT_SPECS: ExitSpec[] = [
   {
     id: "left-9",
@@ -73,9 +74,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "right",
     correctSignal: "right-entry-left-exit",
     ruleEn:
-      "Approach in the right lane, signal right on entry, circulate in the inner lane, then signal left after passing the 12 o'clock exit.",
+      "Approach in the right lane, signal right before entering and keep it on in the inner lane, then signal left after passing the 12 o'clock exit.",
     ruleMs:
-      "Dekati di lorong kanan, beri isyarat kanan semasa masuk, pusing di lorong dalam, kemudian beri isyarat kiri selepas melepasi simpang pukul 12.",
+      "Dekati di lorong kanan, beri isyarat kanan sebelum masuk dan kekalkan isyarat di lorong dalam, kemudian beri isyarat kiri selepas melepasi simpang pukul 12.",
     svgPath: "M 102 190 L 102 137.95 A 31 31 0 1 1 139.95 100 L 196 100",
     exitCoord: { x: 196, y: 100 },
   },
@@ -88,9 +89,9 @@ const EXIT_SPECS: ExitSpec[] = [
     correctLane: "right",
     correctSignal: "right-entry-left-exit",
     ruleEn:
-      "Approach in the right lane, signal right on entry, keep to the inner lane around the island, then signal left after passing the 3 o'clock exit.",
+      "Approach in the right lane, signal right before entering and keep it on in the inner lane around the island, then signal left after passing the 3 o'clock exit.",
     ruleMs:
-      "Dekati di lorong kanan, beri isyarat kanan semasa masuk, kekal di lorong dalam mengelilingi pulau bulatan, kemudian beri isyarat kiri selepas melepasi simpang pukul 3.",
+      "Dekati di lorong kanan, beri isyarat kanan sebelum masuk dan kekalkan isyarat di lorong dalam mengelilingi pulau bulatan, kemudian beri isyarat kiri selepas melepasi simpang pukul 3.",
     svgPath: "M 102 190 L 102 137.95 A 31 31 0 1 1 118 137.95 L 118 190",
     exitCoord: { x: 118, y: 190 },
   },
@@ -101,7 +102,7 @@ const KEJARA_ACTIONS = [
   { en: "Warning", ms: "Amaran" },
   { en: "Suspension for 6–8 months", ms: "Penggantungan selama 6–8 bulan" },
   { en: "Suspension for 8–10 months", ms: "Penggantungan selama 8–10 bulan" },
-  { en: "Suspension for 10–12 months", ms: "Penggantungan selama 10–12 bulan" },
+  { en: "Suspension for 10–12 months. Three suspensions in five years lead to licence cancellation.", ms: "Penggantungan selama 10–12 bulan. Tiga penggantungan dalam lima tahun menyebabkan lesen dibatalkan." },
 ];
 
 interface RuleScenario {
@@ -117,6 +118,7 @@ interface RuleScenario {
   explanationMs: string;
 }
 
+// KPP General, viewer pages 9, 14, 16 and 20. KPP Automatic, viewer pages 71, 73 and 165.
 const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-lmm-age",
@@ -125,42 +127,34 @@ const RULE_SCENARIOS: RuleScenario[] = [
     promptEn: "A 17-year-old learner wants to apply for a driving licence. Which combination is legally permitted under APJ 1987?",
     promptMs: "Seorang calon berumur 17 tahun ingin memohon lesen memandu. Kombinasi manakah yang dibenarkan di bawah APJ 1987?",
     optionsEn: [
-      "Class B2/B motorcycle (min 16) and Class D/DA motorcar (min 17), but not Class E heavy lorry (min 21)",
-      "Class D/DA motorcar and Class E heavy lorry, plus PSV e-hailing immediately",
+      "Class B2/B motorcycle (min 16) and Class D/DA motorcar (min 17), but not Class E heavy motor vehicle (min 21)",
+      "Class D/DA motorcar and Class E heavy motor vehicle, plus PSV e-hailing immediately",
       "Only Class B2 motorcycle under 250 cc; Class D/DA requires age 18",
     ],
     optionsMs: [
-      "Motosikal Kelas B2/B (min 16) dan motokar Kelas D/DA (min 17), tetapi bukan lori berat Kelas E (min 21)",
-      "Motokar Kelas D/DA dan lori berat Kelas E serta lesen vokasional PSV dengan segera",
+      "Motosikal Kelas B2/B (min 16) dan motokar Kelas D/DA (min 17), tetapi bukan kenderaan berat Kelas E (min 21)",
+      "Motokar Kelas D/DA dan kenderaan berat Kelas E serta lesen vokasional PSV dengan segera",
       "Hanya motosikal Kelas B2 bawah 250 cc; Kelas D/DA memerlukan umur 18 tahun",
     ],
     correctIndex: 0,
     explanationEn:
-      "Minimum ages in Malaysia: 16 years for motorcycles (Class B2/B) and three-wheelers (Class C), 17 years for motorcars (Class D Manual & Class DA Automatic), and 21 years for heavy vehicles (Class E) and vocational licences (GDL/PSV/Konduktor).",
+      "The handbook gives minimum ages of 16 for motorcycles, 17 for motorcars, and 21 for heavy motor vehicles.",
     explanationMs:
-      "Had umur minimum di Malaysia: 16 tahun bagi motosikal (Kelas B2/B) dan kenderaan tiga roda (Kelas C), 17 tahun bagi motokar (Kelas D Manual & Kelas DA Automatik), dan 21 tahun bagi kenderaan berat (Kelas E) serta lesen vokasional (GDL/PSV).",
+      "Buku panduan menetapkan umur minimum 16 tahun bagi motosikal, 17 tahun bagi motokar dan 21 tahun bagi kenderaan motor berat.",
   },
   {
     id: "scen-licence-expiry",
-    badge: "LDL / PDL / CDL Validity",
-    ref: "Tempoh Sah Lesen Memandu",
-    promptEn: "How long can each driving licence remain expired before the holder is disqualified from direct renewal and must repeat the test?",
-    promptMs: "Berapa lamakah setiap jenis lesen memandu boleh tamat tempoh sebelum pemegangnya hilang kelayakan pembaharuan terus dan wajib mengulangi ujian?",
-    optionsEn: [
-      "LDL expires after 2 years; PDL cannot lapse > 1 year; CDL cannot lapse > 3 years",
-      "LDL, PDL, and CDL all allow a 5-year grace period before re-testing",
-      "PDL can lapse up to 3 years, while CDL lapses after 1 year",
-    ],
-    optionsMs: [
-      "LDL tamat selepas 2 tahun; PDL tidak boleh tamat > 1 tahun; CDL tidak boleh tamat > 3 tahun",
-      "LDL, PDL, dan CDL semuanya membenarkan tempoh tangguh 5 tahun sebelum ujian semula",
-      "PDL boleh tamat sehingga 3 tahun, manakala CDL tamat selepas 1 tahun",
-    ],
+    badge: "PDL to CDL",
+    ref: "Tempoh Permohonan Lesen Kompeten",
+    promptEn: "Your probationary licence has expired. How long from expiry does the handbook allow to apply for a competent licence?",
+    promptMs: "Lesen memandu percubaan anda telah tamat tempoh. Berapa lamakah tempoh selepas tamat yang dibenarkan oleh buku panduan untuk memohon lesen kompeten?",
+    optionsEn: ["Up to one year", "Up to six months", "Up to two years"],
+    optionsMs: ["Sehingga setahun", "Sehingga enam bulan", "Sehingga dua tahun"],
     correctIndex: 0,
     explanationEn:
-      "An LDL (3 or 6 months per renewal) has a maximum total validity of 2 years. A 2-year Probationary Driving Licence (PDL) cannot remain expired for more than 1 year, and a Competent Driving Licence (CDL) cannot remain expired for more than 3 years.",
+      "The probationary period lasts two years. Apply for a competent licence no later than one year after the probationary licence expires.",
     explanationMs:
-      "Lesen Belajar Memandu (LDL) sah maksimum keseluruhan 2 tahun. Lesen Memandu Percubaan (PDL) 2 tahun tidak boleh tamat tempoh melebihi 1 tahun, manakala Lesen Memandu Kompeten (CDL) tidak boleh tamat tempoh melebihi 3 tahun.",
+      "Tempoh percubaan berlangsung selama dua tahun. Mohon lesen memandu kompeten selewat-lewatnya setahun selepas lesen percubaan tamat.",
   },
   {
     id: "scen-yellow-box",
@@ -169,20 +163,20 @@ const RULE_SCENARIOS: RuleScenario[] = [
     promptEn: "Your traffic light turns green at a yellow criss-cross box junction, but traffic ahead in your exit lane is stationary. What is the legal action?",
     promptMs: "Lampu isyarat anda bertukar hijau di petak kuning bersilang, tetapi trafik di lorong keluar anda sedang berhenti. Apakah tindakan yang sah?",
     optionsEn: [
-      "Wait behind the stop line before the yellow box until your exit lane is completely clear",
+      "Wait outside the box until there is room beyond it for your vehicle",
       "Drive into the middle of the yellow box immediately while the light is green so you do not miss your turn",
       "Enter the yellow box and sound your horn continuously to clear the lane ahead",
     ],
     optionsMs: [
-      "Tunggu di belakang garisan berhenti sebelum petak kuning sehingga lorong keluar anda lapang sepenuhnya",
+      "Tunggu di luar petak kuning sehingga ada ruang untuk kenderaan anda selepas petak",
       "Pandu masuk ke tengah petak kuning serta-merta semasa lampu hijau supaya tidak terlepas giliran",
       "Masuk ke petak kuning dan bunyikan hon secara berterusan untuk mengosongkan lorong di hadapan",
     ],
     correctIndex: 0,
     explanationEn:
-      "Stopping on a yellow box junction obstructs cross-traffic and is a traffic offence. Never enter unless your exit road is clear.",
+      "Stopping on a yellow box junction obstructs cross-traffic and is a traffic offence. Wait outside until there is room to clear the box.",
     explanationMs:
-      "Berhenti di atas petak kuning menghalang trafik lintasan dan merupakan kesalahan jalan raya. Jangan masuk melainkan lorong keluar anda lapang sepenuhnya.",
+      "Berhenti di atas petak kuning menghalang trafik lintasan dan merupakan kesalahan jalan raya. Tunggu di luar sehingga ada ruang untuk melepasi petak.",
   },
   {
     id: "scen-centre-line",
@@ -191,12 +185,12 @@ const RULE_SCENARIOS: RuleScenario[] = [
     promptEn: "The centre of a two-way road has a continuous white line on your side paired with a broken white line on the opposite side. Can you overtake?",
     promptMs: "Bahagian tengah jalan dua hala mempunyai garisan putih bersambung di sebelah lorong anda dan garisan putih putus-putus di sebelah bertentangan. Bolehkah anda memotong?",
     optionsEn: [
-      "No. Because the continuous line is on your side of the road, you are prohibited from crossing it to overtake or make a U-turn",
+      "No. Only drivers on the broken-line side may cross to overtake",
       "Yes, because one of the two lines is broken, either direction may overtake freely",
       "Yes, provided you switch on your hazard lights before crossing the continuous line",
     ],
     optionsMs: [
-      "Tidak boleh. Oleh sebab garisan bersambung berada di sebelah lorong anda, anda dilarang melintasinya untuk memotong atau membuat pusingan U",
+      "Tidak boleh. Hanya pemandu di sebelah garisan putus-putus boleh melintas untuk memotong",
       "Boleh, kerana salah satu garisan adalah putus-putus, maka kedua-dua arah bebas memotong",
       "Boleh, dengan syarat anda memasang lampu kecemasan sebelum melintasi garisan bersambung tersebut",
     ],
@@ -615,6 +609,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
           </div>
         )}
 
+        {/* KPP Automatic, viewer pages 210–211, 215, 232–233. KPP Manual, viewer pages 213 and 215–216. */}
         {activeLab === "transmission" && (
           <div className="panel space-y-4 p-4 sm:p-5">
             <div className="flex flex-wrap gap-2">
@@ -639,8 +634,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {transTrack === "DA"
                   ? lang === "en"
-                    ? "Use your right foot for the brake and accelerator. Select P to park, R to reverse, N for neutral or D to drive forward. Stop before selecting reverse."
-                    : "Gunakan kaki kanan untuk brek dan pemecut. Pilih P untuk parkir, R untuk mengundur, N untuk neutral atau D untuk bergerak ke hadapan. Berhenti sebelum memilih gear undur."
+                    ? "Use your right foot for the brake and accelerator. Select P to park, R to reverse, N for neutral or D to drive forward. Stop and hold the foot brake before selecting reverse."
+                    : "Gunakan kaki kanan untuk brek dan pemecut. Pilih P untuk parkir, R untuk mengundur, N untuk neutral atau D untuk bergerak ke hadapan. Berhenti dan tekan pedal brek sebelum memilih gear undur."
                   : lang === "en"
                     ? "Use your left foot on the clutch. Press it fully to select first gear, then release it gradually to the biting point when moving off."
                     : "Gunakan kaki kiri pada pedal cekam. Tekan cekam sepenuhnya untuk memilih gear pertama, kemudian lepaskan beransur-ansur hingga ke titik pergerakan ketika mula bergerak."}
