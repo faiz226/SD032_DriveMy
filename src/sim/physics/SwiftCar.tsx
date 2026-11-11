@@ -16,6 +16,7 @@ import { SWIFT_2022 as CAR } from './cars/swift-2022';
 import { Cluster } from './Cluster';
 import { CarLamps, type LampState } from './Lamps';
 import { MirrorView } from './MirrorView';
+import { closePillars } from './pillars';
 import { Vehicle } from './vehicle';
 
 export interface CarApi {
@@ -127,6 +128,7 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
         mesh.material = own;
       }
     });
+    closePillars(scene);
     return scene;
   }, [body.scene, shadows, clearcoat]);
   // the car takes more of the sky's light than the yard does; the materials are this car's alone. Not the

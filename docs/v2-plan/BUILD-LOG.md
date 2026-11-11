@@ -754,3 +754,29 @@ gear or the realistic R key, and the rest.
   drawn from both sides and the seams close. Not the whole car: from both sides, the backs of the outer panels came
   across the side windows.
 
+## 11 Nov: the windscreen pillars, again
+
+The owner: "Pillar still broken." Three things were still wrong from the seat, measured by casting a ray through
+every pixel round the pillar, back faces included, and naming what each one met.
+
+- **A red band up the pillar.** The model paints the doors' window frames red on their inner faces too, so between
+  the grey trim and the glass ran a band of body paint. In the real car (a red 2020 Swift's cabin photo) the trim
+  meets black there. The frame faces turned toward the seat on their side of the car (the driver's eye, or its
+  mirror image for the left door) now take black plastic; the outside of the door stays red.
+- **Sky through hairline gaps.** Eighteen pixels at the pillar's top met nothing at all: true gaps of 0.1-3 mm
+  between the frame, its seal, the trim and the glass, each beside an open edge of one of them. A narrow black band
+  (6 mm) now runs along the open edges of the faces the seat sees (the frames, the seals, and the windscreen
+  pillars' trim), leaning back behind each edge and drawn a little behind its depth, so it shows only through a gap.
+- **Teeth along the trim.** The door seal's toothed edge lay up to 9 mm in front of the trim. It now sits 12 mm
+  further from the driver's eye, behind the trim's own clean edge; seen from the seat it is otherwise where it was.
+
+`pillars.ts` does this on the car's own copy of the body (the loaded model stays as it is), and its test loads both
+tiers' models: the gaps are there in the model as it comes, none are left, and no red frame face is turned to the
+seat. Looking left and out of the driver's window shows no gaps either; the one that showed the road where the left
+door meets the dash is closed by the seal's band.
+
+The ramp, checked again in the real page: the autopilot's assessment and a practice drill driven with W, S, A and D
+alone both stopped 0.6 m short of the pole, held 2 s, saw it slide to the wall, drove off the front and down the
+east road, cleared with no fault; the practice drill then offered Next station. `check.py` passes (41 checks) and
+the ramp's tests with it.
+
