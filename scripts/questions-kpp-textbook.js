@@ -29,25 +29,25 @@ export const KPP_TEXTBOOK_QUESTIONS = [
   {
     "id": "618f6ddc-44b0-41a6-bb5d-953abc1f9115",
     "category": "road-signs",
-    "question_en": "You see this sign while following a slower vehicle. What should you do?",
-    "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
+    "question_en": "What does this sign mean?",
+    "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Stay behind at a safe gap",
-      "Follow closely until a gap opens",
-      "Move right and wait beside it",
-      "Pass if the other driver signals"
+      "Designated U-turn",
+      "One-way traffic",
+      "Turn right only",
+      "Keep right"
     ],
     "options_ms": [
-      "Kekal di belakang dengan jarak selamat",
-      "Ikut rapat sehingga ada ruang",
-      "Beralih ke kanan dan tunggu di sisinya",
-      "Potong jika pemandu itu memberi isyarat"
+      "Tempat pusingan U",
+      "Trafik sehala",
+      "Belok kanan sahaja",
+      "Ikut sebelah kanan"
     ],
     "correct_index": 0,
-    "explanation_en": "No overtaking. Plan your route so you can obey this restriction.",
-    "explanation_ms": "Dilarang memotong. Rancang laluan supaya anda dapat mematuhi larangan ini.",
-    "image_url": "/signs/2f019822b1b9e39f.svg",
-    "source_url": "KPP General PDF page 57",
+    "explanation_en": "The blue sign marks a place provided for vehicles to make a U-turn.",
+    "explanation_ms": "Papan tanda biru ini menandakan tempat yang disediakan untuk kenderaan membuat pusingan U.",
+    "image_url": "/signs/8956fe8a103938b3.svg",
+    "source_url": "KPP General PDF page 69",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 2
@@ -5595,24 +5595,24 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "road-signs",
     "set_id": "mock-d-combined-1",
     "order_index": 6,
-    "question_en": "You see this sign while following a slower vehicle. What should you do?",
-    "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
+    "question_en": "What does this sign mean?",
+    "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Stay behind at a safe gap",
-      "Follow closely until a gap opens",
-      "Move right and wait beside it",
-      "Pass if the other driver signals"
+      "No right turn",
+      "No left turn",
+      "No U-turn",
+      "Turn right only"
     ],
     "options_ms": [
-      "Kekal di belakang dengan jarak selamat",
-      "Ikut rapat sehingga ada ruang",
-      "Beralih ke kanan dan tunggu di sisinya",
-      "Potong jika pemandu itu memberi isyarat"
+      "Dilarang belok kanan",
+      "Dilarang belok kiri",
+      "Dilarang membuat pusingan U",
+      "Belok kanan sahaja"
     ],
     "correct_index": 0,
-    "explanation_en": "This sign means no overtaking.",
-    "explanation_ms": "Papan tanda ini bermaksud dilarang memotong.",
-    "image_url": "/signs/2f019822b1b9e39f.svg",
+    "explanation_en": "The crossed right arrow bans a right turn at that junction.",
+    "explanation_ms": "Anak panah kanan yang dipalang melarang pemandu membelok ke kanan di simpang itu.",
+    "image_url": "/signs/2eee15e55fa0ef48.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -5865,7 +5865,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Lorong kiri ditutup di hadapan",
-      "Kelegaan terhad di zon kerja",
+      "Ruang laluan sempit di zon kerja",
       "Lencongan sementara tamat",
       "Lencongan tajam ke kanan"
     ],
@@ -7144,8 +7144,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Pintu pemandu"
     ],
     "correct_index": 1,
-    "explanation_en": "Stop completely with the front wheels on the yellow line. The textbook then calls for applying the parking brake and signalling.",
-    "explanation_ms": "Berhenti sepenuhnya dengan roda hadapan di atas garisan kuning. Kemudian tarik brek tangan dan beri isyarat seperti yang diterangkan.",
+    "explanation_en": "Stop with the front wheels on the yellow line and apply the parking brake. In the test, raise your hand when ready and wait for the instruction to move.",
+    "explanation_ms": "Berhenti dengan roda hadapan di atas garisan kuning dan tarik brek tangan. Semasa ujian, angkat tangan apabila sedia dan tunggu arahan untuk bergerak.",
     "image_url": null,
     "source_url": "KPP Kelas D Manual, PDF 278",
     "created_at": "2026-11-08T00:00:00Z"
@@ -9235,24 +9235,24 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "road-signs",
     "set_id": "mock-da-combined-1",
     "order_index": 6,
-    "question_en": "You see this sign while following a slower vehicle. What should you do?",
-    "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
+    "question_en": "What does this sign mean?",
+    "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Stay behind at a safe gap",
-      "Follow closely until a gap opens",
-      "Move right and wait beside it",
-      "Pass if the other driver signals"
+      "No right turn",
+      "No left turn",
+      "No U-turn",
+      "Turn right only"
     ],
     "options_ms": [
-      "Kekal di belakang dengan jarak selamat",
-      "Ikut rapat sehingga ada ruang",
-      "Beralih ke kanan dan tunggu di sisinya",
-      "Potong jika pemandu itu memberi isyarat"
+      "Dilarang belok kanan",
+      "Dilarang belok kiri",
+      "Dilarang membuat pusingan U",
+      "Belok kanan sahaja"
     ],
     "correct_index": 0,
-    "explanation_en": "This sign means no overtaking.",
-    "explanation_ms": "Papan tanda ini bermaksud dilarang memotong.",
-    "image_url": "/signs/2f019822b1b9e39f.svg",
+    "explanation_en": "The crossed right arrow bans a right turn at that junction.",
+    "explanation_ms": "Anak panah kanan yang dipalang melarang pemandu membelok ke kanan di simpang itu.",
+    "image_url": "/signs/2eee15e55fa0ef48.svg",
     "source_url": "KPP General PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
@@ -9505,7 +9505,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Lorong kiri ditutup di hadapan",
-      "Kelegaan terhad di zon kerja",
+      "Ruang laluan sempit di zon kerja",
       "Lencongan sementara tamat",
       "Lencongan tajam ke kanan"
     ],
