@@ -46,23 +46,23 @@ const EXIT_SPECS: ExitSpec[] = [
       "Approach in the left lane, signal left before entering, stay in the outer (left) circulatory lane, and keep the left signal on until exiting.",
     ruleMs:
       "Masuk melalui lorong kiri, beri isyarat kiri sebelum memasuki bulatan, kekal di lorong luar (kiri), dan kekalkan isyarat kiri sehingga keluar.",
-    svgPath: "M 108 188 L 108 148 Q 108 112 72 112 L 24 112",
-    exitCoord: { x: 28, y: 112 },
+    svgPath: "M 86 190 L 86 149.57 A 48 48 0 0 1 68.43 132 L 24 132",
+    exitCoord: { x: 24, y: 132 },
   },
   {
     id: "straight-12",
     clockEn: "12 o'clock (Second exit straight)",
     clockMs: "Pukul 12 (Susur kedua terus)",
-    titleEn: "Go straight ahead",
-    titleMs: "Jalan terus ke hadapan",
+    titleEn: "Go straight with the left lane clear",
+    titleMs: "Terus ke hadapan apabila lorong kiri lapang",
     correctLane: "left",
     correctSignal: "none-entry-left-exit",
     ruleEn:
       "When the left lane is clear, approach in that lane, stay in it and signal left after passing the first exit.",
     ruleMs:
       "Jika lorong kiri lapang, masuk dan kekal di lorong itu. Beri isyarat kiri selepas melepasi susur keluar pertama.",
-    svgPath: "M 108 188 L 108 145 A 45 45 0 0 1 108 62 L 108 20",
-    exitCoord: { x: 108, y: 24 },
+    svgPath: "M 86 190 L 86 149.57 A 48 48 0 0 1 86 66.43 L 86 24",
+    exitCoord: { x: 86, y: 24 },
   },
   {
     id: "right-3",
@@ -76,8 +76,8 @@ const EXIT_SPECS: ExitSpec[] = [
       "Approach in the right lane, signal right on entry, circulate in the inner lane, then signal left after passing the 12 o'clock exit.",
     ruleMs:
       "Dekati di lorong kanan, beri isyarat kanan semasa masuk, pusing di lorong dalam, kemudian beri isyarat kiri selepas melepasi simpang pukul 12.",
-    svgPath: "M 122 188 L 122 138 A 28 28 0 1 1 142 108 L 196 108",
-    exitCoord: { x: 192, y: 108 },
+    svgPath: "M 102 190 L 102 137.95 A 31 31 0 1 1 139.95 100 L 196 100",
+    exitCoord: { x: 196, y: 100 },
   },
   {
     id: "uturn-6",
@@ -91,8 +91,8 @@ const EXIT_SPECS: ExitSpec[] = [
       "Approach in the right lane, signal right on entry, keep to the inner lane around the island, then signal left after passing the 3 o'clock exit.",
     ruleMs:
       "Dekati di lorong kanan, beri isyarat kanan semasa masuk, kekal di lorong dalam mengelilingi pulau bulatan, kemudian beri isyarat kiri selepas melepasi simpang pukul 3.",
-    svgPath: "M 122 188 L 122 138 A 28 28 0 1 1 132 142 L 132 188",
-    exitCoord: { x: 132, y: 184 },
+    svgPath: "M 102 190 L 102 137.95 A 31 31 0 1 1 118 137.95 L 118 190",
+    exitCoord: { x: 118, y: 190 },
   },
 ];
 
@@ -214,8 +214,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
 
   // Lab 1: Roundabout state
   const [selectedExit, setSelectedExit] = useState<RoundaboutExit>("left-9");
-  const [chosenLane, setChosenLane] = useState<ApproachLane>("left");
-  const [chosenSignal, setChosenSignal] = useState<SignalAction>("left-entry");
+  const [chosenLane, setChosenLane] = useState<ApproachLane | null>(null);
+  const [chosenSignal, setChosenSignal] = useState<SignalAction | null>(null);
   const [roundaboutChecked, setRoundaboutChecked] = useState(false);
   const [solvedExits, setSolvedExits] = useState<Record<string, boolean>>({});
 
@@ -232,6 +232,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
     chosenLane === currentExitSpec.correctLane && chosenSignal === currentExitSpec.correctSignal;
 
   const handleCheckRoundabout = () => {
+    if (!chosenLane || !chosenSignal) return;
     setRoundaboutChecked(true);
     if (isRoundaboutCorrect) {
       setSolvedExits((prev) => ({ ...prev, [selectedExit]: true }));
@@ -341,6 +342,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                       type="button"
                       onClick={() => {
                         setSelectedExit(spec.id);
+                        setChosenLane(null);
+                        setChosenSignal(null);
                         setRoundaboutChecked(false);
                       }}
                       aria-pressed={active}
@@ -456,7 +459,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
               </div>
 
               <div className="flex items-center gap-3 pt-1">
-                <Button type="button" onClick={handleCheckRoundabout}>
+                <Button type="button" onClick={handleCheckRoundabout} disabled={!chosenLane || !chosenSignal}>
                   {lang === "en" ? "Test roundabout maneuver" : "Uji olah gerak bulatan"}
                 </Button>
                 <span className="text-xs text-muted-foreground">
@@ -523,54 +526,50 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                     : `Rajah bulatan menunjukkan ${currentExitSpec.clockMs}`
                 }
               >
-                {/* Road arms */}
-                <rect x="92" y="8" width="36" height="194" fill="#334155" />
-                <rect x="12" y="90" width="196" height="36" fill="#334155" />
-                {/* Outer circulatory roadway */}
-                <circle cx="110" cy="108" r="56" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
-                {/* Lane divider circle */}
-                <circle
-                  cx="110"
-                  cy="108"
-                  r="40"
-                  fill="none"
-                  stroke="#e2e8f0"
-                  strokeWidth="1.5"
-                  strokeDasharray="5 4"
-                />
-                {/* Central island */}
+                {/* Each arm has two lanes in each direction. */}
+                <path d="M 110 8 V 202 M 12 108 H 208" stroke="#334155" strokeWidth="64" />
+                <circle cx="110" cy="108" r="56" fill="#334155" />
+                <path d="M 110 8 V 62 M 110 154 V 202 M 12 108 H 64 M 156 108 H 208"
+                  stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="5 4" />
+                <path d="M 94 8 V 54 M 126 8 V 54 M 94 162 V 202 M 126 162 V 202 M 12 92 H 56 M 12 124 H 56 M 164 92 H 208 M 164 124 H 208"
+                  stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 4" />
+                <circle cx="110" cy="108" r="40" fill="none" stroke="#e2e8f0"
+                  strokeWidth="1.5" strokeDasharray="5 4" />
                 <circle cx="110" cy="108" r="22" fill="#15803d" stroke="#f8fafc" strokeWidth="2.5" />
                 {/* Clock labels */}
                 <text x="110" y="18" textAnchor="middle" fill="#f8fafc" fontSize="9" fontWeight="700">
                   12:00
                 </text>
-                <text x="200" y="85" textAnchor="end" fill="#0f172a" fontSize="9" fontWeight="700">
+                <text x="200" y="85" textAnchor="end" fill="#f8fafc" fontSize="9" fontWeight="700">
                   3:00
                 </text>
-                <text x="20" y="85" textAnchor="start" fill="#0f172a" fontSize="9" fontWeight="700">
+                <text x="20" y="85" textAnchor="start" fill="#f8fafc" fontSize="9" fontWeight="700">
                   9:00
                 </text>
                 <text x="110" y="203" textAnchor="middle" fill="#f8fafc" fontSize="9" fontWeight="700">
-                  6:00 (Entry)
+                  6:00
                 </text>
 
-                {/* Active vehicle trajectory */}
-                <path
-                  d={currentExitSpec.svgPath}
-                  fill="none"
-                  stroke="#eab308"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeDasharray="6 3"
-                />
-                <circle
-                  cx={currentExitSpec.exitCoord.x}
-                  cy={currentExitSpec.exitCoord.y}
-                  r="5.5"
-                  fill="#eab308"
-                  stroke="#0f172a"
-                  strokeWidth="1.5"
-                />
+                {roundaboutChecked && (
+                  <>
+                    <path
+                      d={currentExitSpec.svgPath}
+                      fill="none"
+                      stroke="#eab308"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeDasharray="6 3"
+                    />
+                    <circle
+                      cx={currentExitSpec.exitCoord.x}
+                      cy={currentExitSpec.exitCoord.y}
+                      r="5.5"
+                      fill="#eab308"
+                      stroke="#0f172a"
+                      strokeWidth="1.5"
+                    />
+                  </>
+                )}
               </svg>
               <div className="w-full mt-3 p-3 rounded-lg bg-muted/50 text-xs text-muted-foreground space-y-1">
                 <div className="font-semibold text-foreground">
@@ -578,8 +577,8 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                 </div>
                 <p>
                   {lang === "en"
-                    ? "Traffic already circulating from your right has right-of-way. Never change lanes abruptly across the exit mouth."
-                    : "Kenderaan yang sedang bergerak dari arah kanan mempunyai hak laluan. Jangan menukar lorong secara mengejut di mulut simpang keluar."}
+                    ? "Give way to traffic circulating from your right. Check your side mirrors before exiting, especially for traffic to your left when using the inner lane."
+                    : "Beri laluan kepada kenderaan dari kanan yang sudah berada di bulatan. Periksa cermin sisi sebelum keluar, terutama untuk kenderaan di kiri apabila menggunakan lorong dalam."}
                 </p>
               </div>
             </div>

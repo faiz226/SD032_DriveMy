@@ -461,8 +461,8 @@ export function TheoryPage() {
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "Tap any card to flip and inspect the driver action and textbook reference"
-                      : "Ketik mana-mana kad untuk membalikkan dan membaca tindakan pemandu serta rujukan buku teks"}
+                      ? "Flip a card to read what the sign means and how to respond."
+                      : "Balikkan kad untuk membaca maksud tanda dan tindakan yang sesuai."}
                   </p>
                 </div>
 
@@ -689,8 +689,8 @@ export function TheoryPage() {
                 <div>
                   <h3 className="text-lg font-bold font-heading">
                     {lang === "en"
-                      ? "Part B textbook reference syllabus"
-                      : "Sukatan rujukan buku teks Bahagian B"}
+                      ? "Part B traffic rules"
+                      : "Peraturan jalan raya Bahagian B"}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
