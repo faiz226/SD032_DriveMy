@@ -172,6 +172,21 @@ export function ExamShell({
     </>
   );
 
+  const position = (
+    <>
+      <span className="type-figure text-sm">
+        {currentIndex + 1}
+        <span className="text-muted-foreground"> / {shuffledQuestions.length}</span>
+      </span>
+      <span aria-hidden className="block h-1.5 w-24 overflow-hidden rounded-full bg-muted sm:w-40">
+        <span
+          className="block h-full rounded-full bg-brand transition-[width] duration-500 ease-out motion-reduce:transition-none"
+          style={{ width: `${progressPercentage}%` }}
+        />
+      </span>
+    </>
+  );
+
   // Rendered through a portal, not in place: `.page-enter` animates
   // `transform`, which would make a page wrapper the containing block for this
   // full-viewport `position: fixed` room and collapse it.
@@ -191,25 +206,17 @@ export function ExamShell({
           <span className="hidden sm:inline">{t("exam.exit")}</span>
         </button>
 
-        {/* Position doubles as the navigator trigger: the number you look at to
-            know where you are is the thing you tap to go somewhere else. */}
         <button
           type="button"
           onClick={() => setShowNavigator(true)}
           aria-label={t("exam.openNavigator")}
-          className="tap-sm mx-auto flex flex-col items-center justify-center gap-1.5 rounded-xl px-3"
+          className="tap-sm mx-auto flex flex-col items-center justify-center gap-1.5 rounded-xl px-3 lg:hidden"
         >
-          <span className="type-figure text-sm">
-            {currentIndex + 1}
-            <span className="text-muted-foreground"> / {shuffledQuestions.length}</span>
-          </span>
-          <span aria-hidden className="block h-1.5 w-24 overflow-hidden rounded-full bg-muted sm:w-40">
-            <span
-              className="block h-full rounded-full bg-brand transition-[width] duration-500 ease-out"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </span>
+          {position}
         </button>
+        <div className="mx-auto hidden flex-col items-center gap-1.5 lg:flex">
+          {position}
+        </div>
 
         {timeLimit ? (
           <div
@@ -253,7 +260,7 @@ export function ExamShell({
               </button>
             )}
 
-            <h1 className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.75rem]">
+            <h1 id="exam-question" className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.75rem]">
               {language === "en"
                 ? question.question_en || question.question_ms
                 : question.question_ms || question.question_en}
@@ -272,7 +279,7 @@ export function ExamShell({
               </div>
             )}
 
-            <div className="mt-7 space-y-3" ref={optionsRef} role="radiogroup">
+            <div className="mt-7 space-y-3" ref={optionsRef} role="radiogroup" aria-labelledby="exam-question">
               {optionsEn.map((optEn, i) => {
                 const optMs = optionsMs[i] || "";
                 const isSelected = selectedOption === i;

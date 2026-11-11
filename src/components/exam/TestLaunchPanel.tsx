@@ -123,14 +123,11 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
     <div className="mx-auto w-full max-w-2xl">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
         <header>
-          <p className="text-sm font-medium text-muted-foreground">
+          <h1 className="page-title">
             {mode === "quiz" ? t("launch.quizMaster") : t("launch.mockExam")}
-          </p>
-          <h1 className="page-title mt-1.5">
-            {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockExamDesc")}
           </h1>
-          <p className="mt-3 whitespace-pre-line text-pretty text-base leading-relaxed text-muted-foreground">
-            {mode === "quiz" ? t("launch.quizInfo") : t("launch.mockInfo")}
+          <p className="mt-3 text-pretty text-base leading-relaxed text-muted-foreground">
+            {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockInfo")}
           </p>
         </header>
 
@@ -270,7 +267,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
             <legend className="mb-3 text-sm font-semibold">
               {t("launch.chooseMock")}
             </legend>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {MOCK_NUMBERS.map((sec) => {
                 const isSelected = selectedMockNum === sec.num;
                 return (
@@ -314,21 +311,19 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
           <section className="panel p-5">
             <h2 className="text-base font-semibold">{t("launch.examRules")}</h2>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-              {(["launch.rule1", "launch.rule2", "launch.rule3"] as const).map(rule => (
-                <li key={rule} className="flex gap-2.5">
-                  <CheckCircle size={18} weight="duotone" className="mt-px shrink-0 text-brand-ink" aria-hidden />
-                  <span>{t(rule)}</span>
-                </li>
-              ))}
+              <li className="flex gap-2.5">
+                <CheckCircle size={18} weight="duotone" className="mt-px shrink-0 text-brand-ink" aria-hidden />
+                <span>{t("launch.rule3")}</span>
+              </li>
             </ul>
-            <div className="mt-4 flex items-start gap-3 border-t border-border pt-4">
+            <div className="mt-4 flex items-center gap-3 border-t border-border pt-2">
               <Checkbox
                 id="rulesAccepted"
                 checked={rulesAccepted}
                 onCheckedChange={(checked) => setValue("rulesAccepted", !!checked)}
-                className="mt-0.5 h-5 w-5 shrink-0"
+                className="h-5 w-5 shrink-0"
               />
-              <label htmlFor="rulesAccepted" className="cursor-pointer select-none text-sm leading-relaxed">
+              <label htmlFor="rulesAccepted" className="flex min-h-11 flex-1 cursor-pointer select-none items-center py-2 text-sm leading-relaxed">
                 {t("launch.acceptRules")}
               </label>
             </div>
@@ -348,11 +343,6 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
             <span className="truncate">{buttonLabel}</span>
           </Button>
 
-          {mode === "quiz" && (
-            <p className="mt-3 whitespace-pre-line text-pretty text-sm leading-relaxed text-muted-foreground">
-              {t("launch.quizHint")}
-            </p>
-          )}
         </div>
       </form>
     </div>

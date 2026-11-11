@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -169,23 +169,13 @@ export function TheoryPage() {
         : "Tandakan sudah dipelajari";
 
   return (
-    <div className="max-w-6xl mx-auto pb-24 px-4 sm:px-6 lg:px-8">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-6xl mx-auto pb-24 px-4 sm:px-6 lg:px-8">
       {/* Sticky Header with Search and Navigation */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border shadow-xs -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-4 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="pill pill-brand">
-                {lang === "en" ? "Official JPJ Curriculum" : "Kurikulum Rasmi JPJ"}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {lang === "en" ? "KPP01 Theory Masterclass" : "Sukatan Teori KPP01"}
-              </span>
-            </div>
-            <h1 className="text-2xl font-bold font-heading tracking-tight mt-1 text-foreground">
-              {lang === "en" ? "Theory learning" : "Pembelajaran teori"}
-            </h1>
-          </div>
+          <h1 className="page-title">
+            {lang === "en" ? "KPP01 theory" : "Teori KPP01"}
+          </h1>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-72">
@@ -200,7 +190,7 @@ export function TheoryPage() {
                     ? "Search signs, rules, or safety..."
                     : "Cari tanda, undang-undang, keselamatan..."
                 }
-                className="w-full h-10 pl-9 pr-9 rounded-xl border border-input bg-muted/40 text-sm focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-background transition-colors"
+                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-muted/40 text-sm focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-background transition-colors"
                 aria-label={
                   lang === "en"
                     ? "Search learning topics"
@@ -213,7 +203,7 @@ export function TheoryPage() {
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                  className="absolute right-0 top-0 grid h-11 w-11 place-items-center rounded-xl text-muted-foreground hover:text-foreground cursor-pointer"
                   aria-label={lang === "en" ? "Clear search" : "Kosongkan carian"}
                 >
                   <X size={14} aria-hidden="true" />
@@ -225,24 +215,21 @@ export function TheoryPage() {
 
         {/* Primary Tabs List */}
         <div className="mt-3">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="w-full sm:w-auto overflow-x-auto justify-start inline-flex flex-nowrap hide-scrollbar">
-              <TabsTrigger value="signs">
-                {lang === "en" ? "Road Signs" : "Papan Tanda"}
-              </TabsTrigger>
-              <TabsTrigger value="rules">
-                {lang === "en" ? "Traffic Rules" : "Undang-undang"}
-              </TabsTrigger>
-              <TabsTrigger value="safety">
-                {lang === "en" ? "Safety" : "Keselamatan"}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <TabsList aria-label={lang === "en" ? "Theory topics" : "Topik teori"} className="w-full sm:w-auto overflow-x-auto justify-start inline-flex flex-nowrap hide-scrollbar">
+            <TabsTrigger value="signs" className="min-h-11 px-3">
+              {lang === "en" ? "Road Signs" : "Papan Tanda"}
+            </TabsTrigger>
+            <TabsTrigger value="rules" className="min-h-11 px-3">
+              {lang === "en" ? "Traffic Rules" : "Undang-undang"}
+            </TabsTrigger>
+            <TabsTrigger value="safety" className="min-h-11 px-3">
+              {lang === "en" ? "Safety" : "Keselamatan"}
+            </TabsTrigger>
+          </TabsList>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="mt-6">
+      <TabsContent value={activeTab} className="mt-6">
         {search &&
           !(activeTab === "signs"
             ? filteredSigns.length
@@ -873,7 +860,7 @@ export function TheoryPage() {
             </p>
           )}
         </div>
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }
