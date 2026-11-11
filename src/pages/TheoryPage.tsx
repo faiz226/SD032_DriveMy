@@ -270,13 +270,13 @@ export function TheoryPage() {
                 <div>
                   <h2 className="text-lg font-bold font-heading">
                     {lang === "en"
-                      ? "Visual grammar of Malaysian road signs"
-                      : "Tatabahasa visual papan tanda jalan Malaysia"}
+                      ? "Malaysian road sign categories"
+                      : "Kategori papan tanda jalan Malaysia"}
                   </h2>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "Every road sign shape and colour communicates a precise legal meaning"
-                      : "Setiap bentuk dan warna membawa maksud undang-undang yang tepat"}
+                      ? "Choose a category to filter the signs."
+                      : "Pilih kategori untuk menapis papan tanda."}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -288,7 +288,7 @@ export function TheoryPage() {
                     type="button"
                     onClick={() => setShowOnlyLearned(!showOnlyLearned)}
                     aria-pressed={showOnlyLearned}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
+                    className={`tap-sm px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
                       showOnlyLearned
                         ? "bg-brand text-brand-foreground border-foreground"
                         : "bg-background text-foreground border-border hover:border-foreground/40"
@@ -322,22 +322,17 @@ export function TheoryPage() {
                         isSelected ? "tile-selected" : ""
                       }`}
                     >
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between gap-1.5">
-                          <span className={`pill text-[0.8125rem] py-0.5 px-2 ${cat.swatchClass}`}>
-                            {cat.shapeEn.split(" ")[0]}
-                          </span>
-                          <span className="type-figure text-xs text-muted-foreground">
-                            {mastery.learned}/{mastery.total}
-                          </span>
-                        </div>
-                        <div className="font-bold text-xs sm:text-sm text-foreground mt-1">
+                      <div className="flex w-full items-start justify-between gap-2">
+                        <span className="text-sm font-bold text-foreground">
                           {lang === "en" ? cat.labelEn : cat.labelMs}
-                        </div>
+                        </span>
+                        <span className="type-figure shrink-0 text-xs text-muted-foreground">
+                          {mastery.learned}/{mastery.total}
+                        </span>
                       </div>
-                      <div className="text-[0.8125rem] text-muted-foreground line-clamp-2 leading-snug">
+                      <span className="text-[0.8125rem] leading-snug text-muted-foreground">
                         {lang === "en" ? cat.colorRuleEn : cat.colorRuleMs}
-                      </div>
+                      </span>
                     </button>
                   );
                 })}
@@ -741,13 +736,13 @@ export function TheoryPage() {
                 <div>
                   <h3 className="text-lg font-bold font-heading">
                     {lang === "en"
-                      ? "Part C defensive driving syllabus"
-                      : "Sukatan pemanduan berhemah Bahagian C"}
+                      ? "Defensive driving and safety lessons"
+                      : "Pelajaran pemanduan berhemah dan keselamatan"}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
-                      ? "8 core modules covering SIPDE, pre-drive checks, tyre diagnostics, and emergency management"
-                      : "8 modul utama merangkumi SIPDE, pemeriksaan kenderaan, tayar, dan kecemasan"}
+                      ? "Following gaps, pre-drive checks, tyres and breakdowns"
+                      : "Jarak mengekori, pemeriksaan sebelum memandu, tayar dan kerosakan"}
                   </p>
                 </div>
                 <span className="pill pill-neutral">

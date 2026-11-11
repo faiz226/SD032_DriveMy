@@ -240,17 +240,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
       <div className="panel p-4 sm:p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-border">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="pill pill-brand">
-                {lang === "en" ? "Interactive workbench" : "Makmal interaktif"}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {lang === "en"
-                  ? "Learn by testing real JPJ decisions"
-                  : "Belajar melalui simulasi keputusan sebenar JPJ"}
-              </span>
-            </div>
-            <h2 className="text-lg font-bold font-heading mt-1.5">
+            <h2 className="text-lg font-bold font-heading">
               {lang === "en"
                 ? "Part B interactive traffic rules simulator"
                 : "Simulator interaktif peraturan jalan raya Bahagian B"}
@@ -291,7 +281,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                   type="button"
                   onClick={() => setActiveLab(item.id)}
                   aria-pressed={isActive}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                  className={`tap-sm inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-background text-foreground border-border hover:border-foreground/40"

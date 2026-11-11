@@ -293,17 +293,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
       <div className="panel p-4 sm:p-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-border">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="pill pill-brand">
-                {lang === "en" ? "Interactive safety lab" : "Makmal keselamatan interaktif"}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {lang === "en"
-                  ? "Part C defensive driving, RPK/RSM & CRS physics"
-                  : "Pemanduan berhemah Bahagian C, RPK/RSM & fizik CRS"}
-              </span>
-            </div>
-            <h2 className="text-lg font-bold font-heading mt-1.5">
+            <h2 className="text-lg font-bold font-heading">
               {lang === "en"
                 ? "Part C defensive driving & vehicle inspection lab"
                 : "Makmal pemanduan berhemah & pemeriksaan kenderaan Bahagian C"}
@@ -315,26 +305,26 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               {
                 id: "stopping" as const,
                 icon: Gauge,
-                labelEn: "1. Stopping & night glare",
-                labelMs: "1. Jarak berhenti & silau",
+                labelEn: "Stopping distance and glare",
+                labelMs: "Jarak berhenti dan silau",
               },
               {
                 id: "hazards" as const,
                 icon: ShieldWarning,
-                labelEn: "2. C.I.T.O. & skid recovery",
-                labelMs: "2. C.I.T.O. & kawalan gelincir",
+                labelEn: "CITO and road hazards",
+                labelMs: "CITO dan bahaya jalan raya",
               },
               {
                 id: "rpk" as const,
                 icon: Wrench,
-                labelEn: "3. RPK tyres & RSM ignition",
-                labelMs: "3. Tayar RPK & suis RSM",
+                labelEn: "Tyres and ignition",
+                labelMs: "Tayar dan suis pencucuhan",
               },
               {
                 id: "crs" as const,
                 icon: Users,
-                labelEn: "4. CRS child seat & headrest",
-                labelMs: "4. Kerusi CRS & penyandar kepala",
+                labelEn: "Child seats and head restraints",
+                labelMs: "Kerusi kanak-kanak dan penyandar kepala",
               },
             ].map((item) => {
               const IconComp = item.icon;
@@ -345,7 +335,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                   type="button"
                   onClick={() => setActiveLab(item.id)}
                   aria-pressed={isActive}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                  className={`tap-sm inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-background text-foreground border-border hover:border-foreground/40"
