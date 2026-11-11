@@ -130,7 +130,7 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
         <div className="grid grid-cols-2 items-center gap-6 lg:grid-cols-4">
           <dl className="contents">
             <RoundSign value={MOCK_PASS_MARK} caption={t("dashboard.score.passMark")} />
-            <RoundSign value={bestMock?.score} caption={bestMock ? t("dashboard.score.best") : t("dashboard.score.none")} />
+            <RoundSign value={bestMock?.score} caption={bestMock ? t("dashboard.score.best", { total: bestMock.total_questions }) : t("dashboard.score.none")} />
             <RoundSign
               value={headroom}
               signed

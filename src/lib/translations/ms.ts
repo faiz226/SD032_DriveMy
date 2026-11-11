@@ -990,7 +990,7 @@ export const ms: Record<TranslationKey, string> = {
   "dashboard.score.title":         "Papan markah",
   "dashboard.score.lead":          "Berdasarkan ujian percubaan KPP 70 soalan. Ini latihan, bukan ramalan keputusan sebenar.",
   "dashboard.score.passMark":      "Markah lulus, daripada 70",
-  "dashboard.score.best":          "Markah terbaik anda, daripada 70",
+  "dashboard.score.best":          "Markah terbaik anda, daripada {{total}}",
   "dashboard.score.above":         "Lebihan di atas markah lulus",
   "dashboard.score.short":         "Kurang daripada markah lulus",
   "dashboard.score.none":          "Belum ada ujian percubaan",

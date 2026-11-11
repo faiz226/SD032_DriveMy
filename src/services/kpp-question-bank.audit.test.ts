@@ -43,24 +43,22 @@ describe("KPP Question Bank & Architecture Audit", () => {
       expect(code).not.toMatch(/from\s+['"][^'"]*kppQuestionBank/);
     }
 
-    // If dist/ exists, verify no mock answers are present in compiled JS
+    const mocks = KPP_TEXTBOOK_QUESTIONS.filter((question) => question.set_id.startsWith("mock-"));
+    const explanations = mocks.flatMap(({ explanation_en, explanation_ms }) =>
+      [explanation_en, explanation_ms].filter((value): value is string => Boolean(value)),
+    );
+    const theory = fs.readFileSync(path.join(ROOT, "src/content/theory.ts"), "utf8");
+    for (const explanation of explanations) {
+      expect(theory.includes(JSON.stringify(explanation))).toBe(false);
+    }
+
     const distDir = path.join(ROOT, "dist/assets");
     if (fs.existsSync(distDir)) {
-      const distFiles = fs.readdirSync(distDir).filter((f: string) => f.endsWith(".js"));
-      const sampleMockAnswers = [
-        "Drivers must never cross or straddle these lines to overtake, turn right, or make a U-turn",
-        "Pemandu dilarang sama sekali melintas atau memijak garisan ini untuk memotong, membelok ke kanan, atau berpusing U",
-        "Rainwater mixes with accumulated oil, fuel residue, rubber particles, and road grime to form a slick film",
-        "Air hujan bercampur dengan sisa minyak, bahan api, habuk getah tayar, dan debu menghasilkan lapisan licin",
-        "Wheels slipping off the ramp sides, overshooting the ramp platform, or vehicle sliding back uncontrollably",
-        "Tayar tergelincir keluar dari tebing tanjakan, terlajak melepasi platform, atau kenderaan mengundur tanpa kawalan"
-      ];
-
-      for (const jsFile of distFiles) {
-        const content = fs.readFileSync(path.join(distDir, jsFile), "utf8");
-        for (const answer of sampleMockAnswers) {
-          expect(content.includes(answer)).toBe(false);
-        }
+      const bundle = fs.readdirSync(distDir).filter((file) => file.endsWith(".js"))
+        .map((file) => fs.readFileSync(path.join(distDir, file), "utf8")).join("\n");
+      for (const question of mocks) expect(bundle.includes(question.id)).toBe(false);
+      for (const explanation of explanations) {
+        expect(bundle.includes(explanation) || bundle.includes(JSON.stringify(explanation).slice(1, -1))).toBe(false);
       }
     }
   });

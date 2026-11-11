@@ -989,7 +989,7 @@ export const en = {
   "dashboard.score.title":         "Scoreboard",
   "dashboard.score.lead":          "Based on 70-question KPP mock tests. Practice, not a prediction of your real result.",
   "dashboard.score.passMark":      "Pass mark, out of 70",
-  "dashboard.score.best":          "Your best, out of 70",
+  "dashboard.score.best":          "Your best, out of {{total}}",
   "dashboard.score.above":         "Above the pass mark",
   "dashboard.score.short":         "Short of the pass mark",
   "dashboard.score.none":          "No mock test yet",
