@@ -899,9 +899,6 @@ export const ms: Record<TranslationKey, string> = {
   "a11y.nextPage":                 "Halaman seterusnya",
 
   // ── PWA ────────────────────────────────────────────────────────────────
-  "pwa.updateAvailable":           "Kemas kini tersedia",
-  "pwa.updateDesc":                "Versi baharu DriveMy sudah sedia.",
-  "pwa.reload":                    "Muat semula",
   "pwa.offlineReady":              "Sedia untuk berfungsi luar talian",
 
   // ── RPK / RSM ──────────────────────────────────────────────────────────

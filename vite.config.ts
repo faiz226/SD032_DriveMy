@@ -91,7 +91,11 @@ export default defineConfig({
 
     // ─── Progressive Web App ─────────────────────────────────────────────
     VitePWA({
-      registerType: "prompt",
+      // A new deploy takes over as soon as its service worker is in (skipWaiting, clientsClaim) and the open page
+      // reloads onto it. "prompt" kept the previous deploy in charge until someone clicked Reload on a toast, so
+      // a page opened fresh showed the new version but the return from Google sign-in, a full page load the old
+      // worker answered from its cache, showed the old one (the owner, 11 Nov).
+      registerType: "autoUpdate",
       includeAssets: [
         "favicon.png",
         "apple-touch-icon.png",

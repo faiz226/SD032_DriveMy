@@ -13,28 +13,9 @@ initTelemetry();
 import { registerSW } from "virtual:pwa-register";
 import { useLanguageStore } from "./stores/languageStore";
 
-let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined;
-
 const register = () => {
-  updateSW = registerSW({
-    onNeedRefresh() {
-      const t = useLanguageStore.getState().t;
-      toast.info(t("pwa.updateAvailable"), {
-        description: t("pwa.updateDesc"),
-        action: {
-          label: t("pwa.reload"),
-          onClick: async () => {
-            try {
-              await updateSW?.(true);
-            } catch (err) {
-              console.error("Failed to update SW:", err);
-              window.location.reload();
-            }
-          },
-        },
-        duration: Infinity,
-      });
-    },
+  // autoUpdate (vite.config.ts): a new version's worker takes over and the page reloads onto it by itself
+  registerSW({
     onOfflineReady() {
       const t = useLanguageStore.getState().t;
       toast.success(t("pwa.offlineReady"), { duration: 3000 });
