@@ -898,9 +898,6 @@ export const en = {
   "a11y.nextPage":                  "Next page",
 
   // ── PWA ────────────────────────────────────────────────────────────────
-  "pwa.updateAvailable":           "Update available",
-  "pwa.updateDesc":                "A new version of DriveMy is ready.",
-  "pwa.reload":                    "Reload",
   "pwa.offlineReady":              "Ready to work offline",
 
   // ── RPK / RSM ──────────────────────────────────────────────────────────
