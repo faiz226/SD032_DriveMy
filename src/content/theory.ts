@@ -971,7 +971,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "rsm-cockpit-drill-ignition",
     "title": "RSM before moving off",
     "titleMs": "RSM sebelum bergerak",
-    "source": "KPP Automatic Driving Curriculum, PDF pages 233–239",
+    "source": "KPP Automatic Driving Curriculum, PDF pages 192 and 197–200",
     "badge": "Bahagian C",
     "content": "Set the parking brake, adjust your seat and mirrors, and fasten your seat belt before moving off. Check the selector position before starting an automatic.",
     "contentMs": "Gunakan brek parkir, laraskan tempat duduk dan cermin, serta pakai tali pinggang keledar sebelum bergerak. Periksa kedudukan pemilih gear sebelum menghidupkan kereta automatik."
@@ -980,7 +980,7 @@ export const safetyPrinciples: TheoryTopicItem[] = [
     "id": "occupant-crs-headrest-safety",
     "title": "Seat belts and child locks",
     "titleMs": "Tali pinggang keledar dan kunci kanak-kanak",
-    "source": "KPP Automatic Driving Curriculum, PDF pages 81 and 120",
+    "source": "KPP Automatic Driving Curriculum, PDF pages 120 and 158",
     "badge": "Bahagian C · Keselamatan",
     "content": "Use working seat belts. The rear child lock prevents a door from being opened from inside.",
     "contentMs": "Gunakan tali pinggang keledar yang berfungsi. Kunci kanak-kanak menghalang pintu belakang daripada dibuka dari dalam."
