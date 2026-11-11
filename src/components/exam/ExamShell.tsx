@@ -275,7 +275,7 @@ export function ExamShell({
 
             {question.image_url && (
               <div className="panel mt-5 overflow-hidden">
-                <img src={question.image_url} alt="" className="mx-auto max-h-56 w-auto object-contain p-4" />
+                <img src={question.image_url} alt="" className="mx-auto max-h-40 w-auto object-contain p-4 sm:max-h-56" />
               </div>
             )}
 
