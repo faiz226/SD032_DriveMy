@@ -64,8 +64,8 @@ export const ROAD_SIGN_CATEGORIES: {
     bookSectionMs: "Bahagian II · Papan Tanda Larangan",
     shapeEn: "Circle, Octagon (Stop), or Inverted Triangle (Give Way)",
     shapeMs: "Bulat, Oktagon (Berhenti), atau Segi Tiga Terbalik (Beri Laluan)",
-    colorRuleEn: "White background with red border and black symbol (or red disc)",
-    colorRuleMs: "Latar putih dengan sempadan merah dan simbol hitam (atau bulat merah)",
+    colorRuleEn: "Many use a red border, slash or red background",
+    colorRuleMs: "Banyak menggunakan sempadan, palang atau latar merah",
     swatchClass: "bg-destructive text-destructive-foreground border-destructive",
   },
   {
