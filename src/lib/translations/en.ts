@@ -167,6 +167,8 @@ export const en = {
   "mock.questions":                "70 questions · 75 minutes",
   "mock.passmark":                 "Pass mark: 56/70 (80%)",
   "mock.legacyFormat": "Legacy mock: 50 questions, 45 minutes, 42 to pass.",
+  "mock.submit": "Submit mock test",
+  "mock.confirmSubmit": "Submit mock test?",
   "mock.start":                    "Start Mock Test",
   "mock.passed":                   "LULUS",
   "mock.failed":                   "GAGAL",

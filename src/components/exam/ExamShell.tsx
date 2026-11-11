@@ -253,7 +253,7 @@ export function ExamShell({
               </button>
             )}
 
-            <h1 className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.625rem]">
+            <h1 className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.75rem]">
               {language === "en"
                 ? question.question_en || question.question_ms
                 : question.question_ms || question.question_en}
@@ -322,7 +322,7 @@ export function ExamShell({
                         String.fromCharCode(65 + i)
                       )}
                     </span>
-                    <span className="min-w-0 flex-1 text-pretty text-[0.9375rem] font-medium leading-snug">
+                    <span className="min-w-0 flex-1 text-pretty text-base font-medium leading-snug">
                       {language === "en" ? optEn || optMs : optMs || optEn}
                     </span>
                   </button>
@@ -333,7 +333,7 @@ export function ExamShell({
             {mode === "quiz" && quizPhase === "revealed" && (question.explanation_en || question.explanation_ms) && (
               <div className="mt-6 rounded-2xl border border-brand-ink/25 bg-brand/15 p-4 sm:p-5">
                 <p className="text-sm font-semibold text-brand-ink">{t("quiz.explanation")}</p>
-                <p className="mt-1.5 text-pretty text-[0.9375rem] leading-relaxed">
+                <p className="mt-1.5 text-pretty text-base leading-relaxed">
                   {language === "en"
                     ? question.explanation_en || question.explanation_ms
                     : question.explanation_ms || question.explanation_en}
@@ -383,13 +383,13 @@ export function ExamShell({
             <Button
               onClick={handleConfirmQuiz}
               disabled={selectedOption === null}
-              className="h-12 flex-1 text-[0.9375rem]"
+              className="h-12 flex-1 text-base"
             >
               {t("exam.confirmAnswer")}
             </Button>
           ) : (
-            <Button onClick={handleNext} className="h-12 flex-1 text-[0.9375rem]">
-              <span className="truncate">{isLastQuestion ? t("quiz.submit") : t("quiz.next")}</span>
+            <Button onClick={handleNext} className="h-12 flex-1 text-base">
+              <span className="truncate">{isLastQuestion ? t(mode === "mock" ? "mock.submit" : "quiz.submit") : t("quiz.next")}</span>
               {!isLastQuestion && <ArrowRight className="!size-5 shrink-0" aria-hidden weight="bold" />}
             </Button>
           )}
@@ -415,14 +415,14 @@ export function ExamShell({
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("quiz.confirmSubmit")}</DialogTitle>
+            <DialogTitle>{t(mode === "mock" ? "mock.confirmSubmit" : "quiz.confirmSubmit")}</DialogTitle>
             <DialogDescription>
               {t("quiz.confirmSubmitDesc", { unanswered: shuffledQuestions.length - answeredCount })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={handleCancelSubmit}>{t("common.cancel")}</Button>
-            <Button onClick={handleConfirmSubmit}>{t("quiz.submit")}</Button>
+            <Button onClick={handleConfirmSubmit}>{t(mode === "mock" ? "mock.submit" : "quiz.submit")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

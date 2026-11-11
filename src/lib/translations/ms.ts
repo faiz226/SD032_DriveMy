@@ -168,6 +168,8 @@ export const ms: Record<TranslationKey, string> = {
   "mock.questions":                "70 soalan · 75 minit",
   "mock.passmark":                 "Markah lulus: 56/70 (80%)",
   "mock.legacyFormat": "Ujian lama: 50 soalan, 45 minit, 42 untuk lulus.",
+  "mock.submit": "Hantar ujian percubaan",
+  "mock.confirmSubmit": "Hantar ujian percubaan?",
   "mock.start":                    "Mula Ujian Percubaan",
   "mock.passed":                   "LULUS",
   "mock.failed":                   "GAGAL",
