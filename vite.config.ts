@@ -231,6 +231,25 @@ export default defineConfig({
           // No Google Fonts rules: the fonts are self-hosted now, so they are
           // covered by the precache above like any other same-origin asset.
 
+          // ─── Pages ─────────────────────────────────────────────────────
+          //
+          // From the network, with its current headers; the copy saved last
+          // time only when that fails (offline, or no answer in 4 s), and the
+          // precached app shell for a page never opened before. The sign-in
+          // pages are left to the network (their addresses carry one-time
+          // codes), as are /api and /supabase, which were never app pages.
+          {
+            urlPattern: ({ request, url }) => request.mode === "navigate" && !/^\/(auth|api|supabase)(\/|$)/.test(url.pathname),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "pages",
+              networkTimeoutSeconds: 4,
+              precacheFallback: { fallbackURL: "index.html" },
+              expiration: { maxEntries: 20 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+
           // ─── Simulator ─────────────────────────────────────────────────
           //
           // Never precached: about 8 MB a learner may never use. Fetched the
@@ -340,13 +359,12 @@ export default defineConfig({
           },
         ],
 
-        // SPA navigation fallback — all navigation requests → index.html
-        navigateFallback: "index.html",
-        navigateFallbackDenylist: [/^\/api\//, /^\/supabase\//],
-
-        // Prompt user for update instead of forcefully claiming clients
-        skipWaiting: false,
-        clientsClaim: false,
+        // Page loads go to the network first (see "Pages" above), not to the
+        // precached index.html: a cached page keeps the headers it was saved
+        // with, so a change to the site's headers alone (the CSP, 12 Nov) never
+        // reached a browser that had the app, until a later build changed it.
+        // (skipWaiting and clientsClaim come from registerType "autoUpdate".)
+        navigateFallback: null,
 
         // The precache limit. The 3D vendor chunk that once needed it is now
         // runtime-cached instead (see "Simulator" above); the limit stays as
