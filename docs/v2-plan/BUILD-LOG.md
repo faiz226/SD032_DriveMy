@@ -797,3 +797,7 @@ stayed until a later build changed the app. Page loads now go to the network fir
 the copy saved last time only when that fails (offline, or 4 s), and the precached app shell for a page never
 opened before. Checked with one browser and a server whose header changed between visits: the old setup kept the
 first header, the new one showed the second at once, and both opened pages offline.
+That change showed a fault the old page copy had hidden since the first commit: Vercel answered every page except
+the home page with 404 (sign-in's return included), because with `cleanUrls` on it ignores a rewrite to a `.html`
+file. Every deep link had only ever worked from the service worker's copy. `cleanUrls` is off now (the app has no
+other page that needs it), so the rewrite to `/index.html` serves every route.
