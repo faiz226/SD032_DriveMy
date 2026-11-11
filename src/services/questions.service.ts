@@ -17,7 +17,7 @@ export type { ExamQuestion, AnswerKeyEntry };
  * being ready sits a real road-safety exam unprepared.
  */
 const EXAM_COLUMNS =
-  "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, source_url, created_at";
+  "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, created_at";
 
 /**
  * Practice quiz questions — WITH the answer key.

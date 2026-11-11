@@ -220,11 +220,12 @@ export type InsertColorblindResult = Database["public"]["Tables"]["colorblind_re
  */
 export type ExamQuestion = Omit<
   KppQuestion,
-  "correct_index" | "explanation_en" | "explanation_ms"
+  "correct_index" | "explanation_en" | "explanation_ms" | "source_url"
 > & {
   correct_index?: number;
   explanation_en?: string | null;
   explanation_ms?: string | null;
+  source_url?: string | null;
 };
 
 /** The answer key for one question, fetched only after submission. */
