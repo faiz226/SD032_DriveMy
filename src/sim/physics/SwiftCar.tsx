@@ -16,6 +16,7 @@ import { SWIFT_2022 as CAR } from './cars/swift-2022';
 import { Cluster } from './Cluster';
 import { CarLamps, type LampState } from './Lamps';
 import { MirrorView } from './MirrorView';
+import { closePillars } from './pillars';
 import { Vehicle } from './vehicle';
 
 export interface CarApi {
@@ -41,7 +42,7 @@ interface Props {
 }
 
 const DT = CAR.drive.dt;
-const EYE_PITCH = -0.07;   // a little nose-down, so the bonnet line shows
+const EYE_PITCH = CAR.eyeView.pitch;
 const EYE_ROTATION: [number, number, number, 'YXZ'] = [EYE_PITCH, -Math.PI / 2, 0, 'YXZ'];
 const HEAD_EASE_S = 0.12;  // how quickly the head turns to where it is asked to look
 // The head leans as it turns, as a driver's does (metres). Measured off the model: the door is so high
@@ -64,6 +65,27 @@ function setGlow(m: THREE.MeshStandardMaterial | null, k: number) {
   if (m && m.emissiveIntensity !== k) m.emissiveIntensity = k;
 }
 
+/**
+ * The tyres' rubber. The model has them metallic and smooth, so under the sky's light they mirrored it white (the
+ * testers, 2 Nov); the other cars bake plain colours and never showed it.
+ */
+function rubber(scene: THREE.Object3D) {
+  scene.traverse((o) => {
+    const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+    if (m?.isMeshStandardMaterial && m.name.startsWith('Tire')) {
+      m.metalness = 0;
+      m.roughness = 0.9;
+    }
+  });
+}
+
+/**
+ * Trim the model draws from one side only, which from the seat left the windscreen pillar's seams open to the sky
+ * (the owner, 3 Nov): drawn from both sides, they close. Only these: from both sides, the whole car would put the
+ * backs of its outer panels across the side windows.
+ */
+const BOTH_SIDES = new Set(['Roof_Beige_Plas', 'Roof_BeigeFab', 'Black_Plst_Parts']);
+
 /** The red paint (opaque, red, nothing else in it): free drive's secret code turns it to rainbow. */
 const isPaint = (m: THREE.MeshStandardMaterial) => !m.transparent && m.color.r > 0.4 && m.color.g < 0.1 && m.color.b < 0.1;
 interface Paint { m: THREE.MeshStandardMaterial; base: THREE.Color; lightness: number }
@@ -81,7 +103,7 @@ function poseAt(at: Vec2, heading: number) {
   return { x: at[0], y: ground + CAR.wheelRadius + 0.02, z: -at[1], yaw: heading };
 }
 
-export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = TIERS.low, start, firstPerson, onStep, fov = 50, mirrors = true, onReady }, ref) {
+export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = TIERS.low, start, firstPerson, onStep, fov = CAR.eyeView.fovDeg, mirrors = true, onReady }, ref) {
   const { rapier, world } = useRapier();
   const getThree = useThree((s) => s.get);
   const files = CAR.files(quality.tier);
@@ -97,13 +119,16 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       if (!mesh.isMesh) return;
       mesh.castShadow = shadows;
       const m = mesh.material as THREE.MeshPhysicalMaterial;
-      // this car's own copy: the tail lamps (lit by its brake), the paint (free drive's rainbow), or without clearcoat
-      if (m.name === 'R_Light_Metal' || isPaint(m) || (!clearcoat && m.clearcoat)) {
+      // this car's own copy: the tail lamps (lit by its brake), the paint (free drive's rainbow), without clearcoat,
+      // or trim seen from its back as well
+      if (m.name === 'R_Light_Metal' || isPaint(m) || (!clearcoat && m.clearcoat) || BOTH_SIDES.has(m.name)) {
         const own = m.clone();
         if (!clearcoat) own.clearcoat = 0;
+        if (BOTH_SIDES.has(m.name)) own.side = THREE.DoubleSide;
         mesh.material = own;
       }
     });
+    closePillars(scene);
     return scene;
   }, [body.scene, shadows, clearcoat]);
   // the car takes more of the sky's light than the yard does; the materials are this car's alone. Not the
@@ -116,11 +141,14 @@ export const SwiftCar = forwardRef<CarApi, Props>(function SwiftCar({ quality = 
       });
     }
   }, [bodyScene, steering.scene]);
-  const wheelScenes = useMemo(() => [0, 1, 2, 3].map(() => {
-    const scene = wheel.scene.clone(true);   // shares geometry and materials
-    scene.traverse((o) => { o.castShadow = shadows; });
-    return scene;
-  }), [wheel.scene, shadows]);
+  const wheelScenes = useMemo(() => {
+    rubber(wheel.scene);
+    return [0, 1, 2, 3].map(() => {
+      const scene = wheel.scene.clone(true);   // shares geometry and materials
+      scene.traverse((o) => { o.castShadow = shadows; });
+      return scene;
+    });
+  }, [wheel.scene, shadows]);
   const blob = useMemo(() => (shadows ? null : blobTexture()), [shadows]);
   const tailLamps = useMemo(() => {
     let found: THREE.MeshStandardMaterial | null = null;

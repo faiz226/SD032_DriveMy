@@ -4,10 +4,10 @@ import { circuit, rules, swift } from '../data';
 import { bayHeadingLimit, dir, rad, toDeg } from '../geom';
 import { en } from '../../lib/translations/en';
 import { ms } from '../../lib/translations/ms';
-import { createSession } from './session';
+import { createSession, rampPoleOpen } from './session';
 import {
   DT, Driver, HILL_STOP_S, L, LOCK, PAR, POSITIVE, R_LOCK, SIDE, assessment, drill, hillDrive, mergeDrive,
-  parallelDrive, parallelReverseIn, rampDrive, rampIn, rampOut, sDrive, sNear, sideDrive, sideReverseIn, station,
+  parallelDrive, parallelReverseIn, rampDrive, rampIn, rampOn, sDrive, sNear, sideDrive, sideReverseIn, station,
   zDrive,
 } from './testkit';
 
@@ -80,15 +80,13 @@ describe('assessment run', () => {
     d.rollBack(0.35);
     d.stop(0.5);
     d.follow(CREST() + 5, 8);
-    sideReverseIn(d);                                     // side parking: touch a pole
-    d.hitPole(0);
-    d.tick();
+    sideReverseIn(d);                                     // side parking: cleared (it has no poles since 2 Nov)
     d.stop(1.5, true);
     d.rs = SIDE.inBay;
     d.follow(station('side-parking').s_to + 2, 8);
-    const par = station('parallel-parking');              // parallel: done half a metre out into the lane
+    const par = station('parallel-parking');              // parallel: a mirror 0.2 m out past the line at the mouth
     parallelReverseIn(d);
-    d.glide([d.at[0] + 0.5, d.at[1]], d.heading, 1);
+    d.glide([d.at[0] + par.bay!.width / 2 - swift.width_mirrors_m / 2 + 0.2, d.at[1]], d.heading, 1);
     d.stop(1.5, true);
     d.arc(R_LOCK * PAR.phi, 4, -LOCK);
     d.arc(R_LOCK * PAR.phi, 4, LOCK);
@@ -101,9 +99,9 @@ describe('assessment run', () => {
 
     const v = d.last.verdict!;
     expect(v.pass).toBe(false);
-    expect([...new Set(v.faults.map((f) => f.kind))].sort()).toEqual(['cone', 'kerb', 'not_in_bay', 'pole', 'rollback', 'station_failed']);
-    expect(v.failedStations).toEqual(['hill-start', 'side-parking', 's-curve']);
-    expect(v.demerits).toBe(5 + 5 + 20 + 20 + 10);
+    expect([...new Set(v.faults.map((f) => f.kind))].sort()).toEqual(['cone', 'kerb', 'not_in_bay', 'rollback', 'station_failed']);
+    expect(v.failedStations).toEqual(['hill-start', 's-curve']);
+    expect(v.demerits).toBe(5 + 5 + 20 + 10);
     for (const f of v.faults) {
       expect(f.basis.length, f.kind).toBeGreaterThan(0);
       expect(en[f.reasonKey as keyof typeof en], f.reasonKey).toBeTruthy();
@@ -248,15 +246,6 @@ describe('side parking', () => {
     expect(d.last.demerits).toBe(points);
   });
 
-  it('costs 20 and fails when a pole is touched', () => {
-    const d = drill('side-parking');
-    sideReverseIn(d);
-    d.hitPole(0);
-    d.tick();
-    expect(status(d, 'side-parking')).toBe('failed');
-    expect(d.last.faults.map((f) => [f.kind, f.points])).toEqual([['pole', 20]]);
-  });
-
   it.each([[0.98, 'failed'], [1.0, 'cleared']])('a %s s handbrake stop in the bay: %s', (secs, want) => {
     const d = drill('side-parking');
     sideReverseIn(d);
@@ -290,10 +279,10 @@ describe('parallel parking', () => {
     expect(d.last.faults).toEqual([]);
   });
 
-  it('costs 10 when done half a metre out into the lane', () => {
+  it('costs 10 when a mirror sticks out 0.2 m past the line at the recess mouth', () => {
     const d = drill('parallel-parking');
     parallelReverseIn(d);
-    parkAt(d, 'parallel-parking', -0.5);
+    parkAt(d, 'parallel-parking', -(station('parallel-parking').bay!.width / 2 - swift.width_mirrors_m / 2 + 0.2));
     d.stop(1.5, true);
     expect(d.last.faults.map((f) => f.kind)).toEqual(['not_in_bay']);
   });
@@ -322,6 +311,7 @@ describe('S-curve', () => {
     d.follow(ENTRY() + 12, 25);
     expect(status(d, 's-curve')).toBe('waiting');
     expect(d.stationState('s-curve').detail.voids).toBe(1);
+    expect(d.stationState('s-curve').detail.voidKey).toBe('s.speed');   // the screens say why
     d.follow(station('s-curve').s_to + 2, 10);
     expect(status(d, 's-curve')).toBe('waiting');        // nothing arms until the restart
     const start = d.session.restartStation('s-curve');
@@ -389,8 +379,16 @@ describe('Z-curve', () => {
   });
 });
 
+describe('progress', () => {
+  it('publishes how far along the route the car has come, for the way arrow', () => {
+    const d = assessment();
+    d.follow(50, 8);
+    expect(d.last.progress).toBeCloseTo(50, 0);
+  });
+});
+
 describe('ramp test', () => {
-  it('clears: up, stop 0.6 m short of the pole, hold, reverse out', () => {
+  it('clears: up, stop 0.6 m short of the pole, hold, then on and down off the front', () => {
     const d = drill('ramp-test');
     rampDrive(d);
     expect(status(d, 'ramp-test')).toBe('cleared');
@@ -402,8 +400,7 @@ describe('ramp test', () => {
       const d = drill('ramp-test', 'assessment');
       rampIn(d, gap);
       d.stop(2.5);
-      rampOut(d);
-      d.follow(station('ramp-test').s_to + 2, 8);
+      rampOn(d);
       expect(status(d, 'ramp-test')).toBe(want);
     });
 
@@ -411,12 +408,27 @@ describe('ramp test', () => {
     const d = drill('ramp-test', 'assessment');
     rampIn(d, 1.6);
     d.stop(2.5);
-    rampOut(d);
-    d.follow(station('ramp-test').s_to + 2, 8);
+    rampOn(d);
     expect(status(d, 'ramp-test')).toBe('failed');
     expect(d.last.faults.find((f) => f.station === 'ramp-test')).toMatchObject({
       kind: 'station_failed', reasonKey: 'sim.fault.ramp.window', fixKey: 'sim.fix.ramp.window', measured: '1.60 m', limit: '0.2-1.0 m',
     });
+  });
+
+  it('the pole stands until the car has held still in the window, and a touch where it stood then costs nothing', () => {
+    const d = drill('ramp-test');
+    const pole = circuit.obstacles.poles.findIndex((p) => p.station === 'ramp-test');
+    const ramp = () => d.last.stations.find((st) => st.id === 'ramp-test');
+    rampIn(d);
+    d.stop(1);
+    expect(rampPoleOpen(ramp())).toBe(false);
+    d.stop(1.5);
+    expect(rampPoleOpen(ramp())).toBe(true);
+    d.hitPole(pole);
+    d.tick();
+    rampOn(d);
+    expect(status(d, 'ramp-test')).toBe('cleared');
+    expect(d.last.faults).toEqual([]);
   });
 
   it('costs 20 and fails when the pole is touched', () => {
@@ -431,9 +443,9 @@ describe('ramp test', () => {
   it('costs 20 for a 0.31 m rollback on the slope', () => {
     const d = drill('ramp-test');
     const g = station('ramp-test');
-    d.follow(sNear([g.start.at[0], g.axis!.start[1] - R_LOCK], g.s_from - 3, g.s_to), 6);
-    d.arc(R_LOCK * (Math.PI / 2), 5, -LOCK);
-    d.arc(g.axis!.start[0] + 3 - d.at[0], 5, 0);        // 3 m up the slope
+    const [ax, ay] = g.axis!.start;
+    const h = (g.axis!.heading_deg * Math.PI) / 180;
+    d.follow(sNear([ax + 3 * Math.cos(h), ay + 3 * Math.sin(h)], g.s_from, g.s_to), 5);   // 3 m up the slope
     d.stop(1);
     d.rollBack(0.31);
     d.stop(0.5);
@@ -460,6 +472,7 @@ describe('road merging', () => {
     mergeDrive(d, 10);
     expect(status(d, 'road-merging')).toBe('waiting');
     expect(d.stationState('road-merging').detail.voids).toBe(1);
+    expect(d.stationState('road-merging').detail.voidKey).toBe('merge.slow');
     const start = d.session.restartStation('road-merging');
     const g = station('road-merging');
     d.at = [...start.at] as Vec2;

@@ -21,7 +21,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 
-from lib_geom import HERE, Car, World, follow, parallel_into_slot, reverse_into_bay, reverse_out, three_point
+from lib_geom import HERE, Car, World, follow, parallel_into_slot, reverse_into_bay, three_point
 
 RULES = os.path.join(HERE, '..', 'v2-plan', 'rules.json')
 
@@ -50,6 +50,7 @@ EYE = dict(up=1.20, behind_mid=0.265, right=0.33)
 SCREEN = dict(top=12.5, right=15.0, left=29.0, mirror=(16.5, 31.0, 4.5, 10.0))
 ROOF_M = 1.51
 QUEUE = dict(short=0.4, gap=2.0)
+MIRROR_AHEAD = 0.535   # the door mirrors, ahead of the wheelbase's middle (swift-2022.ts): the hill's guide poles stand level with them
 HEAD = dict(underside=2.9, middle=0.46, lamp=0.28, bracket=0.28, deep=0.24)
 
 
@@ -302,7 +303,7 @@ def main():
     for crit in ('tyre', 'body'):
         b = reverse_into_bay(car, world, sp['bay'], aisle, crit=crit)
         record('possible', 'side parking: reverse into the bay (%s)' % crit, b is not None,
-               ('one full-lock arc then straight back; ends %.1f deg off (limit %.1f deg); poles untouched' % (b[0], lim)) if b
+               ('one full-lock arc then straight back; ends %.1f deg off (limit %.1f deg)' % (b[0], lim)) if b
                else 'no single-arc plan found')
     pp = by['parallel-parking']
     slot = dict(centre=pp['bay']['centre'], length=pp['bay']['length'], width=pp['bay']['width'])
@@ -323,51 +324,74 @@ def main():
     record('possible', 'hill: the whole stop band sits on the up-slope', on_slope,
            'band s %.1f-%.1f m on an up-slope from s %.1f to %.1f m; %.1f%% (%.1f deg)' % (
                band['s_from'], band['s_to'], ramp_from, ramp_from + prof[1][0], grade * 100, math.degrees(math.atan(grade))))
+    # the guide poles (the owner, 2 Nov: "near-peak of the slope with a pole guiding the yellow line"): the band's far edge
+    # within 1.5 m of the crest; a pole on each wall beside it, on the wall top and off the pavement, level with the door
+    # mirrors when the front tyres are mid-band
+    hx, hy = hill['start']
+    hu = (math.cos(math.radians(hill['heading_deg'])), math.sin(math.radians(hill['heading_deg'])))
+    mid_s = (band['s_from'] + band['s_to']) / 2
+    mid_a = (np.interp(mid_s, S, [q[1] for q in samples]) - hx) * hu[0] + (np.interp(mid_s, S, [q[2] for q in samples]) - hy) * hu[1]   # the band's middle, metres up the hill
+    crest_gap = prof[1][0] - mid_a - (band['s_to'] - band['s_from']) / 2
+    wall = C['parameters']['wall_w']['value']
+    gp, bad, sides = [p for p in C['props'].get('ref_poles', []) if p['station'] == 'hill-start'], [], set()
+    for p in gp:
+        a = (p['at'][0] - hx) * hu[0] + (p['at'][1] - hy) * hu[1]
+        c = -(p['at'][0] - hx) * hu[1] + (p['at'][1] - hy) * hu[0]
+        sides.add(c > 0)
+        if not (hill['width'] / 2 <= abs(c) <= hill['width'] / 2 + wall):
+            bad.append('not on a wall')
+        if world.mask[int((p['at'][1] - world.y0) / world.res), int((p['at'][0] - world.x0) / world.res)]:
+            bad.append('on the pavement')
+        if abs(a + car.wb / 2 - MIRROR_AHEAD - mid_a) > 0.05:
+            bad.append('not level with the mirrors')
+        if abs(p['base_z'] - (grade * a + kerb_h)) > 0.01:
+            bad.append('not on the wall top')
+    record('possible', 'hill: a guide pole each side of the band, near the crest', crest_gap <= 1.5 and len(gp) == 2 and sides == {True, False} and not bad,
+           'band %.2f m short of the crest (need <= 1.5 m); %d poles, mirrors level at %.2f m up the hill, wall top %.2f m up%s' % (
+               crest_gap, len(gp), mid_a - (car.wb / 2 - MIRROR_AHEAD), gp[0]['base_z'] if gp else 0.0, '; ' + ', '.join(sorted(set(bad))) if bad else ''))
 
-    # ramp test: drive in from the lane, stop short of the pole, reverse back out into the lane
+    # ramp test (the owner, 2 Nov): up lane E-F, right into the ramp, up to a stop in the window with both front tyres
+    # on the platform; the pole is then moved aside, and the car drives on, down off the front and out
     rt = by['ramp-test']
     ax, ay = rt['axis']['start']
     ah = math.radians(rt['axis']['heading_deg'])
     ux, uy = math.cos(ah), math.sin(ah)
     px, py = rt['pole']
     pole_r = next(p['radius'] for p in C['obstacles']['poles'] if p['station'] == 'ramp-test')
-    lane = [q for q in samples if q[5] == 'ramp-test']
-    lane_h = math.radians(lane[0][3])
-    lx, ly = math.cos(lane_h), math.sin(lane_h)
-    # where the ramp's axis crosses the lane centreline, and how far from it the ramp's mouth is
-    t_cross = ((ax - lane[0][1]) * lx + (ay - lane[0][2]) * ly)
-    cx, cy = lane[0][1] + lx * t_cross, lane[0][2] + ly * t_cross
-    turn_r = 5.0
-    path = [(cx - lx * (turn_r + 10.0), cy - ly * (turn_r + 10.0)), (cx - lx * turn_r, cy - ly * turn_r)]
-    ccx, ccy = cx - lx * turn_r + ux * turn_r, cy - ly * turn_r + uy * turn_r
-    for k in range(1, 19):
-        a = k / 18 * math.pi / 2
-        path.append((ccx - ux * turn_r * math.cos(a) + lx * turn_r * math.sin(a),
-                     ccy - uy * turn_r * math.cos(a) + ly * turn_r * math.sin(a)))
+    prof = next(sl['profile'] for sl in C['slopes'] if sl['id'] == rt['slope'])
+    crest, top_end = prof[1][0], prof[2][0]                   # along the axis from the up-slope's foot
     window = rules['ramp-test']['stop_window_m']
-    stop_gap = sum(window) / 2
-    d_pole = (px - cx) * ux + (py - cy) * uy
-    axle_d = d_pole - pole_r - stop_gap - (car.wb + car.f_oh)
-    path.append((cx + ux * axle_d, cy + uy * axle_d))
-    rec = follow(car, world, path, lookahead=2.0, ds=0.05, kerb_h=kerb_h)
+    d_pole = (px - ax) * ux + (py - ay) * uy - pole_r         # the pole's near side
+    front = [d_pole - g - car.f_oh for g in window]           # the front axle at each edge of the window
+    record('possible', 'ramp: anywhere in the stop window, both front tyres are on the platform',
+           crest + 0.1 <= front[1] and front[0] <= top_end,
+           'front axle %.2f-%.2f m past the crest (platform %.1f m)' % (front[1] - crest, front[0] - crest, top_end - crest))
+
+    def along(x, y):
+        return (x - ax) * ux + (y - ay) * uy
+    lane = [q for q in samples if q[5] == 'ramp-test']
+    axle_d = d_pole - sum(window) / 2 - (car.wb + car.f_oh)   # the rear axle, stopped mid-window
+    path = [(q[1], q[2]) for q in lane if along(q[1], q[2]) < axle_d] + [(ax + ux * axle_d, ay + uy * axle_d)]
+    rec = follow(car, world, path, lookahead=2.0, ds=0.05, kerb_h=kerb_h, start=(lane[0][1], lane[0][2], math.radians(lane[0][3])))
     tyre = min(r[7] for r in rec)
     obst = min(r[8] for r in rec)
-    s_end, x_end, y_end, th_end = rec[-1][:4]
+    x_end, y_end, th_end = rec[-1][1:4]
     fx, fy = car.front_centre(x_end, y_end, th_end)
     gap_to_pole = math.hypot(px - fx, py - fy) - pole_r
-    record('possible', 'ramp: drive in and up without touching a kerb or the pole', tyre >= 0.10 and obst > 0,
-           'tyres %.2f m from the kerbs, body %.2f m from the pole' % (tyre, obst))
-    record('possible', 'ramp: the stop window can be reached', window[0] <= gap_to_pole <= window[1],
-           'front bumper %.2f m short of the pole (window %.1f-%.1f m)' % (gap_to_pole, *window))
-
-    def in_lane(x, y, th):
-        q = min(lane, key=lambda q: (q[1] - x) ** 2 + (q[2] - y) ** 2)
-        h = math.radians(q[3])
-        lateral = -(x - q[1]) * math.sin(h) + (y - q[2]) * math.cos(h)
-        return abs(lateral) <= 1.6
-    out = reverse_out(car, world, (x_end, y_end, th_end), lane_h, in_lane)
-    record('possible', 'ramp: reverse down and out, ending in the lane facing on', out is not None,
-           ('straight back %.1f m, then full %s lock' % (out[0], out[1])) if out else 'no reverse-out plan found')
+    record('possible', 'ramp: up into the stop window without touching a kerb or the pole',
+           tyre >= 0.10 and obst > 0 and window[0] <= gap_to_pole <= window[1],
+           'tyres %.2f m from the kerbs; front bumper %.2f m short of the pole (window %.1f-%.1f m)' % (tyre, gap_to_pole, *window))
+    # the pole moved aside: on from the stop, down off the front and into the turn down the east road
+    s_stop = min(lane, key=lambda q: math.hypot(q[1] - x_end, q[2] - y_end))[0]
+    on = [(q[1], q[2]) for q in samples if s_stop < q[0] <= rt['s_to'] + 8.0]
+    standing = world.obstacles
+    world.obstacles = [o for o in standing if (o[0], o[1]) != (px, py)]
+    rec = follow(car, world, on, lookahead=2.0, ds=0.05, kerb_h=kerb_h, start=(x_end, y_end, th_end))
+    world.obstacles = standing
+    tyre = min(r[7] for r in rec)
+    out = math.hypot(rec[-1][1] - on[-1][0], rec[-1][2] - on[-1][1]) < 1.0
+    record('possible', 'ramp: with the pole moved aside, on past where it stood, down off the front and out', tyre >= 0.10 and out,
+           'tyres %.2f m from the kerbs; %s' % (tyre, 'into the turn down the east road' if out else 'stopped short'))
 
     mg = by['road-merging']
     min_kmh = rules['road-merging']['min_kmh']
@@ -423,6 +447,36 @@ def main():
     record('possible', 'every signal is seen from the first and second car in its queue', not unseen and not on_road,
            ('; '.join(unseen) or ('posts on the road: %s' % on_road) if (unseen or on_road) else '%d approaches; e.g. %s' % (len(seen) // 2, seen[0])))
 
+    # the paint (the owner, 2 Nov: "each side of road should have a line tracing the side of the road", "a solid line
+    # before every junction", "no line in roundabout"): a kerb sampled every metre has an edge line 0.2 to 0.45 m in
+    # from it, except on the stations, the slopes and the walls; every roundabout entry has a give-way line
+    mk = C.get('markings') or {}
+    segs = np.array([(a[0], a[1], b[0], b[1]) for pl in mk.get('edge_lines', []) for a, b in zip(pl, pl[1:])]) if mk.get('edge_lines') else np.zeros((0, 4))
+    on_station = np.array([(q[1], q[2]) for q in samples if q[5] in {st['id'] for st in stations} and q[5] != 'road-merging'])
+    feet = [(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + sl['profile'][-1][0] + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0) for sl in C['slopes']]
+    def ring_area(r):
+        return abs(sum(r[i][0] * r[(i + 1) % len(r)][1] - r[(i + 1) % len(r)][0] * r[i][1] for i in range(len(r)))) / 2
+    lined = total = 0
+    for ring in C['kerbs']['rings']:
+        if ring_area(ring) < 40.0:
+            continue   # a wall or a divider
+        for (ax, ay), (bx, by) in zip(ring, ring[1:] + ring[:1]):
+            n = max(1, int(math.hypot(bx - ax, by - ay)))
+            for k in range(n):
+                px, py = ax + (bx - ax) * (k + 0.5) / n, ay + (by - ay) * (k + 0.5) / n
+                if (len(on_station) and np.min(np.hypot(on_station[:, 0] - px, on_station[:, 1] - py)) < 5.0) or any(f[0] <= px <= f[2] and f[1] <= py <= f[3] for f in feet):
+                    continue
+                total += 1
+                if len(segs):
+                    dx, dy = segs[:, 2] - segs[:, 0], segs[:, 3] - segs[:, 1]
+                    t = np.clip(((px - segs[:, 0]) * dx + (py - segs[:, 1]) * dy) / np.maximum(dx * dx + dy * dy, 1e-9), 0, 1)
+                    d = np.min(np.hypot(px - segs[:, 0] - t * dx, py - segs[:, 1] - t * dy))
+                    lined += 0.2 <= d <= 0.45
+    covered = lined / max(1, total)
+    entries = len(mk.get('give_way', []))
+    record('organised', 'the kerbs carry edge lines; the junctions and the roundabout their lines', covered >= 0.9 and len(mk.get('stop_lines', [])) >= 20 and entries >= 3,
+           '%.0f%% of %d m of road kerb has its edge line (need >= 90%%); %d stop lines; %d give-way lines' % (100 * covered, total, len(mk.get('stop_lines', [])), entries))
+
     # ---------------------------------------------------------------- 5 Cheap
     print('\n5 CHEAP')
     kerb_len = sum(float(np.hypot(*np.diff(np.asarray(r), axis=0).T).sum()) for r in C['kerbs']['rings'])
@@ -433,8 +487,8 @@ def main():
            '%d vertices, %.0f m of kerb (about %d instances at 1 m)' % (kerb_vertices, kerb_len, kerb_len))
     record('cheap', 'circuit data is small', size_kb < 400, '%.0f KB uncompressed' % size_kb)
     props = C['props']
-    record('cheap', 'few props', len(props['booths']) + 1 + len(C['obstacles']['poles']) <= 14,
-           '%d booths, 1 office, %d poles' % (len(props['booths']), len(C['obstacles']['poles'])))
+    record('cheap', 'few props', len(props['booths']) + 1 + len(C['obstacles']['poles']) + len(props.get('ref_poles', [])) <= 14,
+           '%d booths, 1 office, %d pole, %d reference poles' % (len(props['booths']), len(C['obstacles']['poles']), len(props.get('ref_poles', []))))
 
     print('\n%s: %d checks, %d failed (%.0f s)' % ('PASS' if not failures else 'FAIL', len(results), len(failures), time.time() - t0))
     with open(os.path.join(HERE, 'check_report.json'), 'w', encoding='utf-8') as f:

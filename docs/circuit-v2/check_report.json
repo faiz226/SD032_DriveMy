@@ -85,7 +85,7 @@
    "section": "roomy",
    "check": "the driver reaches the end of every driven piece",
    "ok": true,
-   "detail": "2 pieces between manoeuvres, 678 m of route"
+   "detail": "2 pieces between manoeuvres, 670 m of route"
   },
   {
    "section": "roomy",
@@ -127,19 +127,19 @@
    "section": "roomy",
    "check": "clearance: ramp-test",
    "ok": true,
-   "detail": "tyres 1.18 m (need >= 0.10), body 1.05 m, worst at s = 453.1"
+   "detail": "tyres 0.96 m (need >= 0.10), body 0.81 m, worst at s = 466.6"
   },
   {
    "section": "roomy",
    "check": "clearance: road-merging",
    "ok": true,
-   "detail": "tyres 1.20 m (need >= 0.10), body 1.15 m, worst at s = 667.2"
+   "detail": "tyres 1.20 m (need >= 0.10), body 1.15 m, worst at s = 658.5"
   },
   {
    "section": "roomy",
    "check": "clearance: exit-road",
    "ok": true,
-   "detail": "tyres 1.20 m (need >= 0.50), body 1.15 m, worst at s = 672.2"
+   "detail": "tyres 1.20 m (need >= 0.50), body 1.15 m, worst at s = 663.6"
   },
   {
    "section": "roomy",
@@ -151,49 +151,55 @@
    "section": "possible",
    "check": "side parking: reverse into the bay (tyre)",
    "ok": true,
-   "detail": "one full-lock arc then straight back; ends 0.0 deg off (limit 11.9 deg); poles untouched"
+   "detail": "one full-lock arc then straight back; ends 0.0 deg off (limit 11.9 deg)"
   },
   {
    "section": "possible",
    "check": "side parking: reverse into the bay (body)",
    "ok": true,
-   "detail": "one full-lock arc then straight back; ends 0.0 deg off (limit 11.9 deg); poles untouched"
+   "detail": "one full-lock arc then straight back; ends 0.0 deg off (limit 11.9 deg)"
   },
   {
    "section": "possible",
    "check": "parallel park: two-arc reverse into the recess (tyre)",
    "ok": true,
-   "detail": "plan {'out': 1.4, 'ahead': 3.5, 'phi_deg': 45.0, 'straight': 1.75}; ends 0.0 deg off (limit 10.2 deg)"
+   "detail": "plan {'out': 0.4, 'ahead': 2.5, 'phi_deg': 47.5, 'straight': 0.0}; ends 0.0 deg off (limit 36.5 deg)"
   },
   {
    "section": "possible",
    "check": "parallel park: two-arc reverse into the recess (body)",
    "ok": true,
-   "detail": "plan {'out': 1.4, 'ahead': 3.5, 'phi_deg': 47.5, 'straight': 1.5}; ends 0.0 deg off (limit 10.2 deg)"
+   "detail": "plan {'out': 0.4, 'ahead': 2.5, 'phi_deg': 47.5, 'straight': 0.0}; ends 0.0 deg off (limit 36.5 deg)"
   },
   {
    "section": "possible",
    "check": "hill: the whole stop band sits on the up-slope",
    "ok": true,
-   "detail": "band s 17.6-18.2 m on an up-slope from s 14.6 to 25.4 m; 12.0% (6.9 deg)"
+   "detail": "band s 23.8-24.4 m on an up-slope from s 14.4 to 25.2 m; 12.0% (6.9 deg)"
   },
   {
    "section": "possible",
-   "check": "ramp: drive in and up without touching a kerb or the pole",
+   "check": "hill: a guide pole each side of the band, near the crest",
    "ok": true,
-   "detail": "tyres 0.86 m from the kerbs, body 0.81 m from the pole"
+   "detail": "band 0.78 m short of the crest (need <= 1.5 m); 2 poles, mirrors level at 9.03 m up the hill, wall top 1.22 m up"
   },
   {
    "section": "possible",
-   "check": "ramp: the stop window can be reached",
+   "check": "ramp: anywhere in the stop window, both front tyres are on the platform",
    "ok": true,
-   "detail": "front bumper 0.81 m short of the pole (window 0.2-1.0 m)"
+   "detail": "front axle 0.30-1.10 m past the crest (platform 4.0 m)"
   },
   {
    "section": "possible",
-   "check": "ramp: reverse down and out, ending in the lane facing on",
+   "check": "ramp: up into the stop window without touching a kerb or the pole",
    "ok": true,
-   "detail": "straight back 11.5 m, then full right lock"
+   "detail": "tyres 1.00 m from the kerbs; front bumper 0.83 m short of the pole (window 0.2-1.0 m)"
+  },
+  {
+   "section": "possible",
+   "check": "ramp: with the pole moved aside, on past where it stood, down off the front and out",
+   "ok": true,
+   "detail": "tyres 0.50 m from the kerbs; into the turn down the east road"
   },
   {
    "section": "possible",
@@ -214,6 +220,12 @@
    "detail": "3 approaches; e.g. J1 eastbound, first car: 15 deg left, 9-11 deg up"
   },
   {
+   "section": "organised",
+   "check": "the kerbs carry edge lines; the junctions and the roundabout their lines",
+   "ok": true,
+   "detail": "100% of 1225 m of road kerb has its edge line (need >= 90%); 31 stop lines; 3 give-way lines"
+  },
+  {
    "section": "cheap",
    "check": "flat ground plus the hill and the ramp, each with its twin track",
    "ok": true,
@@ -223,19 +235,19 @@
    "section": "cheap",
    "check": "kerbs fit in one instanced mesh",
    "ok": true,
-   "detail": "968 vertices, 1470 m of kerb (about 1470 instances at 1 m)"
+   "detail": "985 vertices, 1468 m of kerb (about 1468 instances at 1 m)"
   },
   {
    "section": "cheap",
    "check": "circuit data is small",
    "ok": true,
-   "detail": "172 KB uncompressed"
+   "detail": "181 KB uncompressed"
   },
   {
    "section": "cheap",
    "check": "few props",
    "ok": true,
-   "detail": "4 booths, 1 office, 5 poles"
+   "detail": "4 booths, 1 office, 1 pole, 4 reference poles"
   }
  ]
 }

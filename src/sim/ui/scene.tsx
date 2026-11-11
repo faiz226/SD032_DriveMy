@@ -1,5 +1,5 @@
 // In the 3D scene: the "where next" marker over the next station's entry on route.samples, a small camera kick when
-// a fault happens (both still for anyone who asks for reduced motion), and free drive's chase view.
+// a fault happens (both still for anyone who asks for reduced motion), and the view from behind the car.
 import { PerformanceMonitor, PerspectiveCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
@@ -8,7 +8,9 @@ import type { StationId, Vec2 } from '../contracts';
 import { circuit } from '../data';
 import type { TierSpec } from '../quality';
 import { useHead } from '../input';
+import { rampPoleOpen } from '../core/session';
 import { getWorld } from '../world/build';
+import { RampPole } from '../world/RampPole';
 import { useRun } from './run';
 
 const REDUCED = typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -20,6 +22,12 @@ const ENTRY = Object.fromEntries(circuit.stations.map((st) => {
   const q = circuit.route.samples.find((s) => s[0] >= st.s_from) ?? circuit.route.samples[0];
   return [st.id, [q[1], q[2]] as Vec2];
 })) as Record<StationId, Vec2>;
+
+/** The ramp's pole, standing or moved aside by the rules' own state (rampPoleOpen); aside in free drive. */
+export function RampGate({ free }: { free: boolean }) {
+  const open = useRun((s) => free || rampPoleOpen(s.state.stations.find((st) => st.id === 'ramp-test')));
+  return <RampPole open={open} snap={REDUCED} />;
+}
 
 export function WhereNext() {
   const target = useRun((s) => {
@@ -62,7 +70,7 @@ const chaseFwd = new THREE.Vector3();
 const chaseWant = new THREE.Vector3();
 const chaseQ = new THREE.Quaternion();
 
-/** Free drive's view from behind the car: the wheels, the lamps and the yard around it. */
+/** The view from behind the car: the wheels, the lamps and the yard around it. */
 export function ChaseCamera({ active, follow }: { active: boolean; follow: () => THREE.Object3D | null }) {
   const cam = useRef<THREE.PerspectiveCamera>(null);
   const was = useRef(false);

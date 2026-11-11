@@ -21,14 +21,18 @@ interface RunStore {
   t: number;
   /** Seconds since this run began. */
   elapsed: number;
+  /** The view from behind the car was on at some point in this run: the verdict says so. The marking never sees it. */
+  chaseUsed: boolean;
   toasts: Toast[];
   /** performance.now() of the newest fault, for the camera kick. */
   lastFaultAt: number;
+  /** Where the car was at the latest snapshot: the way arrow points from it. */
+  pose: Pose | null;
   /** Start a run (practice: one station) and say where the car goes. */
   begin(mode: Mode, drill?: StationId): Pose;
   /** The same run again, from its start. */
   restart(): Pose;
-  step(sample: VehicleSample, events: SimEvent[], dt: number, topDown: boolean): void;
+  step(sample: VehicleSample, events: SimEvent[], dt: number, topDown: boolean, chase?: boolean): void;
   dismiss(id: number): void;
 }
 
@@ -54,7 +58,9 @@ export const useRun = create<RunStore>((set, get) => ({
   state: session.state(),
   t: 0,
   elapsed: 0,
+  chaseUsed: false,
   toasts: [],
+  pose: null,
   lastFaultAt: -Infinity,
 
   begin(mode, drill = get().drill) {
@@ -63,7 +69,7 @@ export const useRun = create<RunStore>((set, get) => ({
     publishedAt = -Infinity;
     shown = '';
     t0 = null;
-    set({ mode, drill, runId: generateUUID(), state: session.state(), t: 0, elapsed: 0, toasts: [] });
+    set({ mode, drill, runId: generateUUID(), state: session.state(), t: 0, elapsed: 0, chaseUsed: false, toasts: [], pose: null });
     return pose;
   },
 
@@ -71,17 +77,19 @@ export const useRun = create<RunStore>((set, get) => ({
     return get().begin(get().mode, get().drill);
   },
 
-  step(sample, events, dt, topDown) {
+  step(sample, events, dt, topDown, chase = false) {
     t0 ??= sample.t - dt;
+    if (chase && !get().chaseUsed) set({ chaseUsed: true });   // for the verdict's note only: the session is not told
     const s = session.step(sample, events, dt, topDown);
     const sig = signature(s);
     if (sig === shown && sample.t - publishedAt < PUBLISH_S) return;
     const fresh = s.faults.slice(get().state.faults.length);
     shown = sig;
     publishedAt = sample.t;
+    const pose: Pose = { at: [sample.x, sample.y], heading: sample.heading };
     set(fresh.length
-      ? { state: s, t: sample.t, elapsed: sample.t - t0, toasts: [...get().toasts, ...fresh.map((fault) => ({ id: ++toastId, fault }))].slice(-MAX_TOASTS), lastFaultAt: performance.now() }
-      : { state: s, t: sample.t, elapsed: sample.t - t0 });
+      ? { state: s, t: sample.t, elapsed: sample.t - t0, pose, toasts: [...get().toasts, ...fresh.map((fault) => ({ id: ++toastId, fault }))].slice(-MAX_TOASTS), lastFaultAt: performance.now() }
+      : { state: s, t: sample.t, elapsed: sample.t - t0, pose });
   },
 
   dismiss(id) {

@@ -5,7 +5,7 @@ import type {
   StationGeometry, StationId, StationProgress, Vec2, VehicleSample,
 } from '../contracts';
 import {
-  bayHeadingLimit, bayOverhang, dir, distToSegment, footprint, headingErrorToAxis, pointInPolygon, rad, segmentsCross, toDeg,
+  bayHeadingLimit, bayOverhang, dir, distToSegment, footprint, headingErrorToAxis, rad, segmentsCross, toDeg,
 } from '../geom';
 
 // Progress tracking along route.samples (0.25 m apart). Engine internals, not rule thresholds.
@@ -79,6 +79,14 @@ const freshWork = (): Work => ({
 
 interface Run { geo: StationGeometry; pub: StationProgress; m: Work; blocked: boolean }
 
+/**
+ * Whether the ramp's pole has been moved aside (the owner, 2 Nov). It stands until the car has held still in the stop
+ * window, and is aside once the station is over, or when the run has no ramp to drive. The screens draw it from the
+ * same state, so a touch the rules ignore is never one the learner can see.
+ */
+export const rampPoleOpen = (st: Pick<StationProgress, 'status' | 'detail'> | undefined): boolean =>
+  !st || st.detail.held === true || (st.status !== 'waiting' && st.status !== 'armed');
+
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const r2 = (v: number) => Math.round(v * 100) / 100;
 
@@ -86,7 +94,6 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
   const R = readRules(rulesData);
   const samples = circuit.route.samples;
   const ordered = [...circuit.stations].sort((a, b) => a.order - b.order);
-  const offRoute = circuit.stations.filter((g) => g.slope === 'ramp' && g.box).map((g) => g.box!);
   const nose = car.wheelbase_m + car.front_overhang_m;
 
   let drill = only;
@@ -137,7 +144,6 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
   }
 
   function track(p: Vec2) {
-    if (offRoute.some((box) => pointInPolygon(p, box))) return;   // the route runs beside the ramp: hold progress on it
     let best = -1;
     let bestD = Infinity;
     for (let j = Math.max(0, idx - BEHIND); j <= Math.min(samples.length - 1, idx + AHEAD); j++) {
@@ -211,11 +217,12 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
    * Practice only: the attempt is void. The station waits, unarmed, for restartStation (the screen moves the car
    * back to its start); detail.voids counts the voids so the screen can react.
    */
-  function voidRun(run: Run) {
+  /** Practice: the attempt does not count (`key` says why, for the screens); the station waits for a restart. */
+  function voidRun(run: Run, key: string) {
     const voids = Number(run.pub.detail.voids ?? 0) + 1;
     run.pub.status = 'waiting';
     run.pub.startedAt = null;
-    run.pub.detail = { voids };
+    run.pub.detail = { voids, voidKey: key };
     run.m = freshWork();
     run.blocked = true;
   }
@@ -237,6 +244,8 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
   function hitStep(events: SimEvent[]) {
     for (const e of events) {
       if (e.type !== 'obstacle-hit') continue;
+      const ramp = e.kind === 'pole' && circuit.obstacles.poles[e.index]?.station === 'ramp-test';
+      if (ramp && rampPoleOpen(state.stations.find((st) => st.id === 'ramp-test'))) continue;   // moved aside: nothing there
       const key = `${e.kind}${e.index}`;
       const last = hits.get(key);
       hits.set(key, e.t);
@@ -366,7 +375,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     if (w.gate >= 1 && w.gate < gates.length) {
       w.outT = v < R.sBand[0] || v > R.sBand[1] ? w.outT + dt : 0;
       if (w.outT > R.sGrace + EPS) {
-        if (mode === 'practice') return voidRun(run);
+        if (mode === 'practice') return voidRun(run, 's.speed');
         return fail(run, 's.speed', p, x.t, `${v.toFixed(0)} km/h for more than ${R.sGrace} s`, `${R.sBand[0]}–${R.sBand[1]} km/h`);
       }
     }
@@ -399,7 +408,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     if (stopped && x.slope?.id === 'ramp') w.stopGap = inWindow ? null : gap;   // kept for the verdict if it never holds
     if (w.phase === 0 && hold(w, stopped && inWindow && (x.handbrake || !R.ramp.handbrake), p, dt, R.ramp.hold, R.ramp.still)) w.phase = 1;
     run.pub.detail = { ...run.pub.detail, gapM: r2(gap), heldS: r1(w.holdT), held: w.phase === 1 };
-    if (w.phase === 1 && crossed(g.gates.find((q) => q.id === 'mouth'), p, -1)) clear(run);
+    if (w.phase === 1 && crossed(g.gates.find((q) => q.id === 'exit'), p)) clear(run);   // the pole aside: on and off the front
   }
 
   function merge(run: Run, x: VehicleSample, p: Vec2) {
@@ -407,7 +416,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
     const v = Math.abs(x.speedKmh);
     run.pub.detail = { ...run.pub.detail, finishKmh: Math.round(v) };
     if (v >= R.mergeKmh - EPS) clear(run);
-    else if (mode === 'practice') voidRun(run);
+    else if (mode === 'practice') voidRun(run, 'merge.slow');
     else fail(run, 'merge.slow', p, x.t, `${v.toFixed(0)} km/h`, `${R.mergeKmh} km/h`);
   }
 
@@ -441,6 +450,7 @@ export const createSession: CreateSession = (circuit: CircuitData, rulesData: Ru
       const stopped = Math.abs(x.speedKmh) < R.stoppedKmh;
       if (topDownOn) state.topDownSeconds += dt;
       track(p);
+      state.progress = s;
       kerbStep(x, events);
       hitStep(events);
       lineStep(x);

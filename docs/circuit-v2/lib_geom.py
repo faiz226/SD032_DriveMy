@@ -313,25 +313,3 @@ def parallel_into_slot(car, world, slot, road_heading, crit='tyre', margin=0.05)
                             if err < 1e-6:
                                 return best
     return best
-
-
-def reverse_out(car, world, pose, target_heading, lane_test, crit='tyre', margin=0.05):
-    """Back out of a dead end: straight back, then reverse on full lock until the car faces
-    target_heading (within 15 deg). lane_test(x, y, th) says whether the end pose is in the lane.
-    Returns (straight metres, lock side, end pose) or None."""
-    x, y, th = pose
-    for back in np.arange(0.0, 25.01, 0.5):
-        start = path_ok(car, world, pose, [(-1, 0.0, back)], crit, margin) if back > 0 else pose
-        if start is None:
-            break
-        for side in (1, -1):
-            p = start
-            for _ in range(int(car.R * math.pi / 0.05)):
-                nxt = path_ok(car, world, p, [(-1, side * car.steer, 0.05)], crit, margin)
-                if nxt is None:
-                    break
-                p = nxt
-                err = abs(math.atan2(math.sin(p[2] - target_heading), math.cos(p[2] - target_heading)))
-                if err < math.radians(15) and lane_test(*p):
-                    return round(float(back), 2), ('left' if side > 0 else 'right'), p
-    return None

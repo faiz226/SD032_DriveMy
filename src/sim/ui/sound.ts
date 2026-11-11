@@ -4,7 +4,8 @@
 // seamless loop of the settled idle, whose pitch and level follow the road speed and the throttle.
 // The owner's other recordings (SFX/, 22 Oct), cut and levelled into the same folder: the horn; a horn far off,
 // the cars that answer ours in free drive; a chime for each surprise; and the yard's air, wind and birds, in
-// 28 s seamless loops under the engine, muffled as heard from inside the car.
+// 28 s seamless loops under the engine, muffled as heard from inside the car. Under them, far-off traffic beyond
+// the fence, generated (a tester, 2 Nov: "add ambience sound").
 // The instructor's voice reads the screen's own strings (scripts/gen-voice.mjs), one line at a time.
 import { create } from 'zustand';
 import type { Language } from '@/lib/constants';
@@ -19,6 +20,59 @@ export function unlockSound() {
   } catch {
     ctx = null;   // no Web Audio: the simulator stays silent
   }
+}
+
+// ---------------------------------------------------------------- the mix (Settings, the owner, 2 Nov)
+export type Mix = 'effects' | 'ambience' | 'voice';
+export interface Volumes { master: number; effects: number; ambience: number; voice: number }
+const VOLUME_KEY = 'drivemy.sim.volume';
+const MIXES = ['effects', 'ambience', 'voice'] as const;
+
+/** The saved volumes, each kept only if it is a number from 0 to 1. */
+function savedVolumes(): Volumes {
+  const full: Volumes = { master: 1, effects: 1, ambience: 1, voice: 1 };
+  try {
+    const saved = JSON.parse(localStorage.getItem(VOLUME_KEY) ?? '{}') as Partial<Record<keyof Volumes, unknown>>;
+    for (const k of Object.keys(full) as (keyof Volumes)[]) {
+      const v = saved[k];
+      if (typeof v === 'number' && v >= 0 && v <= 1) full[k] = v;
+    }
+  } catch { /* storage blocked or unreadable: full volume */ }
+  return full;
+}
+
+let mixes: Record<Mix | 'master', GainNode> | null = null;
+
+/** The volumes, 0 to 1: a master over the car and its effects, the yard's air, and the instructor. */
+export const useVolume = create<Volumes & { setVolume(p: Partial<Volumes>): void }>((set, get) => ({
+  ...savedVolumes(),
+  setVolume: (p) => {
+    set(p);
+    const { master, effects, ambience, voice } = get();
+    try { localStorage.setItem(VOLUME_KEY, JSON.stringify({ master, effects, ambience, voice })); } catch { /* this visit only */ }
+    if (!ctx || !mixes) return;
+    const t = ctx.currentTime;
+    mixes.master.gain.setTargetAtTime(master, t, 0.03);
+    for (const m of MIXES) mixes[m].gain.setTargetAtTime(get()[m], t, 0.03);
+  },
+}));
+
+/** Where a sound goes: its mix, under the master volume. */
+function out(c: AudioContext, mix: Mix): AudioNode {
+  if (!mixes) {
+    const v = useVolume.getState();
+    const master = c.createGain();
+    master.gain.value = v.master;
+    master.connect(c.destination);
+    const made = { master } as Record<Mix | 'master', GainNode>;
+    for (const m of MIXES) {
+      made[m] = c.createGain();
+      made[m].gain.value = v[m];
+      made[m].connect(master);
+    }
+    mixes = made;
+  }
+  return mixes[mix];
 }
 
 // each clip's level, from its measured loudness: the horn a little over the instructor, the rest under the engine
@@ -47,7 +101,7 @@ function play(name: Clip, delayS = 0) {
   const level = ctx.createGain();
   src.buffer = buffer;
   level.gain.value = CLIPS[name][1];
-  src.connect(level).connect(ctx.destination);
+  src.connect(level).connect(out(ctx, 'effects'));
   src.start(ctx.currentTime + delayS);
 }
 
@@ -62,7 +116,7 @@ export function faultSound() {
   level.gain.setValueAtTime(0.0001, t);
   level.gain.exponentialRampToValueAtTime(0.08, t + 0.01);
   level.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
-  tone.connect(level).connect(ctx.destination);
+  tone.connect(level).connect(out(ctx, 'effects'));
   tone.start(t);
   tone.stop(t + 0.2);
 }
@@ -95,7 +149,7 @@ export function meowSound() {
   level.gain.setValueAtTime(0.0001, t);
   level.gain.exponentialRampToValueAtTime(0.12, t + 0.06);
   level.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
-  cry.connect(mouth).connect(level).connect(ctx.destination);
+  cry.connect(mouth).connect(level).connect(out(ctx, 'effects'));
   cry.start(t);
   cry.stop(t + 0.7);
 }
@@ -111,7 +165,7 @@ export function tickSound(on: boolean) {
   level.gain.setValueAtTime(0.0001, t);
   level.gain.exponentialRampToValueAtTime(0.04, t + 0.002);
   level.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-  tone.connect(level).connect(ctx.destination);
+  tone.connect(level).connect(out(ctx, 'effects'));
   tone.start(t);
   tone.stop(t + 0.04);
 }
@@ -148,7 +202,7 @@ export function startEngine(): Promise<void> {
   const level = c.createGain();
   src.loop = true;
   level.gain.value = 0;
-  src.connect(level).connect(c.destination);
+  src.connect(level).connect(out(c, 'effects'));
   const claimed: Engine = { src, level };
   engine = claimed;   // claimed now: a newer start, or leaving, replaces it
   return engineFiles.then(([start, idle]) => {
@@ -158,7 +212,7 @@ export function startEngine(): Promise<void> {
     const onceLevel = c.createGain();
     once.buffer = start;
     onceLevel.gain.value = ENGINE_LEVEL;
-    once.connect(onceLevel).connect(c.destination);
+    once.connect(onceLevel).connect(out(c, 'effects'));
     once.start(t);
     claimed.once = once;
     src.buffer = idle;
@@ -171,21 +225,65 @@ export function startEngine(): Promise<void> {
   }).catch(() => { /* no engine files: the drive carries on without them */ });
 }
 
-// the yard's air: each loop's level, and the low-pass that muffles it as heard from inside the car
-const BEDS = [['/sim/sfx/wind.mp3', 0.35], ['/sim/sfx/birds.mp3', 0.25]] as const;
-const CABIN_HZ = 1400;
-let beds: AudioBufferSourceNode[] | null = null;
+// the yard's air: each loop's level, and the low-pass that muffles it as heard from inside the car. The cabin
+// dulls the wind's hiss, but birdsong (2-8 kHz) still comes through the glass: at the wind's 1.4 kHz the birds
+// were filtered out altogether, and the testers heard no ambience (2 Nov)
+const BEDS = [['/sim/sfx/wind.mp3', 0.35, 1400], ['/sim/sfx/birds.mp3', 0.3, 5000]] as const;
+const TRAFFIC = { level: 0.12, hz: 320, swell: 0.07, depth: 0.05, seconds: 8 };   // far off: low, rising as cars pass
+let beds: AudioScheduledSourceNode[] | null = null;
 
-/** The wind and the birds, from the first start until the simulator is left; a restart leaves them playing. */
+/**
+ * Brown noise for a seamless loop: a random walk, its last `fade` seconds blended into its first so the loop's
+ * seam has no step. `random` is Math.random but for tests.
+ */
+export function brownLoop(rate: number, seconds: number, random = Math.random, fade = 0.25) {
+  const n = Math.round(rate * seconds);
+  const f = Math.round(rate * fade);
+  const walk = new Float32Array(n + f);
+  let last = 0;
+  for (let i = 0; i < walk.length; i++) {
+    last = (last + 0.02 * (random() * 2 - 1)) / 1.02;
+    walk[i] = last * 3.5;
+  }
+  const out = walk.slice(0, n);
+  for (let i = 0; i < f; i++) out[i] = walk[i] * (i / f) + walk[n + i] * (1 - i / f);   // the tail runs on into the head
+  return out;
+}
+
+/** Far-off traffic beyond the fence: low brown noise whose level swells and ebbs, as cars pass on a road outside. */
+function trafficBed(c: AudioContext): AudioScheduledSourceNode[] {
+  const buffer = c.createBuffer(1, Math.round(c.sampleRate * TRAFFIC.seconds), c.sampleRate);
+  buffer.copyToChannel(brownLoop(c.sampleRate, TRAFFIC.seconds), 0);
+  const src = c.createBufferSource();
+  src.buffer = buffer;
+  src.loop = true;
+  const low = c.createBiquadFilter();
+  low.type = 'lowpass';
+  low.frequency.value = TRAFFIC.hz;
+  const level = c.createGain();
+  level.gain.value = 0;
+  const swell = c.createOscillator();
+  swell.frequency.value = TRAFFIC.swell;
+  const depth = c.createGain();
+  depth.gain.value = TRAFFIC.depth;
+  swell.connect(depth).connect(level.gain);
+  src.connect(low).connect(level).connect(out(c, 'ambience'));
+  src.start();
+  swell.start();
+  level.gain.setTargetAtTime(TRAFFIC.level, c.currentTime, 2);
+  return [src, swell];
+}
+
+/** The wind, the birds and the traffic, from the first start until the simulator is left; a restart leaves them. */
 function startBeds(c: AudioContext) {
   if (beds) return;
-  const cabin = c.createBiquadFilter();
-  cabin.type = 'lowpass';
-  cabin.frequency.value = CABIN_HZ;
-  cabin.connect(c.destination);
-  const playing: AudioBufferSourceNode[] = [];
+  const playing: AudioScheduledSourceNode[] = trafficBed(c);
   beds = playing;
-  for (const [url, gain] of BEDS) {
+  for (const [url, gain, hz] of BEDS) {
+    const cabin = c.createBiquadFilter();
+    cabin.type = 'lowpass';
+    cabin.frequency.value = hz;
+    cabin.connect(out(c, 'ambience'));
     const src = c.createBufferSource();
     const level = c.createGain();
     src.loop = true;
@@ -280,7 +378,7 @@ async function sayNext() {
     src.buffer = await Promise.race([lines.get(line.url)!, new Promise<never>((_, no) => { window.setTimeout(() => no(new Error('slow')), 8000); })]);
     const level = c.createGain();
     level.gain.value = VOICE_LEVEL;
-    src.connect(level).connect(c.destination);
+    src.connect(level).connect(out(c, 'voice'));
     // said: when it ends, or by its own length (a stalled audio clock never ends a line), held while paused
     let said = false;
     let timer = 0;

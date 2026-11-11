@@ -24,6 +24,8 @@ export const SWIFT_2022 = {
   },
   // 1.20 m above the road, on the steering hub's line (0.33 m right of centre), 0.62 m behind the hub
   eye: [0.3549 - 0.62, 1.2 - 0.324, 0.3295] as V3,
+  // its view at rest: a little nose-down, so the bonnet line shows, and this tall (degrees)
+  eyeView: { pitch: -0.07, fovDeg: 50 },
   mirrors: {
     left: [0.5349, 0.7607, -0.839] as V3,
     right: [0.5349, 0.7607, 0.839] as V3,

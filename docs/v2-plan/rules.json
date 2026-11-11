@@ -85,11 +85,11 @@
     },
     "ramp-test": {
       "time_limit_s": 300,
-      "clear": "Drive up onto the platform and stop with the front bumper between stop_window_m short of the pole; hold still (still_m) for hold_s; then reverse down and out past the mouth gate without touching the pole",
+      "clear": "Drive up and stop with both front tyres on the platform, the front bumper between stop_window_m short of the pole; hold still (still_m) for hold_s, and the pole is moved aside; then drive on, down off the front, past the exit gate",
       "stop_window_m": [0.2, 1.0], "hold_s": 2.0, "still_m": 0.05, "handbrake_required": false,
-      "fail": ["touched the pole (also 20 demerits)",
+      "fail": ["touched the pole while it stood (also 20 demerits); once it is moved aside there is nothing to touch",
         "stopped only outside stop_window_m and drove on (ramp.window: the verdict shows the measured gap against the window)"],
-      "basis": "guides (a DA learner: climb onto the cement block, do not hit the pole in the middle; 5 minutes) + decided (stop window, hold, reverse out)"
+      "basis": "guides (a DA learner: climb onto the cement block, do not hit the pole in the middle; 5 minutes) + the owner, 2 Nov (both front tyres on the platform, the pole moved aside, out through the front) + decided (stop window, hold)"
     },
     "road-merging": {
       "time_limit_s": null,

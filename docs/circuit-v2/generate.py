@@ -48,7 +48,7 @@ P = {
     'hill_up':       (10.8,  'prd',     'Up-slope length'),
     'hill_top':      (4.15,  'prd',     'Flat top: 25.75 total - 2 x 10.8 (PRD hill length)'),
     'hill_rise':     (1.3,   'decided', 'Rise 1.3 m, 12.0% (v1 value, kept on 14 Oct: no public JPJ gradient found)'),
-    'hill_stop':     (0.33,  'decided', 'Yellow stop band at 33% of the rise'),
+    'hill_stop':     (0.9,   'decided', 'Yellow stop band 90% of the way up the slope, near the crest and still on it (the owner, 2 Nov: "the yellow line is placed at near-peak of the slope with a pole guiding the yellow line"; it stood at 33%, the PRD value)'),
     'hill_band':     (0.6,   'decided', 'Yellow stop band along the slope; the front wheels must stop on it (guides: front tyre on the yellow line)'),
     'side_pocket_l': (4.72,  'photo',   'Side-parking pocket in the bottom-left island, along the band'),
     'side_pocket_d': (5.78,  'photo',   'Pocket depth from the band'),
@@ -58,7 +58,7 @@ P = {
     'pole_out':      (0.3,   'decided', 'Poles at the four bay corners, 0.3 m outside the lines (guides: touching a pole fails)'),
     'par_slot_l':    (6.60,  'photo',   'Parallel recess in the top-left island, along lane A-B'),
     'par_slot_w':    (3.77,  'photo',   'Parallel recess depth'),
-    'par_box_w':     (2.5,   'decided', 'Painted parking box inside the recess, against its kerb, 6.6 x 2.5 m (v1 value, kept on 14 Oct)'),
+    'par_box_w':     (3.77,  'decided', 'Painted parking box: the whole recess, its outer line from one kerb corner to the other (the owner, 2 Nov: the 2.5 m box sat too deep inside the recess)'),
     'tpt_w':         (7.64,  'photo',   'Three-point-turn lane: the real lane beside the Z, decided on 14 Oct to be the three-point-turn lane; inside the car-derived 6.0-9.5 m window'),
     's_w':           (3.6,   'photo',   'S lane, kerb to kerb (real p10-p90 3.35-3.76 m, median 3.6 m)'),
     's_r':           (7.5,   'photo',   'S centreline radius (real median 7.5 m and 7.1 m)'),
@@ -71,8 +71,9 @@ P = {
     'ramp_mouth':    (3.0,   'decided', 'Flat run-in from the lane to the foot of the slope'),
     'ramp_up':       (6.0,   'decided', 'Up-slope length'),
     'ramp_rise':     (0.6,   'decided', 'Platform height: a 10% slope up onto a raised block (a DA learner: naik atas batu simen)'),
-    'ramp_top':      (7.0,   'decided', 'Platform length to the end wall'),
-    'ramp_pole_in':  (0.4,   'decided', 'The pole stands on the centreline this far before the end wall (a DA learner: one pole in the middle)'),
+    'ramp_top':      (4.0,   'the owner', 'Platform length (2 Nov: both front tyres stop on the platform, the pole is moved aside, and the car drives on and out through the front)'),
+    'ramp_down':     (5.0,   'the owner', "Down-slope off the platform's far end, 12% like the hill's (2 Nov: out through the front)"),
+    'ramp_pole_at':  (2.05,  'decided', 'The pole stands on the centreline this far past the crest (a DA learner: one pole in the middle), so a stop anywhere in the 0.2-1.0 m window puts both front tyres on the platform'),
     'ramp_site':     ('top-right floor', 'decided', 'The real yard has no ramp; the blueprint draws a structure on the open top-right floor, so the ramp stands there, in line with the hill'),
 }
 
@@ -499,13 +500,15 @@ def build_route(L):
     t.line_to(L['ef_nb'] - R, 7.7)
     t.arc(R, 90, 7.7)
     t.line_to(L['islands_top'], 7.3)
-    # 6 Ramp test: past the ramp's mouth on the right; drive in, stop, reverse out, carry on north
+    # 6 Ramp test (the owner, 2 Nov): right into the ramp, up onto the platform, stop with both front tyres on it;
+    # the pole is moved aside, and the car drives on, down off the front and out onto the east road
     t.mark('ramp_in')
-    t.line_to(L['ramp_out_y'], 8.0, 'ramp-test')
+    t.line_to(L['ramp_y'] - R, 8.0, 'ramp-test')
+    t.arc(R, -90, 6.0, 'ramp-test')
+    t.line_to(L['ramp_end_x'] + 1.5, v('ramp_w'), 'ramp-test')
     t.mark('ramp_out')
-    # to 7: right along the top lane, right down the east road, right along the spine road to the roundabout
-    t.arc(R, -90, 4.1)
-    t.line_to(L['east_sb'] - R, 4.1)
+    # to 7: on to the east road, right down it, right along the spine road to the roundabout
+    t.line_to(L['east_sb'] - R, 6.4)
     t.arc(R, -90, 6.4)
     t.shift(0.3, 6.0, 6.4)                                     # into the southbound lane's middle, clear of its centre line
     t.line_to(L['spine_wb'] + L['rb_turn_r'], 6.4)
@@ -548,7 +551,7 @@ def main():
         s_x=M(774.25, 0)[0], s_top=M(0, 519)[1], s_bottom=None,
         z_x0=M(499, 0)[0], z_x1=M(581, 0)[0], z_jog_y=M(0, 602)[1], z_top=M(0, 518)[1], z_bottom=M(0, 688)[1],
         ef_x=(M(878, 0)[0] + M(955.5, 0)[0]) / 2, islands_top=M(0, 202)[1],
-        ramp_out_y=66.0 - R,
+        ramp_y=M(0, 96)[1],
         east_sb=113.4,
         merge_in_x=30.6, merge_finish_y=46.0, end_y=52.0, rb_turn_r=4.5,   # the station starts just past the last junction
     )
@@ -571,6 +574,7 @@ def main():
     L['s_bottom'] = L['s_top'] - 3.0 - 2 * v('s_r') * math.sin(math.radians(v('s_turn'))) - 3.0
     L['side_stop_x'] = L['pocket_x'] - 3.4                     # rear axle about one turning radius past the bay
     L['pocket_park_y'] = L['pocket_mouth'] + v('side_bay_l') - 0.2 - 0.696 - 0.2   # parked: rear 0.2 m inside the back line
+    L['ramp_end_x'] = L['ef_x'] + 3.04 + v('ramp_mouth') + v('ramp_up') + v('ramp_top') + v('ramp_down')   # the down-slope's foot
     t = build_route(L)
     pts = t.pts
 
@@ -587,29 +591,30 @@ def main():
     z_fill = [quarter_fillet(zx0 + h, zy - h, 1, -1, v('z_fillet')),       # island 9's corner
               quarter_fillet(zx1 - h, zy + h, -1, 1, v('z_fillet'))]        # island 8's corner
     s_lane = corridor_polys(pts, t.marks['s_in']['s'] - 0.5, t.marks['s_out']['s'] + 0.5)
-    # ramp: run-in, slope and platform on the open floor; kerbed walls from the foot of the slope
-    ramp_y = M(0, 96)[1]
+    # ramp: run-in, up-slope, platform and down-slope on the open floor (the owner, 2 Nov: out through the front);
+    # kerbed walls along both sides from the foot of one slope to the foot of the other
+    ramp_y = L['ramp_y']
     mouth_x = L['ef_x'] + 3.04
     foot_x = mouth_x + v('ramp_mouth')
-    end_x = foot_x + v('ramp_up') + v('ramp_top')
+    crest_x = foot_x + v('ramp_up')
+    end_x = L['ramp_end_x']
     hw, ww = v('ramp_w') / 2, v('wall_w')
-    ramp_walls = [rect(foot_x, ramp_y + hw, end_x + ww, ramp_y + hw + ww),
-                  rect(foot_x, ramp_y - hw - ww, end_x + ww, ramp_y - hw),
-                  rect(end_x, ramp_y - hw - ww, end_x + ww, ramp_y + hw + ww)]
+    ramp_walls = [rect(foot_x, ramp_y + hw, end_x, ramp_y + hw + ww),
+                  rect(foot_x, ramp_y - hw - ww, end_x, ramp_y - hw)]
     # hill: kerbed walls along both sides of the strip
     hx0, hx1 = M(478, 0)[0], M(760, 0)[0]
     hy, hh = L['hill_y'], v('hill_w') / 2
     hill_walls = [rect(hx0, hy + hh, hx1, hy + hh + ww), rect(hx0, hy - hh - ww, hx1, hy - hh)]
-    # Twin tracks (the owner, 20 Oct): a second hill strip beside ours to the north, and a second ramp beside
-    # ours to the south, each sharing the wall between them, so another learner drives the same test beside
-    # us, facing the same way. The north one needs the yard's edge pushed out along the hill; the south one
-    # takes the east end of the top road, which the route never drives.
+    # Twin tracks (the owner, 20 Oct): a second hill strip and a second ramp, each beside ours to the north and
+    # sharing the wall between them, so another learner drives the same test beside us, facing the same way.
+    # The twin ramp stood south of ours until 2 Nov, where a learner driving up lane E-F reached it first and
+    # turned into it, at the car parked on it; now ours is the first turn. Both need the yard's edge pushed out.
     hill_twin_y = hy + v('hill_w') + ww
-    ramp_twin_y = ramp_y - v('ramp_w') - ww
+    ramp_twin_y = ramp_y + v('ramp_w') + ww
     hill_walls.append(rect(hx0, hill_twin_y + hh, hx1, hill_twin_y + hh + ww))
-    ramp_walls += [rect(foot_x, ramp_twin_y - hw - ww, end_x + ww, ramp_twin_y - hw),
-                   rect(end_x, ramp_twin_y - hw - ww, end_x + ww, ramp_twin_y + hw)]
+    ramp_walls.append(rect(foot_x, ramp_twin_y + hw, end_x, ramp_twin_y + hw + ww))
     yard_bump = rect(hx0 - 4.0, hy, hx1 + 4.0, hill_twin_y + hh + ww + 1.2)
+    ramp_bump = rect(mouth_x - 3.0, ramp_y, end_x + 3.0, ramp_twin_y + hw + ww + 1.2)
 
     xs = [x for x, _ in boundary]
     ys = [y for _, y in boundary]
@@ -618,6 +623,7 @@ def main():
     world = World(*site, res=0.05)
     world.add(boundary)
     world.add(yard_bump)
+    world.add(ramp_bump)
     for k, poly in islands.items():
         world.cut(poly)
     for poly in z_legs + z_fill + s_lane:
@@ -650,12 +656,12 @@ def main():
                                             [v('hill_up') + v('hill_top'), v('hill_rise')],
                                             [2 * v('hill_up') + v('hill_top'), 0.0]], sides=sides)
     ramp = dict(id='ramp', start=[foot_x, ramp_y], heading_deg=0.0, width=v('ramp_w'),
-                profile=[[0.0, 0.0], [v('ramp_up'), v('ramp_rise')], [v('ramp_up') + v('ramp_top'), v('ramp_rise')]],
-                sides=sides + '; the platform ends at a wall')
+                profile=[[0.0, 0.0], [v('ramp_up'), v('ramp_rise')], [v('ramp_up') + v('ramp_top'), v('ramp_rise')],
+                         [v('ramp_up') + v('ramp_top') + v('ramp_down'), 0.0]], sides=sides)
     hill_twin = dict(hill, id='hill-twin', start=[hill['start'][0], hill_twin_y],
                      sides=sides + '; the twin track north of ours (the owner, 20 Oct), not marked')
     ramp_twin = dict(ramp, id='ramp-twin', start=[foot_x, ramp_twin_y],
-                     sides=sides + '; the platform ends at a wall; the twin track south of ours (the owner, 20 Oct), not marked')
+                     sides=sides + '; the twin track north of ours (the owner, 20 Oct; south of ours until 2 Nov), not marked')
 
     # ------------------------------------------------------------ stations
     def s_of(name):
@@ -663,21 +669,30 @@ def main():
     up = v('hill_up')
     stop_s = s_of('hill_ramp_a') + v('hill_stop') * up
     bay_c = (L['pocket_x'], L['pocket_mouth'] + v('side_bay_l') / 2)
-    poles = []
-    lat = v('side_bay_w') / 2 + v('pole_out')
-    for py in (L['pocket_mouth'] - v('pole_out'), L['pocket_mouth'] + v('side_bay_l') + v('pole_out')):
-        for sx in (-1, 1):
-            poles.append(dict(station='side-parking', at=[round(bay_c[0] + sx * lat, 3), round(py, 3)], radius=0.05,
-                              height=1.2, status='decided 14 Oct: four corners, 0.3 m outside the lines'))
-    pole_at = (end_x - v('ramp_pole_in'), ramp_y)
-    poles.append(dict(station='ramp-test', at=[round(pole_at[0], 3), round(pole_at[1], 3)], radius=0.05, height=1.2,
-                      base_z=v('ramp_rise'), status='decided 14 Oct: on the platform centreline'))
+    poles = []   # the side bay has none (the owner, 2 Nov)
+    # Reference poles for the side bay (the owner, 2 Nov: "add pole in red circles and tell the driver the ideal place
+    # to stop"): one on the grass either side of the band, on the line through the door mirrors where a driver stops to
+    # reverse in (rear axle at side_stop_x, heading west): stop with the mirrors on the poles, full lock right, reverse
+    mirror_ahead = 0.535                                # the mirrors, ahead of the wheelbase's middle (swift-2022.ts)
+    mirror_x = L['side_stop_x'] - (2.45 / 2 + mirror_ahead)
+    band_n, band_s = M(0, 626.5)[1], M(0, 675)[1]
+    ref_poles = [dict(station='side-parking', at=[round(mirror_x, 3), round(y_, 3)], height=1.5,
+                      note='line up the door mirrors with this pole and its twin across the band, then reverse in on full right lock')
+                 for y_ in (band_n + 0.75, band_s - 0.75)]
+    # Reference poles for the hill (the owner, 2 Nov: "a pole guiding the yellow line"): one on each wall beside the band, on
+    # the line through the door mirrors when the front tyres are mid-band: stop with the mirrors on the poles. They stand on
+    # the wall tops (the deck's height there plus its kerb), so the shared wall's pole serves the twin learner's mirror as well
+    pole_a = v('hill_stop') * up - (2.45 / 2 - mirror_ahead)      # along the hill: the mirrors sit behind the front axle
+    ref_poles += [dict(station='hill-start', at=[round(hill['start'][0] + pole_a, 3), round(hill['start'][1] + side * (hh + ww / 2), 3)],
+                       base_z=round(v('hill_rise') * pole_a / up + v('kerb_h'), 3), height=1.5,
+                       note='line up the door mirrors with this pole and its twin across the strip: both front tyres are then on the yellow band')
+                  for side in (-1, 1)]
+    pole_at = (crest_x + v('ramp_pole_at'), ramp_y)
+    poles.append(dict(station='ramp-test', at=[round(pole_at[0], 3), round(pole_at[1], 3)], radius=0.05, height=1.6,   # the owner's photo: about twice a cone
+                      base_z=v('ramp_rise'), status='decided 14 Oct: on the platform centreline; the owner, 2 Nov: moved aside once the car has held still short of it'))
     pocket = to_m([(267.75, 626.5), (317.75, 626.5), (317.75, 565.25), (267.75, 565.25)])
     par_c = (M(353, 0)[0] + v('par_box_w') / 2, (M(0, 329)[1] + M(0, 399)[1]) / 2)
     par_recess = to_m([(353, 399), (393, 399), (393, 329), (353, 329)])
-    # the ramp's footprint, from where a car turning in from lane E-F's northbound lane leaves it (the rules hold the
-    # car's progress along the route while it is inside)
-    ramp_box = rect(L['ef_nb'] + 1.0, ramp_y - hw - ww, end_x + ww, ramp_y + hw + ww)
 
     def across(x, gid):
         return dict(id=gid, a=[round(x, 3), round(ramp_y + hw + 0.2, 3)], b=[round(x, 3), round(ramp_y - hw - 0.2, 3)],
@@ -698,7 +713,7 @@ def main():
              pocket=par_recess,
              bay=dict(centre=[round(par_c[0], 3), round(par_c[1], 3)], axis_deg=90.0,
                       length=v('par_slot_l'), width=v('par_box_w'), kerbed=True,
-                      note='painted box against the recess kerb; the recess itself is 3.77 m deep'),
+                      note='the painted box is the whole recess: its outer line runs from one kerb corner to the other'),
              gates=[gate(pts, s_of('par_in'), gid='enter'), gate(pts, s_of('par_out'), gid='leave')]),
         dict(id='s-curve', order=4, title='S-Curve', s_from=s_of('s_in'), s_to=s_of('s_out'),
              gates=[gate(pts, s_of('s_a'), gid='entry'), gate(pts, (s_of('s_a') + s_of('s_mid')) / 2, gid='apex-1'),
@@ -709,10 +724,11 @@ def main():
              gates=[gate(pts, s_of('z_in') + 4.5 * math.pi / 2 + 0.5, gid='entry', w_pad=0.2), gate(pts, s_of('z_c1'), gid='corner-1', w_pad=0.2),
                     gate(pts, s_of('z_c2'), gid='corner-2', w_pad=0.2), gate(pts, s_of('z_out') - 0.5, gid='exit', w_pad=0.2)]),
         dict(id='ramp-test', order=6, title='Ramp Test', s_from=s_of('ramp_in'), s_to=s_of('ramp_out'), slope='ramp',
-             box=ramp_box, pole=[round(pole_at[0], 3), round(pole_at[1], 3)],
+             pole=[round(pole_at[0], 3), round(pole_at[1], 3)],
              axis=dict(start=[round(foot_x, 3), round(ramp_y, 3)], heading_deg=0.0),
-             gates=[across(mouth_x + 0.5, 'mouth'), across(foot_x + v('ramp_up'), 'platform')],
-             manoeuvre='turn right into the ramp, drive up, stop short of the pole, hold still, reverse down and out, then carry on north'),
+             gates=[across(mouth_x + 0.5, 'mouth'), across(crest_x, 'platform'), across(end_x + 1.0, 'exit')],
+             manoeuvre='turn right into the ramp, drive up and stop with both front tyres on the platform short of the pole, '
+                       'hold still; the pole is moved aside; drive on, down off the front, and right down the east road'),
         dict(id='road-merging', order=7, title='Road Merging', s_from=s_of('merge_in'), s_to=s_of('merge_finish'),
              gates=[gate(pts, s_of('merge_in'), gid='lane-start'), gate(pts, s_of('rb_give_way'), gid='give-way'),
                     gate(pts, s_of('merge_finish'), gid='finish', w_pad=0.3)],
@@ -725,14 +741,18 @@ def main():
     # ------------------------------------------------------------ lane lines (the owner, 20 Oct)
     # Two-way roads, keeping left, with an unbroken centre line; the stations stay one car wide and unmarked.
     keep = World(*site, res=world.res)
+    # the stations and the slopes alone: no edge lines or stop lines there either. Road merging is ordinary road (the
+    # roundabout), and the side bay's band and the parallel recess's lane are aisles: painted as any other, their kerbs
+    # traced as in the real yard (the owner, 2 Nov); their bays keep only their own lines
+    quiet = World(*site, res=world.res)
     for st in stations:
         for poly in corridor_polys(pts, st['s_from'] - 2.0, st['s_to'] + 4.0):   # + 4: the nose, 3.1 m ahead of the rear axle
             keep.add(poly)
-        for key in ('pocket', 'box'):
-            if key in st:
-                keep.add(st[key])
-    for poly in z_legs + z_fill:
+            if st['id'] not in ('road-merging', 'side-parking', 'parallel-parking'):
+                quiet.add(poly)
+    for poly in [st[key] for st in stations for key in ('pocket', 'box') if key in st] + z_legs + z_fill:
         keep.add(poly)
+        quiet.add(poly)
     # wherever the route bends off a road's axis (a turn at a junction or a station's mouth, a sideways shift), the
     # line clears the car's swept footprint by 0.5 m: a turning car's nose swings wide of its path
     car = json.load(open(os.path.join(HERE, 'car-swift-2022.json'), encoding='utf-8'))
@@ -744,12 +764,26 @@ def main():
             keep.add([(q[1] + c * al - sn * ac, q[2] + sn * al + c * ac) for al, ac in ((-back, -side), (nose, -side), (nose, side), (-back, side))])
     for sl in (hill, ramp, hill_twin, ramp_twin):                 # no lines on any slope, a twin's included
         length = sl['profile'][-1][0]
-        keep.add(rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0))
+        foot = rect(sl['start'][0] - 1.0, sl['start'][1] - sl['width'] / 2 - 1.0, sl['start'][0] + length + 1.5, sl['start'][1] + sl['width'] / 2 + 1.0)
+        keep.add(foot)
+        quiet.add(foot)
     keep.finish()
+    quiet.finish()
     centre_lines, roads = lane_centres(world, keep.mask)
     # the other cars, the signals, the merge, the queues and the rest of the paint (traffic_gen.py)
     LT = dict(L, hill_w=v('hill_w'), wall_w=v('wall_w'), hill_x0_wall=hx0, marks={k: m['s'] for k, m in t.marks.items()}, M=M)
-    traffic, more_paint, zebra_box, loop_paths, twin_bay = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car)
+    traffic, more_paint, zebra_box, loop_paths, twin_bay = traffic_gen.build(LT, pts, stations, roads, world, keep.mask, Turtle, car, quiet.mask)
+    # a solid line across each station lane where it comes out onto a road (the owner, 2 Nov, drawn at the S-curve's
+    # exit), just inside its mouth, kerb to kerb
+    for sid in ('s-curve', 'z-curve'):
+        st = next(s_ for s_ in stations if s_['id'] == sid)
+        q = min(pts, key=lambda q_: abs(q_[0] - (st['s_to'] - 0.3)))
+        ax, ay = -math.sin(q[3]), math.cos(q[3])
+        half = q[4] / 2 - 0.2
+        more_paint['stop_lines'].append([[round(q[1] - ax * half, 2), round(q[2] - ay * half, 2)], [round(q[1] + ax * half, 2), round(q[2] + ay * half, 2)]])
+    for rp in ref_poles:
+        ix, iy = int((rp['at'][0] - world.x0) / world.res), int((rp['at'][1] - world.y0) / world.res)
+        assert not world.mask[iy, ix], 'a reference pole on the pavement: %s' % rp
     centre_lines = break_lines(centre_lines, [[(q[1], q[2]) for q in pts]] + loop_paths, [j['polygon'] for j in traffic['junctions']])
     centre_lines = cut_box(centre_lines, zebra_box, 4.0)              # no centre line across or just before the zebra
     for r in roads:
@@ -772,11 +806,11 @@ def main():
     office = box(320, -10, 440, 25)
     # the other learners (the owner, 20 Oct): stopped mid-test on the twin tracks, facing the way we do. `at` is
     # the car's centre (the wheelbase's middle): on the hill with its front tyres on the stop band's line, on
-    # the ramp 0.6 m short of where a pole would stand
+    # the ramp's platform 0.6 m short of where its pole would stand
     wb, fo = 2.45, 0.696
     npc_cars = [
         dict(on='hill-twin', at=[round(hill['start'][0] + v('hill_stop') * v('hill_up') - wb / 2, 3), round(hill_twin_y, 3)], heading_deg=0.0),
-        dict(on='ramp-twin', at=[round(end_x - v('ramp_pole_in') - 0.6 - fo - wb / 2, 3), round(ramp_twin_y, 3)], heading_deg=0.0),
+        dict(on='ramp-twin', at=[round(pole_at[0] - 0.05 - 0.6 - fo - wb / 2, 3), round(ramp_twin_y, 3)], heading_deg=0.0),
     ]
     spawn = dict(at=[round(L['spawn_x'], 3), round(L['hill_y'], 3)], heading_deg=0.0, handbrake=True)
 
@@ -807,7 +841,7 @@ def main():
                            'dash 0 and gap 0: unbroken', **more_paint),
         traffic=traffic,
         props=dict(booths=booths, office=office, fence=site,
-                   npc_cars=npc_cars + [dict(on='side-twin', at=twin_bay['centre'], heading_deg=180.0)]),
+                   npc_cars=npc_cars + [dict(on='side-twin', at=twin_bay['centre'], heading_deg=180.0)], ref_poles=ref_poles),
         spawn=spawn,
     )
     out = rnd(out)

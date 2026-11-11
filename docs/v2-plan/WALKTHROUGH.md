@@ -18,13 +18,25 @@ either fixed before submission or listed under Limitations in the report.
 Every start runs the same way: the instructor reads the brief, the engine starts, and only then does
 the car move. Each brief is read once per visit, so a restart only starts the engine again.
 
-**Keys:** W accelerate, S brake, A and D steer, R to change between D and R (only when stopped),
-Q to look over your left shoulder (the blind spot), E to look down out of your window (on the hill, the yellow band shows beside the door mirror),
+**Keys:** W go, S brake, A and D steer. The keys change gear for you: to reverse, brake with S until the car has
+stopped, let go, then press S again (the first time, a hint says so); to go forward again after reversing, brake with W,
+let go, then press W again. Holding S while the car is stopped only holds it, so it is safe at a line or on the hill.
+R changes between D and R (only when stopped), in either mode. In Settings, Realistic gears (R key) set to On turns
+the key-press gears off: W is then only the throttle, S only the brake, and R is the only way to change gear.
+Q or Shift+A to look over your left shoulder (the blind spot), E or Shift+D to look down out of your window (on the hill, the yellow band and its black-and-white guide pole show beside the door mirror; A and D keep steering while Shift is held),
 drag the view to look anywhere, including over your right shoulder,
 Space for the handbrake, Z and C for the left and right indicators, L for the headlamps, H for the horn,
-T for the top-down view, V for the view from behind the car (free drive only), + and - to zoom, P or Esc to pause.
+T for the top-down view, V for the view from behind the car (every mode; an assessment's result says if you used it, and its marks are unchanged), + and - to zoom, P or Esc to pause.
 
-**On a phone:** hold it sideways. The left pad steers and keeps its angle; double-tap it to centre.
+**Settings:** the gear button while driving (it pauses the drive), or Settings on the simulator's first panel:
+the volumes (overall, the car and its effects, the surroundings, the instructor), how the gears change, every key
+(press its button, then the new key), the quality and the touch controls.
+
+**On a phone:** start the app with `npm run dev:phone` instead, and open the Network address it prints
+(`http://<the laptop's address>:5173`) on a phone on the same Wi-Fi; if Windows asks, let Node.js through its
+firewall. Google sign-in only works on the deployed site, so on the laptop's address go straight to
+`/dev/sim/assessment`, `/dev/sim/free` or a station such as `/dev/sim/hill-start`: no sign-in, nothing saved.
+Hold it sideways. The left pad steers and keeps its angle; double-tap it to centre.
 The right pedals press harder the higher up you touch them. The buttons along the bottom are the left
 indicator, D/R, handbrake, pause, the top-down view and the right indicator. If the touch controls do not appear, open Settings on the
 simulator's first panel and set Touch controls to On.

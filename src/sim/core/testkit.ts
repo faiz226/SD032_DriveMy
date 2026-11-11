@@ -231,29 +231,27 @@ export function zDrive(d: Driver, kmh = 8) {
   d.follow(station('z-curve').s_to + 2, kmh);
 }
 
-/** Ramp: right turn into the mouth, up to `gap` short of the pole, hold, reverse out and turn back into the lane. */
+/** Ramp (the owner, 2 Nov): along the route, up lane E-F and right into the ramp, to `gap` short of the pole. */
 export function rampIn(d: Driver, gap = 0.6) {
   const g = station('ramp-test');
-  const laneX = g.start.at[0];
-  d.follow(sNear([laneX, g.axis!.start[1] - R_LOCK], g.s_from - 3, g.s_to), 6);
-  d.arc(R_LOCK * (Math.PI / 2), 5, -LOCK);
+  const [ux, uy] = dir(rad(g.axis!.heading_deg));
   const pole = circuit.obstacles.poles.find((p) => p.station === 'ramp-test')!;
-  const stopX = pole.at[0] - pole.radius - gap - (L + swift.front_overhang_m);
-  d.arc(stopX - d.at[0], 5, 0);
+  const back = pole.radius + gap + L + swift.front_overhang_m;   // the rear axle, that far short of the pole's middle
+  const stop: Vec2 = [pole.at[0] - ux * back, pole.at[1] - uy * back];
+  const s = sNear(stop, g.s_from, g.s_to) - 2;
+  d.follow(s, 5);                                                       // up the route to about 2 m short
+  const rest = (stop[0] - d.at[0]) * ux + (stop[1] - d.at[1]) * uy;
+  d.arc(rest, 5, 0);                                                    // and straight on to the exact stop
+  d.rs = s + rest;                                                      // the route runs along the axis there
 }
-export function rampOut(d: Driver) {
-  const g = station('ramp-test');
-  d.arc(-(d.at[0] - (g.gates.find((q) => q.id === 'mouth')!.a[0] - 1)), -4, 0);
-  d.arc(-R_LOCK * (Math.PI / 2), -4, -LOCK);
-  const q = routePose(sNear([g.start.at[0], d.at[1] + 2], g.s_from, g.s_to));
-  d.glide(q.at, q.heading, 4);
-  d.rs = sNear(q.at, g.s_from, g.s_to);
+/** The pole moved aside: on past where it stood, down off the front and out of the station. */
+export function rampOn(d: Driver) {
+  d.follow(station('ramp-test').s_to + 2, 8);
 }
 export function rampDrive(d: Driver) {
   rampIn(d);
   d.stop(2.5);
-  rampOut(d);
-  d.follow(station('ramp-test').s_to + 2, 8);
+  rampOn(d);
 }
 
 export function mergeDrive(d: Driver, kmh = 20) {

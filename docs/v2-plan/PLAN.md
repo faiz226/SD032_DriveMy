@@ -71,7 +71,9 @@ what feels wrong.
       the plan (WP2).
       Evidence: `npm run check:circuit` (44 of 44); `docs/circuit-v2/frames/world-vs-plan.png`.
 - [x] Holding brake on the hill never selects reverse. The handbrake holds the car on the hill
-      (WP3).
+      (WP3). Since 2 Nov the keyboard has two gear modes: the press of S that braked the car never
+      reverses it, and with Realistic gears on no press of S does; only a fresh press of S at rest
+      reverses, in the automatic mode (WP3, "Controls").
       Evidence: `vehicle.test.ts`; `input.test.ts`.
 - [x] The car meets every target in `physics/car-check.cjs`, and the mirrors pass the flip and
       flank checks (WP3).

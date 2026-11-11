@@ -10,6 +10,7 @@ import type { TranslationKey } from '@/lib/translations';
 import { cn } from '@/lib/utils';
 import { circuit } from '../data';
 import { GRASS, H, KERB, LINE, PAVEMENT, STATIONS, toMap, W } from './Minimap';
+import { Steps } from './Steps';
 import { stationName } from './Verdict';
 
 const SAMPLES = circuit.route.samples;
@@ -135,6 +136,7 @@ export function LoadingMap({ ready }: { ready: boolean }) {
             <>
               <p className="type-label-strong">{t('sim.hud.next')}: {next.n} · {stationName(t, next.id)}</p>
               <p className="type-label text-sm opacity-90">{t(`sim.tips.${next.id}` as TranslationKey)}</p>
+              <Steps id={next.id} className="type-label text-sm opacity-90" />
             </>
           )}
         </div>

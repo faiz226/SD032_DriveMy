@@ -434,7 +434,8 @@ languages, with a rule test.
 **Also:**
 
 - `input.test.ts`: switching tabs releases every input and pauses; R changes gear only when stopped;
-  holding S never selects reverse.
+  holding S never selects reverse (since 2 Nov: the press of S that braked the car, and any press with
+  Realistic gears on; see the 2 Nov entry).
 - **The v1 simulator is removed.** Its components (`SimulationHUD`, `SimulationResults`,
   `MobileControls`, `JPJCircuit`) and its score store (`src/stores/carStore.ts`) had no route since
   WP4. `rules.json` and `RULES.md` now say the rubric's weights came from that store, which git
@@ -609,3 +610,173 @@ The owner's asks through the day, in order. Each was committed the same day.
   woodland outside the fence. Now: first drive 19.3 s (target 15 s, missed), the whole drive's p50 30 fps but
   13–18 fps in its first minutes, and Medium 42 fps. Performance builds can switch the scenery and the moving
   cars' drawing off (`scenery=0`, `traffic=0`), and `__simPerf.programs()` lists each shader program's users.
+
+## 2 Nov: the testers' notes on keys, views and mirrors
+
+Three learners on a laptop keyboard walked the simulator. Their notes, and what was done (all in
+`src/sim/`; no database or schema change):
+
+- **"People are used to S = reverse, W = go"; "the gear change is quite confusing."** The keys now change
+  gear (`input.ts`), and a setting, Realistic gears (R key), keeps the old behaviour. A press means what it
+  meant as the key went down, for as long as that press is held. The key for the way the gear drives
+  drives. The key for the other way (S in D, W in R) brakes a moving car and holds it stopped, however
+  long, so S at a stop line or on the hill never reverses; a fresh press (let go, then pressed again) while
+  the car is stopped, or creeping below 2 km/h (the creep after the brake is let go), selects the other
+  gear and drives. A car rolling the other way is braked, both keys together only brake, and the first
+  time S holds the car stopped a one-line hint says "Press S again to reverse". R changes gear when stopped
+  in both modes. The gear is the real one, so the rules see every change; the touch controls are as they
+  were. This replaces WP3's "holding S at rest on the hill never selects reverse", now true of the press
+  that braked and of Realistic gears; the drive layer still never reads the brake as reverse.
+- **The "Stop first" notice was never shown.** `useDriver.notice` was set and nothing read it. The HUD now
+  shows it (and the hint) for a few seconds; a new run starts without the last run's.
+- **"To see the side view maybe use Shift+A/D instead?"** Shift+A and Shift+D look left and right like Q and
+  E, and A and D go on steering while Shift is held.
+- **"I drive well with the view that shows the car."** V, and its HUD button, now work in practice and
+  assessment too. An assessment's marking never sees it; the verdict says plainly that the view was used
+  and that this is not like the real test. The flag lives in the run store, so the saved record is unchanged.
+- **"Hard to judge the bay lines and the kerb."** In R both door mirrors dip 12 degrees (eased), as a real
+  car's do: the rear tyre's patch of road, the kerb and the bay lines now show in them, and they rise again
+  in D (`mirrors.test.ts` projects the tyre's patch into both).
+- **"Fix the side mirror's position."** The left panel sat above the middle and touched the interior
+  mirror, where the right mirror sits lower on the car's own glass. It is now the right mirror's place
+  across the middle of the screen, found by projecting the right glass through the driver's camera, at the
+  same height, so it covers neither the road ahead nor the HUD; with touch controls it keeps the edge and
+  stays above the steering pad.
+- **Key help.** The keys line on the mode panel, in English and Malay, describes whichever gear mode is
+  set; `WALKTHROUGH.md` and WP3 describe both.
+
+## 2 Nov: the ramp, rebuilt from the real one
+
+The owner's photo of a real yard's ramp and a tester's note ("both front tyres on a platform, then the pole
+is moved to the side; carry on straight and exit through the front") replaced the dead end that was
+reversed out of. Another tester saw learners turn into the twin ramp, at the car parked on it.
+
+- **The ramp.** A 3 m run-in, 6 m up to the 0.6 m platform (10%), a 4 m platform and 5 m down off its far
+  end (12%, the hill's own). The pole stands 2.05 m past the crest, so a stop anywhere in the 0.2-1.0 m
+  window puts both front tyres on the platform (`check.py` checks the whole window, not one stop). It is
+  1.6 m tall, as the photo's is, so its top bands show over the bonnet at the stop.
+- **The route goes through it.** Up lane E-F, right into the ramp, and out the far end straight onto the
+  east road, where the route went anyway; the top lane past the ramp is no longer driven. The rules used
+  to hold the car's progress while it was on the ramp beside the route; that `box` is gone.
+- **The pole moves aside.** Once the car has held still in the window, the pole slides to the wall
+  (`RampPole.tsx`, drawn from the same station state the rules read, `rampPoleOpen`), and a touch where it
+  stood costs nothing; touching it while it stands still costs 20 and fails the station. The station
+  clears at a gate past the down-slope's foot.
+- **The twin moved north,** so driving up lane E-F ours is the first turn, and the parked learner sits on
+  the second. The yard's edge is pushed out 1.5 m beside it, as it is beside the twin hill.
+- **A dead end left behind.** The world still closed the ramp's end with an invisible guard and raised the
+  walls' last metre, from the old end wall; the scripted car stopped with its bumper on the guard at the
+  down-slope's foot. Both are gone.
+
+## 2 Nov: finding the way, and what to do at each station
+
+All three testers lost the route without the top-down view ("after one practice I don't know where to go";
+"after the spawn, which way?"), two asked for the stations explained step by step, and one failed road
+merging "without knowing I failed".
+
+- **The way arrow.** On the way to a station, an arrow at the top of the screen points at the route 15 m
+  ahead of the car, turned to where it lies from the car, with the metres left to the station (its name is
+  in the station panel beside it). The rules engine now publishes its own progress along the route
+  (`SessionState.progress`), so the arrow follows the same reading of the route the marking uses, the same
+  road driven twice included; `way.ts` holds the geometry and its left-and-right test.
+- **What next, after a drill.** The panel at the end of a practice drill now offers Next station (the
+  circuit's order, the last back to the first) beside Restart and the station list.
+- **Why an attempt did not count.** A practice attempt voided for its speed (the S's band, the merge's
+  finish) used to leave a small "Attempt void" note with no reason. The session now records why
+  (`detail.voidKey`), and the same panel says what happened and how to fix it, edged in the warning
+  colour (neither a pass nor a fail).
+- **Steps.** Each station has four to six numbered steps with the reference points to use (`sim.steps.*`,
+  English and Malay): mirrors on the poles for the hill and the 3-side bay, half the car past the kerb's
+  corner (checked with Q or E) before turning in the S and the Z, close to the outside kerb before each
+  bend, the ramp's first turn. The briefing screen lists them under the station's tip; in practice the HUD
+  keeps them in a Steps box under the station panel (closed at first on a phone, where space is short).
+
+## 2 Nov: tyres, a phone, and the yard's air
+
+- **White tyres.** The wheel model's tyre materials are metallic (0.72-0.83) and smooth (roughness about
+  0.28), so under the sky's light the learner's tyres mirrored it white; the other cars bake plain colours
+  and never showed it. `SwiftCar` makes them rubber (metalness 0, roughness 0.9).
+- **"No phone control available."** `npm run dev:phone` serves the app on the local network (Vite's
+  `--host`); the walkthrough says how to open it on a phone, and points at `/dev/sim/<mode>`, since Google
+  sign-in only works on the deployed site.
+- **"Add ambience sound."** The wind and birds were there, but both ran through the cabin's 1.4 kHz
+  low-pass, and birdsong lives at 2-8 kHz: the birds were filtered out. Each loop now has its own filter
+  (wind 1.4 kHz, birds 5 kHz), and under them runs far-off traffic, generated: low brown noise whose level
+  swells and ebbs every 14 s or so, as cars pass on a road outside the fence (`brownLoop`, a seamless loop,
+  tested).
+
+## 2 Nov: a new instructor
+
+A tester asked for a different voice. The owner chose from four samples (the ramp's tip read in English and
+Malay): the Malay lines now speak in a Malay male voice and the English lines in "Adrian", an English male
+voice, each in its own language, where one Malay female voice had read both. `gen-voice.mjs` takes a voice
+per language (`--voice-en`, `--voice-ms`; the defaults are the owner's choice, and `FISH_AUDIO_VOICE_ID` stays
+the narration's), and all 26 lines were spoken again, the three tips rewritten today (hill, 3-side, ramp)
+among them, so the voice and the screen agree again.
+
+## 2 Nov: settings in the simulator
+
+The owner asked for a settings button in the simulator: the volumes, keys of one's own, the choice of S changing
+gear or the realistic R key, and the rest.
+
+- **One panel, two doors.** `Settings.tsx` holds the panel (Sound, Controls, Other): the first panel shows it as
+  before, and while driving a gear button on the HUD opens it as a dialog; the drive pauses while it is open and is
+  left as it was after, and the driving keys are off so the panel can take them.
+- **Sound.** A master volume over three mixes: the car and its effects (engine, horn, faults, chimes), the
+  surroundings (wind, birds, the far-off traffic) and the instructor, whose on and off stays too. Every sound now
+  goes through its mix (`out()` in `sound.ts`); the volumes are kept in the browser. There is no music in the
+  simulator, so the surroundings take that slider's place.
+- **Keys.** Every action is on one key the learner can change (`useKeys`): press its button, then the new key
+  (Esc keeps the old one); a key another action has swaps over, so every action keeps one. The arrows, Esc and the
+  keypad's + and - always do theirs, so no one can lock themselves out, and Shift, Tab and the system keys cannot
+  be taken. The strings that name a key (the first panel's keys line, "press S again", the pause hint, the verdict's
+  note, the S's and Z's steps) name the learner's own. The browser's own shortcuts (Ctrl, Alt, Cmd) no longer
+  reach the car.
+- **Gears.** The same choice as before, put plainly: "S and W change gear" or "Realistic: the R key", each naming
+  the learner's keys.
+
+## 3 Nov: the owner's look at the cabin
+
+- **The mirrors as they were.** The 12° dip of the door mirrors in reverse and the left panel's move (2 Nov) are
+  taken out: the owner preferred the earlier, steady view, which showed more ("I can't see anything now").
+- **The sky was black in the mirrors.** The painted sky is a dome that follows the camera, drawn first and behind
+  everything; at 500 m it lay past the mirror cameras' 60 m far plane, so they cut it away and showed black where
+  the sky is. At 50 m it sits inside every camera's far plane, and, drawn first and behind everything, its size
+  never shows.
+- **The dials were not round.** The silver rings round the dials and the bezels inside them are faceted in the
+  model itself (the same 333 and 248 vertices in both tiers). `Cluster.tsx` now draws them round: each faceted
+  triangle cut into 64 and every point laid back on the circle about its dial's axis (the circle the silver ring's
+  points make, seen straight on), at its own radius and depth, its texture where it was; sharp edges stay sharp.
+  The faceted ones are hidden while the round ones show.
+- **The windscreen pillar's trim was broken.** From the seat the right pillar's trim, the red paint and the black
+  surround did not meet, and the sky showed through the seams: the model draws its roof trim and the black plastic
+  parts from one side only. Those three materials (`Roof_Beige_Plas`, `Roof_BeigeFab`, `Black_Plst_Parts`) are now
+  drawn from both sides and the seams close. Not the whole car: from both sides, the backs of the outer panels came
+  across the side windows.
+
+## 11 Nov: the windscreen pillars, again
+
+The owner: "Pillar still broken." Three things were still wrong from the seat, measured by casting a ray through
+every pixel round the pillar, back faces included, and naming what each one met.
+
+- **A red band up the pillar.** The model paints the doors' window frames red on their inner faces too, so between
+  the grey trim and the glass ran a band of body paint. In the real car (a red 2020 Swift's cabin photo) the trim
+  meets black there. The frame faces turned toward the seat on their side of the car (the driver's eye, or its
+  mirror image for the left door) now take black plastic; the outside of the door stays red.
+- **Sky through hairline gaps.** Eighteen pixels at the pillar's top met nothing at all: true gaps of 0.1-3 mm
+  between the frame, its seal, the trim and the glass, each beside an open edge of one of them. A narrow black band
+  (6 mm) now runs along the open edges of the faces the seat sees (the frames, the seals, and the windscreen
+  pillars' trim), leaning back behind each edge and drawn a little behind its depth, so it shows only through a gap.
+- **Teeth along the trim.** The door seal's toothed edge lay up to 9 mm in front of the trim. It now sits 12 mm
+  further from the driver's eye, behind the trim's own clean edge; seen from the seat it is otherwise where it was.
+
+`pillars.ts` does this on the car's own copy of the body (the loaded model stays as it is), and its test loads both
+tiers' models: the gaps are there in the model as it comes, none are left, and no red frame face is turned to the
+seat. Looking left and out of the driver's window shows no gaps either; the one that showed the road where the left
+door meets the dash is closed by the seal's band.
+
+The ramp, checked again in the real page: the autopilot's assessment and a practice drill driven with W, S, A and D
+alone both stopped 0.6 m short of the pole, held 2 s, saw it slide to the wall, drove off the front and down the
+east road, cleared with no fault; the practice drill then offered Next station. `check.py` passes (41 checks) and
+the ramp's tests with it.
+

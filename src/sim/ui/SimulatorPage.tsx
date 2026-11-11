@@ -17,7 +17,7 @@ import { useAuthStore } from '@/stores/authStore';
 import type { SimEvent, StationId, VehicleSample } from '../contracts';
 import { circuit, rules, swift } from '../data';
 import { rad } from '../geom';
-import { useDriver, useHead, useKeyboardControls, useTouchPref, useTouchUi } from '../input';
+import { useDriver, useGearPref, useHead, useKeyboardControls, useSettingsPanel, useTouchPref, useTouchUi } from '../input';
 import { OtherCars } from '../physics/OtherCars';
 import { Traffic } from '../traffic/model';
 import { TrafficView } from '../traffic/TrafficView';
@@ -29,10 +29,11 @@ import { TouchControls } from './TouchControls';
 import { Daylight, TopDownCamera, World } from '../world/World';
 import { Scenery } from '../world/Scenery';
 import { Hud, HUD_PLATE } from './Hud';
+import type { SettingsProps } from './Settings';
 import { ModePanel, type PanelMode } from './ModePanel';
 import { type Pose, spawnPose, useRun } from './run';
 import { Autopilot, PERF_TOOLS } from './autopilot';
-import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RenderScale, WhereNext } from './scene';
+import { CameraKick, ChaseCamera, dprFor, FrameProbe, HeadDrag, RampGate, RenderScale, WhereNext } from './scene';
 import { engineSound, farHornSound, hornSound, pauseSound, say, startEngine, stopEngine, unlockSound, useVoicePref } from './sound';
 import { briefFor } from './start';
 import { Eggs, RoofNote, useEggs, useKonami, ZebraCat } from './Eggs';
@@ -44,6 +45,9 @@ type Phase = 'choose' | 'explore' | 'drive' | 'verdict';
 const STATIONS = new Set<string>(circuit.stations.map((s) => s.id));
 const isStation = (id: string | undefined): id is StationId => !!id && STATIONS.has(id);
 /** /simulations/free opens free drive; a station's id, its practice; anything else, the assessment. */
+/** Practice's next drill, in the circuit's order; after the last, the first. */
+const ORDER = [...circuit.stations].sort((a, b) => a.order - b.order).map((st) => st.id);
+const nextStation = (id: StationId): StationId => ORDER[(ORDER.indexOf(id) + 1) % ORDER.length];
 const modeFor = (id: string | undefined): PanelMode => (id === 'free' ? 'free' : isStation(id) ? 'practice' : 'assessment');
 
 const stationStart = (id: StationId): Pose => {
@@ -76,6 +80,7 @@ export function SimulatorPage() {
   const touch = useTouchUi();
   const touchPref = useTouchPref((s) => s.pref);
   const voicePref = useVoicePref((s) => s.pref);
+  const gearPref = useGearPref((s) => s.pref);
   const qualityPref = useQualityPref((s) => s.pref);
   const auto_ = useTier();
   const forced = PERF_TOOLS ? params.get('quality') : null;   // performance runs can force a tier
@@ -88,6 +93,7 @@ export function SimulatorPage() {
   const paused = useDriver((s) => s.paused);
   const chase = useDriver((s) => s.chase);
   const verdict = useRun((s) => s.state.verdict);
+  const chaseUsed = useRun((s) => s.chaseUsed);
 
   const car = useRef<CarApi>(null);
   const carGroup = useCallback(() => car.current?.group() ?? null, []);
@@ -114,7 +120,8 @@ export function SimulatorPage() {
   const getTraffic = useCallback(() => traffic.current, []);
 
   // the autopilot never loses focus to a person, so it never pauses for it
-  useKeyboardControls(phase === 'drive' && !autopilotOn);
+  const settingsOpen = useSettingsPanel((s) => s.open);
+  useKeyboardControls(phase === 'drive' && !autopilotOn && !settingsOpen);   // the settings take the keys while open
   // scripts/sim-demo.mjs times its screenshots from these (development and performance builds only)
   useEffect(() => { if (PERF_TOOLS) Object.assign(window, { __simRun: useRun, __simDriver: useDriver, __simHead: useHead, __simCar: () => car.current, __simEggs: getEggs }); }, [getEggs]);
   useEffect(() => () => {
@@ -163,6 +170,7 @@ export function SimulatorPage() {
       throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false, indicator: 0,
       ...(m !== 'free' && { rainbow: false }),   // the marked modes drive the plain red Swift
     });
+    useDriver.setState({ notice: null });
     // the start (the owner, 21 Oct): the brief, read once a visit; then the engine, started afresh every time;
     // only then is the car free to move. A newer start (a restart mid-way) takes over from this one.
     const run = ++starts.current;
@@ -222,15 +230,15 @@ export function SimulatorPage() {
       return;
     }
     const run = useRun.getState();
-    run.step(sample, [...events, ...met], dt, driver.topDown);
+    run.step(sample, [...events, ...met], dt, driver.topDown, driver.chase && !driver.topDown);
     if (auto.current) useDriver.getState().set(auto.current.next(sample, dt));
     const now = useRun.getState();
     if (now.mode === 'assessment' && now.state.verdict && savedRun.current !== now.runId) finish();
   }, [finish]);
 
   const exit = () => navigate(ROUTES.SIMULATIONS);
-  // free drive's view from behind the car, unless the top-down view is on
-  const chaseOn = mode === 'free' && phase === 'drive' && chase && !topDown;
+  // the view from behind the car, in every mode, unless the top-down view is on
+  const chaseOn = phase === 'drive' && chase && !topDown;
 
   const ready_ = () => {
     performance.mark('sim:ready');
@@ -248,6 +256,11 @@ export function SimulatorPage() {
     useQualityPref.getState().setPref(p);
   };
 
+  const settings: SettingsProps = {
+    quality: qualityPref, detected, touch: touchPref, voice: voicePref, gears: gearPref,
+    onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p), onVoice: (p) => useVoicePref.getState().setPref(p), onGears: (p) => useGearPref.getState().setPref(p),
+  };
+
   return (
     <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--road))]', phase === 'explore' && EXPLORE_CANVAS, phase === 'drive' && '[&_canvas]:touch-none')}>
       <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows && 'percentage'} gl={{ powerPreference: 'high-performance' }}>
@@ -263,6 +276,7 @@ export function SimulatorPage() {
           </Physics>
           <Daylight shadows={spec.shadows} follow={carGroup} />
           {mode !== 'free' && <WhereNext />}
+          <RampGate free={mode === 'free'} />
           <ZebraCat eggs={getEggs} />
           <RoofNote />
         </Suspense>
@@ -281,10 +295,7 @@ export function SimulatorPage() {
           ready={ready}
           onMode={setMode}
           onDrill={setDrill}
-          settings={{
-            quality: qualityPref, detected, touch: touchPref, voice: voicePref,
-            onQuality: changeQuality, onTouch: (p) => useTouchPref.getState().setPref(p), onVoice: (p) => useVoicePref.getState().setPref(p),
-          }}
+          settings={settings}
           onStart={() => begin(mode, drill)}
           onExplore={() => go('explore')}
           onExit={exit}
@@ -297,8 +308,10 @@ export function SimulatorPage() {
             touch={touch}
             free={mode === 'free'}
             onRestart={() => begin(mode, drill)}
+            onNext={() => begin('practice', nextStation(drill))}
             onStations={() => { if (mode !== 'free') setMode('practice'); go('choose'); }}
             onExit={exit}
+            settings={settings}
           />
           {touch && <TouchControls />}
         </>
@@ -306,6 +319,7 @@ export function SimulatorPage() {
       {phase === 'verdict' && verdict && (
         <VerdictView
           verdict={verdict}
+          chase={chaseUsed}
           save={save}
           onRetry={() => begin('assessment', drill)}
           onPractise={(st) => begin('practice', st)}

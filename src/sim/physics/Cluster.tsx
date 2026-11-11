@@ -5,10 +5,12 @@
 // dial is re-seated: its ring is measured as the driver sees it (the silver edge projected from the eye onto
 // the dial's plane, and a circle fitted), and a disc there carries the car's own dial painting, re-drawn flat
 // once from the model's texture and scaled to fill the ring. The needles turn on each ring's centre, fed the
-// road speed every frame and eased a little, as the Godot build's were (godot/scripts/cluster.gd).
+// road speed every frame and eased a little, as the Godot build's were (godot/scripts/cluster.gd). The rings
+// themselves are faceted in the model, in both tiers; they are drawn round (roundRings), the faceted ones hidden.
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
+import { mergeVertices, toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { SWIFT_2022 as CAR } from './cars/swift-2022';
 import { flatFace } from './surface';
 
@@ -29,6 +31,8 @@ const EASE_S = 0.08;        // how quickly a needle settles on a new reading
 // marked nowhere.
 const IDLE_RPM = 800;
 const rpmAt = (kmh: number) => IDLE_RPM + 2400 * (1 - Math.exp(-kmh / 25));
+const CUT = 8;               // each faceted triangle is cut into CUT x CUT before its points go round
+const CREASE = Math.PI / 6;  // edges sharper than this stay sharp on the round rings
 const RED = new THREE.Color('rgb(230, 41, 31)');
 const HUB_RED = new THREE.Color('rgb(172, 31, 23)');
 
@@ -97,6 +101,85 @@ function seats(body: THREE.Object3D, face: Face, eye: THREE.Vector3): Seat[] | n
       opening,
       dial: i === 0 ? CAR.cluster.tacho : CAR.cluster.speedo,
     };
+  });
+}
+
+/** The model's faceted silver rings and the bezels inside them. */
+function facetedRings(body: THREE.Object3D): THREE.Mesh[] {
+  const found: THREE.Mesh[] = [];
+  body.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    const name = mesh.isMesh ? (mesh.material as THREE.Material).name : '';
+    if (name === CAR.cluster.rings.material || name === CAR.cluster.bezel) found.push(mesh);
+  });
+  return found;
+}
+
+/**
+ * The silver rings and the bezels inside them, round (the owner, 3 Nov: "the meter is still not round"). Each faceted
+ * triangle is cut small and every point laid back on the circle about its dial's axis, at its own radius and depth,
+ * its texture where it was: the model's own shapes, without the corners. Each axis is the circle the silver ring's
+ * points make, seen straight on. In the body's frame; empty if the model has no rings.
+ */
+function roundRings(body: THREE.Object3D, face: Face): THREE.Mesh[] {
+  const toBody = body.matrixWorld.clone().invert();
+  const origin = face.planePoint(0, 0, 0);
+  const d = new THREE.Vector3();
+  const local = (p: THREE.Vector3): [number, number, number] => {
+    d.subVectors(p, origin);
+    return [d.dot(face.right), d.dot(face.up), d.dot(face.normal)];
+  };
+  const parts = facetedRings(body).map((mesh) => {
+    const g = mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry;
+    const m = toBody.clone().multiply(mesh.matrixWorld);
+    const P = g.attributes.position;
+    const U = g.attributes.uv;
+    const pts = Array.from({ length: P.count }, (_, i) => local(new THREE.Vector3().fromBufferAttribute(P, i).applyMatrix4(m)));
+    const uvs = U ? Array.from({ length: U.count }, (_, i) => [U.getX(i), U.getY(i)]) : null;
+    if (g !== mesh.geometry) g.dispose();
+    return { mesh, pts, uvs };
+  });
+  const half = face.width / 2;
+  const ring: [number, number][][] = [[], []];   // the silver ring's points, left dial then right
+  for (const { mesh, pts } of parts) {
+    if ((mesh.material as THREE.Material).name !== CAR.cluster.rings.material) continue;
+    for (const [x, y] of pts) ring[x < half ? 0 : 1].push([x, y]);
+  }
+  if (ring.some((side) => side.length < 6)) return [];
+  const axes = ring.map((side) => fitCircle(side));
+  const at = new THREE.Vector3();
+  return parts.map(({ mesh, pts, uvs }) => {
+    const pos: number[] = [];
+    const uv: number[] = [];
+    for (let t = 0; t + 2 < pts.length; t += 3) {
+      const tri = [pts[t], pts[t + 1], pts[t + 2]];
+      const { cx, cy } = axes[(tri[0][0] + tri[1][0] + tri[2][0]) / 3 < half ? 0 : 1];
+      const cyl = tri.map(([x, y, z]) => ({ r: Math.hypot(x - cx, y - cy), a: Math.atan2(y - cy, x - cx), z }));
+      for (const c of cyl.slice(1)) c.a = cyl[0].a + Math.atan2(Math.sin(c.a - cyl[0].a), Math.cos(c.a - cyl[0].a));   // no wrap inside one triangle
+      const point = (i: number, j: number) => {   // corners 0, 1 and 2 at (0, 0), (CUT, 0) and (0, CUT)
+        const w = [(CUT - i - j) / CUT, i / CUT, j / CUT];
+        const r = w[0] * cyl[0].r + w[1] * cyl[1].r + w[2] * cyl[2].r;
+        const a = w[0] * cyl[0].a + w[1] * cyl[1].a + w[2] * cyl[2].a;
+        const z = w[0] * cyl[0].z + w[1] * cyl[1].z + w[2] * cyl[2].z;
+        at.copy(origin).addScaledVector(face.right, cx + r * Math.cos(a)).addScaledVector(face.up, cy + r * Math.sin(a)).addScaledVector(face.normal, z);
+        pos.push(at.x, at.y, at.z);
+        if (uvs) for (const k of [0, 1]) uv.push(w[0] * uvs[t][k] + w[1] * uvs[t + 1][k] + w[2] * uvs[t + 2][k]);
+      };
+      for (let i = 0; i < CUT; i++) {
+        for (let j = 0; i + j < CUT; j++) {
+          point(i, j); point(i + 1, j); point(i, j + 1);   // the winding of the corners, kept
+          if (i + j < CUT - 1) { point(i + 1, j); point(i + 1, j + 1); point(i, j + 1); }
+        }
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    if (uvs) g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    const merged = mergeVertices(g, 1e-5);
+    const round = toCreasedNormals(merged, CREASE);
+    g.dispose();
+    merged.dispose();
+    return new THREE.Mesh(round, mesh.material);   // the car's own material, shared: never disposed here
   });
 }
 
@@ -219,10 +302,29 @@ export function Cluster({ body, speed }: { body: THREE.Object3D; speed: () => nu
   const dials = useMemo(() => {
     const face = flatFace(body, CAR.cluster, CAR.eye);
     const list = face && seats(body, face, new THREE.Vector3(...CAR.eye));
-    return face && list ? { face, d: new Dials(face, list) } : null;
+    if (!face || !list) return null;
+    const rings = new THREE.Group();
+    for (const m of roundRings(body, face)) rings.add(m);
+    return { face, d: new Dials(face, list), rings };
   }, [body]);
-  useEffect(() => () => { dials?.d.dispose(); dials?.face.geometry.dispose(); }, [dials]);
+  useEffect(() => () => {
+    dials?.d.dispose();
+    dials?.face.geometry.dispose();
+    for (const m of dials?.rings.children ?? []) (m as THREE.Mesh).geometry.dispose();
+  }, [dials]);
+  // the faceted rings, hidden while the round ones stand in for them
+  useEffect(() => {
+    if (!dials?.rings.children.length) return;
+    const faceted = facetedRings(body);
+    for (const m of faceted) m.visible = false;
+    return () => { for (const m of faceted) m.visible = true; };
+  }, [body, dials]);
   useFrame(({ gl }, dt) => dials?.d.show(gl, Math.abs(speed()), dt));
   if (!dials) return null;
-  return <primitive object={dials.d.group} />;
+  return (
+    <>
+      <primitive object={dials.d.group} />
+      <primitive object={dials.rings} />
+    </>
+  );
 }

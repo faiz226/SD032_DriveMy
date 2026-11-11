@@ -27,7 +27,6 @@ export interface StationGeometry {
   stop_band?: { s_from: number; s_to: number; note: string };
   pocket?: Polygon;
   bay?: { centre: Vec2; axis_deg: number; length: number; width: number; kerbed?: boolean };
-  box?: Polygon;            // ramp test: the ramp's footprint
   width?: number;
   depth?: number;
   legs?: Polygon[];
@@ -77,6 +76,8 @@ export interface CircuitData {
   markings?: {
     centre_lines: Vec2[][]; dash: number; gap: number; width: number; note?: string;
     edge_lines?: Vec2[][]; stop_lines?: Vec2[][]; give_way?: Vec2[][];
+    /** A give-way triangle before each give-way line: its line's middle and the way the drivers it faces travel. */
+    triangles?: { at: Vec2; heading_deg: number }[];
     arrows?: { at: Vec2; heading_deg: number; kind: string; junction: string }[];
     chevrons?: { polygon: Polygon; heading_deg: number; note?: string }[];
     zebras?: Zebra[];
@@ -88,6 +89,8 @@ export interface CircuitData {
     booths: { centre: Vec2; size: Vec2; heading_deg: number }[]; office: { centre: Vec2; size: Vec2; heading_deg: number }; fence: number[];
     /** Other learners' cars, stopped mid-test on the twin tracks: `at` is the car's centre, the wheelbase's middle. */
     npc_cars?: { on: string; at: Vec2; heading_deg: number }[];
+    /** Reference poles: where a driver lines up the door mirrors, on the grass before reversing into a bay, or on a hill wall's top (base_z) beside the stop band. */
+    ref_poles?: { station: StationId; at: Vec2; height: number; base_z?: number; note?: string }[];
   };
   spawn: { at: Vec2; heading_deg: number; handbrake: boolean };
   parameters: Record<string, { value: unknown; source: string; note: string }>;
@@ -204,6 +207,7 @@ export interface SessionState {
   mode: Mode;
   current: StationId | null;           // the only armed station; null after the last
   stations: StationProgress[];         // in order
+  progress?: number;                   // metres along route.samples the car has come: the screens' way arrow
   demerits: number;
   faults: Fault[];
   ended: boolean;

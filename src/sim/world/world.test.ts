@@ -34,7 +34,7 @@ describe('the world is placed from circuit.json', () => {
     for (const s of circuit.slopes) { near(find(`slope:${s.id}`), toThree(s.start[0], s.start[1]), `slope ${s.id}`); count++; }
     circuit.props.booths.forEach((b, i) => { near(find(`booth:${i}`), toThree(b.centre[0], b.centre[1]), `booth ${i}`); count++; });
     near(find('spawn'), toThree(circuit.spawn.at[0], circuit.spawn.at[1]), 'spawn');
-    expect(count).toBeGreaterThan(40);
+    expect(count).toBeGreaterThan(35);
   });
 
   it('puts a collider on every pole, carrying its index', () => {
@@ -45,6 +45,18 @@ describe('the world is placed from circuit.json', () => {
       expect(p.position[2]).toBeCloseTo(-src.at[1], 3);
       expect(p.position[1] - p.halfHeight).toBeCloseTo(src.base_z ?? 0, 3);
     });
+  });
+
+  it('draws each reference pole from its base: the hill\'s on its wall tops, the bay\'s on the grass', () => {
+    const refs = circuit.props.ref_poles ?? [];
+    expect(refs.filter((r) => r.station === 'hill-start' && r.base_z)).toHaveLength(2);
+    const pos = (world.group.getObjectByName('things') as THREE.Mesh).geometry.getAttribute('position');
+    for (const r of refs) {
+      const ys: number[] = [];
+      for (let i = 0; i < pos.count; i++) if (Math.hypot(pos.getX(i) - r.at[0], pos.getZ(i) + r.at[1]) < 0.06) ys.push(pos.getY(i));
+      expect(Math.min(...ys), `${r.station} pole base`).toBeCloseTo(r.base_z ?? 0, 3);
+      expect(Math.max(...ys), `${r.station} pole top`).toBeCloseTo((r.base_z ?? 0) + r.height, 3);
+    }
   });
 
   it('raises both slopes to their profiles', () => {

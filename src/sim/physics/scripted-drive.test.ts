@@ -105,10 +105,9 @@ describe('acceptance runs through the real controls (WP6)', () => {
     const want: [string, string | undefined, string][] = [
       ['rollback', undefined, 'hill-start'],
       ['not_in_bay', undefined, 'side-parking'],
-      ['pole', undefined, 'side-parking'],
       ['station_failed', 'sim.fault.s.speed', 's-curve'],
       ['kerb', undefined, 'z-curve'],
-      ['station_failed', 'sim.fault.ramp.window', 'ramp-test'],
+      ['pole', undefined, 'ramp-test'],   // held outside the window, the pole stands, and driving on touches it
       ['station_failed', 'sim.fault.merge.slow', 'road-merging'],
     ];
     for (const [kind, reason, station] of want) {
@@ -118,7 +117,7 @@ describe('acceptance runs through the real controls (WP6)', () => {
       expect(f!.fixKey, kind).toMatch(/^sim\.fix\./);
       expect(f!.basis.length, kind).toBeGreaterThan(0);
     }
-    for (const reason of ['sim.fault.rollback', 'sim.fault.ramp.window', 'sim.fault.merge.slow']) {
+    for (const reason of ['sim.fault.rollback', 'sim.fault.merge.slow']) {
       const f = v!.faults.find((x) => x.reasonKey === reason)!;
       expect(f.measured, reason).toBeTruthy();
       expect(f.limit, reason).toBeTruthy();
