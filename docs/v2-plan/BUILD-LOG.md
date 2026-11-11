@@ -791,3 +791,9 @@ it never showed there. `connect-src` now allows `blob:` (addresses the page make
 production build under the live header, sent through the browser: refused textures before, the full dash after.
 Also deployed since 11 Nov: the service worker updates itself (`registerType: "autoUpdate"`), so a new deploy no
 longer waits for a click on Reload, which had kept the sign-in return on the previous version.
+The header alone did not reach a browser that already had the app: the service worker answered every page load
+with the index.html it had precached, and a cached page keeps the headers it was saved with, so the old policy
+stayed until a later build changed the app. Page loads now go to the network first, with their current headers;
+the copy saved last time only when that fails (offline, or 4 s), and the precached app shell for a page never
+opened before. Checked with one browser and a server whose header changed between visits: the old setup kept the
+first header, the new one showed the second at once, and both opened pages offline.
