@@ -29,19 +29,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
   {
     "id": "618f6ddc-44b0-41a6-bb5d-953abc1f9115",
     "category": "road-signs",
-    "question_en": "What does this sign mean?",
-    "question_ms": "Apakah maksud papan tanda ini?",
+    "question_en": "You see this sign while following a slower vehicle. What should you do?",
+    "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
     "options_en": [
-      "No overtaking",
-      "No stopping",
-      "No left turn",
-      "No right turn"
+      "Stay behind the vehicle",
+      "Pass if the lane is clear",
+      "Pass after sounding your horn",
+      "Pass if the vehicle slows down"
     ],
     "options_ms": [
-      "Dilarang memotong",
-      "Dilarang berhenti",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Kekal di belakang kenderaan",
+      "Potong jika lorong lapang",
+      "Potong selepas membunyikan hon",
+      "Potong jika kenderaan memperlahankan kelajuan"
     ],
     "correct_index": 0,
     "explanation_en": "No overtaking. Plan your route so you can obey this restriction.",
@@ -224,7 +224,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_ms": [
       "Simpang jalan di sebelah kiri",
       "Simpang jalan di sebelah kanan",
-      "Simpang yang diatur di hadapan",
+      "Persimpangan beranjak di hadapan",
       "Simpang serong di sebelah kiri"
     ],
     "correct_index": 0,
@@ -250,7 +250,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_ms": [
       "Simpang jalan di sebelah kiri",
       "Simpang jalan di sebelah kanan",
-      "Simpang yang diatur di hadapan",
+      "Persimpangan beranjak di hadapan",
       "Simpang serong di sebelah kiri"
     ],
     "correct_index": 1,
@@ -1227,8 +1227,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-1",
     "order_index": 3,
-    "question_en": "At 60 km/h, a driver covers 17 metres before pressing the pedal and 44 metres before stopping. How far does the car travel after the pedal is pressed?",
-    "question_ms": "Pada kelajuan 60 km/j, pemandu bergerak sejauh 17 meter sebelum menekan pedal dan 44 meter sebelum berhenti. Berapakah jarak yang dilalui selepas pedal ditekan?",
+    "question_en": "At 60 km/h, the total stopping distance in the example is 44 metres. The first 17 metres occur before braking. What is the braking distance?",
+    "question_ms": "Pada 60 km/j, jumlah jarak berhenti dalam contoh ialah 44 meter. Kenderaan bergerak 17 meter sebelum membrek. Berapakah jarak membrek?",
     "options_en": [
       "17 metres",
       "22 metres",
@@ -1331,8 +1331,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-1",
     "order_index": 7,
-    "question_en": "Which areas should you check immediately before moving out to pass a car?",
-    "question_ms": "Kawasan manakah yang perlu diperiksa sejurus sebelum keluar dari lorong untuk memotong kereta?",
+    "question_en": "The road ahead is clear for overtaking. What should you check just before moving right?",
+    "question_ms": "Jalan di hadapan lapang untuk memotong. Apakah yang patut diperiksa sebelum bergerak ke kanan?",
     "options_en": [
       "Behind and beside your car",
       "Ahead and along the shoulder",
@@ -1539,8 +1539,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-1",
     "order_index": 15,
-    "question_en": "In a stopped queue, what should still be visible in front of you?",
-    "question_ms": "Dalam barisan kenderaan yang berhenti, apakah yang patut masih kelihatan di hadapan anda?",
+    "question_en": "Which point is the handbook’s reference for leaving a gap when stopping behind a car?",
+    "question_ms": "Bahagian manakah dijadikan panduan dalam buku untuk meninggalkan jarak ketika berhenti di belakang kereta?",
     "options_en": [
       "The car’s rear window",
       "The car’s rear wheels",
@@ -2007,8 +2007,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 8,
-    "question_en": "Which lane should you approach in to go straight through a three-lane roundabout?",
-    "question_ms": "Lorong manakah yang patut digunakan ketika menghampiri bulatan tiga lorong untuk meneruskan perjalanan lurus?",
+    "question_en": "At a three-lane roundabout with no lane arrows, which approach lane does the handbook recommend for going straight?",
+    "question_ms": "Di bulatan tiga lorong tanpa anak panah lorong, lorong manakah disyorkan oleh buku panduan untuk bergerak lurus?",
     "options_en": [
       "The left lane",
       "The right lane",
@@ -2033,19 +2033,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 9,
-    "question_en": "You are ready to enter a roundabout. Which traffic has priority over you?",
-    "question_ms": "Anda bersedia untuk memasuki bulatan. Trafik manakah mempunyai keutamaan berbanding anda?",
+    "question_en": "You are waiting to enter a roundabout. Which vehicles already circulating should you give way to?",
+    "question_ms": "Anda menunggu untuk memasuki bulatan. Kenderaan manakah yang sudah berada di bulatan perlu diberi laluan?",
     "options_en": [
-      "Vehicles approaching from your left",
-      "Vehicles approaching from your right",
-      "Vehicles waiting opposite you",
-      "Vehicles waiting beside you"
+      "Circulating traffic on your left",
+      "Circulating traffic from your right",
+      "Vehicles entering at the next arm",
+      "Vehicles leaving at the next exit"
     ],
     "options_ms": [
-      "Kenderaan yang menghampiri dari kiri",
-      "Kenderaan yang menghampiri dari kanan",
-      "Kenderaan yang menunggu di hadapan bertentangan",
-      "Kenderaan yang menunggu di sebelah anda"
+      "Trafik yang beredar di sebelah kiri",
+      "Trafik yang beredar dari kanan",
+      "Kenderaan yang masuk di laluan seterusnya",
+      "Kenderaan yang keluar di susur seterusnya"
     ],
     "correct_index": 1,
     "explanation_en": "Slow down and let traffic approaching from the right pass before you enter.",
@@ -2059,8 +2059,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 10,
-    "question_en": "The light turns amber before you reach the stop line. What should you do?",
-    "question_ms": "Lampu bertukar jingga sebelum anda tiba di garisan berhenti. Apakah tindakan anda?",
+    "question_en": "The light turns amber and you have enough room to stop before the line. What should you do?",
+    "question_ms": "Lampu bertukar jingga dan ruang mencukupi untuk berhenti sebelum garisan. Apakah tindakan anda?",
     "options_en": [
       "Stop behind the line",
       "Proceed if the lane is clear",
@@ -2267,19 +2267,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-2",
     "order_index": 18,
-    "question_en": "What can happen if you turn the wheel too far in a bend?",
-    "question_ms": "Apakah yang boleh berlaku jika anda memusing stereng terlalu jauh ketika membelok?",
+    "question_en": "With normal tyre grip, what happens to your turning path if you steer too sharply?",
+    "question_ms": "Dengan cengkaman tayar biasa, apakah kesan memusing stereng terlalu banyak pada laluan belokan?",
     "options_en": [
-      "The car may cut into the next lane",
-      "The car may run wide at the outside",
-      "The car may keep the same arc",
-      "The car may straighten before the exit"
+      "It tightens",
+      "It widens",
+      "It stays the same",
+      "It straightens"
     ],
     "options_ms": [
-      "Kereta mungkin masuk ke lorong sebelah",
-      "Kereta mungkin terbabas ke bahagian luar",
-      "Kereta mungkin kekal pada lengkok sama",
-      "Kereta mungkin bergerak lurus sebelum keluar"
+      "Lengkok mengecil",
+      "Lengkok melebar",
+      "Lengkok kekal sama",
+      "Laluan menjadi lurus"
     ],
     "correct_index": 0,
     "explanation_en": "Too much steering tightens the arc, potentially taking the vehicle into another lane.",
@@ -2553,19 +2553,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-3",
     "order_index": 4,
-    "question_en": "Floodwater ahead is too deep to cross safely. What should you do?",
-    "question_ms": "Air banjir di hadapan terlalu dalam untuk dilalui dengan selamat. Apakah tindakan anda?",
+    "question_en": "Floodwater covers the road ahead and you cannot judge its depth. How should you proceed?",
+    "question_ms": "Air banjir menutupi jalan di hadapan dan kedalamannya tidak dapat dipastikan. Apakah tindakan anda?",
     "options_en": [
       "Turn back and find another route",
-      "Follow a larger vehicle across",
-      "Cross near the edge of the road",
-      "Wait for a gap and cross slowly"
+      "Wait for a larger vehicle and follow it",
+      "Test the water by entering slowly",
+      "Cross where the water looks still"
     ],
     "options_ms": [
       "Patah balik dan cari laluan lain",
-      "Ikut kenderaan lebih besar merentasi air",
-      "Lintas berhampiran tepi jalan",
-      "Tunggu ruang dan lintas perlahan-lahan"
+      "Tunggu kenderaan lebih besar dan ikutinya",
+      "Uji air dengan memasuki perlahan-lahan",
+      "Lintas di tempat air kelihatan tenang"
     ],
     "correct_index": 0,
     "explanation_en": "Choose another route. Deep water can stall the engine or damage it if water reaches the air intake.",
@@ -2686,18 +2686,18 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "You have applied the parking brake and are about to leave the parked car. What else should you do before getting out?",
     "question_ms": "Brek tangan sudah ditarik dan anda hendak meninggalkan kereta. Apakah yang perlu dibuat sebelum keluar?",
     "options_en": [
-      "Leave the engine idling",
-      "Leave the blower running",
       "Switch off the engine",
-      "Raise the idle speed"
+      "Shift into neutral and leave it idling",
+      "Wait for the cooling fan to stop",
+      "Switch off the lights and leave it idling"
     ],
     "options_ms": [
-      "Biarkan enjin melahu",
-      "Biarkan penghembus hidup",
       "Matikan enjin",
-      "Tingkatkan putaran melahu"
+      "Tukar ke neutral dan biarkan enjin melahu",
+      "Tunggu kipas penyejuk berhenti",
+      "Padam lampu dan biarkan enjin melahu"
     ],
-    "correct_index": 2,
+    "correct_index": 0,
     "explanation_en": "The curriculum flags leaving a vehicle without switching off the engine or applying the parking brake.",
     "explanation_ms": "Kurikulum menyenaraikan meninggalkan kenderaan tanpa mematikan enjin atau menggunakan brek tangan sebagai kesalahan.",
     "image_url": null,
@@ -2709,8 +2709,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-3",
     "order_index": 10,
-    "question_en": "What distinguishes the two dangerous-driving categories listed next to each other in the curriculum?",
-    "question_ms": "Apakah yang membezakan dua kategori pemanduan berbahaya yang disenaraikan berturutan dalam kurikulum?",
+    "question_en": "The handbook lists two dangerous-driving offences. What makes the more serious one different?",
+    "question_ms": "Buku panduan menyenaraikan dua kesalahan memandu secara berbahaya. Apakah yang membezakan kesalahan yang lebih serius?",
     "options_en": [
       "Whether property was damaged",
       "Whether a warning was given",
@@ -2848,7 +2848,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Failing to stop at a roadblock"
     ],
     "options_ms": [
-      "Mengabaikan isyarat lalu lintas",
+      "Ingkar papan tanda lalu lintas",
       "Meletak kereta di perhentian bas",
       "Memandu kereta tanpa insurans",
       "Gagal berhenti di sekatan jalan"
@@ -3073,19 +3073,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "quiz-b-3",
     "order_index": 24,
-    "question_en": "A route restriction lists bicycles and micromobility vehicles. Which road user is also covered by that restriction?",
-    "question_ms": "Sekatan laluan menyenaraikan basikal dan kenderaan mikromobiliti. Pengguna jalan raya manakah turut tertakluk pada sekatan itu?",
+    "question_en": "A sign prohibits micromobility vehicles. Which of these vehicles falls in that category?",
+    "question_ms": "Papan tanda melarang kenderaan mikromobiliti. Kenderaan manakah termasuk dalam kategori itu?",
     "options_en": [
-      "An e-scooter rider",
-      "A passenger in a car",
-      "A driver in a light van",
-      "A bus passenger"
+      "An electric kick scooter",
+      "An electric passenger car",
+      "An electric delivery van",
+      "An electric motorcycle"
     ],
     "options_ms": [
-      "Penunggang skuter elektrik",
-      "Penumpang kereta",
-      "Pemandu van ringan",
-      "Penumpang bas"
+      "Skuter tendang elektrik",
+      "Kereta penumpang elektrik",
+      "Van penghantaran elektrik",
+      "Motosikal elektrik"
     ],
     "correct_index": 0,
     "explanation_en": "An e-scooter is a micromobility vehicle. Its rider must use an allowed route.",
@@ -3203,8 +3203,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-1",
     "order_index": 4,
-    "question_en": "Which vocational endorsement applies to a rider delivering parcels for work?",
-    "question_ms": "Lesen vokasional manakah digunakan oleh penunggang yang menghantar bungkusan untuk kerja?",
+    "question_en": "Which licence category does the handbook list for carrying goods by motorcycle?",
+    "question_ms": "Kategori lesen manakah disenaraikan oleh buku panduan untuk membawa barangan dengan motosikal?",
     "options_en": [
       "GDL",
       "PSV",
@@ -3411,8 +3411,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-1",
     "order_index": 12,
-    "question_en": "Which is the correct left-to-right pedal order in the manual car shown?",
-    "question_ms": "Apakah susunan pedal dari kiri ke kanan dalam kereta manual yang ditunjukkan?",
+    "question_en": "What is the left-to-right pedal order in a three-pedal manual car?",
+    "question_ms": "Apakah susunan pedal dari kiri ke kanan dalam kereta manual tiga pedal?",
     "options_en": [
       "Clutch, brake, accelerator",
       "Brake, clutch, accelerator",
@@ -3853,23 +3853,23 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-2",
     "order_index": 14,
-    "question_en": "On the manual gear pattern shown in the curriculum, where is reverse from Neutral?",
-    "question_ms": "Dalam corak gear manual yang ditunjukkan, ke manakah tombol perlu digerakkan dari kedudukan bebas untuk memilih gear undur?",
+    "question_en": "Which pedal should you press fully before selecting reverse in a manual car?",
+    "question_ms": "Pedal manakah perlu ditekan sepenuhnya sebelum memilih gear undur dalam kereta manual?",
     "options_en": [
-      "Fully right, then forward",
-      "Fully left, then back",
-      "Fully right, then back",
-      "Fully left, then forward"
+      "Clutch pedal",
+      "Accelerator pedal",
+      "Brake pedal only",
+      "Brake and accelerator together"
     ],
     "options_ms": [
-      "Kanan sepenuhnya, kemudian ke hadapan",
-      "Kiri sepenuhnya, kemudian ke belakang",
-      "Kanan sepenuhnya, kemudian ke belakang",
-      "Kiri sepenuhnya, kemudian ke hadapan"
+      "Pedal cekam",
+      "Pedal pemecut",
+      "Pedal brek sahaja",
+      "Brek dan pemecut serentak"
     ],
-    "correct_index": 2,
-    "explanation_en": "For the illustrated gear pattern, press the clutch, move the lever fully right, then pull back.",
-    "explanation_ms": "Bagi corak gear dalam rajah, tekan cekam, gerakkan tombol sepenuhnya ke kanan, kemudian tarik ke belakang.",
+    "correct_index": 0,
+    "explanation_en": "Press the clutch fully before moving the gear lever into reverse. Check the pattern on your own vehicle.",
+    "explanation_ms": "Tekan pedal cekam sepenuhnya sebelum menggerakkan tuil ke gear undur. Semak corak gear kenderaan anda.",
     "image_url": null,
     "source_url": "KPP Kelas D Manual, PDF 214",
     "created_at": "2026-11-08T00:00:00Z"
@@ -4191,8 +4191,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-3",
     "order_index": 12,
-    "question_en": "In the illustrated gear pattern, how do you move from first to second?",
-    "question_ms": "Dalam corak gear yang ditunjukkan, bagaimanakah anda menukar dari gear satu ke gear dua?",
+    "question_en": "On a conventional H-pattern with first and second in the left gate, how do you move from first to second?",
+    "question_ms": "Pada corak H biasa dengan gear pertama dan kedua di laluan kiri, bagaimanakah anda menukar dari gear pertama ke kedua?",
     "options_en": [
       "Back through Neutral",
       "Forward through Neutral",
@@ -4243,8 +4243,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-3",
     "order_index": 14,
-    "question_en": "From third gear, which way does the lever move to select fourth on the illustrated pattern?",
-    "question_ms": "Dari gear tiga, ke arah manakah tombol perlu digerakkan untuk memilih gear empat dalam rajah?",
+    "question_en": "On a five-speed H-pattern with third and fourth in the centre gate, how do you shift from third to fourth?",
+    "question_ms": "Pada corak H lima kelajuan dengan gear ketiga dan keempat di laluan tengah, bagaimanakah anda menukar dari gear ketiga ke keempat?",
     "options_en": [
       "Straight ahead through Neutral",
       "Left and then back",
@@ -4269,8 +4269,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-d-3",
     "order_index": 15,
-    "question_en": "After reaching Neutral from fourth, where do you move the lever to select fifth on the illustrated pattern?",
-    "question_ms": "Selepas mencapai kedudukan bebas dari gear empat, ke manakah tombol perlu digerakkan untuk memilih gear lima dalam rajah?",
+    "question_en": "On a conventional five-speed H-pattern, how do you move the lever from neutral into fifth?",
+    "question_ms": "Pada corak H lima kelajuan biasa, bagaimanakah tuil digerakkan dari neutral ke gear kelima?",
     "options_en": [
       "Right, then back",
       "Left, then forward",
@@ -4373,8 +4373,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-1",
     "order_index": 4,
-    "question_en": "Which vocational endorsement applies to a rider delivering parcels for work?",
-    "question_ms": "Lesen vokasional manakah digunakan oleh penunggang yang menghantar bungkusan untuk kerja?",
+    "question_en": "Which licence category does the handbook list for carrying goods by motorcycle?",
+    "question_ms": "Kategori lesen manakah disenaraikan oleh buku panduan untuk membawa barangan dengan motosikal?",
     "options_en": [
       "GDL",
       "PSV",
@@ -4607,8 +4607,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-1",
     "order_index": 13,
-    "question_en": "What should you do with the brake pedal before selecting Park?",
-    "question_ms": "Apakah yang perlu dibuat dengan pedal brek sebelum memilih kedudukan P?",
+    "question_en": "In the handbook’s automatic selector routine, how should you hold the brake before selecting Park?",
+    "question_ms": "Dalam rutin pemilih gear automatik buku panduan, bagaimanakah anda patut menekan brek sebelum memilih Park?",
     "options_en": [
       "Press it lightly",
       "Press it fully",
@@ -5387,8 +5387,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "quiz-c-da-3",
     "order_index": 13,
-    "question_en": "Which pair of positions requires the lock button on the selector shown in this curriculum?",
-    "question_ms": "Pasangan kedudukan manakah memerlukan butang pengunci pada tombol gear yang ditunjukkan dalam kurikulum ini?",
+    "question_en": "On the automatic selector described in the handbook, which pair requires pressing the lock button?",
+    "question_ms": "Pada pemilih gear automatik yang diterangkan dalam buku panduan, pasangan kedudukan manakah memerlukan butang pengunci ditekan?",
     "options_en": [
       "N and D",
       "P and R",
@@ -5595,19 +5595,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "road-signs",
     "set_id": "mock-d-combined-1",
     "order_index": 6,
-    "question_en": "What does this sign prohibit?",
-    "question_ms": "Apakah larangan pada papan tanda ini?",
+    "question_en": "You see this sign while following a slower vehicle. What should you do?",
+    "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
     "options_en": [
-      "No overtaking",
-      "No stopping",
-      "No left turn",
-      "No right turn"
+      "Stay behind the vehicle",
+      "Pass if the lane is clear",
+      "Pass after sounding your horn",
+      "Pass if the vehicle slows down"
     ],
     "options_ms": [
-      "Dilarang memotong",
-      "Dilarang berhenti",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Kekal di belakang kenderaan",
+      "Potong jika lorong lapang",
+      "Potong selepas membunyikan hon",
+      "Potong jika kenderaan memperlahankan kelajuan"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no overtaking.",
@@ -5860,13 +5860,13 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_en": [
       "Traffic shifts lanes ahead",
       "Narrow clearance in work zone",
-      "Right bend in work zone",
+      "Temporary detour ends",
       "Sharp work-zone diversion"
     ],
     "options_ms": [
       "Lencongan lorong di hadapan",
       "Kelegaan terhad di zon kerja",
-      "Selekoh kanan di zon kerja",
+      "Lencongan sementara tamat",
       "Lencongan tajam di zon kerja"
     ],
     "correct_index": 3,
@@ -6063,8 +6063,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-combined-1",
     "order_index": 24,
-    "question_en": "A child is cycling ahead near the kerb. What movement should you expect?",
-    "question_ms": "Seorang kanak-kanak berbasikal di hadapan berhampiran bebendul. Apakah pergerakan yang perlu dijangka?",
+    "question_en": "A child is cycling near the kerb. Which sudden movement should you leave extra room for?",
+    "question_ms": "Seorang kanak-kanak berbasikal berhampiran bebendul. Pergerakan mengejut manakah yang memerlukan ruang tambahan?",
     "options_en": [
       "Stopping at the kerb",
       "Moving onto the footpath",
@@ -6193,19 +6193,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-combined-1",
     "order_index": 29,
-    "question_en": "What can you miss when the car radio is too loud?",
-    "question_ms": "Apakah yang mungkin terlepas perhatian jika radio kereta terlalu kuat?",
+    "question_en": "You are approaching a junction with the radio on. Which outside warning is most likely to be masked by loud music?",
+    "question_ms": "Anda menghampiri persimpangan dengan radio terpasang. Amaran dari luar manakah paling mudah dilindungi oleh muzik yang kuat?",
     "options_en": [
-      "Sounds from outside",
-      "Changes in engine speed",
-      "Dashboard warning symbols",
-      "Lights from other vehicles"
+      "An approaching siren",
+      "A vibration from the road",
+      "A flashing signal",
+      "A car moving into view"
     ],
     "options_ms": [
-      "Bunyi dari luar",
-      "Perubahan kelajuan enjin",
-      "Simbol amaran papan pemuka",
-      "Lampu kenderaan lain"
+      "Siren yang menghampiri",
+      "Getaran daripada jalan",
+      "Lampu isyarat berkelip",
+      "Kereta yang mula kelihatan"
     ],
     "correct_index": 0,
     "explanation_en": "Listening is part of observing the road. Set the radio low enough to hear outside sounds.",
@@ -6271,8 +6271,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-combined-1",
     "order_index": 32,
-    "question_en": "A driver is tailgating you. Which gap ahead does the book teach?",
-    "question_ms": "Pemandu di belakang mengekori anda terlalu rapat. Apakah jarak masa yang diajar untuk ruang di hadapan?",
+    "question_en": "The handbook uses a two-second gap in normal conditions. What gap does it advise when someone is tailgating you?",
+    "question_ms": "Buku panduan menggunakan jarak dua saat dalam keadaan biasa. Apakah jarak yang disarankan apabila kenderaan belakang mengekori terlalu rapat?",
     "options_en": [
       "Four seconds",
       "Two seconds",
@@ -6378,16 +6378,16 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "A tyre bursts while you are driving. What should you do with the controls?",
     "question_ms": "Tayar pecah ketika anda memandu. Bagaimanakah anda patut mengawal kenderaan?",
     "options_en": [
-      "Hold the wheel and brake hard",
-      "Hold the wheel and brake gently",
-      "Steer to the edge and brake hard",
-      "Accelerate and then steer aside"
+      "Brake hard and steer toward the kerb",
+      "Hold the wheel firmly and slow gently",
+      "Ease off and steer sharply to the left",
+      "Accelerate briefly and then pull over"
     ],
     "options_ms": [
-      "Pegang stereng dan brek kuat",
-      "Pegang stereng dan brek perlahan",
-      "Belok ke tepi dan brek kuat",
-      "Pecut dahulu dan kemudian belok ke tepi"
+      "Brek kuat dan hala ke bebendul",
+      "Pegang stereng erat dan perlahankan kenderaan",
+      "Lepaskan pemecut dan belok tajam ke kiri",
+      "Pecut seketika dan kemudian berhenti di tepi"
     ],
     "correct_index": 1,
     "explanation_en": "Keep the car stable and slow progressively. Find a flat, safe place to stop.",
@@ -7259,19 +7259,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-d-combined-1",
     "order_index": 70,
-    "question_en": "What is the largest percentage deduction listed for KEJARA points?",
-    "question_ms": "Berapakah peratusan potongan tertinggi yang disenaraikan bagi mata KEJARA?",
+    "question_en": "If a KEJARA points deduction is granted under the handbook’s conditions, what is the upper limit?",
+    "question_ms": "Jika pengurangan mata KEJARA diberikan mengikut syarat buku panduan, berapakah hadnya?",
     "options_en": [
       "25%",
       "50%",
-      "75%",
-      "100%"
+      "60%",
+      "75%"
     ],
     "options_ms": [
       "25%",
       "50%",
-      "75%",
-      "100%"
+      "60%",
+      "75%"
     ],
     "correct_index": 1,
     "explanation_en": "The curriculum describes a possible reduction of up to 50% of the demerit points under the listed conditions.",
@@ -8273,19 +8273,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-d-combined-2",
     "order_index": 39,
-    "question_en": "Which mirror helps confirm the vehicle you passed is far enough behind before you return left?",
-    "question_ms": "Cermin manakah membantu mengesahkan kenderaan yang dipotong sudah cukup jauh di belakang sebelum kembali ke kiri?",
+    "question_en": "Before returning left after overtaking, where should the front of the vehicle you passed be visible according to the handbook?",
+    "question_ms": "Sebelum kembali ke kiri selepas memotong, di manakah bahagian hadapan kenderaan yang dipotong patut kelihatan menurut buku panduan?",
     "options_en": [
       "Right side mirror",
       "Left side mirror",
-      "Interior rear-view mirror only",
-      "Any mirror showing the kerb"
+      "Interior rear-view mirror",
+      "Wide-angle parking mirror"
     ],
     "options_ms": [
       "Cermin sisi kanan",
       "Cermin sisi kiri",
-      "Cermin pandang belakang sahaja",
-      "Mana-mana cermin yang menunjukkan bebendul"
+      "Cermin pandang belakang dalam",
+      "Cermin parkir sudut lebar"
     ],
     "correct_index": 1,
     "explanation_en": "Check the left side mirror for the front of the vehicle you passed. Use CITO before returning.",
@@ -8823,15 +8823,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah yang perlu diperiksa pada plat nombor semasa pemeriksaan keliling kereta?",
     "options_en": [
       "Clean and undamaged",
-      "Clean with no sharp edges",
-      "Straight and freshly painted",
-      "Rust-free with new screws"
+      "Readable and loosely attached",
+      "Secure and covered with dirt",
+      "Straight and cracked"
     ],
     "options_ms": [
       "Bersih dan tidak rosak",
-      "Bersih dan tiada bucu tajam",
-      "Lurus dan baru dicat",
-      "Bebas karat dengan skru baharu"
+      "Boleh dibaca dan longgar",
+      "Kukuh dan dilitupi kotoran",
+      "Lurus dan retak"
     ],
     "correct_index": 0,
     "explanation_en": "Check that the plates are clean and undamaged.",
@@ -9235,19 +9235,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "road-signs",
     "set_id": "mock-da-combined-1",
     "order_index": 6,
-    "question_en": "What does this sign prohibit?",
-    "question_ms": "Apakah larangan pada papan tanda ini?",
+    "question_en": "You see this sign while following a slower vehicle. What should you do?",
+    "question_ms": "Anda melihat papan tanda ini ketika mengekori kenderaan yang lebih perlahan. Apakah tindakan anda?",
     "options_en": [
-      "No overtaking",
-      "No stopping",
-      "No left turn",
-      "No right turn"
+      "Stay behind the vehicle",
+      "Pass if the lane is clear",
+      "Pass after sounding your horn",
+      "Pass if the vehicle slows down"
     ],
     "options_ms": [
-      "Dilarang memotong",
-      "Dilarang berhenti",
-      "Dilarang membelok ke kiri",
-      "Dilarang membelok ke kanan"
+      "Kekal di belakang kenderaan",
+      "Potong jika lorong lapang",
+      "Potong selepas membunyikan hon",
+      "Potong jika kenderaan memperlahankan kelajuan"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no overtaking.",
@@ -9500,13 +9500,13 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_en": [
       "Traffic shifts lanes ahead",
       "Narrow clearance in work zone",
-      "Right bend in work zone",
+      "Temporary detour ends",
       "Sharp work-zone diversion"
     ],
     "options_ms": [
       "Lencongan lorong di hadapan",
       "Kelegaan terhad di zon kerja",
-      "Selekoh kanan di zon kerja",
+      "Lencongan sementara tamat",
       "Lencongan tajam di zon kerja"
     ],
     "correct_index": 3,
@@ -10275,19 +10275,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-combined-1",
     "order_index": 46,
-    "question_en": "When making a left turn, when should you begin to accelerate back to a safe road speed?",
-    "question_ms": "Ketika membelok ke kiri, bilakah anda patut mula menambah kelajuan semula ke kelajuan yang selamat?",
+    "question_en": "You have slowed for a left turn. When should you smoothly pick up speed again?",
+    "question_ms": "Anda telah memperlahankan kenderaan untuk membelok ke kiri. Bilakah anda patut menambah kelajuan dengan lancar?",
     "options_en": [
-      "Before slowing for the junction",
-      "As soon as you signal",
-      "Once clear of the hazard",
-      "As you enter the turn"
+      "Before reaching the junction",
+      "Immediately after signalling",
+      "After clearing the turn",
+      "As you start steering left"
     ],
     "options_ms": [
-      "Sebelum memperlahankan kenderaan untuk simpang",
-      "Sebaik sahaja memberi isyarat",
-      "Selepas melepasi halangan",
-      "Semasa mula membelok"
+      "Sebelum tiba di persimpangan",
+      "Sejurus selepas memberi isyarat",
+      "Selepas selesai membelok",
+      "Sebaik mula memusing stereng ke kiri"
     ],
     "correct_index": 2,
     "explanation_en": "Set a suitable speed before the turn. Accelerate smoothly once you have cleared the hazard.",
@@ -10899,19 +10899,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "safety-principles",
     "set_id": "mock-da-combined-1",
     "order_index": 70,
-    "question_en": "What is the largest percentage deduction listed for KEJARA points?",
-    "question_ms": "Berapakah peratusan potongan tertinggi yang disenaraikan bagi mata KEJARA?",
+    "question_en": "If a KEJARA points deduction is granted under the handbook’s conditions, what is the upper limit?",
+    "question_ms": "Jika pengurangan mata KEJARA diberikan mengikut syarat buku panduan, berapakah hadnya?",
     "options_en": [
       "25%",
       "50%",
-      "75%",
-      "100%"
+      "60%",
+      "75%"
     ],
     "options_ms": [
       "25%",
       "50%",
-      "75%",
-      "100%"
+      "60%",
+      "75%"
     ],
     "correct_index": 1,
     "explanation_en": "The curriculum describes a possible reduction of up to 50% of the demerit points under the listed conditions.",
@@ -12329,19 +12329,19 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "category": "traffic-rules",
     "set_id": "mock-da-combined-2",
     "order_index": 55,
-    "question_en": "A passenger wants to be picked up beside a reserved bus-and-taxi lane. Which location should you use?",
-    "question_ms": "Penumpang mahu diambil berhampiran lorong khas bas dan teksi. Lokasi manakah patut digunakan?",
+    "question_en": "A bus-and-taxi lane runs beside a pickup bay for private cars. Where should you stop to collect a passenger?",
+    "question_ms": "Lorong bas dan teksi bersebelahan petak mengambil penumpang untuk kereta persendirian. Di manakah anda patut berhenti untuk mengambil penumpang?",
     "options_en": [
-      "A permitted pickup point",
-      "The bus stop inside the reserved lane",
-      "The live lane beside the reserved lane",
-      "The line where the reserved lane starts"
+      "In the bay outside the bus lane",
+      "In the bus lane beside the bay",
+      "In the traffic lane next to the bay",
+      "At the start of the bus lane"
     ],
     "options_ms": [
-      "Tempat mengambil penumpang yang dibenarkan",
-      "Perhentian bas dalam lorong khas",
-      "Lorong trafik di sebelah lorong khas",
-      "Garisan permulaan lorong khas"
+      "Di petak di luar lorong bas",
+      "Di lorong bas di sebelah petak",
+      "Di lorong trafik di sebelah petak",
+      "Di permulaan lorong bas"
     ],
     "correct_index": 0,
     "explanation_en": "The bus-and-taxi lane is reserved. A private car should use a permitted pickup point outside it.",
@@ -12463,15 +12463,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah yang perlu diperiksa pada plat nombor semasa pemeriksaan keliling kereta?",
     "options_en": [
       "Clean and undamaged",
-      "Clean with no sharp edges",
-      "Straight and freshly painted",
-      "Rust-free with new screws"
+      "Readable and loosely attached",
+      "Secure and covered with dirt",
+      "Straight and cracked"
     ],
     "options_ms": [
       "Bersih dan tidak rosak",
-      "Bersih dan tiada bucu tajam",
-      "Lurus dan baru dicat",
-      "Bebas karat dengan skru baharu"
+      "Boleh dibaca dan longgar",
+      "Kukuh dan dilitupi kotoran",
+      "Lurus dan retak"
     ],
     "correct_index": 0,
     "explanation_en": "Check that the plates are clean and undamaged.",
