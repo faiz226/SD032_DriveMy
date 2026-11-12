@@ -14,7 +14,7 @@ describe("CategoryBreakdownBar", () => {
     ]} />);
 
     const figure = screen.getByRole("figure", { name: "Average score by category" });
-    expect(within(figure).getByText("Pass mark 84%. At or above: Road signs. Below: Traffic rules.")).toBeInTheDocument();
+    expect(within(figure).getByText("Pass mark 80%. At or above: Road signs. Below: Traffic rules.")).toBeInTheDocument();
     const table = within(figure).getByRole("table");
     expect(within(table).getByRole("rowheader", { name: "Traffic rules" })).toBeInTheDocument();
     expect(within(table).getByText("70%")).toBeInTheDocument();

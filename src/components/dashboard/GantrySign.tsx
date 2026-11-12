@@ -9,9 +9,10 @@ interface GantrySignProps {
   theory: number;
   /** Points earned in the simulator, out of 15. */
   practical: number;
-  /** Best full 50-question mock, when there is one. */
+  /** Best full mock, when there is one. */
   bestMock?: number;
   passMark: number;
+  mockTotal?: number;
 }
 
 const POST = "absolute bottom-0 h-28 w-[18px] bg-[linear-gradient(90deg,#55524c,#8d8a83,#55524c)]";
@@ -22,14 +23,14 @@ const POST = "absolute bottom-0 h-28 w-[18px] bg-[linear-gradient(90deg,#55524c,
  * mock reaches the pass mark in practice; neither plate is a JPJ record, and
  * the sign says so.
  */
-export function GantrySign({ score, theory, practical, bestMock, passMark }: GantrySignProps) {
+export function GantrySign({ score, theory, practical, bestMock, passMark, mockTotal }: GantrySignProps) {
   const { t } = useLanguage();
   const left = Math.max(0, 100 - Math.round(score));
   const theoryReached = bestMock !== undefined && bestMock >= passMark;
   const lDetail = theoryReached
     ? t("dashboard.gantry.lDone")
     : bestMock !== undefined
-      ? t("dashboard.gantry.lBest", { score: bestMock })
+      ? t("dashboard.gantry.lBest", { score: bestMock, total: mockTotal ?? 70, pass: passMark })
       : t("dashboard.gantry.lFresh");
 
   return (

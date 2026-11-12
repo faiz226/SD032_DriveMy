@@ -31,6 +31,7 @@ import { MOCK_1_PART2 } from "./questions-mock1-part2.js";
 import { MOCK_1_PART3 } from "./questions-mock1-part3.js";
 import { MOCK_2 } from "./questions-mock2.js";
 import { MOCK_3 } from "./questions-mock3.js";
+import { KPP_TEXTBOOK_QUESTIONS } from "./questions-kpp-textbook.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -153,13 +154,28 @@ const MOCK_1_ALL = [...MOCK_1_PART1, ...MOCK_1_PART2, ...MOCK_1_PART3].map(
   (q, i) => ({ ...q, order_index: i + 1 })
 );
 
-const ALL_QUESTIONS = [...QUIZ_POOL, ...MOCK_1_ALL, ...MOCK_2, ...MOCK_3].map(shuffleOptions);
+const ALL_QUESTIONS = [
+  ...QUIZ_POOL.map(shuffleOptions),
+  ...MOCK_1_ALL.map(shuffleOptions),
+  ...MOCK_2.map(shuffleOptions),
+  ...MOCK_3.map(shuffleOptions),
+  ...KPP_TEXTBOOK_QUESTIONS,
+];
 
 // ---------------------------------------------------------------------------
 // Validation helpers
 // ---------------------------------------------------------------------------
 const VALID_CATEGORIES = new Set(["road-signs", "traffic-rules", "safety-principles"]);
-const VALID_SET_IDS = new Set(["quiz-pool", "mock-1", "mock-2", "mock-3"]);
+const VALID_SET_IDS = new Set([
+  "quiz-pool",
+  "mock-1", "mock-2", "mock-3",
+  "quiz-a-1", "quiz-a-2", "quiz-a-3",
+  "quiz-b-1", "quiz-b-2", "quiz-b-3",
+  "quiz-c-da-1", "quiz-c-da-2", "quiz-c-da-3",
+  "quiz-c-d-1", "quiz-c-d-2", "quiz-c-d-3",
+  "mock-da-combined-1", "mock-da-combined-2",
+  "mock-d-combined-1", "mock-d-combined-2",
+]);
 
 function validateQuestion(q, idx) {
   const errs = [];
@@ -205,7 +221,7 @@ async function seed() {
 
   console.log(`📊  Questions loaded: ${ALL_QUESTIONS.length} total`);
   for (const [setId, count] of Object.entries(bySets)) {
-    const expected = setId === "quiz-pool" ? null : 50;
+    const expected = setId.includes("-combined-") ? 70 : setId.startsWith("mock-") ? 50 : null;
     const flag = expected && count !== expected ? " ⚠️  (expected 50)" : "";
     console.log(`     ${setId.padEnd(12)} ${count}${flag}`);
   }
@@ -225,10 +241,15 @@ async function seed() {
   console.log("  ✅  All questions valid.\n");
 
   // ── Verify mock sets are exactly 50 ──────────────────────────────────────
-  for (const setId of ["mock-1", "mock-2", "mock-3"]) {
+  for (const setId of [
+    "mock-1", "mock-2", "mock-3",
+    "mock-da-combined-1", "mock-da-combined-2",
+    "mock-d-combined-1", "mock-d-combined-2",
+  ]) {
     const count = ALL_QUESTIONS.filter((q) => q.set_id === setId).length;
-    if (count !== 50) {
-      console.error(`❌  ${setId} has ${count} questions — expected exactly 50.`);
+    const expected = setId.includes("-combined-") ? 70 : 50;
+    if (count !== expected) {
+      console.error(`❌  ${setId} has ${count} questions — expected exactly ${expected}.`);
       process.exit(1);
     }
   }

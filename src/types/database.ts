@@ -196,6 +196,8 @@ export interface Database {
   };
 }
 
+export type LicenseTrack = "DA" | "D";
+
 export type KppQuestion = Database["public"]["Tables"]["kpp_questions"]["Row"];
 export type QuizResult = Database["public"]["Tables"]["quiz_results"]["Row"];
 export type MockTestResult = Database["public"]["Tables"]["mock_test_results"]["Row"];
@@ -218,11 +220,12 @@ export type InsertColorblindResult = Database["public"]["Tables"]["colorblind_re
  */
 export type ExamQuestion = Omit<
   KppQuestion,
-  "correct_index" | "explanation_en" | "explanation_ms"
+  "correct_index" | "explanation_en" | "explanation_ms" | "source_url"
 > & {
   correct_index?: number;
   explanation_en?: string | null;
   explanation_ms?: string | null;
+  source_url?: string | null;
 };
 
 /** The answer key for one question, fetched only after submission. */

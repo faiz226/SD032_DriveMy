@@ -51,8 +51,21 @@ describe("questions.service - W02 remediation (SEC-003)", () => {
     expect(projectedColumns).not.toContain("correct_index");
     expect(projectedColumns).not.toContain("explanation_en");
     expect(projectedColumns).not.toContain("explanation_ms");
+    expect(projectedColumns).not.toContain("source_url");
     expect(questions).toHaveLength(1);
     expect(questions[0].correct_index).toBeUndefined();
+  });
+
+  it("falls back to the legacy mock when the requested set has not been migrated", async () => {
+    const legacy = { id: "q1", set_id: "mock-1" };
+    const order = vi.fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({ data: [legacy], error: null });
+    const eq = vi.fn().mockReturnValue({ order });
+    vi.mocked(supabase.from).mockReturnValue({ select: () => ({ eq }) } as never);
+
+    expect(await fetchMockQuestionsBySet("mock-da-combined-1")).toEqual([legacy]);
+    expect(eq.mock.calls).toEqual([["set_id", "mock-da-combined-1"], ["set_id", "mock-1"]]);
   });
 
   it("fetchQuizQuestions queries secure practice view for immediate feedback", async () => {

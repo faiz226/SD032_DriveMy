@@ -17,7 +17,7 @@ export type { ExamQuestion, AnswerKeyEntry };
  * being ready sits a real road-safety exam unprepared.
  */
 const EXAM_COLUMNS =
-  "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, source_url, created_at";
+  "id, category, set_id, order_index, question_en, question_ms, options_en, options_ms, image_url, created_at";
 
 /**
  * Practice quiz questions — WITH the answer key.
@@ -28,9 +28,11 @@ const EXAM_COLUMNS =
  */
 export async function fetchQuizQuestions({
   category,
+  setId,
   limit = 20,
 }: {
   category?: string;
+  setId?: string;
   limit?: number;
 }): Promise<KppQuestion[]> {
   let query = supabase
@@ -39,9 +41,22 @@ export async function fetchQuizQuestions({
     .order("order_index", { ascending: true })
     .limit(limit);
   if (category) query = query.eq("category", category);
+  if (setId) query = query.eq("set_id", setId);
   const { data, error } = await query;
   if (error) throw new Error(`fetchQuizQuestions: ${error.message}`);
-  return (data ?? []) as KppQuestion[];
+  const rows = (data ?? []) as KppQuestion[];
+  if (rows.length > 0 || !setId) return rows;
+
+  // Migration gap fallback: if specific set_id not yet migrated, query any available
+  // practice questions (by category if available) up to limit.
+  let fallbackQuery = supabase
+    .from("kpp_practice_questions" as never)
+    .select("*")
+    .order("order_index", { ascending: true })
+    .limit(limit);
+  if (category) fallbackQuery = fallbackQuery.eq("category", category);
+  const { data: fallbackData } = await fallbackQuery;
+  return (fallbackData ?? []) as KppQuestion[];
 }
 
 /**
@@ -58,7 +73,17 @@ export async function fetchMockQuestionsBySet(setId: string): Promise<ExamQuesti
     .order("order_index", { ascending: true });
 
   if (error) throw new Error(`fetchMockQuestionsBySet(${setId}): ${error.message}`);
-  return (data ?? []) as unknown as ExamQuestion[];
+  const rows = (data ?? []) as unknown as ExamQuestion[];
+  if (rows.length > 0 || setId === "mock-1") return rows;
+
+  // Migration gap fallback: if the new textbook set hasn't landed in DB yet,
+  // query legacy 'mock-1' so learners never see an empty test or error.
+  const fallback = await supabase
+    .from("kpp_questions")
+    .select(EXAM_COLUMNS)
+    .eq("set_id", "mock-1")
+    .order("order_index", { ascending: true });
+  return (fallback.data ?? []) as unknown as ExamQuestion[];
 }
 
 /** Only a saved, caller-owned attempt can release the mock answer key. */

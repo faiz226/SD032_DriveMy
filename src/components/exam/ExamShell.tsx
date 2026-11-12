@@ -172,6 +172,21 @@ export function ExamShell({
     </>
   );
 
+  const position = (
+    <>
+      <span className="type-figure text-sm">
+        {currentIndex + 1}
+        <span className="text-muted-foreground"> / {shuffledQuestions.length}</span>
+      </span>
+      <span aria-hidden className="block h-1.5 w-24 overflow-hidden rounded-full bg-muted sm:w-40">
+        <span
+          className="block h-full rounded-full bg-brand transition-[width] duration-500 ease-out motion-reduce:transition-none"
+          style={{ width: `${progressPercentage}%` }}
+        />
+      </span>
+    </>
+  );
+
   // Rendered through a portal, not in place: `.page-enter` animates
   // `transform`, which would make a page wrapper the containing block for this
   // full-viewport `position: fixed` room and collapse it.
@@ -191,25 +206,17 @@ export function ExamShell({
           <span className="hidden sm:inline">{t("exam.exit")}</span>
         </button>
 
-        {/* Position doubles as the navigator trigger: the number you look at to
-            know where you are is the thing you tap to go somewhere else. */}
         <button
           type="button"
           onClick={() => setShowNavigator(true)}
           aria-label={t("exam.openNavigator")}
-          className="tap-sm mx-auto flex flex-col items-center justify-center gap-1.5 rounded-xl px-3"
+          className="tap-sm mx-auto flex flex-col items-center justify-center gap-1.5 rounded-xl px-3 lg:hidden"
         >
-          <span className="type-figure text-sm">
-            {currentIndex + 1}
-            <span className="text-muted-foreground"> / {shuffledQuestions.length}</span>
-          </span>
-          <span aria-hidden className="block h-1.5 w-24 overflow-hidden rounded-full bg-muted sm:w-40">
-            <span
-              className="block h-full rounded-full bg-brand transition-[width] duration-500 ease-out"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </span>
+          {position}
         </button>
+        <div className="mx-auto hidden flex-col items-center gap-1.5 lg:flex">
+          {position}
+        </div>
 
         {timeLimit ? (
           <div
@@ -253,7 +260,7 @@ export function ExamShell({
               </button>
             )}
 
-            <h1 className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.625rem]">
+            <h1 id="exam-question" className="text-pretty text-[1.375rem] font-semibold leading-snug tracking-[-0.015em] sm:text-[1.75rem]">
               {language === "en"
                 ? question.question_en || question.question_ms
                 : question.question_ms || question.question_en}
@@ -268,11 +275,11 @@ export function ExamShell({
 
             {question.image_url && (
               <div className="panel mt-5 overflow-hidden">
-                <img src={question.image_url} alt="" className="mx-auto max-h-56 w-auto object-contain p-4" />
+                <img src={question.image_url} alt="" className="mx-auto max-h-40 w-auto object-contain p-4 sm:max-h-56" />
               </div>
             )}
 
-            <div className="mt-7 space-y-3" ref={optionsRef} role="radiogroup">
+            <div className="mt-7 space-y-3" ref={optionsRef} role="radiogroup" aria-labelledby="exam-question">
               {optionsEn.map((optEn, i) => {
                 const optMs = optionsMs[i] || "";
                 const isSelected = selectedOption === i;
@@ -322,7 +329,7 @@ export function ExamShell({
                         String.fromCharCode(65 + i)
                       )}
                     </span>
-                    <span className="min-w-0 flex-1 text-pretty text-[0.9375rem] font-medium leading-snug">
+                    <span className="min-w-0 flex-1 text-pretty text-base font-medium leading-snug">
                       {language === "en" ? optEn || optMs : optMs || optEn}
                     </span>
                   </button>
@@ -333,7 +340,7 @@ export function ExamShell({
             {mode === "quiz" && quizPhase === "revealed" && (question.explanation_en || question.explanation_ms) && (
               <div className="mt-6 rounded-2xl border border-brand-ink/25 bg-brand/15 p-4 sm:p-5">
                 <p className="text-sm font-semibold text-brand-ink">{t("quiz.explanation")}</p>
-                <p className="mt-1.5 text-pretty text-[0.9375rem] leading-relaxed">
+                <p className="mt-1.5 text-pretty text-base leading-relaxed">
                   {language === "en"
                     ? question.explanation_en || question.explanation_ms
                     : question.explanation_ms || question.explanation_en}
@@ -383,13 +390,13 @@ export function ExamShell({
             <Button
               onClick={handleConfirmQuiz}
               disabled={selectedOption === null}
-              className="h-12 flex-1 text-[0.9375rem]"
+              className="h-12 flex-1 text-base"
             >
               {t("exam.confirmAnswer")}
             </Button>
           ) : (
-            <Button onClick={handleNext} className="h-12 flex-1 text-[0.9375rem]">
-              <span className="truncate">{isLastQuestion ? t("quiz.submit") : t("quiz.next")}</span>
+            <Button onClick={handleNext} className="h-12 flex-1 text-base">
+              <span className="truncate">{isLastQuestion ? t(mode === "mock" ? "mock.submit" : "quiz.submit") : t("quiz.next")}</span>
               {!isLastQuestion && <ArrowRight className="!size-5 shrink-0" aria-hidden weight="bold" />}
             </Button>
           )}
@@ -415,14 +422,14 @@ export function ExamShell({
       <Dialog open={showSubmitModal} onOpenChange={setShowSubmitModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("quiz.confirmSubmit")}</DialogTitle>
+            <DialogTitle>{t(mode === "mock" ? "mock.confirmSubmit" : "quiz.confirmSubmit")}</DialogTitle>
             <DialogDescription>
               {t("quiz.confirmSubmitDesc", { unanswered: shuffledQuestions.length - answeredCount })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={handleCancelSubmit}>{t("common.cancel")}</Button>
-            <Button onClick={handleConfirmSubmit}>{t("quiz.submit")}</Button>
+            <Button onClick={handleConfirmSubmit}>{t(mode === "mock" ? "mock.submit" : "quiz.submit")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

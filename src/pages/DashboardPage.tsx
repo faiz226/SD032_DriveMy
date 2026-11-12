@@ -11,7 +11,7 @@ import { VmsBoard } from "@/components/dashboard/VmsBoard";
 import { TollPlaza, type Lane } from "@/components/dashboard/TollPlaza";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadError } from "@/components/shared/LoadError";
-import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, ROUTES } from "@/lib/constants";
+import { MOCK_PASS_MARK, ROUTES, mockPassMark } from "@/lib/constants";
 import { dashboardModel, type DashboardModel, type NextStep as NextStepKey } from "@/lib/dashboard/model";
 import { readinessContributions } from "@/lib/readiness";
 import { learnerKeys } from "@/lib/queryKeys";
@@ -85,7 +85,7 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
     {
       sign: "KPP 01",
       title: t("dashboard.bay.kpp.title"),
-      description: bestMock ? t("dashboard.bay.kpp.best", { score: bestMock.score, total: MOCK_TOTAL_QUESTIONS }) : t("dashboard.bay.kpp.fresh"),
+      description: bestMock ? t("dashboard.bay.kpp.best", { score: bestMock.score, total: bestMock.total_questions }) : t("dashboard.bay.kpp.fresh"),
       to: ROUTES.MOCK_TEST,
       state: bays.kpp,
     },
@@ -104,8 +104,8 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
         <span className="font-semibold text-muted-foreground">{t(helloKey(new Date().getHours()))}</span>, {name}.
       </p>
 
-      <GantrySign score={score} theory={parts.theory} practical={parts.practical} bestMock={bestMock?.score} passMark={MOCK_PASS_MARK} />
-      <JourneyRoad value={score} label={t("dashboard.hero.meter")} lReached={(bestMock?.score ?? -1) >= MOCK_PASS_MARK} />
+      <GantrySign score={score} theory={parts.theory} practical={parts.practical} bestMock={bestMock?.score} mockTotal={bestMock?.total_questions} passMark={bestMock ? mockPassMark(bestMock.total_questions) : MOCK_PASS_MARK} />
+      <JourneyRoad value={score} label={t("dashboard.hero.meter")} lReached={!!bestMock && bestMock.score >= mockPassMark(bestMock.total_questions)} />
 
       <VmsBoard
         label={t("dashboard.next.label")}
@@ -130,7 +130,7 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
         <div className="grid grid-cols-2 items-center gap-6 lg:grid-cols-4">
           <dl className="contents">
             <RoundSign value={MOCK_PASS_MARK} caption={t("dashboard.score.passMark")} />
-            <RoundSign value={bestMock?.score} caption={bestMock ? t("dashboard.score.best") : t("dashboard.score.none")} />
+            <RoundSign value={bestMock?.score} caption={bestMock ? t("dashboard.score.best", { total: bestMock.total_questions }) : t("dashboard.score.none")} />
             <RoundSign
               value={headroom}
               signed

@@ -66,8 +66,8 @@ describe('QUESTIONS_BY_CATEGORY', () => {
 });
 
 describe('Exam configuration constants', () => {
-  it('MOCK_TIME_LIMIT is 45 minutes in seconds', () => {
-    expect(MOCK_TIME_LIMIT).toBe(45 * 60);
+  it('MOCK_TIME_LIMIT is 75 minutes in seconds', () => {
+    expect(MOCK_TIME_LIMIT).toBe(75 * 60);
   });
 
   it('MOCK_WARNING_TIME is 5 minutes in seconds', () => {

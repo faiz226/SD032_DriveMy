@@ -17,7 +17,7 @@ vi.mock("@/services/results.service", () => ({ saveMockResult: vi.fn(), OFFLINE_
 vi.mock("@/services/questions.service", () => ({ fetchMockAnswerKey: vi.fn(), fetchMockQuestionsBySet: vi.fn(async () => [question]) }));
 vi.mock("@/stores/authStore", () => ({ useAuthStore: () => ({ user: { id: "dummy-user" } }) }));
 vi.mock("@/hooks/useLanguage", () => ({ useLanguage: () => ({ t: (key: string) => key, language: "en" }) }));
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn(), warning: vi.fn() } }));
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() } }));
 vi.mock("@/components/exam/TestLaunchPanel", () => ({ TestLaunchPanel: ({ onStart }: { onStart: (args: object) => void }) =>
   <button onClick={() => onStart({ language: "en", setId: "mock-1" })}>Start</button> }));
 vi.mock("@/components/exam/ExamShell", () => ({ ExamShell: ({ onComplete }: { onComplete: (args: object) => void }) =>
@@ -43,6 +43,7 @@ describe("actual mock completion flow", () => {
   it("saves original-order answers first, gates review by returned ID and displays the server grade", async () => {
     await submit();
     expect(await screen.findByTestId("grade")).toHaveTextContent("42/50;review=1");
+    expect(toast.info).toHaveBeenCalledWith("mock.legacyFormat");
     expect(vi.mocked(saveMockResult).mock.calls[0][0]).toEqual(expect.objectContaining({ answers: attempt.answersForStorage, score: 0 }));
     expect(fetchMockAnswerKey).toHaveBeenCalledWith("saved-attempt");
     expect(vi.mocked(saveMockResult).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(fetchMockAnswerKey).mock.invocationCallOrder[0]);
