@@ -22,16 +22,13 @@ export const ROUTES = {
 } as const;
 
 /**
- * Contact address published in the privacy policy.
+ * Contact address for the privacy notice, or null while there is none.
  *
- * ⚠️ CHANGE THIS BEFORE LAUNCH. `.local` is a reserved TLD that does not route
- * anywhere — mail sent here is undeliverable. Malaysia's PDPA requires a
- * working way for people to ask about their data or request its deletion, so a
- * dead address means the policy does not actually satisfy the law.
- *
- * Use a real inbox you monitor.
+ * The notice used to print privacy@drivemy.local, a reserved domain that never delivers mail, so learners were
+ * shown a contact that could not reach anyone. Set a real, monitored inbox here and the notice shows a contact
+ * section again; until then it points people to the self-service tools in Settings.
  */
-export const PRIVACY_CONTACT_EMAIL = "privacy@drivemy.local";
+export const PRIVACY_CONTACT_EMAIL: string | null = null;
 
 export const STORAGE_KEYS = {
   QUIZ_PROGRESS: "drivemy-quiz-progress",
@@ -62,4 +59,6 @@ export function mockPassMark(total: number): number {
 export const MOCK_WARNING_TIME = 300;            // 5 minutes in seconds
 
 // ── Simulation configuration ──────────────────────────────────────────────────
-export const TOTAL_SIMULATION_MANEUVERS = 8;
+/** The simulator's seven JPJ circuit stations, as in docs/v2-plan/rules.json (constants.test.ts checks it). */
+export const SIM_STATIONS = ["hill-start", "side-parking", "parallel-parking", "s-curve", "z-curve", "ramp-test", "road-merging"] as const;
+export const TOTAL_SIMULATION_MANEUVERS = SIM_STATIONS.length;

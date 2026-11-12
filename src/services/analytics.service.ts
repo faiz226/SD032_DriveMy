@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import type { QuizResult, MockTestResult, SimulationResult } from "@/types/database";
 import { expandSimRuns } from "@/sim/record";
+import { SIM_STATIONS } from "@/lib/constants";
 
 /** Best colour-vision percentage, or null when the learner has not taken the test. */
 export async function getBestColorVisionScore(userId: string): Promise<number | null> {
@@ -90,14 +91,8 @@ export async function getRecentActivity(userId: string): Promise<ActivityEvent[]
 
 // ── Progress statistics ──────────────────────────────────────────────────────
 
-export async function getQuizStats(userId: string, dateRange?: number) {
-  let query = supabase.from("quiz_results").select("*").eq("user_id", userId);
-  if (dateRange) {
-    const date = new Date();
-    date.setDate(date.getDate() - dateRange);
-    query = query.gte("completed_at", date.toISOString());
-  }
-  const { data, error } = await query;
+export async function getQuizStats(userId: string) {
+  const { data, error } = await supabase.from("quiz_results").select("*").eq("user_id", userId);
   if (error) throw error;
   if (!data || data.length === 0) return { best: 0, average: 0, count: 0, trend: [], totalDuration: 0, history: [] };
 
@@ -135,14 +130,8 @@ export async function getQuizStats(userId: string, dateRange?: number) {
   return { best, average, count, trend, totalDuration, history: rows, categoryPerformance };
 }
 
-export async function getMockStats(userId: string, dateRange?: number) {
-  let query = supabase.from("mock_test_results").select("*").eq("user_id", userId);
-  if (dateRange) {
-    const date = new Date();
-    date.setDate(date.getDate() - dateRange);
-    query = query.gte("completed_at", date.toISOString());
-  }
-  const { data, error } = await query;
+export async function getMockStats(userId: string) {
+  const { data, error } = await supabase.from("mock_test_results").select("*").eq("user_id", userId);
   if (error) throw error;
   if (!data || data.length === 0) return { best: 0, average: 0, count: 0, passRate: 0, trend: [], totalDuration: 0, history: [] };
 
@@ -163,26 +152,25 @@ export async function getMockStats(userId: string, dateRange?: number) {
   return { best, average, count, passRate, trend, totalDuration, history: rows };
 }
 
-export async function getSimStats(userId: string, dateRange?: number) {
-  let query = supabase.from("simulation_results").select("*").eq("user_id", userId);
-  if (dateRange) {
-    const date = new Date();
-    date.setDate(date.getDate() - dateRange);
-    query = query.gte("completed_at", date.toISOString());
-  }
-  const { data, error } = await query;
+export async function getSimStats(userId: string) {
+  const { data, error } = await supabase.from("simulation_results").select("*").eq("user_id", userId);
   if (error) throw error;
-  if (!data || data.length === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
+  if (!data || data.length === 0) return { completed: 0, cleared: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
 
-  const rows = expandSimRuns(data as SimulationResult[]);
+  const runs = data as SimulationResult[];
+  const rows = expandSimRuns(runs);
   const validRows = rows.filter(d => typeof d.score === 'number' && !isNaN(d.score));
   const count = validRows.length;
-  if (count === 0) return { completed: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: [] };
+  if (count === 0) return { completed: 0, cleared: 0, averageScore: 0, byManeuver: [], totalDuration: 0, history: runs };
 
   const uniqueManeuvers = new Set(validRows.map((d) => d.maneuver_id).filter(Boolean));
   const completed = uniqueManeuvers.size;
+  // Stations of today's circuit passed at least once. "completed" also counts stations tried and failed, and
+  // stations from older circuits, so it cannot stand for practical readiness.
+  const cleared = SIM_STATIONS.filter(id => validRows.some(d => d.maneuver_id === id && d.passed === true)).length;
   const averageScore = validRows.reduce((sum, d) => sum + d.score, 0) / count;
-  const totalDuration = rows.reduce((sum, d) => sum + (Number(d.completion_seconds) || 0), 0);
+  // Per run: an expanded run repeats its time on every station row.
+  const totalDuration = runs.reduce((sum, d) => sum + (Number(d.completion_seconds) || 0), 0);
 
   const byManeuver = Array.from(uniqueManeuvers).map((m) => {
     const mData = rows.filter((d) => d.maneuver_id === m);
@@ -193,7 +181,8 @@ export async function getSimStats(userId: string, dateRange?: number) {
     };
   });
 
-  return { completed, averageScore, byManeuver, totalDuration, history: rows };
+  // History is per run, as the learner drove it; byManeuver is per station.
+  return { completed, cleared, averageScore, byManeuver, totalDuration, history: runs };
 }
 
 /**

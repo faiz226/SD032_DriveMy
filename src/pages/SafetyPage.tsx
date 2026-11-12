@@ -1,262 +1,152 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useAuthStore } from "@/stores/authStore";
-import { useUpdateTheoryProgress } from "@/hooks/useProgress";
-import { ScenarioCard, type Scenario } from "@/components/safety/ScenarioCard";
-import { EthicsSlider } from "@/components/safety/EthicsSlider";
-import { ResultsBadge } from "@/components/safety/ResultsBadge";
-import { Card } from "@/components/ui/card";
+import { EMERGENCIES, type Emergency } from "@/content/road-safety";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "sonner";
-import { ShieldWarning, BookmarkSimple } from "@/components/ui/icons";
-import type { TranslationKey } from "@/lib/translations";
+import { Panel } from "@/components/ui/surface";
+import { ArrowClockwise, ArrowRight, CheckCircle, XCircle } from "@/components/ui/icons";
+import { cn } from "@/lib/utils";
 
-const SCENARIOS: Scenario[] = [
-  {
-    id: "s1",
-    titleKey: "safety.scenario.s1.title",
-    descKey: "safety.scenario.s1.desc",
-    options: [
-      { id: "o1", textKey: "safety.scenario.s1.o1" },
-      { id: "o2", textKey: "safety.scenario.s1.o2" },
-      { id: "o3", textKey: "safety.scenario.s1.o3" },
-    ],
-    correctId: "o1",
-    principle: "nafs",
-    explanationKey: "safety.scenario.s1.explanation",
-  },
-  {
-    id: "s2",
-    titleKey: "safety.scenario.s2.title",
-    descKey: "safety.scenario.s2.desc",
-    options: [
-      { id: "o1", textKey: "safety.scenario.s2.o1" },
-      { id: "o2", textKey: "safety.scenario.s2.o2" },
-      { id: "o3", textKey: "safety.scenario.s2.o3" },
-    ],
-    correctId: "o2",
-    principle: "aql",
-    explanationKey: "safety.scenario.s2.explanation",
-  },
-  {
-    id: "s3",
-    titleKey: "safety.scenario.s3.title",
-    descKey: "safety.scenario.s3.desc",
-    options: [
-      { id: "o1", textKey: "safety.scenario.s3.o1" },
-      { id: "o2", textKey: "safety.scenario.s3.o2" },
-      { id: "o3", textKey: "safety.scenario.s3.o3" },
-    ],
-    correctId: "o3",
-    principle: "nafs",
-    explanationKey: "safety.scenario.s3.explanation",
-  },
-  {
-    id: "s4",
-    titleKey: "safety.scenario.s4.title",
-    descKey: "safety.scenario.s4.desc",
-    options: [
-      { id: "o1", textKey: "safety.scenario.s4.o1" },
-      { id: "o2", textKey: "safety.scenario.s4.o2" },
-      { id: "o3", textKey: "safety.scenario.s4.o3" },
-    ],
-    correctId: "o2",
-    principle: "nasl",
-    explanationKey: "safety.scenario.s4.explanation",
-  },
-  {
-    id: "s5",
-    titleKey: "safety.scenario.s5.title",
-    descKey: "safety.scenario.s5.desc",
-    options: [
-      { id: "o1", textKey: "safety.scenario.s5.o1" },
-      { id: "o2", textKey: "safety.scenario.s5.o2" },
-      { id: "o3", textKey: "safety.scenario.s5.o3" },
-    ],
-    correctId: "o1",
-    principle: "aql",
-    explanationKey: "safety.scenario.s5.explanation",
-  },
-];
+/** A fresh option order for every emergency, so the right answer is not always in the same place. */
+function shuffledOrders() {
+  return EMERGENCIES.map(() => {
+    const order = [0, 1, 2];
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
+  });
+}
 
-const ETHICS_CASE_KEYS: TranslationKey[] = [
-  "safety.ethics.case.c1",
-  "safety.ethics.case.c2",
-  "safety.ethics.case.c3",
-];
+function Steps({ emergency }: { emergency: Emergency }) {
+  const { language } = useLanguage();
+  return (
+    <ol className="space-y-3">
+      {emergency.steps[language].map((step, i) => (
+        <li key={step} className="flex gap-3">
+          <span className="type-figure grid h-7 w-7 shrink-0 place-items-center rounded-full bg-muted text-xs">{i + 1}</span>
+          <span className="pt-0.5">{step}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
 
 export function SafetyPage() {
-  const { t } = useLanguage();
-  const { user } = useAuthStore();
-  const { mutateAsync: updateProgress } = useUpdateTheoryProgress();
+  const { t, language } = useLanguage();
+  const [orders, setOrders] = useState(shuffledOrders);
+  const [index, setIndex] = useState(0);
+  // The option each emergency was answered with; 0 is the KPP answer.
+  const [picks, setPicks] = useState<number[]>([]);
+  const feedback = useRef<HTMLHeadingElement>(null);
 
-  const [phase, setPhase] = useState<"defensive" | "ethics" | "results">("defensive");
+  const finished = picks.length === EMERGENCIES.length && index === EMERGENCIES.length;
+  const emergency = EMERGENCIES[index];
+  const pick = picks[index];
 
-  const [currentScenarioIndex, setCurrentScenarioIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [isExiting, setIsExiting] = useState(false);
-  const [ethicsTotal, setEthicsTotal] = useState(0);
+  useEffect(() => {
+    if (pick !== undefined) feedback.current?.focus();
+  }, [pick]);
 
-  const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
-  const [ethicsValue, setEthicsValue] = useState(5);
-  const [ethicsSubmitted, setEthicsSubmitted] = useState(false);
-  const [mockAvg, setMockAvg] = useState(0);
-
-  // Blended final score: defensive (max 80) + ethics avg mapped to 0-20
-  const blendedScore = Math.min(score + Math.round((ethicsTotal / ETHICS_CASE_KEYS.length) * 2), 100);
-
-  const handleScenarioNext = (isCorrect: boolean) => {
-    if (isCorrect) setScore((prev) => prev + 16); // 5 scenarios × 16 pts = 80 pts max
-
-    setIsExiting(true);
-    setTimeout(() => {
-      if (currentScenarioIndex < SCENARIOS.length - 1) {
-        setCurrentScenarioIndex((prev) => prev + 1);
-        setIsExiting(false);
-      } else {
-        setPhase("ethics");
-        setIsExiting(false);
-      }
-    }, 300);
+  const restart = () => {
+    setOrders(shuffledOrders());
+    setPicks([]);
+    setIndex(0);
   };
 
-  const submitEthics = () => {
-    const avgs = [7.2, 6.5, 8.1];
-    setMockAvg(avgs[currentCaseIndex]);
-    setEthicsTotal((prev) => prev + ethicsValue);
-    setEthicsSubmitted(true);
-  };
+  const header = (
+    <header className="page-header">
+      <h1 className="page-title">{t("safety.title")}</h1>
+      <p className="page-lead">{t("safety.lead")}</p>
+    </header>
+  );
 
-  const handleCaseNext = () => {
-    if (currentCaseIndex < ETHICS_CASE_KEYS.length - 1) {
-      setCurrentCaseIndex((prev) => prev + 1);
-      setEthicsValue(5);
-      setEthicsSubmitted(false);
-    } else {
-      finishModule();
-    }
-  };
-
-  const finishModule = async () => {
-    setPhase("results");
-    if (user) {
-      try {
-        await updateProgress({
-          user_id: user.id,
-          module_id: "safety_ethics",
-          completed: true,
-          completed_at: new Date().toISOString(),
-        });
-        toast.success(t("color.saved"));
-      } catch (_err) {
-        toast.error("Failed to save progress");
-      }
-    }
-  };
-
-  if (phase === "results") {
+  if (finished) {
+    const missed = EMERGENCIES.filter((_, i) => picks[i] !== 0);
+    const score = EMERGENCIES.length - missed.length;
     return (
-      <div className="page-shell max-w-2xl space-y-6">
-        <h1 className="page-title">{t("safety.title")}</h1>
-        <Card className="p-8 text-center space-y-6 border border-border bg-card">
-          <div className="flex justify-center mb-4">
-            <ResultsBadge score={blendedScore} />
-          </div>
-          {/* Final blended score: defensive (max 80) + ethics (max 20) */}
-          <div className="text-5xl font-bold font-mono text-primary font-tabular-nums">
-            {blendedScore}/100
-          </div>
-          <div className="mt-8 p-4 rounded-xl border border-border bg-muted/30">
-            <div className="text-sm text-muted-foreground uppercase tracking-wide font-bold mb-1">{t("safety.ethics.title")}</div>
-            <div className="text-3xl font-bold font-mono text-secondary-foreground font-tabular-nums">
-              {(ethicsTotal / ETHICS_CASE_KEYS.length).toFixed(1)}/10.0
-            </div>
-          </div>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            {t("safety.resultsDesc")}
-          </p>
-        </Card>
+      <div className="page-shell page-enter">
+        {header}
+        <section className={cn("tile p-5 sm:p-8", missed.length === 0 && "tile-done")} aria-labelledby="safety-score">
+          <h2 id="safety-score" className="text-2xl">{t("safety.result.title", { score, total: EMERGENCIES.length })}</h2>
+          <p className="mt-2 max-w-readable text-muted-foreground">{missed.length === 0 ? t("safety.result.allRight") : t("safety.result.someMissed")}</p>
+          <Button variant="outline" className="mt-6" onClick={restart}>
+            <ArrowClockwise aria-hidden="true" />
+            {t("safety.restart")}
+          </Button>
+        </section>
+
+        {missed.length > 0 && (
+          <section aria-labelledby="safety-review" className="space-y-4">
+            <h2 id="safety-review" className="text-2xl">{t("safety.result.review")}</h2>
+            {missed.map(item => (
+              <Panel key={item.id} className="space-y-4 p-5 sm:p-6">
+                <h3 className="text-lg">{item.situation[language]}</h3>
+                <Steps emergency={item} />
+              </Panel>
+            ))}
+          </section>
+        )}
       </div>
     );
   }
 
-  if (phase === "ethics") {
-    const caseKey = ETHICS_CASE_KEYS[currentCaseIndex];
-    return (
-      <div className="page-shell max-w-2xl space-y-6">
-        <header className="page-header flex flex-row items-center gap-2 text-primary">
-          <BookmarkSimple className="w-5 h-5 shrink-0" aria-hidden />
-          <h1 className="page-title text-foreground">{t("safety.ethics.title")}</h1>
-        </header>
-
-        <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-          <span>{t("safety.ethics.case", { current: currentCaseIndex + 1, total: ETHICS_CASE_KEYS.length })}</span>
-        </div>
-        <Progress value={((currentCaseIndex) / ETHICS_CASE_KEYS.length) * 100} className="h-2 mb-8" />
-
-        <Card className="p-6 border border-border bg-card">
-          <p className="text-lg font-medium mb-8 leading-relaxed">
-            {t(caseKey)}
-          </p>
-
-          <div className="space-y-8">
-            <EthicsSlider
-              value={ethicsValue}
-              onChange={setEthicsValue}
-              disabled={ethicsSubmitted}
-            />
-
-            {!ethicsSubmitted ? (
-              <Button
-                onClick={submitEthics}
-                disabled={!ethicsValue}
-                className={`w-full ${!ethicsValue ? "cursor-not-allowed opacity-50" : ""}`}
-              >
-                {t("safety.submit")}
-              </Button>
-            ) : (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-4 rounded-md bg-muted border border-border">
-                    <div className="text-xs text-muted-foreground mb-1">{t("safety.your.position", { val: ethicsValue.toFixed(2) })}</div>
-                    <div className="text-xl font-bold font-mono text-primary font-tabular-nums">{ethicsValue.toFixed(2)}</div>
-                  </div>
-                  <div className="p-4 rounded-md bg-muted border border-border">
-                    <div className="text-xs text-muted-foreground mb-1">{t("safety.illustrativeComparison", { value: mockAvg.toFixed(2) })}</div>
-                    <div className="text-xl font-bold font-mono text-muted-foreground font-tabular-nums">{mockAvg.toFixed(2)}</div>
-                  </div>
-                </div>
-                <Button onClick={handleCaseNext} className="w-full">
-                  {currentCaseIndex < ETHICS_CASE_KEYS.length - 1 ? t("safety.next") : t("common.done")}
-                </Button>
-              </div>
-            )}
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  const currentScenario = SCENARIOS[currentScenarioIndex];
+  const answered = pick !== undefined;
+  const right = pick === 0;
+  const last = index === EMERGENCIES.length - 1;
 
   return (
-    <div className="page-shell max-w-2xl space-y-6">
-      <header className="page-header flex flex-row items-center gap-2 text-primary">
-        <ShieldWarning className="w-5 h-5 shrink-0" aria-hidden />
-        <h1 className="page-title text-foreground">{t("safety.defensive.title")}</h1>
-      </header>
+    <div className="page-shell page-enter">
+      {header}
+      <Panel className="mx-auto w-full max-w-3xl p-5 sm:p-8">
+        <p className="type-figure text-sm" aria-live="polite">{t("safety.progress", { current: index + 1, total: EMERGENCIES.length })}</p>
+        <Progress value={((index + 1) / EMERGENCIES.length) * 100} className="mt-3" aria-label={t("safety.progress", { current: index + 1, total: EMERGENCIES.length })} />
 
-      <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-2">
-        <span>{t("safety.scenario", { current: currentScenarioIndex + 1, total: SCENARIOS.length })}</span>
-      </div>
-      <Progress value={((currentScenarioIndex) / SCENARIOS.length) * 100} className="h-2 mb-8" />
+        <h2 className="mt-8 text-2xl sm:text-[1.75rem]">{emergency.situation[language]}</h2>
+        <p className="mt-2 text-muted-foreground" id="safety-question">{t("safety.question")}</p>
 
-      <ScenarioCard
-        scenario={currentScenario}
-        onNext={handleScenarioNext}
-        isExiting={isExiting}
-      />
+        <div className="mt-5 grid gap-3" role="group" aria-labelledby="safety-question">
+          {orders[index].map(option => {
+            const isKpp = option === 0;
+            const isPick = option === pick;
+            return (
+              <button
+                key={option}
+                type="button"
+                disabled={answered}
+                aria-pressed={isPick}
+                onClick={() => setPicks(prev => { const next = [...prev]; next[index] = option; return next; })}
+                className={cn(
+                  "tile flex min-h-14 w-full items-start gap-3 p-4 text-left disabled:cursor-default",
+                  answered && isKpp && "tile-done",
+                  answered && isPick && !isKpp && "tile-fail",
+                  answered && !isKpp && !isPick && "opacity-60",
+                )}
+              >
+                {answered && isKpp && <CheckCircle size={20} className="mt-0.5 shrink-0 text-success" aria-label={t("safety.kppAnswer")} />}
+                {answered && isPick && !isKpp && <XCircle size={20} className="mt-0.5 shrink-0 text-destructive" aria-label={t("safety.yourAnswer")} />}
+                <span>{emergency.options[option][language]}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {answered && (
+          <div className="mt-8 space-y-4 border-t border-border pt-6">
+            <h3 ref={feedback} tabIndex={-1} className="flex items-center gap-2 text-xl focus-visible:shadow-none focus-visible:outline-none">
+              {right ? <CheckCircle size={24} className="text-success" aria-hidden="true" /> : <XCircle size={24} className="text-destructive" aria-hidden="true" />}
+              {right ? t("safety.right") : t("safety.wrong")}
+            </h3>
+            <p className="font-bold">{t("safety.steps")}</p>
+            <Steps emergency={emergency} />
+            <Button variant="brand" size="lg" className="mt-2 w-full sm:w-auto" onClick={() => setIndex(index + 1)}>
+              {last ? t("safety.finish") : t("safety.next")}
+              <ArrowRight aria-hidden="true" />
+            </Button>
+          </div>
+        )}
+      </Panel>
     </div>
   );
 }

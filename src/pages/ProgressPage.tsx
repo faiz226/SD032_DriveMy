@@ -1,382 +1,274 @@
-import { useState } from "react";
-import { Download, Calendar, Activity, Book, Clock, Target, Warning } from "@/components/ui/icons";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
+import { CaretRight, CheckCircle } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
-import { useAuthStore } from "@/stores/authStore";
-import { 
-  useQuizStats, 
-  useMockStats, 
-  useSimStats, 
-  useTheoryProgressStats, 
-  useOverallReadiness 
+import {
+  useBestColorVisionScore,
+  useMockStats,
+  useOverallReadiness,
+  useQuizStats,
+  useSimStats,
+  useTheoryProgressStats,
 } from "@/hooks/useProgressStats";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Panel } from "@/components/ui/surface";
 import { ReadinessDonut } from "@/components/progress/ReadinessDonut";
-import { ManeuverScoresBar } from "@/components/progress/ManeuverScoresBar";
 import { ScoreTrendChart } from "@/components/progress/ScoreTrendChart";
 import { CategoryBreakdownBar } from "@/components/progress/CategoryBreakdownBar";
-import { QuizHistoryTable } from "@/components/progress/QuizHistoryTable";
-import { MockHistoryTable } from "@/components/progress/MockHistoryTable";
-import { SimHistoryTable } from "@/components/progress/SimHistoryTable";
+import { ManeuverScoresBar } from "@/components/progress/ManeuverScoresBar";
+import { AttemptList, type Attempt } from "@/components/progress/AttemptList";
 import { LoadError } from "@/components/shared/LoadError";
-import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS } from "@/lib/constants";
+import { countRpkCompleted, RPK_TOPICS } from "@/content/rpk-rsm";
+import { bestFullMock } from "@/lib/dashboard/model";
+import { LEGACY_MOCK_TOTAL, MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, ROUTES, TOTAL_SIMULATION_MANEUVERS, mockPassMark } from "@/lib/constants";
+import type { TranslationKey } from "@/lib/translations";
+import type { MockTestResult, QuizResult, SimulationResult } from "@/types/database";
+import { cn } from "@/lib/utils";
 
-// A trend needs two points; one attempt is listed in the history table below.
-const MIN_TREND_POINTS = 2;
+const PASS_PERCENT = Math.round((MOCK_PASS_MARK / MOCK_TOTAL_QUESTIONS) * 100);
+
+const CATEGORY_KEYS: Record<string, TranslationKey> = {
+  "road-signs": "progress.category.road-signs",
+  "traffic-rules": "progress.category.traffic-rules",
+  "safety-principles": "progress.category.safety-principles",
+};
+
+const STATION_KEYS: Record<string, TranslationKey> = {
+  "hill-start": "progress.maneuver.hill-start",
+  "side-parking": "progress.maneuver.side-parking",
+  "parallel-parking": "progress.maneuver.parallel-parking",
+  "three-point-turn": "progress.maneuver.three-point-turn",
+  "s-curve": "progress.maneuver.s-curve",
+  "z-curve": "progress.maneuver.z-curve",
+  "ramp-test": "progress.maneuver.ramp-test",
+  "road-merging": "progress.maneuver.road-merging",
+};
+
+const minutes = (seconds: number | null | undefined) => (seconds ? Math.max(1, Math.round(seconds / 60)) : 0);
+
+interface StandRow {
+  label: string;
+  value: string;
+  note: string;
+  done: boolean;
+  to: string;
+}
 
 export function ProgressPage() {
-  const { t, language } = useLanguage();
-  const { user } = useAuthStore();
-
-  const [dateRange, setDateRange] = useState<number>(0);
-  const [activeTab, setActiveTab] = useState("quizzes");
-
-  const quizQ = useQuizStats(dateRange || undefined);
-  const mockQ = useMockStats(dateRange || undefined);
-  const simQ = useSimStats(dateRange || undefined);
-  const theoryQ = useTheoryProgressStats();
+  const { t } = useLanguage();
   const readinessQ = useOverallReadiness();
+  const mockQ = useMockStats();
+  const quizQ = useQuizStats();
+  const simQ = useSimStats();
+  const theoryQ = useTheoryProgressStats();
+  const colorQ = useBestColorVisionScore();
+  const queries = [readinessQ, mockQ, quizQ, simQ, theoryQ, colorQ];
 
-  const { data: quiz, isPending: quizPending } = quizQ;
-  const { data: mock, isPending: mockPending } = mockQ;
-  const { data: sim, isPending: simPending } = simQ;
-  const { data: theory, isPending: theoryPending } = theoryQ;
-  const { data: readiness, isPending: readinessPending } = readinessQ;
+  const header = (
+    <header className="page-header">
+      <h1 className="page-title">{t("progress.title")}</h1>
+      <p className="page-lead">{t("progress.lead")}</p>
+    </header>
+  );
 
-  // Previously there was no error branch at all: a failed fetch left every
-  // skeleton shimmering indefinitely with no message and no way to retry.
-  const loadFailed =
-    quizQ.isError || mockQ.isError || simQ.isError || theoryQ.isError || readinessQ.isError;
-
-  const retryAll = () => {
-    void quizQ.refetch();
-    void mockQ.refetch();
-    void simQ.refetch();
-    void theoryQ.refetch();
-    void readinessQ.refetch();
-  };
-
-  const handleExport = async () => {
-    if (!hasData) return;
-
-    if (!user) {
-      toast.error(t("common.error"));
-      return;
-    }
-    try {
-      const { generateProgressPDF } = await import("@/lib/generateProgressPDF");
-      await generateProgressPDF({
-        language,
-        userName: user.email?.split("@")[0] || "Student",
-        theory: theory || { completedModules: 0, totalModules: 3, percentage: 0 },
-        quiz: quiz || { average: 0, totalDuration: 0, history: [], trend: [] },
-        mock: mock || { passRate: 0, totalDuration: 0, history: [], trend: [] },
-        sim: sim || { averageScore: 0, totalDuration: 0, history: [], byManeuver: [] },
-      });
-    } catch {
-      toast.error(t("common.error"));
-    }
-  };
-
-  const hasData = quiz?.count || mock?.count || sim?.completed;
-
-  const categoryData = quiz?.categoryPerformance || [
-    { category: "road-signs", averageScore: 0, attempts: 0 },
-    { category: "traffic-rules", averageScore: 0, attempts: 0 },
-    { category: "safety-principles", averageScore: 0, attempts: 0 },
-  ];
-
-  if (loadFailed) {
+  if (queries.some(q => q.isError)) {
+    return <div className="page-shell">{header}<LoadError onRetry={() => queries.forEach(q => { void q.refetch(); })} /></div>;
+  }
+  if (queries.some(q => q.isPending)) {
     return (
-      <div className="page-shell max-w-7xl space-y-6">
-        <header className="page-header">
-          <h1 className="page-title">{t("progress.title")}</h1>
-        </header>
-        <LoadError onRetry={retryAll} />
+      <div className="page-shell" aria-busy="true" aria-label={t("common.loading")}>
+        {header}
+        <div className="grid gap-[var(--panel-gap)] lg:grid-cols-[20rem_1fr]">
+          <Skeleton className="h-80 rounded-[var(--radius-panel)]" />
+          <Skeleton className="h-80 rounded-[var(--radius-panel)]" />
+        </div>
+        <Skeleton className="h-64 rounded-[var(--radius-panel)]" />
       </div>
     );
   }
 
+  const readiness = readinessQ.data!;
+  const mock = mockQ.data!;
+  const quiz = quizQ.data!;
+  const sim = simQ.data!;
+  const theory = theoryQ.data!;
+  const colorBest = colorQ.data;
+
+  const mockRows = mock.history as MockTestResult[];
+  const quizRows = quiz.history as QuizResult[];
+  const simRuns = sim.history as SimulationResult[];
+
+  const bestMock = bestFullMock(mockRows);
+  const bestPassMark = bestMock ? mockPassMark(bestMock.total_questions) : MOCK_PASS_MARK;
+  const quizTopics = ("categoryPerformance" in quiz ? quiz.categoryPerformance : undefined) ?? [];
+  const weakest = quizTopics.filter(c => c.attempts > 0).sort((a, b) => a.averageScore - b.averageScore)[0];
+  const categoryName = (id: string) => (CATEGORY_KEYS[id] ? t(CATEGORY_KEYS[id]) : id);
+  const rpkDone = countRpkCompleted(theory.byModule);
+
+  const stand: StandRow[] = [
+    {
+      label: t("progress.stand.mock"),
+      value: bestMock ? `${bestMock.score} / ${bestMock.total_questions}` : "-",
+      note: bestMock ? t("progress.stand.mockNote", { pass: bestPassMark, total: bestMock.total_questions, count: mock.count }) : t("progress.stand.mockNone"),
+      done: !!bestMock && bestMock.score >= bestPassMark,
+      to: ROUTES.MOCK_TEST,
+    },
+    {
+      label: t("progress.stand.quiz"),
+      value: quiz.count ? `${Math.round(quiz.average)}%` : "-",
+      note: weakest ? t("progress.stand.quizNote", { count: quiz.count, topic: categoryName(weakest.category), score: weakest.averageScore }) : t("progress.stand.quizNone"),
+      done: quiz.count > 0 && quiz.average >= PASS_PERCENT,
+      to: ROUTES.QUIZ,
+    },
+    {
+      label: t("progress.stand.learn"),
+      value: `${theory.completedModules} / ${theory.totalModules}`,
+      note: t("progress.stand.learnNote"),
+      done: theory.completedModules === theory.totalModules,
+      to: ROUTES.THEORY,
+    },
+    {
+      label: "RPK / RSM",
+      value: `${rpkDone} / ${RPK_TOPICS.length}`,
+      note: t("progress.stand.rpkNote"),
+      done: rpkDone === RPK_TOPICS.length,
+      to: ROUTES.RPK_RSM,
+    },
+    {
+      label: t("progress.stand.sim"),
+      value: `${sim.cleared} / ${TOTAL_SIMULATION_MANEUVERS}`,
+      note: t("progress.stand.simNote"),
+      done: sim.cleared === TOTAL_SIMULATION_MANEUVERS,
+      to: ROUTES.SIMULATIONS,
+    },
+    {
+      label: t("progress.stand.color"),
+      value: colorBest === null || colorBest === undefined ? t("progress.stand.colorNone") : t("progress.stand.colorDone"),
+      note: t("progress.stand.colorNote"),
+      done: colorBest !== null && colorBest !== undefined,
+      to: ROUTES.COLOR_VISION,
+    },
+  ];
+
+  const taken = (seconds: number | null | undefined) => (minutes(seconds) ? [t("common.minutes", { count: minutes(seconds) })] : []);
+
+  const mockLabel = (row: MockTestResult) => {
+    if (row.total_questions === LEGACY_MOCK_TOTAL) return t("progress.mock.legacy");
+    const match = /^mock-(da|d)-combined-(\d+)$/.exec(row.set_id);
+    return match ? t("progress.mock.set", { num: match[2], track: match[1].toUpperCase() }) : t("progress.mock.generic");
+  };
+
+  const mockAttempts: Attempt[] = mockRows.map(row => ({
+    id: row.id,
+    date: row.completed_at,
+    title: mockLabel(row),
+    score: `${row.score} / ${row.total_questions}`,
+    details: [t("progress.passMarkOf", { pass: mockPassMark(row.total_questions) }), ...taken(row.duration_seconds)],
+    passed: Boolean(row.passed),
+  }));
+
+  const quizAttempts: Attempt[] = quizRows.map(row => ({
+    id: row.id,
+    date: row.completed_at,
+    title: t("progress.quiz.title", { topic: categoryName(row.quiz_title) }),
+    score: `${row.score} / ${row.total_questions}`,
+    details: taken(row.duration_seconds),
+  }));
+
+  const simAttempts: Attempt[] = simRuns.map(row => {
+    const stations = (row.attempt_data as { stations?: { status: string }[] } | null)?.stations;
+    const isRun = Array.isArray(stations);
+    return {
+      id: row.id,
+      date: row.completed_at,
+      title: isRun ? t("progress.sim.run") : STATION_KEYS[row.maneuver_id] ? t(STATION_KEYS[row.maneuver_id]) : row.maneuver_id,
+      score: isRun ? t("progress.sim.cleared", { done: stations.filter(s => s.status === "cleared").length, total: stations.length }) : `${row.score}%`,
+      details: [t("progress.sim.faults", { count: row.errors ?? 0 }), ...taken(row.completion_seconds)],
+      passed: Boolean(row.passed),
+    };
+  });
+
   return (
-    <div className="page-shell max-w-7xl space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <header className="page-header">
-          <h1 className="page-title">{t("progress.title")}</h1>
-          <p className="page-lead">{t("progress.subtitle")}</p>
-        </header>
+    <div className="page-shell page-enter">
+      {header}
 
-        <div className="flex items-center gap-3">
-          <Select value={dateRange.toString()} onValueChange={(v) => setDateRange(Number(v))}>
-            <SelectTrigger className="w-36 bg-card">
-              <Calendar className="w-4 h-4 mr-2" />
-              <SelectValue placeholder={t("progress.dateRange")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="0">{t("progress.allTime")}</SelectItem>
-              <SelectItem value="7">{t("progress.last7Days")}</SelectItem>
-              <SelectItem value="30">{t("progress.last30Days")}</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="grid items-start gap-[var(--panel-gap)] lg:grid-cols-[20rem_1fr]">
+        <Panel className="p-5 sm:p-6">
+          <h2 className="text-xl">{t("progress.score.title")}</h2>
+          <p className="mt-1 mb-4 text-sm text-muted-foreground">{t("progress.score.lead")}</p>
+          <ReadinessDonut {...readiness} />
+        </Panel>
 
-          <Button 
-            onClick={handleExport} 
-            disabled={!hasData}
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            {t("progress.exportPdf")}
-          </Button>
-        </div>
+        <Panel className="p-5 sm:p-6">
+          <h2 className="text-xl">{t("progress.stand.title")}</h2>
+          <ul className="mt-3 divide-y divide-border">
+            {stand.map(row => (
+              <li key={row.label}>
+                <Link to={row.to} className="group -mx-2 flex min-h-16 items-center gap-3 rounded-xl px-2 py-3 text-foreground no-underline transition-base hover:bg-muted/60">
+                  <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full", row.done ? "bg-success/15 text-success" : "bg-muted text-muted-foreground")}>
+                    {row.done ? <CheckCircle size={18} aria-label={t("progress.completed")} /> : <span aria-hidden="true" className="h-4 w-4 rounded-full border-2 border-current opacity-60" />}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">{row.label}</span>
+                    <span className="block text-sm text-muted-foreground">{row.note}</span>
+                  </span>
+                  <span className="type-figure shrink-0 text-lg">{row.value}</span>
+                  <CaretRight size={16} className="shrink-0 opacity-40 transition-base group-hover:translate-x-0.5 group-hover:opacity-80" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Panel>
       </div>
 
-      <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card-premium p-6 flex flex-col md:col-span-1">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
-            {t("progress.examReadiness")}
-          </h2>
-          {readinessPending ? (
-            <div className="h-[250px] flex items-center justify-center">
-              <Skeleton circle className="h-40 w-40" />
-            </div>
-          ) : readiness ? (
-            <ReadinessDonut {...readiness} />
-          ) : (
-            <div className="h-[250px] flex items-center justify-center text-muted-foreground">{t("common.loading")}</div>
-          )}
-        </div>
+      <section aria-labelledby="progress-history" className="space-y-4">
+        <h2 id="progress-history" className="text-[1.75rem]">{t("progress.history.title")}</h2>
+        <Tabs defaultValue="mocks">
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="mocks" className="min-h-11 flex-1 sm:flex-none">{t("progress.tab.mocks")}</TabsTrigger>
+            <TabsTrigger value="quizzes" className="min-h-11 flex-1 sm:flex-none">{t("progress.tab.quizzes")}</TabsTrigger>
+            <TabsTrigger value="sim" className="min-h-11 flex-1 sm:flex-none">{t("progress.tab.simulations")}</TabsTrigger>
+          </TabsList>
 
-        <div className="md:col-span-2 grid grid-cols-2 gap-4">
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Book className="w-4 h-4" weight="regular" />
-              <span>{t("progress.theoryCompleted")}</span>
-            </div>
-            {theoryPending ? (
-              <div className="space-y-2 mt-1">
-                <Skeleton className="h-9 w-20" />
-                <Skeleton className="h-4 w-32" />
-              </div>
-            ) : (
-              <>
-                <div className="text-3xl font-bold type-figure text-primary">
-                  {theory ? `${Math.round(theory.percentage)}%` : "0%"}
+          <TabsContent value="mocks">
+            <Panel className="space-y-6 p-5 sm:p-6">
+              {mock.trend.length >= 2 && (
+                <ScoreTrendChart data={mock.trend} label={t("progress.chart.mockTrend")} limit={10} passMark={PASS_PERCENT} />
+              )}
+              <AttemptList items={mockAttempts} empty={t("progress.noMockAttempts")} />
+            </Panel>
+          </TabsContent>
+
+          <TabsContent value="quizzes">
+            <Panel className="space-y-6 p-5 sm:p-6">
+              {quiz.count > 0 && (
+                <div>
+                  <h3 className="mb-3 text-lg">{t("progress.categoryPerformance")}</h3>
+                  <CategoryBreakdownBar data={quizTopics} />
                 </div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  {theory ? t("progress.modulesCount", { completed: theory.completedModules, total: theory.totalModules }) : ""}
+              )}
+              {quiz.trend.length >= 2 && (
+                <ScoreTrendChart data={quiz.trend.map(point => ({ ...point, title: point.title ? categoryName(point.title) : undefined }))} label={t("progress.chart.quizTrend")} limit={20} />
+              )}
+              <AttemptList items={quizAttempts} empty={t("progress.noQuizAttempts")} />
+            </Panel>
+          </TabsContent>
+
+          <TabsContent value="sim">
+            <Panel className="space-y-6 p-5 sm:p-6">
+              {sim.byManeuver.length > 0 && (
+                <div>
+                  <h3 className="mb-3 text-lg">{t("progress.bestScoresByManeuver")}</h3>
+                  <ManeuverScoresBar data={sim.byManeuver} />
                 </div>
-              </>
-            )}
-          </div>
-          
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Activity className="w-4 h-4" />
-              <span>{t("progress.totalAttempts")}</span>
-            </div>
-            {quizPending || mockPending || simPending ? (
-              <div className="mt-1">
-                <Skeleton className="h-9 w-16" />
-              </div>
-            ) : (
-              <div className="text-3xl font-bold type-figure text-foreground">
-                {(quiz?.count || 0) + (mock?.count || 0) + (sim?.completed || 0)}
-              </div>
-            )}
-          </div>
-
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Warning className="w-4 h-4" weight="regular" />
-              <span>{t("progress.mockPassRate")}</span>
-            </div>
-            {mockPending ? (
-              <div className="mt-1">
-                <Skeleton className="h-9 w-16" />
-              </div>
-            ) : (
-              <div className={`text-3xl font-bold type-figure ${mock && mock.passRate >= 84 ? "text-success" : "text-warning"}`}>
-                {mock ? `${Math.round(mock.passRate)}%` : "0%"}
-              </div>
-            )}
-          </div>
-
-          <div className="card-premium p-6 flex flex-col justify-center min-h-[120px]">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Clock className="w-4 h-4" />
-              <span>{t("progress.studyTime")}</span>
-            </div>
-            {quizPending || mockPending || simPending ? (
-              <div className="mt-1">
-                <Skeleton className="h-9 w-24" />
-              </div>
-            ) : (
-              <div className="text-3xl font-bold type-figure text-foreground">
-                {(() => {
-                  const total = (quiz?.totalDuration || 0) + (mock?.totalDuration || 0) + (sim?.totalDuration || 0);
-                  return `${Math.floor(total / 3600)}h ${Math.floor((total / 60) % 60)}m`;
-                })()}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-3xl grid-cols-4 mb-6">
-          <TabsTrigger value="theory">{t("progress.tab.theory")}</TabsTrigger>
-          <TabsTrigger value="quizzes">{t("progress.tab.quizzes")}</TabsTrigger>
-          <TabsTrigger value="mocks">{t("progress.tab.mocks")}</TabsTrigger>
-          <TabsTrigger value="simulations">{t("progress.tab.simulations")}</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="theory" className="space-y-6">
-          <div className="card-premium p-6">
-            <h3 className="text-lg font-semibold mb-4">{t("progress.categoryPerformance")}</h3>
-            <CategoryBreakdownBar key={activeTab} data={categoryData} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="quizzes" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 card-premium p-6 flex flex-col items-center justify-center text-center">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">{t("progress.averageScore")}</h3>
-              {quizPending ? (
-                <>
-                  <Skeleton className="h-10 w-24 mb-4 mt-2" />
-                  <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full flex justify-center">
-                    <Skeleton className="h-5 w-32" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-4xl font-bold type-figure text-primary">{quiz ? Math.round(quiz.average) : 0}%</p>
-                  <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
-                    {t("progress.bestScore")}: <span className="font-semibold text-foreground">{quiz?.best || 0}%</span>
-                  </div>
-                </>
               )}
-            </div>
-            <div className="lg:col-span-8 card-premium p-6">
-              <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
-              {quizPending ? (
-                <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : quiz?.trend && quiz.trend.length >= MIN_TREND_POINTS ? (
-                <ScoreTrendChart key={activeTab} data={quiz.trend} label={t("progress.chart.quizTrend")} limit={20} />
-              ) : (
-                <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
-              )}
-            </div>
-          </div>
-          <div className="card-premium p-6">
-            <h3 className="text-lg font-semibold mb-4">{t("progress.attemptHistory")}</h3>
-            {quizPending ? (
-              <div className="space-y-4">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : (
-              <QuizHistoryTable data={quiz?.history || []} />
-            )}
-          </div>
-        </TabsContent>
+              <AttemptList items={simAttempts} empty={t("progress.noSimAttempts")} />
+            </Panel>
+          </TabsContent>
+        </Tabs>
+      </section>
 
-        <TabsContent value="mocks" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 card-premium p-6 flex flex-col items-center justify-center text-center">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">{t("progress.averageScore")}</h3>
-              {mockPending ? (
-                <>
-                  <Skeleton className="h-10 w-24 mb-4 mt-2" />
-                  <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full flex justify-center">
-                    <Skeleton className="h-5 w-32" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-4xl font-bold type-figure text-primary">{mock ? Math.round(mock.average) : 0}%</p>
-                  <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
-                    {t("progress.bestScore")}: <span className="font-semibold text-foreground">{mock?.best || 0}%</span>
-                  </div>
-                </>
-              )}
-            </div>
-            <div className="lg:col-span-8 card-premium p-6">
-              <h3 className="text-lg font-semibold mb-4">{t("progress.scoreTrend")}</h3>
-              {mockPending ? (
-                <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : mock?.trend && mock.trend.length >= MIN_TREND_POINTS ? (
-                <ScoreTrendChart key={activeTab} data={mock.trend} label={t("progress.chart.mockTrend")} limit={10} passMark={Math.round((MOCK_PASS_MARK / MOCK_TOTAL_QUESTIONS) * 100)} />
-              ) : (
-                <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
-              )}
-            </div>
-          </div>
-          <div className="card-premium p-6">
-            <h3 className="text-lg font-semibold mb-4">{t("progress.attemptHistory")}</h3>
-            {mockPending ? (
-              <div className="space-y-4">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : (
-              <MockHistoryTable data={mock?.history || []} />
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="simulations" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 card-premium p-6 flex flex-col items-center justify-center text-center">
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">{t("progress.averageScore")}</h3>
-              {simPending ? (
-                <>
-                  <Skeleton className="h-10 w-24 mb-4 mt-2" />
-                  <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full flex justify-center">
-                    <Skeleton className="h-5 w-48" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-4xl font-bold type-figure text-primary">{sim ? Math.round(sim.averageScore) : 0}%</p>
-                  <div className="mt-4 text-sm text-muted-foreground border-t pt-4 w-full">
-                    {t("progress.maneuversAttempted")}: <span className="font-semibold text-foreground">{t("progress.maneuversCount", { completed: sim?.completed || 0, total: 8 })}</span>
-                  </div>
-                </>
-              )}
-            </div>
-            <div className="lg:col-span-8 card-premium p-6">
-              <h3 className="text-lg font-semibold mb-4">{t("progress.bestScoresByManeuver")}</h3>
-              {simPending ? (
-                <Skeleton className="h-[250px] w-full rounded-xl" />
-              ) : sim?.byManeuver && sim.byManeuver.length > 0 ? (
-                <ManeuverScoresBar key={activeTab} data={sim.byManeuver} />
-              ) : (
-                <p className="text-muted-foreground py-10 text-center">{t("progress.notEnoughData")}</p>
-              )}
-            </div>
-          </div>
-          <div className="card-premium p-6">
-            <h3 className="text-lg font-semibold mb-4">{t("progress.attemptHistory")}</h3>
-            {simPending ? (
-              <div className="space-y-4">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : (
-              <SimHistoryTable data={sim?.history || []} />
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-      </div>
+      <p className="rounded-2xl bg-info/20 px-5 py-4">{t("dashboard.note")}</p>
     </div>
   );
 }

@@ -7,9 +7,9 @@ import type { QueryClient } from "@tanstack/react-query";
  * the profile read ["profile", "quizBest", id], so it stayed stale.
  */
 export const learnerKeys = {
-  quizStats: (userId?: string, days?: number) => ["progress", "quiz", userId, days] as const,
-  mockStats: (userId?: string, days?: number) => ["progress", "mock", userId, days] as const,
-  simStats: (userId?: string, days?: number) => ["progress", "sim", userId, days] as const,
+  quizStats: (userId?: string) => ["progress", "quiz", userId] as const,
+  mockStats: (userId?: string) => ["progress", "mock", userId] as const,
+  simStats: (userId?: string) => ["progress", "sim", userId] as const,
   theoryStats: (userId?: string) => ["progress", "theory", userId] as const,
   readiness: (userId?: string) => ["progress", "readiness", userId] as const,
   theoryRows: (userId?: string) => ["theoryProgress", userId] as const,

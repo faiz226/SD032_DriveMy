@@ -1,733 +1,298 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { useActivityStore } from "@/stores/activityStore";
 import { useSaveResultMutation } from "@/hooks/useResults";
 import { saveColorblindResult } from "@/services/results.service";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Eye, Warning, Play } from '@/components/ui/icons';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from "@/components/ui/progress";
+import { Panel, Pill, type PillTone } from "@/components/ui/surface";
+import { ArrowClockwise, ArrowLeft, ArrowRight, CheckCircle, Info, Warning } from "@/components/ui/icons";
+import { PLATES, plateImage, scoreTest, type Plate, type Reading } from "@/content/color-vision";
+import { saveProgress, loadProgress, clearProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
+import type { TranslationKey } from "@/lib/translations";
 import { cn } from "@/lib/utils";
-import {
-  saveProgress,
-  loadProgress,
-  clearProgress,
-  PROGRESS_SCOPES,
-} from "@/lib/testProgress";
-import type { TranslationKey } from "@/lib/translations/en";
 
-/** Snapshot of an in-progress colour vision test, for crash-safe resume. */
-interface PersistedColorVisionState {
+/** An unfinished test, kept on the device so a stray tap on the menu does not lose it. */
+interface SavedTest {
   answers: Record<number, string>;
-  currentPlateIndex: number;
-  testLimit: number;
-  /**
-   * The exact plate order shown. Plate shuffling is genuinely random, and
-   * currentPlateIndex is positional — without the order, a resume would drop
-   * the learner on a different plate than the one they left.
-   */
-  plateOrder: number[];
+  index: number;
 }
-import confetti from "canvas-confetti";
-import { PLATES, COLOR_SETS, type PlateType } from "@/content/color-vision";
 
-const PLATE_TYPE_KEYS: Record<PlateType, TranslationKey> = {
-  control: "color.plateType.control",
-  screening: "color.plateType.screening",
-  diagnostic: "color.plateType.diagnostic",
-  classification: "color.plateType.classification",
-  tritan: "color.plateType.tritan",
+const READING: Record<Reading, { key: TranslationKey; tone: PillTone }> = {
+  normal: { key: "color.reading.normal", tone: "success" },
+  redGreen: { key: "color.reading.redGreen", tone: "warning" },
+  protan: { key: "color.reading.protan", tone: "warning" },
+  deutan: { key: "color.reading.deutan", tone: "warning" },
+  other: { key: "color.reading.other", tone: "neutral" },
 };
 
-const STAGGER_CLASSES = [
-  "anim-stagger-0",
-  "anim-stagger-1",
-  "anim-stagger-2",
-  "anim-stagger-3",
-  "anim-stagger-4",
-  "anim-stagger-5",
-  "anim-stagger-6",
-  "anim-stagger-7",
-  "anim-stagger-8",
-  "anim-stagger-9",
-];
-
-/**
- * Compare a typed answer against a plate's expected normal-vision answer.
- *
- * Module scope rather than component scope: it depends only on its arguments,
- * and defining it inside the component put it textually after the effect at
- * line ~94 that calls it (a use-before-declare that the React Hooks lint rules
- * flag), besides reallocating it on every render.
- */
-function checkAnswer(answer: string | undefined, p: (typeof PLATES)[0]): boolean {
-  if (!answer) return false;
-  return answer.toLowerCase().trim() === p.normalAnswer.toLowerCase().trim();
+/** A plate as the learner sees it: round, like the printed card, so its white margin never shows on a dark card. */
+function PlateImage({ plate, className }: { plate: Plate; className?: string }) {
+  const { t } = useLanguage();
+  return (
+    <span className={cn("block aspect-square shrink-0 overflow-hidden rounded-full bg-white shadow-sm ring-1 ring-border", className)}>
+      <img src={plateImage(plate.n)} alt={t("color.plateAlt", { num: plate.n })} className="h-full w-full scale-[1.04] object-cover" width={233} height={233} />
+    </span>
+  );
 }
 
 export function ColorVisionPage() {
-  const { t, language } = useLanguage();
-  const { user } = useAuthStore();
-  const saveMutation = useSaveResultMutation(saveColorblindResult, {
-    successToastKey: "color.saved",
-    errorToastKey: "color.error.saveFailed",
+  const { t } = useLanguage();
+  const user = useAuthStore(s => s.user);
+  const isDevBypass = useAuthStore(s => s.isDevBypass);
+  const saveMutation = useSaveResultMutation(saveColorblindResult, { successToastKey: "color.saved", errorToastKey: "color.error.saveFailed" });
+
+  // Read once, before the first paint, so a resumed test opens on the plate the learner left.
+  const [restored] = useState(() => {
+    const saved = user?.id ? loadProgress<SavedTest>(PROGRESS_SCOPES.colorVision, user.id) : null;
+    // A snapshot from the old shuffled test has no plain index: start fresh rather than land on a wrong plate.
+    return saved && typeof saved.data.index === "number" && saved.data.answers ? saved : null;
   });
+  const [phase, setPhase] = useState<"intro" | "test" | "result">(restored ? "test" : "intro");
+  const [answers, setAnswers] = useState<Record<number, string>>(restored?.data.answers ?? {});
+  const [index, setIndex] = useState(restored?.data.index ?? 0);
+  const [draft, setDraft] = useState(() => (restored ? restored.data.answers[PLATES[restored.data.index].n] ?? "" : ""));
+  const [showAll, setShowAll] = useState(false);
+  const startedAt = useRef(restored?.startedAt ?? Date.now());
+  const input = useRef<HTMLInputElement>(null);
 
-  const plateDescription = (type: PlateType) => t(PLATE_TYPE_KEYS[type]);
-  const plateAlt = (plateNum: number, type: PlateType) =>
-    t("color.plateAlt", { num: plateNum, description: plateDescription(type) });
-
-  // ── Resume an interrupted test ────────────────────────────────────────────
-  // Read once, synchronously, before first paint so the plate order below can
-  // be restored rather than reshuffled.
-  const [restoredTest] = useState(() =>
-    user?.id
-      ? loadProgress<PersistedColorVisionState>(PROGRESS_SCOPES.colorVision, user.id)
-      : null
-  );
-  const [restoredOrder, setRestoredOrder] = useState<number[] | null>(
-    restoredTest?.data.plateOrder ?? null
-  );
-
-  const [isStarted, setIsStarted] = useState(Boolean(restoredTest));
-  const [selectedSet, setSelectedSet] = useState<string | undefined>(undefined);
-  const [rulesAccepted, setRulesAccepted] = useState(Boolean(restoredTest));
-  const [testLimit, setTestLimit] = useState(restoredTest?.data.testLimit ?? 25);
-
-  const [currentPlateIndex, setCurrentPlateIndex] = useState(
-    restoredTest?.data.currentPlateIndex ?? 0
-  );
-  const [answers, setAnswers] = useState<Record<number, string>>(
-    restoredTest?.data.answers ?? {}
-  );
-  const [userAnswer, setUserAnswer] = useState("");
-  const [isFinished, setIsFinished] = useState(false);
-
-  // Random key that changes each time the test starts, triggering re-shuffle
-  const [shuffleKey, setShuffleKey] = useState(() => Math.random());
-
-  // Fire firework confetti when test finishes with a "Normal" classification
   useEffect(() => {
-    if (!isFinished) return;
-    // Calculate pass: control plate correct and enough screening plates correct
-    const plate1 = PLATES.find(p => p.plateNum === 1);
-    const plate1Pass = plate1 ? checkAnswer(answers[plate1.id], plate1) : false;
-    const screeningPlates = PLATES.filter(p => p.plateNum >= 2 && p.plateNum <= 9);
-    const screeningCorrect = screeningPlates.filter(p => checkAnswer(answers[p.id], p)).length;
-    const isNormal = plate1Pass && screeningCorrect >= 7;
-    if (isNormal) {
-      const duration = 3 * 1000;
-      const animEnd = Date.now() + duration;
-      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-      const interval = window.setInterval(() => {
-        if (Date.now() > animEnd) { clearInterval(interval); return; }
-        confetti({ particleCount: 40, spread: 360, startVelocity: 30, ticks: 60, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-        confetti({ particleCount: 40, spread: 360, startVelocity: 30, ticks: 60, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-      }, 300);
-      return () => clearInterval(interval);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFinished]);
-
-  // Shuffle plates on each test start: keep plate 1 (control) first, shuffle the rest.
-  //
-  // A resumed test REUSES the saved plate order. The shuffle is genuinely
-  // random (shuffleKey only invalidates the memo, it is not a seed), so
-  // regenerating it on resume would leave `currentPlateIndex` pointing at a
-  // different plate than the one the learner was actually looking at.
-  const activePlates = useMemo(() => {
-    if (restoredOrder) {
-      const byId = new Map(PLATES.map((p) => [p.id, p]));
-      const rebuilt = restoredOrder
-        .map((id) => byId.get(id))
-        .filter((p): p is (typeof PLATES)[0] => Boolean(p));
-      if (rebuilt.length > 0) return rebuilt;
-    }
-
-    const pool = PLATES.slice(0, testLimit);
-    const [control, ...rest] = pool;
-    // Fisher-Yates
-    for (let i = rest.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [rest[i], rest[j]] = [rest[j], rest[i]];
-    }
-    return [control, ...rest];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testLimit, shuffleKey, restoredOrder]);
-
-  const currentPlate = activePlates[currentPlateIndex];
-
-  // ── Crash-safe persistence ────────────────────────────────────────────────
-  // Losing a 25-plate test to one accidental tap on the bottom nav is the kind
-  // of thing that makes people give up on an app. Snapshot after every answer.
-  useEffect(() => {
-    if (!user?.id || !isStarted || isFinished) return;
-    saveProgress<PersistedColorVisionState>(
-      PROGRESS_SCOPES.colorVision,
-      user.id,
-      restoredTest?.startedAt ?? Date.now(),
-      {
-        answers,
-        currentPlateIndex,
-        testLimit,
-        // The exact order shown, so a resume lands on the same plate.
-        plateOrder: activePlates.map((p) => p.id),
-      }
-    );
-  }, [answers, currentPlateIndex, testLimit, activePlates, isStarted, isFinished, user?.id, restoredTest]);
-
-  // Suspend the inactivity sign-out while the test is running.
-  useEffect(() => {
-    if (!isStarted || isFinished) return;
-    const { beginTest, endTest } = useActivityStore.getState();
-    beginTest();
-    return endTest;
-  }, [isStarted, isFinished]);
-
-  // Let the learner know their progress came back.
-  useEffect(() => {
-    if (restoredTest) toast.success(t("color.resumed"));
-    // Once, on mount, only for a resumed test.
+    if (restored) toast.success(t("color.resumed"));
+    // Once, for a resumed test only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Leaving mid-test is now recoverable, but still worth confirming.
+  // Snapshot after every answer; the inactivity sign-out waits while a test is running.
   useEffect(() => {
-    if (!isStarted || isFinished || Object.keys(answers).length === 0) return;
-    const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [isStarted, isFinished, answers]);
+    if (phase !== "test" || !user?.id) return;
+    saveProgress<SavedTest>(PROGRESS_SCOPES.colorVision, user.id, startedAt.current, { answers, index });
+  }, [phase, answers, index, user?.id]);
 
-  const handleSubmit = () => {
-    if (!userAnswer) {
-      toast.error(t("color.error.answerRequired"));
-      return;
-    }
+  useEffect(() => {
+    if (phase !== "test") return;
+    const { beginTest, endTest } = useActivityStore.getState();
+    beginTest();
+    return endTest;
+  }, [phase]);
 
-    const updatedAnswers = { ...answers, [currentPlate.id]: userAnswer };
-    setAnswers(updatedAnswers);
-    setUserAnswer("");
+  useEffect(() => {
+    if (phase !== "test" || Object.keys(answers).length === 0) return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [phase, answers]);
 
-    if (currentPlateIndex < activePlates.length - 1) {
-      setCurrentPlateIndex((prev) => prev + 1);
-    } else {
-      handleFinish(updatedAnswers);
-    }
+  const plate = PLATES[index];
+
+  const start = () => {
+    startedAt.current = Date.now();
+    setShowAll(false);
+    setAnswers({});
+    setIndex(0);
+    setDraft("");
+    setPhase("test");
   };
 
-  const handleFinish = async (finalAnswers: Record<number, string>) => {
-    setIsFinished(true);
-    // The attempt is complete — the resume snapshot has done its job.
+  const goTo = (next: number, all: Record<number, string>) => {
+    setIndex(next);
+    setDraft(all[PLATES[next].n] ?? "");
+    input.current?.focus();
+  };
+
+  const answer = (value: string) => {
+    const next = { ...answers, [plate.n]: value };
+    setAnswers(next);
+    if (index < PLATES.length - 1) return goTo(index + 1, next);
+
     if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
-    let score = 0;
-    activePlates.forEach((p) => {
-      if (checkAnswer(finalAnswers[p.id], p)) score++;
-    });
-
-    const percentage = Math.round((score / activePlates.length) * 100);
-
-    if (user) {
+    setPhase("result");
+    // The dev sign-in has no real session, so nothing is written for it.
+    if (user && !isDevBypass) {
+      const { normal } = scoreTest(next);
       saveMutation.mutate({
         user_id: user.id,
-        score,
-        total_plates: activePlates.length,
-        percentage,
-        answers: Object.fromEntries(Object.entries(finalAnswers).map(([k, v]) => [k, String(v)]))
+        score: normal,
+        total_plates: PLATES.length,
+        percentage: Math.round((normal / PLATES.length) * 100),
+        answers: Object.fromEntries(Object.entries(next)),
       });
     }
   };
 
-  const resetTest = () => {
-    setCurrentPlateIndex(0);
-    setAnswers({});
-    setIsFinished(false);
-    setUserAnswer("");
-    setIsStarted(false);
-    // Drop the resumed order so the next test gets a genuinely fresh shuffle,
-    // and bin the saved snapshot — starting over must not resume the old one.
-    setRestoredOrder(null);
-    if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
-    setShuffleKey(Math.random()); // trigger new shuffle on next test start
-  };
-
-  // Launch Panel View
-  if (!isStarted) {
-    const isSubmitDisabled = !selectedSet || !rulesAccepted;
-    const activeSet = COLOR_SETS.find(s => s.id === selectedSet);
-
-    let buttonLabel = language === 'en' ? "Select a Test Set" : "Pilih Set Ujian";
-    if (!selectedSet) {
-      buttonLabel = language === 'en' ? "Select a Test Set" : "Pilih Set Ujian";
-    } else if (!rulesAccepted) {
-      buttonLabel = language === 'en' ? "Accept Guidelines to Begin" : "Terima Garis Panduan";
-    } else {
-      buttonLabel = language === 'en' ? "Start Color Test" : "Mula Ujian Warna";
-    }
-
+  if (phase === "intro") {
     return (
-      <div className="max-w-xl mx-auto page-enter mt-10">
-        <div className="panel overflow-hidden flex flex-col">
-          {/* Header */}
-          <div className="hero-panel !rounded-none !border-0 !shadow-none p-8">
-            <div aria-hidden="true" className="absolute -right-6 top-1/2 -translate-y-1/2 text-white/[0.06] select-none pointer-events-none">
-              <Eye className="w-[168px] h-[168px]" weight="thin" />
-            </div>
-
-            <div className="relative z-10">
-              <div className="mb-2 text-xs font-semibold text-white/75">
-                Ishihara
-              </div>
-              <h2 className="type-display mb-1 text-[2rem] text-white">
-                {language === 'en' ? "Test your color vision" : "Uji penglihatan warna anda"}
-              </h2>
-              <p className="text-sm text-white/75">
-                {language === 'en' ? "Ujian Penglihatan Warna Ishihara" : "Ishihara Color Vision Test"}
-              </p>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-6 md:p-8 space-y-6">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {language === 'en'
-                ? "The Ishihara Color Test is the gold standard for detecting red-green color vision deficiencies. You will be shown pseudo-isochromatic plates containing numbers or paths."
-                : "Ujian Warna Ishihara adalah standard emas untuk mengesan kekurangan penglihatan warna merah-hijau. Anda akan ditunjukkan plat pseudo-isokromatik yang mengandungi nombor atau laluan."}
-            </p>
-
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
-                {language === 'en' ? "CHOOSE TEST LENGTH" : "PILIH PANJANG UJIAN"}
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {COLOR_SETS.map((sec) => (
-                  <button
-                    key={sec.id}
-                    type="button"
-                    onClick={() => setSelectedSet(sec.id)}
-                    className={cn(
-                      "p-4 rounded-xl border-2 text-left transition-all active:scale-[0.98]",
-                      selectedSet === sec.id
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border bg-card text-foreground hover:border-foreground/30 hover:bg-muted/30"
-                    )}
-                  >
-                    <div className="text-[10px] font-bold tracking-wider uppercase opacity-60 mb-1">
-                      PLATES
-                    </div>
-                    <div className="font-heading font-black text-3xl leading-none mb-2">
-                      {sec.limit}
-                    </div>
-                    <div className="font-bold text-sm">
-                      {language === 'en' ? sec.title : sec.titleMs}
-                    </div>
-                    <div className="text-xs opacity-70 mt-0.5 font-medium">
-                      {language === 'en' ? sec.desc : sec.descMs}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                if (activeSet) {
-                  setTestLimit(activeSet.limit);
-                  setIsStarted(true);
-                }
-              }}
-              disabled={isSubmitDisabled}
-              className={cn(
-                "w-full flex items-center justify-center gap-2 min-h-[56px] py-4 rounded-xl font-black text-lg uppercase tracking-wider transition-all",
-                !isSubmitDisabled
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md active:scale-[0.99]"
-                  : "bg-muted/40 text-muted-foreground/60 cursor-not-allowed"
-              )}
-            >
-              <Play className="w-5 h-5" weight="fill" />
-              {buttonLabel}
-            </button>
-
-            <div className="bg-card border rounded-2xl p-5 md:p-6 space-y-4">
-              <h3 className="font-heading font-bold text-sm text-foreground">
-                {language === 'en' ? "Test Guidelines" : "Garis Panduan Ujian"}
-              </h3>
-              <ul className="text-xs text-muted-foreground space-y-2 list-disc list-inside pl-1">
-                {language === 'en' ? (
-                  <>
-                    <li>Ensure screen brightness is set to at least 50%.</li>
-                    <li>Position yourself about 75cm (arm's length) from the screen.</li>
-                    <li>Do not wear color-correcting lenses or tinted glasses.</li>
-                    <li>Spend no more than 5 seconds analyzing each plate.</li>
-                  </>
-                ) : (
-                  <>
-                    <li>Pastikan kecerahan skrin sekurang-kurangnya 50%.</li>
-                    <li>Letakkan diri anda kira-kira 75cm (panjang lengan) dari skrin.</li>
-                    <li>Jangan pakai kanta pembetulan warna atau cermin mata berwarna.</li>
-                    <li>Jangan luangkan lebih daripada 5 saat untuk menganalisis setiap plat.</li>
-                  </>
-                )}
-              </ul>
-              <div className="pt-3 border-t flex items-start gap-3">
-                <Checkbox
-                  id="rulesAccepted"
-                  checked={rulesAccepted}
-                  onCheckedChange={(checked) => setRulesAccepted(!!checked)}
-                  className="mt-0.5"
-                />
-                <label htmlFor="rulesAccepted" className="text-xs text-muted-foreground font-medium leading-relaxed cursor-pointer select-none">
-                  {language === 'en'
-                    ? "I have set up my environment and am ready to begin the test."
-                    : "Saya telah menyediakan persekitaran saya dan bersedia untuk memulakan ujian."}
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Active Test Results View
-  if (isFinished) {
-    const plate1 = PLATES.find(p => p.plateNum === 1);
-    const plate1Valid = plate1 && checkAnswer(answers[plate1.id], plate1);
-
-    const screeningPlates = PLATES.filter(p => p.plateNum >= 2 && p.plateNum <= 9);
-    let screeningCorrect = 0;
-    screeningPlates.forEach((p) => {
-      if (answers[p.id] !== undefined && checkAnswer(answers[p.id], p)) {
-        screeningCorrect++;
-      }
-    });
-
-    const diagnosticPlates = PLATES.filter(p => p.plateNum >= 10 && p.plateNum <= 17);
-    let diagnosticCorrect = 0;
-    diagnosticPlates.forEach((p) => {
-      if (answers[p.id] !== undefined && checkAnswer(answers[p.id], p)) {
-        diagnosticCorrect++;
-      }
-    });
-
-    const classificationPlates = PLATES.filter(p => p.plateNum >= 18 && p.plateNum <= 21);
-    // Count how many classification plates the user responded with a colorblind number (not "nothing")
-    // Plates 18-21: normalAnswer="nothing", redGreenAnswer=the number only colorblind see
-    let classificationCorrect = 0; // kept for breakdown display (correct "nothing" answers)
-    let classificationColorblindCount = 0; // how many plates user saw numbers on (colorblind indicator)
-    classificationPlates.forEach((p) => {
-      if (answers[p.id] !== undefined) {
-        if (checkAnswer(answers[p.id], p)) classificationCorrect++;
-        const ans = answers[p.id].toLowerCase().trim();
-        const colorblindAns = p.redGreenAnswer.toLowerCase().trim();
-        // Only count as colorblind indicator if colorblind answer is a number (not "nothing")
-        if (colorblindAns !== "nothing" && ans === colorblindAns) {
-          classificationColorblindCount++;
-        }
-      }
-    });
-
-    const tritanPlates = PLATES.filter(p => p.plateNum >= 22 && p.plateNum <= 25);
-    let tritanCorrect = 0;
-    tritanPlates.forEach((p) => {
-      if (answers[p.id] !== undefined && checkAnswer(answers[p.id], p)) {
-        tritanCorrect++;
-      }
-    });
-    // Tritan indicator: how many tritan plates the user got WRONG (tritan-deficient miss these)
-    const tritanAnswered = tritanPlates.filter(p => answers[p.id] !== undefined).length;
-    const tritanMisses = tritanAnswered - tritanCorrect;
-
-    let classification = t("color.results.class.normal");
-    let isInvalid = false;
-    let diagnosis = "";
-
-    if (!plate1Valid) {
-      classification = t("color.results.class.invalid");
-      diagnosis = t("color.results.diagnosis.recheckPlate1");
-      isInvalid = true;
-    } else {
-      if (testLimit === 9) {
-        if (screeningCorrect >= 7) {
-          classification = t("color.results.class.normal");
-          diagnosis = t("color.results.diagnosis.normal");
-        } else {
-          classification = t("color.results.class.deutan");
-          diagnosis = t("color.results.diagnosis.moderateRedGreen");
-        }
-      } else {
-        const redGreenPlates = PLATES.filter(p => p.plateNum >= 2 && p.plateNum <= 17);
-        let redGreenCorrect = 0;
-        redGreenPlates.forEach((p) => {
-          if (answers[p.id] !== undefined && checkAnswer(answers[p.id], p)) {
-            redGreenCorrect++;
-          }
-        });
-        const redGreenMisses = redGreenPlates.length - redGreenCorrect;
-
-        if (redGreenCorrect >= 14) {
-          classification = t("color.results.class.normal");
-          diagnosis = t("color.results.diagnosis.normal");
-        } else if (redGreenMisses >= 2 && redGreenMisses <= 4) {
-          classification = t("color.results.class.deutan");
-          diagnosis = t("color.results.diagnosis.mildRedGreen");
-        } else if (redGreenMisses >= 5 && redGreenMisses <= 8) {
-          classification = t("color.results.class.deutan");
-          diagnosis = t("color.results.diagnosis.moderateRedGreen");
-        } else if (redGreenMisses > 8) {
-          classification = t("color.results.class.deutan");
-          diagnosis = t("color.results.diagnosis.severeRedGreen");
-        }
-
-        if (testLimit === 25) {
-          // classificationColorblindCount: how many plates 18-21 the user saw colorblind numbers on
-          if (classificationColorblindCount >= 2) {
-            classification = t("color.results.class.deutan");
-            diagnosis = t("color.results.diagnosis.redGreenConfirmed");
-          }
-          // tritanMisses: how many tritan plates the user got wrong (high = tritan deficiency)
-          if (tritanMisses >= 2) {
-            if (classification === t("color.results.class.normal")) {
-              classification = t("color.results.class.tritan");
-              diagnosis = t("color.results.diagnosis.tritan");
-            } else {
-              classification += " & " + t("color.results.class.tritan");
-              diagnosis += " & " + t("color.results.diagnosis.tritan");
-            }
-          }
-        }
-      }
-    }
-
-    let totalCorrect = 0;
-    activePlates.forEach((p) => {
-      if (checkAnswer(answers[p.id], p)) {
-        totalCorrect++;
-      }
-    });
-    const percentage = Math.round((totalCorrect / activePlates.length) * 100);
-
-    return (
-      <div className="page-shell max-w-5xl space-y-6">
-        <h1 className="page-title">{t("color.results.title")}</h1>
-
-        <Card className={`p-6 text-center space-y-4 border border-border bg-card ${isInvalid ? "border-destructive" : ""}`}>
-          <div className="text-5xl font-bold font-mono font-tabular-nums text-primary">{percentage}%</div>
-          <div className="text-xl">{t("color.results.score", { score: totalCorrect, total: activePlates.length, percentage })}</div>
-          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-base ${isInvalid ? 'bg-destructive/15 text-destructive' : 'bg-secondary text-secondary-foreground'}`}>
-            <Warning className="w-5 h-5" weight="regular" />
-            {classification}
-          </div>
-
-          {diagnosis && (
-            <div className="text-sm text-muted-foreground mt-2">{diagnosis}</div>
-          )}
-
-          <div className="mt-6 pt-6 border-t border-border space-y-3 text-left">
-            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t("color.results.breakdown")}</div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              <div className="p-3 rounded-md border border-border bg-muted/50">
-                <div className="text-muted-foreground">{t("color.results.breakdown.control")}</div>
-                <div className={`font-bold ${plate1Valid ? "text-success" : "text-destructive"}`}>
-                  {plate1Valid ? t("color.results.status.valid") : t("color.results.status.invalid")}
-                </div>
-              </div>
-              <div className="p-3 rounded-md border border-border bg-muted/50">
-                <div className="text-muted-foreground">{t("color.results.breakdown.screening")}</div>
-                <div className="font-bold font-tabular-nums">
-                  {screeningCorrect}/8
-                </div>
-              </div>
-              {testLimit >= 17 && (
-                <div className="p-3 rounded-md border border-border bg-muted/50">
-                  <div className="text-muted-foreground">{t("color.results.breakdown.diagnostic")}</div>
-                  <div className="font-bold font-tabular-nums">
-                    {diagnosticCorrect}/8
-                  </div>
-                </div>
-              )}
-              {testLimit >= 25 && (
-                <>
-                  <div className="p-3 rounded-md border border-border bg-muted/50">
-                    <div className="text-muted-foreground">{t("color.results.breakdown.classification")}</div>
-                    <div className="font-bold font-tabular-nums">
-                      {classificationCorrect}/4
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-md border border-border bg-muted/50">
-                    <div className="text-muted-foreground">{t("color.results.breakdown.tritan")}</div>
-                    <div className="font-bold font-tabular-nums">
-                      {tritanCorrect}/4
-                    </div>
-                  </div>
-                </>
-              )}
-              <div className="p-3 rounded-md border border-border bg-muted/50">
-                <div className="text-muted-foreground">{t("color.results.breakdown.total")}</div>
-                <div className={`font-bold font-tabular-nums text-primary`}>
-                  {totalCorrect}/{activePlates.length}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <Button size="lg" onClick={resetTest}>{t("color.retake")}</Button>
-          </div>
-        </Card>
-
-        <h2 className="text-xl font-semibold mt-8 mb-4">{t("color.results.review")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {activePlates.map((p, idx) => {
-            const isCorrect = checkAnswer(answers[p.id], p);
-            return (
-              <Card
-                key={p.id}
-                className={cn(
-                  "p-4 border border-border bg-card space-y-3",
-                  STAGGER_CLASSES[idx % STAGGER_CLASSES.length]
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-lg">{t("color.plateLabel", { num: p.plateNum })}</div>
-                  <div className={`text-sm px-3 py-1 rounded-md font-semibold ${isCorrect ? 'bg-success/15 text-success' : 'bg-destructive/15 text-destructive'}`}>
-                    {isCorrect ? t("results.correct") : t("results.incorrect")}
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
-                  <img
-                    src={`/color-plates/${p.imageFile}`}
-                    alt={plateAlt(p.plateNum, p.type)}
-                    className="w-full max-w-xs rounded-md border border-border"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">{t("color.results.yourAnswerLabel")}</span>
-                    <span className="font-bold font-tabular-nums text-foreground">{answers[p.id] || "-"}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">{t("color.results.correctAnswerLabel")}</span>
-                    <span className="font-bold font-tabular-nums text-success">{p.normalAnswer}</span>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Active Test View
-  return (
-    <div className="page-shell max-w-3xl space-y-6">
-      <header className="page-header flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+      <div className="page-shell page-enter">
+        <header className="page-header">
           <h1 className="page-title">{t("color.title")}</h1>
-          <p className="page-lead">{t("color.subtitle")}</p>
-        </div>
-      </header>
+          <p className="page-lead">{t("color.lead")}</p>
+        </header>
 
-      <Card className="p-6 border border-border bg-card">
-        <div className="text-sm font-semibold text-muted-foreground mb-6 uppercase tracking-wider text-center">
-          {t("color.plate", { current: currentPlateIndex + 1, total: activePlates.length })}
-        </div>
-
-        <div className="flex justify-center mb-10" key={currentPlate.id}>
-          <div
-            className="w-64 h-64 rounded-md flex items-center justify-center relative overflow-hidden transition-all duration-200 border border-border bg-card"
-            aria-label={plateAlt(currentPlate.plateNum, currentPlate.type)}
-          >
-            <img
-              src={`/color-plates/${currentPlate.imageFile}`}
-              alt={plateAlt(currentPlate.plateNum, currentPlate.type)}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+        <Panel className="grid items-center gap-8 p-5 sm:p-8 md:grid-cols-[1fr_auto]">
+          <div className="max-w-readable space-y-6">
+            <section aria-labelledby="color-how">
+              <h2 id="color-how" className="text-xl">{t("color.how.title")}</h2>
+              <ul className="mt-3 space-y-2 text-muted-foreground">
+                <li>{t("color.how.plates")}</li>
+                <li>{t("color.how.answer")}</li>
+                <li>{t("color.how.first")}</li>
+              </ul>
+            </section>
+            <section aria-labelledby="color-setup">
+              <h2 id="color-setup" className="text-xl">{t("color.setup.title")}</h2>
+              <ul className="mt-3 space-y-2">
+                {(["color.setup.brightness", "color.setup.filters", "color.setup.glasses"] as const).map(key => (
+                  <li key={key} className="flex gap-2.5">
+                    <CheckCircle size={20} className="mt-0.5 shrink-0 text-success" aria-hidden="true" />
+                    <span>{t(key)}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <Button variant="brand" size="lg" onClick={start}>
+              {t("color.start")}
+              <ArrowRight aria-hidden="true" />
+            </Button>
           </div>
-        </div>
+          <PlateImage plate={PLATES[0]} className="mx-auto w-48 sm:w-60" />
+        </Panel>
 
-        <div className="text-center font-medium mb-4">{t("color.question")}</div>
-        <div className="flex flex-col items-center gap-4 max-w-sm mx-auto">
-          <div className="flex gap-3 items-center w-full justify-center">
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={2}
-              placeholder={t("color.input.placeholder")}
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value.replace(/[^0-9]/g, ''))}
-              autoFocus
-              className="w-full text-center text-xl font-bold font-tabular-nums p-3 rounded-md border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-              aria-label={t("color.input.ariaLabel")}
-            />
-            {currentPlate.type !== "control" && (
-              <>
-                <span className="text-muted-foreground">{t("color.input.or")}</span>
-                <button
-                  type="button"
-                  onClick={() => setUserAnswer("nothing")}
-                  className={cn(
-                    "px-4 py-3 rounded-md border font-medium shrink-0 transition-colors min-h-[44px]",
-                    userAnswer === "nothing"
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:border-primary/40"
-                  )}
-                >
-                  {t("color.nothing")}
-                </button>
-              </>
+        <p className="flex max-w-readable items-start gap-2 text-sm text-muted-foreground">
+          <Info size={18} className="mt-0.5 shrink-0 text-info" aria-hidden="true" />
+          {t("color.note")}
+        </p>
+      </div>
+    );
+  }
+
+  if (phase === "test") {
+    const last = index === PLATES.length - 1;
+    return (
+      <div className="page-shell page-enter">
+        <header className="page-header">
+          <h1 className="page-title">{t("color.title")}</h1>
+        </header>
+        <Panel className="mx-auto w-full max-w-xl p-5 sm:p-8">
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <p className="type-figure" aria-live="polite">{t("color.plate", { current: index + 1, total: PLATES.length })}</p>
+            {index > 0 && (
+              <Button variant="ghost" className="-mr-3 px-3" onClick={() => goTo(index - 1, answers)}>
+                <ArrowLeft aria-hidden="true" />
+                {t("color.previous")}
+              </Button>
             )}
           </div>
-          <button
-            onClick={handleSubmit}
-            disabled={!userAnswer}
-            className="w-full min-h-[48px] py-3 rounded-md bg-primary text-primary-foreground font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {t("color.input.submit")}
-          </button>
-        </div>
-      </Card>
+          <Progress value={((index + 1) / PLATES.length) * 100} className="mt-3" aria-label={t("color.plate", { current: index + 1, total: PLATES.length })} />
 
-      {/* Plate Navigation Grid */}
-      <div className="grid grid-cols-6 md:grid-cols-12 gap-2 mt-8">
-        {activePlates.map((p, idx) => {
-          const position = idx + 1; // sequential display number: 1, 2, 3...
-          const isAnswered = answers[p.id] !== undefined;
-          const isActive = idx === currentPlateIndex;
-          const isLocked = !isAnswered && !isActive && idx > currentPlateIndex;
-          return (
-            <button
-              key={p.id}
-              disabled={isLocked}
-              onClick={() => {
-                setCurrentPlateIndex(idx);
-                setUserAnswer(answers[p.id] || "");
-              }}
-              className={`
-                h-10 rounded-md flex items-center justify-center text-sm font-medium font-tabular-nums transition-colors
-                ${isActive ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}
-                ${isAnswered && !isActive ? 'bg-primary/20 text-foreground' : ''}
-                ${!isAnswered && !isActive ? 'bg-muted text-muted-foreground' : ''}
-                ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-primary/40'}
-              `}
-              title={`Plate ${position}`}
-            >
-              {position}
-            </button>
-          );
-        })}
+          <PlateImage key={plate.n} plate={plate} className="mx-auto my-8 w-[min(15rem,70vw)] sm:w-72" />
+
+          <form
+            className="mx-auto max-w-sm space-y-3"
+            onSubmit={e => { e.preventDefault(); if (draft) answer(draft); }}
+          >
+            <label htmlFor="plate-answer" className="block text-center font-bold">{t("color.question")}</label>
+            <input
+              ref={input}
+              id="plate-answer"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              pattern="[0-9]*"
+              maxLength={2}
+              autoFocus
+              value={draft}
+              onChange={e => setDraft(e.target.value.replace(/\D/g, ""))}
+              className="type-figure h-16 w-full rounded-xl border border-input bg-card text-center text-3xl transition-base focus-visible:border-brand-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-ink/20"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <Button type="button" variant="outline" size="lg" onClick={() => answer("")}>
+                {t("color.nothing")}
+              </Button>
+              <Button type="submit" variant="brand" size="lg" disabled={!draft}>
+                {last ? t("color.finish") : t("color.next")}
+              </Button>
+            </div>
+          </form>
+        </Panel>
       </div>
+    );
+  }
+
+  const result = scoreTest(answers);
+  const verdict = {
+    clear: { tile: "tile-done", icon: CheckCircle, title: t("color.result.clear.title"), body: t("color.result.clear.body") },
+    check: { tile: "tile-progress", icon: Warning, title: t("color.result.check.title", { count: result.differ }), body: t("color.result.check.body", { redGreen: result.redGreen }) },
+    invalid: { tile: "tile-fail", icon: Warning, title: t("color.result.invalid.title"), body: t("color.result.invalid.body") },
+  }[result.outcome];
+  const VerdictIcon = verdict.icon;
+
+  return (
+    <div className="page-shell page-enter">
+      <header className="page-header">
+        <h1 className="page-title">{t("color.result.title")}</h1>
+      </header>
+
+      <section className={cn("tile p-5 sm:p-8", verdict.tile)} aria-labelledby="color-verdict">
+        <div className="max-w-readable space-y-3">
+          <h2 id="color-verdict" className="flex items-start gap-3 text-2xl">
+            <VerdictIcon size={28} className="mt-0.5 shrink-0" aria-hidden="true" />
+            {verdict.title}
+          </h2>
+          <p>{verdict.body}</p>
+          {result.outcome === "check" && <p className="text-muted-foreground">{t("color.result.check.advice")}</p>}
+        </div>
+        <Button variant="outline" className="mt-6" onClick={start}>
+          <ArrowClockwise aria-hidden="true" />
+          {t("color.retake")}
+        </Button>
+      </section>
+
+      <section aria-labelledby="color-review" className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="color-review" className="text-2xl">{t(showAll ? "color.review.title" : "color.review.differ")}</h2>
+          <Button variant="outline" aria-pressed={showAll} onClick={() => setShowAll(v => !v)}>
+            {showAll ? t("color.review.showDiffer") : t("color.review.showAll", { total: PLATES.length })}
+          </Button>
+        </div>
+        {!showAll && result.differ === 0 && result.outcome !== "invalid" && <p className="text-muted-foreground">{t("color.review.noneDiffer")}</p>}
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {result.readings.filter(r => showAll || r.reading !== "normal").map(({ plate: p, answer: given, reading }) => {
+            // Each reading as "label: value", so long Malay labels and values wrap like a sentence.
+            const rows: [string, string][] = [
+              [t("color.review.you"), given || t("color.nothing")],
+              [t("color.review.normal"), p.normal ?? t("color.nothing")],
+              ...(p.protan !== undefined
+                ? [[t("color.reading.protan"), p.protan], [t("color.reading.deutan"), p.deutan ?? ""]] as [string, string][]
+                : p.redGreen !== undefined ? [[t("color.review.redGreen"), p.redGreen ?? t("color.review.missOrWrong")]] as [string, string][] : []),
+            ];
+            return (
+              <li key={p.n} className="panel flex items-start gap-4 p-4">
+                <PlateImage plate={p} className="w-16 sm:w-20" />
+                <div className="min-w-0 flex-1 space-y-2 text-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-bold">{t("color.plateLabel", { num: p.n })}</span>
+                    <Pill tone={READING[reading].tone}>{t(READING[reading].key)}</Pill>
+                  </div>
+                  <dl className="space-y-0.5">
+                    {rows.map(([label, value]) => (
+                      <div key={label}>
+                        <dt className="inline text-muted-foreground">{label}: </dt>
+                        <dd className="type-figure inline">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <p className="flex max-w-readable items-start gap-2 text-sm text-muted-foreground">
+        <Info size={18} className="mt-0.5 shrink-0 text-info" aria-hidden="true" />
+        {t("color.note")}
+      </p>
     </div>
   );
 }
