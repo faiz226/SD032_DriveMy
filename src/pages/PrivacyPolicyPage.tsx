@@ -1,112 +1,70 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "@/components/ui/icons";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight } from "@/components/ui/icons";
+import { BrandMark } from "@/components/shared/BrandMark";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { PRIVACY_CONTACT_EMAIL, ROUTES } from "@/lib/constants";
+import { PRIVACY_SECTIONS, PRIVACY_SUMMARY, PRIVACY_UPDATED } from "@/content/privacy";
 
+/**
+ * The privacy notice. Public, so it can be read before signing up (PDPA 2010, Notice and Choice), which also
+ * means it sits outside the app shell and brings its own way back and its own language switch.
+ */
 export function PrivacyPolicyPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  // The page has no menu, so this is its only way out. Opened from inside the app (Settings, the consent
-  // banner) it goes back there; opened from a link it goes home: the dashboard, or sign-in when signed out.
+  // Opened from inside the app (Settings, the consent banner) it goes back there; opened from a link it goes
+  // home: the dashboard, or sign-in when signed out.
   const goBack = () => (location.key === "default" ? navigate(ROUTES.DASHBOARD) : navigate(-1));
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-6">
-      <button
-        type="button"
-        onClick={goBack}
-        className="-ml-1 mb-4 inline-flex min-h-[48px] items-center gap-1.5 rounded-sm px-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-        {t("common.back")}
-      </button>
-      <h1 className="text-3xl font-heading font-bold mb-6">Privacy Policy</h1>
-      <p className="mb-4 text-muted-foreground">Effective Date: [Insert Date]</p>
-      
-      <div className="space-y-6 text-foreground/80 leading-relaxed">
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">1. Introduction</h2>
-          <p>Welcome to DriveMy. We respect your privacy and are committed to protecting your personal data in compliance with the Personal Data Protection Act 2010 (PDPA) of Malaysia and other applicable laws.</p>
-        </section>
+    <div className="min-h-[100dvh]">
+      <header className="glass sticky top-0 z-10 border-b border-border">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-3 px-4 sm:px-6">
+          <Button variant="ghost" className="-ml-3 px-3" onClick={goBack}>
+            <ArrowLeft aria-hidden="true" />
+            {t("common.back")}
+          </Button>
+          <BrandMark />
+          <LanguageToggle variant="pill" />
+        </div>
+      </header>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">2. Data We Collect</h2>
-          <p className="mb-2">We collect:</p>
-          <ul className="list-disc pl-6 space-y-1">
-            <li>Your email address, and your name if you sign in with Google.</li>
-            <li>Theory quiz and mock test results, including your answers and scores.</li>
-            <li>Driving simulation results.</li>
-            <li>
-              Colour vision (Ishihara) screening results. This is health-related
-              information, and we hold it for a shorter period than everything else.
-            </li>
-            <li>Which theory modules you have completed.</li>
-          </ul>
-        </section>
+      <main className="mx-auto max-w-3xl space-y-10 px-4 py-10 sm:px-6 sm:py-14">
+        <header className="space-y-3">
+          <h1 className="page-title">{t("privacy.title")}</h1>
+          <p className="text-sm text-muted-foreground">{PRIVACY_UPDATED[language]}</p>
+          <p className="max-w-readable text-lg leading-relaxed">{PRIVACY_SUMMARY[language]}</p>
+        </header>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">3. How We Use Your Data</h2>
-          <p>Your data is used solely to track your progress, personalize your learning experience, and improve the application. We do not sell your personal data to third parties.</p>
-        </section>
+        {PRIVACY_SECTIONS.map(section => (
+          <section key={section.id} aria-labelledby={`privacy-${section.id}`} className="space-y-4 border-t border-border pt-8">
+            <h2 id={`privacy-${section.id}`} className="text-2xl">{section.title[language]}</h2>
+            <ul className="max-w-readable list-disc space-y-2.5 pl-5 marker:text-muted-foreground">
+              {section.items.map(item => <li key={item.en} className="pl-1 leading-relaxed">{item[language]}</li>)}
+            </ul>
+            {section.id === "choices" && (
+              <Button asChild variant="outline">
+                <Link to={ROUTES.SETTINGS}>
+                  {t("privacy.openSettings")}
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+            )}
+          </section>
+        ))}
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">4. How Long We Keep It</h2>
-          <p className="mb-2">
-            In line with the Retention Principle in section 10 of the PDPA, we do
-            not keep your data longer than we need it:
-          </p>
-          <ul className="list-disc pl-6 space-y-1">
-            <li>Quiz, mock test and simulation results: <strong>2 years</strong> after each attempt.</li>
-            <li>Colour vision screening results: <strong>1 year</strong> after each test.</li>
-            <li>
-              Your account and theory progress: kept until you delete your
-              account, after which everything is removed.
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">5. Where Your Data Is Stored</h2>
-          <p>
-            Your data is stored using Supabase (database, sign-in and file
-            storage). If we have enabled error monitoring, technical error
-            reports may also be processed by Sentry; we configure it not to send
-            personal information, and we strip web addresses that could contain
-            sign-in tokens.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">Optional narration</h2>
-          <p>When you press Listen, the displayed learning text is sent to Fish Audio to generate speech. DriveMy does not send your email address, account details or test score with that text. We record a daily request count against your account to limit audio usage. Audio does not start automatically.</p>
-        </section>
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">6. Your Rights</h2>
-          <p>
-            You have the right to access, export and delete your personal data at
-            any time from the Settings page. &ldquo;Export My Data&rdquo; downloads
-            everything we hold about you as a JSON file, and
-            &ldquo;Delete Account&rdquo; permanently removes your account and all
-            associated records.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-2 text-foreground">7. Contact Us</h2>
-          <p>
-            If you have any questions about this Privacy Policy, or want to
-            access or delete your data, please contact us at{" "}
-            <a
-              href={`mailto:${PRIVACY_CONTACT_EMAIL}`}
-              className="text-primary underline underline-offset-4 hover:no-underline"
-            >
-              {PRIVACY_CONTACT_EMAIL}
-            </a>
-            .
-          </p>
-        </section>
-      </div>
+        {PRIVACY_CONTACT_EMAIL && (
+          <section aria-labelledby="privacy-contact" className="space-y-4 border-t border-border pt-8">
+            <h2 id="privacy-contact" className="text-2xl">{t("privacy.contact")}</h2>
+            <p className="max-w-readable">
+              {t("privacy.contactBody")} <a href={`mailto:${PRIVACY_CONTACT_EMAIL}`} className="inline-link">{PRIVACY_CONTACT_EMAIL}</a>
+            </p>
+          </section>
+        )}
+      </main>
     </div>
   );
 }

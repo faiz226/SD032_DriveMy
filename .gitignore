@@ -67,4 +67,6 @@ dist-perf/
 
 # KPP reference textbooks (never commit)
 KPP_*.pdf
+# Ishihara source PDF for the colour test plates (never commit)
+Ishihara_Tests.pdf
 

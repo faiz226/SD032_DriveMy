@@ -11,29 +11,29 @@ import {
   getBestColorVisionScore,
 } from "@/services/analytics.service";
 
-export function useQuizStats(dateRange?: number) {
+export function useQuizStats() {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: learnerKeys.quizStats(user?.id, dateRange),
-    queryFn: () => getQuizStats(user!.id, dateRange),
+    queryKey: learnerKeys.quizStats(user?.id),
+    queryFn: () => getQuizStats(user!.id),
     enabled: !!user,
   });
 }
 
-export function useMockStats(dateRange?: number) {
+export function useMockStats() {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: learnerKeys.mockStats(user?.id, dateRange),
-    queryFn: () => getMockStats(user!.id, dateRange),
+    queryKey: learnerKeys.mockStats(user?.id),
+    queryFn: () => getMockStats(user!.id),
     enabled: !!user,
   });
 }
 
-export function useSimStats(dateRange?: number) {
+export function useSimStats() {
   const { user } = useAuthStore();
   return useQuery({
-    queryKey: learnerKeys.simStats(user?.id, dateRange),
-    queryFn: () => getSimStats(user!.id, dateRange),
+    queryKey: learnerKeys.simStats(user?.id),
+    queryFn: () => getSimStats(user!.id),
     enabled: !!user,
   });
 }
@@ -72,7 +72,8 @@ export function useOverallReadiness() {
         getSimStats(user.id),
       ]);
 
-      const simScore = sim ? (sim.completed / TOTAL_SIMULATION_MANEUVERS) * 100 : 0;
+      // Stations cleared, not merely tried: a failed station is practice still to do.
+      const simScore = sim ? (sim.cleared / TOTAL_SIMULATION_MANEUVERS) * 100 : 0;
       const quizScore = quiz ? quiz.best : 0;
       const mockScore = mock ? mock.best : 0;
       const theoryScore = theory ? theory.percentage : 0;

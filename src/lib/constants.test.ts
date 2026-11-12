@@ -11,7 +11,9 @@ import {
   MOCK_TOTAL_QUESTIONS,
   MOCK_WARNING_TIME,
   TOTAL_SIMULATION_MANEUVERS,
+  SIM_STATIONS,
 } from './constants';
+import rules from '../../docs/v2-plan/rules.json';
 
 describe('ROUTES', () => {
   it('has a root dashboard route', () => {
@@ -89,7 +91,9 @@ describe('Exam configuration constants', () => {
     expect(Number.isInteger(QUIZ_QUESTION_COUNT)).toBe(true);
   });
 
-  it('TOTAL_SIMULATION_MANEUVERS is 8', () => {
-    expect(TOTAL_SIMULATION_MANEUVERS).toBe(8);
+  it('counts the simulator stations the rules define', () => {
+    // It was 8 from an older circuit with a three-point turn; the circuit has seven stations.
+    expect([...SIM_STATIONS]).toEqual(Object.keys(rules.stations));
+    expect(TOTAL_SIMULATION_MANEUVERS).toBe(7);
   });
 });

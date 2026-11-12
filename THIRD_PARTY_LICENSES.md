@@ -4,29 +4,17 @@ This document records all third-party content (images, datasets, and media) used
 
 ---
 
-## Colour Vision Test Plates (Ishihara-style)
+## Colour Vision Test Plates (Ishihara)
 
-**Location:** `public/color-plates/`
-**Used in:** Color Vision Test (`/color-vision`)
+**Location:** `public/color-plates/1.jpg` to `25.jpg`
+**Used in:** Colour test (`/color-vision`)
 
-The pseudo-isochromatic colour plates used in the colour vision screening feature are **SVG plates generated programmatically** using public-domain Ishihara design principles. They are **not** reproductions of the original Ishihara plates published by Kanehara & Co., Ltd., which remain under copyright.
+The plates are the 25 number plates from the answer key of *Ishihara Charts* (Challenge TB, funded by USAID, 2018), the project's source PDF `Ishihara_Tests.pdf`. Each image is that PDF's own embedded plate image, extracted byte for byte; none is drawn or generated. The PDF is kept outside the repository and must not be committed. The answers and the scoring in `src/content/color-vision.ts` come from the same answer key. Plates 26 to 38 of that key are traced with a finger and are not used.
 
-### Design Basis
-
-The plates are constructed using:
-- Circular dot patterns (pseudo-isochromatic design, a method first described by Ishihara Shinobu in 1917 — now in the public domain)
-- Colour palettes derived from peer-reviewed colour-vision research available in the public domain
-- No direct reproduction of any commercially-published plate
-
-### Attribution
-
-| Source | Usage | License |
-|--------|-------|---------|
-| Pseudo-isochromatic plate design method (Ishihara 1917) | Design basis | Public domain (>100 years) |
-| SVG plate generation (`scripts/fetch-color-plates.ts`) | Source script | MIT (this project) |
+The Ishihara test itself is published by Kanehara Trading Inc. These copies are used for non-commercial, educational screening in a student project.
 
 > [!NOTE]
-> These plates are intended for **educational screening only** and are **not a medical diagnostic tool**. Users are advised to consult a certified optometrist for clinical colour vision assessment.
+> The colour test is practice only and is **not a medical diagnostic tool**. Learners are told to see an optometrist or a doctor for a proper colour vision check.
 
 ---
 
