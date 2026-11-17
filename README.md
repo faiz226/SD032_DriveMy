@@ -2,7 +2,7 @@
 
 DriveMy is a modern, bilingual (English/Bahasa Malaysia), offline-capable Progressive Web Application (PWA) designed to help Malaysian learner drivers prepare for their JPJ KPP1 theory exam and practical driving test. 
 
-It features an interactive KPP1 mock exam simulator, visual road signs directory, Islamic ethics & defensive driving scenarios (based on Maqasid al-Shariah), color vision deficiency diagnostic test, and a gamified driving simulator.
+It features an interactive KPP1 mock exam and quizzes, a visual road signs directory, a colour-vision screening (not a diagnosis, and off in production), and a 3D driving simulator. Sign-in is with Google only.
 
 ---
 
@@ -72,7 +72,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 * **State Management**: Zustand, TanStack Query
 * **Backend as a Service (BaaS)**: Supabase (Auth, PostgreSQL, Storage, RLS)
 * **Progressive Web App**: Vite PWA, Workbox, IndexedDB
-* **Game Development**: Phaser 3 (2D physics and rendering)
+* **3D Simulator**: three.js via `@react-three/fiber`, with `@react-three/rapier` physics
 * **Utilities**: PDF generation (jsPDF)
 
 ---
@@ -80,8 +80,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 ## 🎯 Features Implemented
 
 * **Bilingual Translation Engine**: Real-time toggling between English (EN) and Bahasa Malaysia (BM).
-* **Defensive Driving & Safety Ethics**: Scenario quizzes highlighting Maqasid al-Shariah values and ethical trade-offs using a custom situational awareness dashboard.
-* **Color Vision Ishihara Diagnostic**: Web-based plate tests calculating Deuteranopia, Protanopia, or Tritanopia deficiency types.
+* **Colour Vision Screening**: Web-based plate test that suggests a possible red-green or blue-yellow difference. It is a screening, not a diagnosis. Off in production; a private build sets `VITE_COLOUR_TEST=1` and supplies its own plates in `public/color-plates/`.
 * **Offline-First Synchronization**: Automatically caches API responses and uses an IndexedDB write-queue to sync local results back to Supabase once online connectivity resumes.
-* **Gamified Driving Simulator**: Interactive 2D driving simulation built with Phaser 3 to practice basic driving controls.
+* **Driving Simulator**: Interactive 3D simulation of the seven JPJ circuit stations, built with three.js and Rapier physics.
 * **Lighthouse Optimized**: Module preloading is disabled for lazy routes to keep the main bundle extremely lightweight, resulting in optimal FCP/LCP load speeds.

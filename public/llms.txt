@@ -1,7 +1,5 @@
 # DriveMy
 
-DriveMy is a progressive web application (PWA) for managing driving school bookings, instructors, and exams.
+DriveMy is a bilingual (English and Bahasa Malaysia) study companion for Malaysian learner drivers preparing for the JPJ KPP1 theory exam. It offers theory notes, quizzes, full mock exams, a road signs directory and a 3D driving simulator. It is an unofficial study aid and is not affiliated with JPJ.
 
-## Documentation Links
-- [Home](https://drivemy.local/)
-- [About](https://drivemy.local/about)
+Sign-in is with Google. Learner results are private to the signed-in account.

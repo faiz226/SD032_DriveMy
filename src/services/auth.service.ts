@@ -231,40 +231,6 @@ export async function completeAuthRedirect() {
   return getSession();
 }
 
-// ── Two-factor (TOTP) ─────────────────────────────────────────────────────────
-
-/** `currentLevel === "aal2"` means a verified authenticator is in use. */
-export async function getMfaAssuranceLevel() {
-  const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (error) throw error;
-  return data;
-}
-
-export async function enrollTotp() {
-  const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
-  if (error) throw error;
-  return data;
-}
-
-/** Challenge the factor and check the learner's six-digit code in one step. */
-export async function verifyTotp(factorId: string, code: string) {
-  const challenge = await supabase.auth.mfa.challenge({ factorId });
-  if (challenge.error) throw challenge.error;
-  const { error } = await supabase.auth.mfa.verify({ factorId, challengeId: challenge.data.id, code });
-  if (error) throw error;
-}
-
-/** Remove the enrolled authenticator. Returns false when none was enrolled. */
-export async function unenrollTotp(): Promise<boolean> {
-  const { data, error } = await supabase.auth.mfa.listFactors();
-  if (error) throw error;
-  const factor = data.totp[0];
-  if (!factor) return false;
-  const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
-  if (unenrollError) throw unenrollError;
-  return true;
-}
-
 /** Send a password-reset email. redirectTo must be the /reset-password page. */
 export async function sendPasswordResetEmail(email: string, captchaToken?: string) {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {

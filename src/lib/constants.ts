@@ -11,13 +11,11 @@ export const ROUTES = {
   PROGRESS: "/progress",
   SAFETY: "/safety",
   RPK_RSM: "/rpk-rsm",
-  PROFILE: "/profile",
   SETTINGS: "/settings",
   AUTH: "/auth",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
   VERIFY_EMAIL: "/verify-email",
-  MFA: "/mfa",
   PRIVACY: "/privacy",
 } as const;
 

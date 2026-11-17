@@ -32,12 +32,12 @@ This checklist tracks the resolution of all identified issues from the Technical
 
 - [x] **Refine Code-splitting:** Implement dynamic Phaser import (via `PhaserGame` prop), `motion` chunk, drop `lucide-react`, re-enable `modulePreload`. (§1.11–1.15)
 - [x] **Improve Service Worker Updates:** Set `skipWaiting: false` for safer SW updates. (§1.14)
-- [x] **Enhance Auth:** Add MFA for admin accounts. Add session inactivity timeout via `useSessionTimeout` hook (30 min, passive listeners, clears SW cache). **MFA enrollment UI implemented via `MfaEnrollmentPage.tsx`.** (§4.3)
-- [x] **Add Rate Limiting:** Edge Function (`supabase/functions/rate-limit/`) with Upstash Redis deployed. **Frontend invocation and captcha on auth forms implemented using `@marsidev/react-turnstile`.** (§9.1, 9.2)
+- [x] **Enhance Auth:** Add MFA for admin accounts. Add session inactivity timeout via `useSessionTimeout` hook (30 min, passive listeners, clears SW cache). MFA enrollment UI was removed (no admin UI, TOTP off). (§4.3)
+- [ ] **Add Rate Limiting:** Edge Function (`supabase/functions/rate-limit/`) with Upstash Redis deployed. Frontend invocation and captcha on auth forms are not confirmed live. (§9.1, 9.2)
 - [x] **Data Compliance:** Add GDPR data-export and delete flow. (§14.2)
 - [x] **Legal:** Add Privacy Policy and cookie consent (if analytics are added). (§14.1)
 - [x] **Content Licensing:** Document Ishihara plate design basis and JPJ road sign attribution in `THIRD_PARTY_LICENSES.md`. (§8.8, 14.3)
-- [x] **Monitoring:** Add Lighthouse CI (`lighthouse.yml` + `.lighthouserc.json`) and synthetic uptime monitoring. (§15.1, 15.4)
+- [ ] **Monitoring:** Add Lighthouse CI (`lighthouse.yml` + `.lighthouserc.json`) and synthetic uptime monitoring. (Lighthouse CI is in place; uptime monitoring is not confirmed.) (§15.1, 15.4)
 - [x] **Disaster Recovery:** Document Supabase plan / backup RPO and create a restore runbook (`docs/DISASTER_RECOVERY.md`). (§13.2)
 - [x] **Clean Repo:** Add `supabase/.temp/` to `.gitignore` (was never tracked, gitignore entry added). (§8.7)
 
@@ -51,6 +51,6 @@ This checklist tracks the resolution of all identified issues from the Technical
 - [x] **GitHub Secrets:** Add `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID` for CI.
 - [x] **Vercel Env Vars:** Add `VITE_SENTRY_DSN`.
 - [x] **Supabase Edge Function Secrets:** Set `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN` via CLI/Dashboard.
-- [x] **Supabase Dashboard:** Enable MFA, verify PITR backups (Pro plan), and configure Google OAuth Client ID/Secret.
+- [ ] **Supabase Dashboard:** Enable MFA, verify PITR backups (Pro plan), and configure Google OAuth Client ID/Secret. (Google OAuth is live; MFA and PITR are not confirmed.)
 - [x] **Content Licensing:** Manually source licensed/public-domain Ishihara plates for `src/assets/color-vision/`.
-- [x] **Uptime Monitoring:** Set up BetterStack/UptimeRobot synthetic monitor pointing to the live Vercel URL.
+- [ ] **Uptime Monitoring:** Set up BetterStack/UptimeRobot synthetic monitor pointing to the live Vercel URL.

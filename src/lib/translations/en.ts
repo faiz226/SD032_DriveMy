@@ -146,7 +146,6 @@ export const en = {
   "exam.pdf.ansWrong":            "Wrong",
   "title.resetPassword":          "Reset password",
   "title.verifyEmail":            "Verify email",
-  "title.mfa":                    "Two-step sign-in",
 
   // ── Quiz results ───────────────────────────────────────────────────────
   "results.title":                 "Quiz Results",
@@ -245,7 +244,6 @@ export const en = {
   "exam.grading":                  "Marking your answers…",
   "exam.resumed":                  "Welcome back. We picked up where you left off.",
   "color.resumed":                 "Welcome back. Your colour vision test continues from where you left off.",
-  "exam.resumedExpired":           "Your previous attempt ran out of time, so we've started a fresh one.",
   "exam.queuedUngraded": "Your attempt is queued on this device and has not been graded. Your results history will update after it syncs.",
   "exam.saveFailedUngraded": "Your attempt could not be saved. No grade is available. Retry saving your answers.",
   "exam.retrySave": "Retry saving",
@@ -673,16 +671,6 @@ export const en = {
   "settings.resetProgressDesc":    "Clear all your learning and simulation progress data.",
   "settings.resetProgressConfirm": "Are you sure you want to reset all your learning and simulation progress? This will permanently erase your quiz scores, mock test history, simulator attempts, and theory progress. This action cannot be undone.",
   "settings.progressResetSuccess": "Your progress has been successfully reset.",
-  "settings.mfa":                  "Multi-Factor Auth",
-  "settings.mfaDesc":              "Secure your account with an authenticator app.",
-  "settings.mfaEnabled":           "MFA is enabled on your account.",
-  "settings.mfaDisable":           "Disable MFA",
-  "settings.mfaReturn":            "Return to Dashboard",
-  "settings.mfaSetup":             "Set up Authenticator App",
-  "settings.mfaQrAlt":             "QR Code for MFA setup",
-  "settings.mfaScanDesc":          "Scan this QR code with Google Authenticator or Authy, then enter the 6-digit code below.",
-  "settings.mfaCode":              "Verification Code",
-  "settings.mfaVerify":            "Verify and Enable",
 
   // ── Profile ────────────────────────────────────────────────────────────
   "profile.identity":              "Identity",

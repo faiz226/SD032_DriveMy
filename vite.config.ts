@@ -14,10 +14,6 @@ const sentryUploadEnabled = Boolean(SENTRY_ORG && SENTRY_PROJECT && SENTRY_AUTH_
 
 /** Which named chunk a module the first page does not need belongs to (what it needs is grouped ahead of these). */
 function vendorChunk(id: string): string | undefined {
-  // Phaser game engine — large, isolated
-  if (id.includes("node_modules/phaser")) {
-    return "vendor-phaser";
-  }
   // Framer Motion chunk
   if (id.includes("framer-motion") || id.includes("motion")) {
     return "vendor-motion";

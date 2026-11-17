@@ -21,7 +21,6 @@ const TITLES: Record<string, TranslationKey> = {
   "/forgot-password": "auth.forgotPassword",
   "/reset-password": "title.resetPassword",
   "/verify-email": "title.verifyEmail",
-  "/mfa": "title.mfa",
 };
 
 /** Names the page in the tab and to screen readers on every route change (WCAG 2.4.2). */

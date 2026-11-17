@@ -15,7 +15,6 @@ import { ConsentBanner }  from "@/components/shared/ConsentBanner";
 import { AuthPage }           from "@/pages/auth/AuthPage";
 import { VerifyEmailPage }    from "@/pages/auth/VerifyEmailPage";
 import { AuthCallbackPage }   from "@/pages/auth/AuthCallbackPage";
-import { MfaEnrollmentPage }  from "@/pages/auth/MfaEnrollmentPage";
 
 // Lazy-load all heavy app pages to split vendor chunks
 const LazyDashboardPage   = lazy(() => import("@/pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
@@ -134,7 +133,6 @@ function App() {
                     <Route path={ROUTES.PROGRESS}             element={routed(<LazyProgressPage />)} />
                     <Route path={ROUTES.SAFETY}               element={routed(<LazySafetyPage />)} />
                     <Route path={ROUTES.SETTINGS}             element={routed(<LazySettingsPage />)} />
-                    <Route path={ROUTES.MFA}                  element={routed(<MfaEnrollmentPage />)} />
                     {/* The simulator draws full screen over the shell. */}
                     <Route path={ROUTES.SIMULATIONS}          element={routed(<LazySimulationsPage />)} />
                     <Route path={`${ROUTES.SIMULATIONS}/:id`} element={routed(<LazySimulation3DView />)} />

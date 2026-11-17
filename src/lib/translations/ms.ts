@@ -147,7 +147,6 @@ export const ms: Record<TranslationKey, string> = {
   "exam.pdf.ansWrong":            "Salah",
   "title.resetPassword":          "Tetapkan semula kata laluan",
   "title.verifyEmail":            "Sahkan e-mel",
-  "title.mfa":                    "Log masuk dua langkah",
 
   // ── Quiz results ───────────────────────────────────────────────────────
   "results.title":                 "Keputusan Kuiz",
@@ -246,7 +245,6 @@ export const ms: Record<TranslationKey, string> = {
   "exam.grading":                  "Menyemak jawapan anda…",
   "exam.resumed":                  "Selamat kembali. Kami menyambung dari tempat anda berhenti.",
   "color.resumed":                 "Selamat kembali. Ujian penglihatan warna anda disambung dari tempat anda berhenti.",
-  "exam.resumedExpired":           "Percubaan anda sebelum ini telah tamat masa, jadi kami mulakan yang baharu.",
   "exam.queuedUngraded": "Percubaan anda menunggu penyegerakan pada peranti ini dan belum dinilai. Sejarah keputusan akan dikemas kini selepas penyegerakan.",
   "exam.saveFailedUngraded": "Percubaan anda tidak dapat disimpan. Markah belum tersedia. Cuba simpan jawapan anda sekali lagi.",
   "exam.retrySave": "Cuba simpan semula",
@@ -674,16 +672,6 @@ export const ms: Record<TranslationKey, string> = {
   "settings.resetProgressDesc":    "Padamkan semua data kemajuan pembelajaran dan simulasi anda.",
   "settings.resetProgressConfirm": "Adakah anda pasti mahu menetapkan semula semua kemajuan pembelajaran dan simulasi anda? Ini akan memadamkan secara kekal skor kuiz, sejarah ujian percubaan, percubaan simulator, dan kemajuan teori anda. Tindakan ini tidak boleh dibatalkan.",
   "settings.progressResetSuccess": "Kemajuan anda telah berjaya ditetapkan semula.",
-  "settings.mfa":                  "Pengesahan Pelbagai Faktor",
-  "settings.mfaDesc":              "Lindungi akaun anda dengan aplikasi pengesah.",
-  "settings.mfaEnabled":           "MFA diaktifkan pada akaun anda.",
-  "settings.mfaDisable":           "Nyahaktifkan MFA",
-  "settings.mfaReturn":            "Kembali ke Papan Pemuka",
-  "settings.mfaSetup":             "Sediakan Aplikasi Pengesah",
-  "settings.mfaQrAlt":             "Kod QR untuk persediaan MFA",
-  "settings.mfaScanDesc":          "Imbas kod QR ini dengan Google Authenticator atau Authy, kemudian masukkan kod 6 digit di bawah.",
-  "settings.mfaCode":              "Kod Pengesahan",
-  "settings.mfaVerify":            "Sahkan dan Aktifkan",
 
   // ── Profile ────────────────────────────────────────────────────────────
   "profile.identity":              "Identiti",

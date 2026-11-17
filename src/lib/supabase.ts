@@ -16,22 +16,3 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
     flowType: "pkce",
   },
 });
-
-/**
- * Passively checks if the 'kpp-images' Supabase Storage bucket exists.
- * Logs a console warning if missing — does NOT block or throw.
- * Call this once at app startup (e.g. in main.tsx or App.tsx).
- */
-export async function checkKppImagesBucket(): Promise<void> {
-  try {
-    const { data, error } = await supabase.storage.getBucket("kpp-images");
-    if (error || !data) {
-      console.warn(
-        "[DriveMy] ⚠️ Supabase Storage bucket 'kpp-images' is missing or inaccessible. " +
-          "Road sign images will not load. Create a public bucket named 'kpp-images' in your Supabase dashboard."
-      );
-    }
-  } catch {
-    // Network offline or permissions error — fail silently
-  }
-}

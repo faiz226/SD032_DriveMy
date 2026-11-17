@@ -506,16 +506,6 @@ export async function clearUserResultsQueue(userId: string): Promise<void> {
   }
 }
 
-/** Number of results parked in dead-letter queues across all tables. */
-export async function getDeadLetterCount(): Promise<number> {
-  const counts = await Promise.all(
-    Object.values(QUEUES).map(async (queueKey) =>
-      normaliseQueue<object>(await get(deadLetterKey(queueKey))).length
-    )
-  );
-  return counts.reduce((a, b) => a + b, 0);
-}
-
 /** Bounded account-scoped status: returns pending and dead-letter count for the target/current user. */
 export async function getUserPendingStatus(userId?: string): Promise<{ pendingCount: number; deadLetterCount: number }> {
   const activeUserId = useAuthStore.getState().user?.id;
@@ -626,5 +616,3 @@ export async function retryUserDeadLetterItem(table: TableName, itemId: string, 
 
   return true;
 }
-
-export { syncOfflineResults as syncSimulationResults };
