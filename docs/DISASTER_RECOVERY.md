@@ -1,13 +1,15 @@
 # DriveMy — Disaster Recovery & Backup Runbook
 
-> **Last updated:** 2026-08-04
+> **Last updated:** 2026-11-17
 > **Owner:** Platform / DriveMy FYP Team
 > **Scope:** Supabase hosted database, Auth, and Storage for the DriveMy PWA
 >
-> ⚠️ **2026-08-04 — real incident, see §8.** The project ID below was wrong
-> for over a month: config and docs pointed at an empty duplicate project
-> while a second, real project sat unused. See the fire-drill log for details
-> before trusting any project-ID reference in older commits or docs.
+> ⚠️ **The account holds two Supabase projects; see §8.** The live project is
+> "DriveMy2" (`yvkzixbyxonvlicyrhpy`): the production site's JavaScript bundle
+> points at it (checked 2026-11-17). The 2026-08-04 incident note in §8 named
+> the other project ("DriveMy", `dwtrtdwlsexcrjzroumo`) as the real one; that
+> is out of date. Run `supabase migration list` against a project before
+> trusting any project-ID reference in older commits or docs.
 
 ---
 
@@ -15,7 +17,7 @@
 
 | Component | Provider | Details |
 |-----------|----------|---------|
-| Database | Supabase (PostgreSQL) | Project ID: `dwtrtdwlsexcrjzroumo` ("DriveMy") |
+| Database | Supabase (PostgreSQL) | Project ID: `yvkzixbyxonvlicyrhpy` ("DriveMy2") |
 | Auth | Supabase Auth | Email + Google OAuth |
 | Storage | Supabase Storage | Bucket: `kpp-images` |
 | Frontend | Vercel | Auto-deployed from `main` branch |
@@ -88,7 +90,7 @@ Store the dump in a secure location (e.g., encrypted cloud storage, not in the G
 
 ```bash
 # 1. Connect to the Supabase database
-psql "postgresql://postgres:[DB_PASSWORD]@db.dwtrtdwlsexcrjzroumo.supabase.co:5432/postgres"
+psql "postgresql://postgres:[DB_PASSWORD]@db.yvkzixbyxonvlicyrhpy.supabase.co:5432/postgres"
 
 # 2. Restore
 psql "postgresql://..." -f backup_YYYYMMDD.sql
@@ -150,7 +152,7 @@ git push origin main
 
 | Resource | URL |
 |----------|-----|
-| Supabase Dashboard | https://app.supabase.com/project/dwtrtdwlsexcrjzroumo |
+| Supabase Dashboard | https://app.supabase.com/project/yvkzixbyxonvlicyrhpy |
 | Supabase Status | https://status.supabase.com |
 | Vercel Dashboard | https://vercel.com/dashboard |
 | Vercel Status | https://www.vercel-status.com |

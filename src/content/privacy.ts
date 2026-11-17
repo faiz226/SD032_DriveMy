@@ -3,7 +3,7 @@ import type { Language } from "@/lib/constants";
 type Text = Record<Language, string>;
 
 /** When this notice last changed. Update it with any change below. */
-export const PRIVACY_UPDATED: Text = { en: "Last updated 12 November 2026", ms: "Dikemas kini 12 November 2026" };
+export const PRIVACY_UPDATED: Text = { en: "Last updated 18 November 2026", ms: "Dikemas kini 18 November 2026" };
 
 export const PRIVACY_SUMMARY: Text = {
   en: "DriveMy keeps your account and your learning results so you can see your progress. We never sell your data. You can download or delete all of it in Settings, at any time.",
@@ -28,10 +28,6 @@ export const PRIVACY_SECTIONS: { id: string; title: Text; items: Text[] }[] = [
       {
         en: "Your results: quiz and mock test answers and scores, simulator runs, and the Learn and RPK / RSM topics you have finished.",
         ms: "Keputusan anda: jawapan dan markah kuiz serta ujian percubaan, larian simulator, dan topik Belajar serta RPK / RSM yang telah anda selesaikan.",
-      },
-      {
-        en: "Your colour test answers and result. This is health-related, so we keep it for a shorter time.",
-        ms: "Jawapan dan keputusan ujian warna anda. Ini maklumat berkaitan kesihatan, jadi kami menyimpannya untuk tempoh yang lebih singkat.",
       },
       {
         en: "How many times a day you press Listen, so narration stays within its daily limit.",
@@ -72,8 +68,8 @@ export const PRIVACY_SECTIONS: { id: string; title: Text; items: Text[] }[] = [
     title: { en: "Who else handles it", ms: "Pihak lain yang mengendalikannya" },
     items: [
       {
-        en: "Supabase stores your account and results and runs sign-in.",
-        ms: "Supabase menyimpan akaun dan keputusan anda serta mengendalikan log masuk.",
+        en: "Supabase stores your account and results and runs sign-in. Your data is stored in Singapore.",
+        ms: "Supabase menyimpan akaun dan keputusan anda serta mengendalikan log masuk. Data anda disimpan di Singapura.",
       },
       {
         en: "Vercel hosts the website and, like any web host, sees your IP address when you visit.",
@@ -106,10 +102,6 @@ export const PRIVACY_SECTIONS: { id: string; title: Text; items: Text[] }[] = [
         ms: "Keputusan kuiz, ujian percubaan dan simulator: 2 tahun selepas setiap percubaan.",
       },
       {
-        en: "Colour test results: 1 year after each test.",
-        ms: "Keputusan ujian warna: 1 tahun selepas setiap ujian.",
-      },
-      {
         en: "Your account and finished topics: until you delete your account.",
         ms: "Akaun dan topik yang telah selesai: sehingga anda memadam akaun anda.",
       },
@@ -134,6 +126,10 @@ export const PRIVACY_SECTIONS: { id: string; title: Text; items: Text[] }[] = [
       {
         en: "Error reporting lets you allow or stop error reports.",
         ms: "Laporan ralat membolehkan anda membenarkan atau menghentikan laporan ralat.",
+      },
+      {
+        en: "If you are under 18, use DriveMy with your parent's or guardian's knowledge.",
+        ms: "Jika anda berumur di bawah 18 tahun, gunakan DriveMy dengan pengetahuan ibu bapa atau penjaga anda.",
       },
       {
         en: "DriveMy follows Malaysia's Personal Data Protection Act 2010.",

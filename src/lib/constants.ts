@@ -28,7 +28,14 @@ export const ROUTES = {
  * shown a contact that could not reach anyone. Set a real, monitored inbox here and the notice shows a contact
  * section again; until then it points people to the self-service tools in Settings.
  */
-export const PRIVACY_CONTACT_EMAIL: string | null = null;
+export const PRIVACY_CONTACT_EMAIL: string | null = "ahmadfaizacb2468abc@gmail.com";
+
+/**
+ * The colour test is off in production: its Ishihara plates have no licence, so none ships with the app.
+ * A private demo build, with plates the operator keeps in public/color-plates/ (gitignored), sets
+ * VITE_COLOUR_TEST=1 to bring back the menu entry, the route and the progress and milestone entries.
+ */
+export const COLOUR_TEST = import.meta.env.VITE_COLOUR_TEST === "1";
 
 export const STORAGE_KEYS = {
   QUIZ_PROGRESS: "drivemy-quiz-progress",

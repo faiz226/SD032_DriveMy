@@ -25,6 +25,9 @@ export function useSaveResultMutation<TArgs, TResult>(
 
   return useMutation({
     mutationFn,
+    // Run while offline too: saveResult then queues the attempt on the device. The default ("online") pauses the
+    // mutation until the connection returns, which left a learner who submitted offline on an endless spinner.
+    networkMode: "always",
     onSuccess: (saved) => {
       if ((saved as { id?: string } | null)?.id === OFFLINE_QUEUED_ID) return;
       toast.success(useLanguageStore.getState().t(successKey));

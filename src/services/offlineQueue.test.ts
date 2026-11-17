@@ -33,8 +33,17 @@ describe("isTransientError", () => {
 
   it("treats 4xx as PERMANENT", () => {
     expect(isTransientError({ status: 400 })).toBe(false);
-    expect(isTransientError({ status: 401 })).toBe(false);
     expect(isTransientError({ status: 403 })).toBe(false);
+  });
+
+  it("treats an expired sign-in (401) as TRANSIENT, so the attempt is queued rather than lost", () => {
+    expect(isTransientError({ status: 401 })).toBe(true);
+    expect(isTransientError({ code: "PGRST301", message: "JWT expired" }, 401)).toBe(true);
+  });
+
+  it("keeps an RLS denial (403 with code 42501) PERMANENT", () => {
+    expect(isTransientError({ code: "42501", message: "new row violates row-level security policy" }, 403)).toBe(false);
+    expect(isTransientError({ code: "42501", status: 403 })).toBe(false);
   });
 
   it("treats 5xx, 408 and 429 as TRANSIENT", () => {

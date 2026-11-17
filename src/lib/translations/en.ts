@@ -738,10 +738,8 @@ export const en = {
   "color.question":                "What number do you see?",
   "color.nothing":                 "No number",
   "color.retake":                  "Take the test again",
-  "color.saved":                   "Colour test result saved",
   "color.plateLabel":              "Plate {{num}}",
   "color.plateAlt":                "Ishihara plate {{num}}",
-  "color.error.saveFailed":        "Failed to save result.",
 
   // ── Phase 8: Safety Ethics ─────────────────────────────────────────────
   "safety.title":                  "Road safety",
@@ -956,7 +954,7 @@ export const en = {
   "privacy.title": "Privacy",
   "privacy.openSettings": "Open Settings",
   "privacy.contact": "Contact",
-  "privacy.contactBody": "Questions about your data? Email",
+  "privacy.contactBody": "Write to us to see, correct or delete your data, or to complain. We reply within 21 days. Email",
   "progress.lead": "Where you stand for your JPJ tests, and how each attempt went.",
   "progress.score.title": "Learning score",
   "progress.score.lead": "The same score as the sign on your dashboard, split into the parts that earn it.",

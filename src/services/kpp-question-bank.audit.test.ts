@@ -246,4 +246,14 @@ describe("KPP Question Bank & Architecture Audit", () => {
       }
     }
   });
+
+  // Audit F01 and F02: two graded mock questions had the wrong key. Migration 20261118000100 fixes the same two rows.
+  it.each([
+    ["KPP Kelas D Automatik p.249, pull-and-push steering through bends", "92bda1e2-47b5-49ac-a6d2-09362de676fe", 1, "Alternate pulling and pushing"],
+    ["KPP Kelas D Automatik p.78, alcohol impairs anticipation", "11739bb6-3181-421d-a79d-b2887d6c7b95", 3, "Anticipating changes in traffic"],
+  ])("keys the textbook answer (%s)", (_source, id, index, answer) => {
+    const question = KPP_TEXTBOOK_QUESTIONS.find((q) => q.id === id);
+    expect(question?.correct_index).toBe(index);
+    expect(question?.options_en[index]).toBe(answer);
+  });
 });

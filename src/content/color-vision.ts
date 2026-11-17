@@ -2,8 +2,9 @@
  * The 25 number plates of the Ishihara colour test and how to read each answer.
  *
  * Source: the answer key in Ishihara_Tests.pdf ("Ishihara charts", Challenge TB, 2018), plates 1 to 25. The
- * images in public/color-plates/<n>.jpg are that PDF's own plate images, taken from the key page byte for byte.
- * Never draw or generate a plate. Plates 26 to 38 in the same key are traced with a finger rather than read as a
+ * images in public/color-plates/<n>.jpg would be that PDF's own plate images, taken from the key page byte for byte.
+ * They are not distributed (no licence): the folder is gitignored and only a private demo build, with
+ * VITE_COLOUR_TEST=1, has them. Never draw or generate a plate. Plates 26 to 38 in the same key are traced with a finger rather than read as a
  * number, so a typed answer cannot use them.
  *
  * The key gives no pass mark. It says what normal colour vision reads on each plate and what red-green colour

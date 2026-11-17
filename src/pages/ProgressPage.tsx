@@ -20,7 +20,7 @@ import { AttemptList, type Attempt } from "@/components/progress/AttemptList";
 import { LoadError } from "@/components/shared/LoadError";
 import { countRpkCompleted, RPK_TOPICS } from "@/content/rpk-rsm";
 import { bestFullMock } from "@/lib/dashboard/model";
-import { LEGACY_MOCK_TOTAL, MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, ROUTES, TOTAL_SIMULATION_MANEUVERS, mockPassMark } from "@/lib/constants";
+import { COLOUR_TEST, LEGACY_MOCK_TOTAL, MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, ROUTES, TOTAL_SIMULATION_MANEUVERS, mockPassMark } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations";
 import type { MockTestResult, QuizResult, SimulationResult } from "@/types/database";
 import { cn } from "@/lib/utils";
@@ -141,13 +141,13 @@ export function ProgressPage() {
       done: sim.cleared === TOTAL_SIMULATION_MANEUVERS,
       to: ROUTES.SIMULATIONS,
     },
-    {
+    ...(COLOUR_TEST ? [{
       label: t("progress.stand.color"),
       value: colorBest === null || colorBest === undefined ? t("progress.stand.colorNone") : t("progress.stand.colorDone"),
       note: t("progress.stand.colorNote"),
       done: colorBest !== null && colorBest !== undefined,
       to: ROUTES.COLOR_VISION,
-    },
+    }] : []),
   ];
 
   const taken = (seconds: number | null | undefined) => (minutes(seconds) ? [t("common.minutes", { count: minutes(seconds) })] : []);

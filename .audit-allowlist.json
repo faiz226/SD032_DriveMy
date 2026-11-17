@@ -6,5 +6,45 @@
     "whose reviewBy date has passed. Adding an entry requires a real applicability",
     "argument, not just 'it is noisy'."
   ],
-  "allow": []
+  "allow": [
+    {
+      "ghsa": "GHSA-fc5q-39xc-vjpf",
+      "package": "picomatch (via vite, tinyglobby, fdir and @rollup/pluginutils; and via tailwindcss 3 -> chokidar, micromatch, anymatch, readdirp)",
+      "title": "picomatch vulnerable to ReDoS through single-branch repeated extglobs",
+      "severity": "high",
+      "reviewBy": "2026-12-18",
+      "justification": [
+        "NOT REACHABLE IN THIS APPLICATION. The attack needs an attacker to choose the glob: a",
+        "pattern such as +(*) or +(*a) makes picomatch's regular expression backtrack",
+        "exponentially. Here picomatch runs only at build and test time, never in the app or in",
+        "api/. All four copies in package-lock.json (4.0.7, and 2.3.2 under anymatch, micromatch",
+        "and readdirp) are dev-only: `npm ls picomatch --omit=dev` is empty and",
+        "`npm audit --omit=dev` reports 0 advisories. The patterns it is given are written in",
+        "this repository and contain no extglob: the two Tailwind content globs in",
+        "tailwind.config.js, the vite-plugin-pwa globPatterns in vite.config.ts, the include",
+        "lists in vitest.config.ts and the ESLint ignores. No app code or script imports",
+        "picomatch, micromatch, anymatch, readdirp, tinyglobby or fdir, and none of them is in",
+        "the built bundle (Tailwind ships static CSS), so no user input ever reaches them. The",
+        "Vite dev server and CI only run on a developer's machine or in GitHub Actions, against",
+        "this repository's own files.",
+        "",
+        "NO FORWARD FIX EXISTS. The advisory covers picomatch <=4.0.7. GitHub lists no patched",
+        "version and 4.0.7 is the latest release (npm dist-tag latest; `npm view",
+        "\"picomatch@>4.0.7\"` finds nothing; checked 2026-11-18), so no lockfile update can",
+        "reach a patched copy. The 2.x line ends at 2.3.2, also in range, and the 2.x copies are",
+        "pinned inside Tailwind 3: tailwindcss 3.4.19 (the last 3.x) needs chokidar ^3.6.0, whose",
+        "last release needs readdirp ~3.6.0 and anymatch ~3.1.2, and fast-glob ^3.3.2, which",
+        "needs micromatch ^4.0.8 (picomatch ^2.3.1). An npm override would only move them to",
+        "another vulnerable release. npm's remediation is tailwindcss 4, a semver-major",
+        "migration of the whole design system, which is a project of its own.",
+        "",
+        "ACTION ON EXPIRY: check for a picomatch release above 4.0.7 and run `npm update",
+        "picomatch --package-lock-only`; for the 2.x copies, check for micromatch, anymatch and",
+        "readdirp releases that drop 2.x, or plan the Tailwind 4 migration. Delete this entry as",
+        "soon as a patched version is installed (the gate also flags it as stale). If anything",
+        "ever passes user-supplied globs or patterns to these packages, delete this entry",
+        "immediately: the argument above no longer holds."
+      ]
+    }
+  ]
 }

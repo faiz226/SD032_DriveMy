@@ -62,6 +62,7 @@ describe("My progress", () => {
     view();
     expect(screen.getByText("Average of 4 quizzes. Weakest topic: Traffic rules, 60%.")).toBeInTheDocument();
     expect(within(screen.getByText("RPK / RSM").closest("a")!).getByText("1 / 6")).toBeInTheDocument();
-    expect(within(screen.getByText("Colour test").closest("a")!).getByText("Not taken")).toBeInTheDocument();
+    // The colour test is off in production builds, so nothing on this page may point at it.
+    expect(screen.queryByText("Colour test")).not.toBeInTheDocument();
   });
 });

@@ -66,6 +66,9 @@ export function isTransientError(err: unknown, statusSibling?: number): boolean 
   // 2. HTTP status codes
   const status = typeof statusSibling === "number" ? statusSibling : (err as { status?: number } | null)?.status;
   if (typeof status === "number") {
+    // 401 = the sign-in expired. The session refreshes, so the result is queued, not lost (an RLS denial
+    // arrives as 403 with a 42xxx code and was already ruled permanent above).
+    if (status === 401) return true;
     // Client errors other than 408 (timeout) and 429 (rate-limited) are permanent
     if (status >= 400 && status < 500 && status !== 408 && status !== 429) return false;
     // 0 = network drop / aborted request, 5xx = server error, 408/429 = retryable
