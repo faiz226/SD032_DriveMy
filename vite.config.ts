@@ -424,6 +424,8 @@ export default defineConfig({
     // source. When Sentry is configured the plugin uploads then deletes them
     // (filesToDeleteAfterUpload above); when it is not, emitting them at all
     // is pure downside, so don't.
+    // Fonts stay files: inlined as data: URLs they trip the CSP font-src 'self' and log a console error on every page.
+    assetsInlineLimit: (file: string) => (file.endsWith('.woff2') ? false : undefined),
     sourcemap: sentryUploadEnabled ? "hidden" : false,
     rollupOptions: {
       output: {

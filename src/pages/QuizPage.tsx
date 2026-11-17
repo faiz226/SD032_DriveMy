@@ -12,6 +12,7 @@ import { TestLaunchPanel } from "@/components/exam/TestLaunchPanel";
 import { ExamShell, type ExamResult } from "@/components/exam/ExamShell";
 import { TestResultsView } from "@/components/exam/TestResultsView";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadError } from "@/components/shared/LoadError";
 import type { KppQuestion } from "@/types/database";
 
 type Phase = "launch" | "testing" | "results";
@@ -33,7 +34,7 @@ export function QuizPage() {
   const [activeQuestions, setActiveQuestions] = useState<KppQuestion[]>([]);
 
   // Fetch quiz questions
-  const { data: allQuestions = [], isLoading } = useQuery({
+  const { data: allQuestions = [], isLoading, isError, refetch } = useQuery({
     queryKey: [...QUERY_KEYS.QUESTIONS, "quiz-pool"],
     queryFn: () => fetchQuizQuestions({ limit: 500 }),
   });
@@ -145,9 +146,9 @@ export function QuizPage() {
 
   return (
     <div className="page-shell max-w-7xl w-full mx-auto">
-      {phase === "launch" && (
-        <TestLaunchPanel mode="quiz" t={t} onStart={handleStart} />
-      )}
+      {phase === "launch" && (isError
+        ? <LoadError onRetry={() => { void refetch(); }} />
+        : <TestLaunchPanel mode="quiz" t={t} onStart={handleStart} />)}
 
       {phase === "testing" && activeQuestions.length > 0 && (
         <ExamShell
@@ -167,15 +168,13 @@ export function QuizPage() {
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
             <Warning className="h-8 w-8 text-muted-foreground" aria-hidden />
           </div>
-          <h2 className="text-xl font-bold font-heading">No Questions Available</h2>
-          <p className="text-muted-foreground max-w-md">
-            We couldn't load questions from the database for this section. Please check your database connection or seed the questions table.
-          </p>
+          <h2 className="text-xl font-bold font-heading">{t("quiz.noQuestionsTitle")}</h2>
+          <p className="text-muted-foreground max-w-md">{t("quiz.noQuestions")}</p>
           <button 
             onClick={() => setPhase("launch")}
             className="px-6 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors mt-4"
           >
-            Go Back
+            {t("common.back")}
           </button>
         </div>
       )}

@@ -2,9 +2,13 @@ import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useActivityStore } from '@/stores/activityStore';
 import { toast } from 'sonner';
+import { useLanguageStore } from '@/stores/languageStore';
 
 /** 30-minute inactivity window — sign the user out automatically. */
 const TIMEOUT_MS = 30 * 60 * 1000;
+/** Two minutes before that, offer to stay signed in (WCAG 2.2.1). */
+const WARN_TOAST = 'session-warning';
+const WARN_MS = 28 * 60 * 1000;
 
 const ACTIVITY_EVENTS = [
   'mousedown',
@@ -30,12 +34,19 @@ export function useSessionTimeout() {
   const { user, signOut } = useAuthStore();
   const userId = user?.id;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const warnRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!userId) return;
 
     const resetTimeout = () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (warnRef.current) clearTimeout(warnRef.current);
+      toast.dismiss(WARN_TOAST);
+      warnRef.current = setTimeout(() => {
+        const t = useLanguageStore.getState().t;
+        toast.warning(t('session.warn'), { id: WARN_TOAST, duration: TIMEOUT_MS - WARN_MS, action: { label: t('session.stay'), onClick: resetTimeout } });
+      }, WARN_MS);
       timeoutRef.current = setTimeout(async () => {
         // Never sign someone out mid-test. The mock exam runs 45 minutes
         // against a 30-minute idle timeout, so a careful candidate — or one who
@@ -46,7 +57,7 @@ export function useSessionTimeout() {
           return;
         }
         await signOut();
-        toast.error('Session expired due to inactivity. Please sign in again.', {
+        toast.error(useLanguageStore.getState().t('session.expired'), {
           duration: 6000,
         });
       }, TIMEOUT_MS);
@@ -62,6 +73,7 @@ export function useSessionTimeout() {
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (warnRef.current) clearTimeout(warnRef.current);
       ACTIVITY_EVENTS.forEach((event) =>
         document.removeEventListener(event, resetTimeout)
       );

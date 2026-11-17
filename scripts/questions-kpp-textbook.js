@@ -21,7 +21,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Gated rail crossing. Stop and wait for the gate to open before proceeding carefully.",
     "explanation_ms": "Lintasan kereta api berpagar. Berhenti dan tunggu pagar dibuka sebelum meneruskan perjalanan dengan berhati-hati.",
     "image_url": "/signs/e846f69e41c180a7.svg",
-    "source_url": "KPP General PDF page 56",
+    "source_url": "KPP General, PDF page 56",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 1
@@ -47,7 +47,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The blue sign marks a place provided for vehicles to make a U-turn.",
     "explanation_ms": "Papan tanda biru ini menandakan tempat yang disediakan untuk kenderaan membuat pusingan U.",
     "image_url": "/signs/8956fe8a103938b3.svg",
-    "source_url": "KPP General PDF page 69",
+    "source_url": "KPP General, PDF page 69",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 2
@@ -75,7 +75,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means four-way intersection. Look for vehicles approaching from both sides before proceeding.",
     "explanation_ms": "Papan tanda ini bermaksud persimpangan empat hala. Perhatikan kenderaan yang datang dari kedua-dua sisi sebelum meneruskan perjalanan.",
     "image_url": "/signs/4a3491aff2749365.svg",
-    "source_url": "KPP General PDF page 40",
+    "source_url": "KPP General, PDF page 40",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -99,7 +99,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The crossed-out horn means the horn must not be used in this area.",
     "explanation_ms": "Simbol hon yang dipalang bermaksud hon tidak boleh dibunyikan di kawasan ini.",
     "image_url": "/signs/ce55b86645694f5d.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 4
@@ -125,7 +125,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "No vehicle entry. Plan your route so you can obey this restriction.",
     "explanation_ms": "Kenderaan dilarang masuk. Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "image_url": "/signs/9a316a4baac9f49a.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 5
@@ -151,7 +151,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "No left turn. Plan your route so you can obey this restriction.",
     "explanation_ms": "Dilarang membelok ke kiri. Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "image_url": "/signs/ef495735d6870ce2.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 6
@@ -177,7 +177,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "No right turn. Use another route if you need to turn right.",
     "explanation_ms": "Dilarang membelok ke kanan. Gunakan laluan lain jika anda perlu membelok ke kanan.",
     "image_url": "/signs/2eee15e55fa0ef48.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 7
@@ -203,7 +203,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "No U-turn. Plan your route so you can obey this restriction.",
     "explanation_ms": "Dilarang membuat pusingan U. Rancang laluan supaya anda dapat mematuhi larangan ini.",
     "image_url": "/signs/a299aef5bccc0fca.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 8
@@ -231,7 +231,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means side road to the left.",
     "explanation_ms": "Papan tanda ini bermaksud simpang jalan di sebelah kiri.",
     "image_url": "/signs/e22292f492beec26.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -257,7 +257,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means side road to the right.",
     "explanation_ms": "Papan tanda ini bermaksud simpang jalan di sebelah kanan.",
     "image_url": "/signs/12e8b0d727c5bdf1.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -283,7 +283,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means t-junction ahead. Slow down, signal your turn and stop at the junction before proceeding safely.",
     "explanation_ms": "Papan tanda ini bermaksud persimpangan T di hadapan. Perlahankan kenderaan, beri isyarat membelok dan berhenti di persimpangan sebelum meneruskan perjalanan dengan selamat.",
     "image_url": "/signs/e3ccd470b3c6bc8e.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -307,7 +307,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "No motorcycle entry. Choose an alternative route if riding a motorcycle.",
     "explanation_ms": "Motosikal dilarang masuk. Pilih laluan lain jika menunggang motosikal.",
     "image_url": "/signs/efd2fb23c0d0e1ac.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 12
@@ -335,7 +335,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass either side of the island. Choose a lane that leads where you intend to go and keep within it.",
     "explanation_ms": "Papan tanda ini bermaksud lalui pulau dari mana-mana sisi. Pilih lorong yang menuju ke arah destinasi dan kekal dalam lorong itu.",
     "image_url": "/signs/322e269754adeff6.svg",
-    "source_url": "KPP General PDF page 44",
+    "source_url": "KPP General, PDF page 44",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -359,7 +359,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Parking is prohibited where this sign applies.",
     "explanation_ms": "Anda tidak boleh meletakkan kenderaan di kawasan yang tertakluk pada tanda ini.",
     "image_url": "/signs/fbd415b24ab21b44.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 14
@@ -385,7 +385,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The crossed lines mean you cannot stop in the signed area.",
     "explanation_ms": "Garisan bersilang bermaksud anda tidak boleh berhenti di kawasan bertanda ini.",
     "image_url": "/signs/ecd3d648f3d4a187.svg",
-    "source_url": "KPP General PDF page 59",
+    "source_url": "KPP General, PDF page 59",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-1",
     "order_index": 15
@@ -411,7 +411,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop at the junction. Stop before the line, check both directions and continue only when safe.",
     "explanation_ms": "Berhenti di persimpangan. Berhenti sebelum garisan, periksa kedua-dua arah dan teruskan hanya apabila selamat.",
     "image_url": "/signs/8cd2c7d525ad7c21.svg",
-    "source_url": "KPP General PDF page 59",
+    "source_url": "KPP General, PDF page 59",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-2",
     "order_index": 1
@@ -439,7 +439,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means sharp left bend.",
     "explanation_ms": "Papan tanda ini bermaksud selekoh tajam ke kiri.",
     "image_url": "/signs/194637442da016e5.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -465,7 +465,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means sharp right bend.",
     "explanation_ms": "Papan tanda ini bermaksud selekoh tajam ke kanan.",
     "image_url": "/signs/8c4124b32afd3704.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -491,7 +491,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means direction of a sharp bend.",
     "explanation_ms": "Papan tanda ini bermaksud arah selekoh yang tajam.",
     "image_url": "/signs/b716cb9e685088a5.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -515,7 +515,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop for children crossing. Wait for children to clear the crossing before moving off.",
     "explanation_ms": "Berhenti untuk kanak-kanak melintas. Tunggu sehingga kanak-kanak selesai melintas sebelum bergerak.",
     "image_url": "/signs/e22b17f982a5ee46.svg",
-    "source_url": "KPP General PDF page 59",
+    "source_url": "KPP General, PDF page 59",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-2",
     "order_index": 5
@@ -541,7 +541,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "End of the posted speed limit. Follow the next applicable speed limit.",
     "explanation_ms": "Had laju yang dipaparkan tamat. Patuhi had laju seterusnya yang berkuat kuasa.",
     "image_url": "/signs/63b26ca2bbf8dc2b.png",
-    "source_url": "KPP General PDF page 60",
+    "source_url": "KPP General, PDF page 60",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-2",
     "order_index": 6
@@ -569,7 +569,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means divided road ends. Watch for vehicles coming the other way once the divider ends.",
     "explanation_ms": "Papan tanda ini bermaksud jalan terbahagi dua tamat. Awasi kenderaan dari arah bertentangan selepas pembahagi jalan tamat.",
     "image_url": "/signs/b12139221efc15b6.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -595,7 +595,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means divided road begins. Stay on the correct side as the divider separates the two streams of traffic.",
     "explanation_ms": "Papan tanda ini bermaksud jalan terbahagi dua bermula. Kekal di sebelah yang betul apabila pembahagi jalan memisahkan dua aliran trafik.",
     "image_url": "/signs/788d475c2d05336c.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -621,7 +621,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means roundabout ahead. Pick the appropriate approach lane and yield to traffic already in the roundabout.",
     "explanation_ms": "Papan tanda ini bermaksud bulatan di hadapan. Pilih lorong masuk yang sesuai dan beri laluan kepada kenderaan yang sudah berada dalam bulatan.",
     "image_url": "/signs/d26a8ccc75c5a905.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -647,7 +647,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means two-way traffic ahead. Expect oncoming vehicles on the same road and check carefully before overtaking.",
     "explanation_ms": "Papan tanda ini bermaksud lalu lintas dua hala di hadapan. Jangkakan kenderaan dari arah bertentangan di jalan yang sama dan periksa keadaan sebelum memotong.",
     "image_url": "/signs/ea082fc0b4c65733.svg",
-    "source_url": "KPP General PDF page 49",
+    "source_url": "KPP General, PDF page 49",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -671,7 +671,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "No entry over 8 tonnes. Use another route if your vehicle exceeds the weight shown.",
     "explanation_ms": "Kenderaan melebihi 8 tan dilarang masuk. Gunakan laluan lain jika kenderaan melebihi berat yang dipaparkan.",
     "image_url": "/signs/ed63604f3712ca41.svg",
-    "source_url": "KPP General PDF page 62",
+    "source_url": "KPP General, PDF page 62",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-2",
     "order_index": 11
@@ -697,7 +697,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "One-way traffic. Follow the direction of the arrow.",
     "explanation_ms": "Lalu lintas sehala. Ikut arah anak panah.",
     "image_url": "/signs/396a58e1a26f5557.svg",
-    "source_url": "KPP General PDF page 63",
+    "source_url": "KPP General, PDF page 63",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-2",
     "order_index": 12
@@ -725,7 +725,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means road narrows on both sides.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menyempit di kedua-dua sisi.",
     "image_url": "/signs/ce68f8896451a2c9.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -751,7 +751,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means road narrows on the left.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menyempit di sebelah kiri.",
     "image_url": "/signs/2be93e13645351ef.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -777,7 +777,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means road narrows on the right.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menyempit di sebelah kanan.",
     "image_url": "/signs/e08ca85fb4d9816f.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -803,7 +803,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means steep uphill stretch. Select a lower gear to get the power needed to climb.",
     "explanation_ms": "Papan tanda ini bermaksud jalan mendaki dengan curam. Gunakan gear rendah untuk mendapatkan kuasa yang diperlukan semasa mendaki.",
     "image_url": "/signs/fa01479a3e275ae3.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -829,7 +829,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means steep downhill stretch. Select a lower gear to help control your speed on the descent.",
     "explanation_ms": "Papan tanda ini bermaksud jalan menurun dengan curam. Gunakan gear rendah untuk membantu mengawal kelajuan semasa menurun.",
     "image_url": "/signs/eb9c555ec03577f6.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -855,7 +855,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means narrow bridge ahead. Slow down and give way if a vehicle coming the other way is closer to the bridge.",
     "explanation_ms": "Papan tanda ini bermaksud jambatan sempit di hadapan. Perlahankan kenderaan dan beri laluan jika kenderaan dari arah bertentangan lebih hampir dengan jambatan.",
     "image_url": "/signs/d1e9a6d6aab128b3.svg",
-    "source_url": "KPP General PDF page 51",
+    "source_url": "KPP General, PDF page 51",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -881,7 +881,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means slippery road surface. Slow smoothly, avoid hard braking and leave a safe gap.",
     "explanation_ms": "Papan tanda ini bermaksud permukaan jalan licin. Perlahankan kenderaan dengan lancar, elakkan brek mengejut dan kekalkan jarak selamat.",
     "image_url": "/signs/9702f462c37241a4.svg",
-    "source_url": "KPP General PDF page 51",
+    "source_url": "KPP General, PDF page 51",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -905,7 +905,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Turn left only. Follow the required direction.",
     "explanation_ms": "Belok ke kiri sahaja. Ikut arah yang diwajibkan.",
     "image_url": "/signs/57708bf453b84a72.svg",
-    "source_url": "KPP General PDF page 63",
+    "source_url": "KPP General, PDF page 63",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 5
@@ -931,7 +931,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Turn right only. Follow the required direction.",
     "explanation_ms": "Belok ke kanan sahaja. Ikut arah yang diwajibkan.",
     "image_url": "/signs/cbae8fe06ab6d6f0.svg",
-    "source_url": "KPP General PDF page 63",
+    "source_url": "KPP General, PDF page 63",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 6
@@ -959,7 +959,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means stop sign ahead. Slow down early and be ready to come to a complete stop at the actual stop sign.",
     "explanation_ms": "Papan tanda ini bermaksud tanda berhenti di hadapan. Perlahankan kenderaan awal dan bersedia untuk berhenti sepenuhnya di tanda berhenti sebenar.",
     "image_url": "/signs/add368369889404d.svg",
-    "source_url": "KPP General PDF page 52",
+    "source_url": "KPP General, PDF page 52",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -985,7 +985,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means other hazard ahead.",
     "explanation_ms": "Papan tanda ini bermaksud bahaya lain di hadapan.",
     "image_url": "/signs/3f13bbd2ffe5c466.svg",
-    "source_url": "KPP General PDF page 52",
+    "source_url": "KPP General, PDF page 52",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1009,7 +1009,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Compulsory right turn. Follow the required direction.",
     "explanation_ms": "Wajib belok ke kanan. Ikut arah yang diwajibkan.",
     "image_url": "/signs/c70027b1fa8b10e9.svg",
-    "source_url": "KPP General PDF page 63",
+    "source_url": "KPP General, PDF page 63",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 9
@@ -1037,7 +1037,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means risk of falling rocks. Watch the road for fallen material before continuing.",
     "explanation_ms": "Papan tanda ini bermaksud risiko runtuhan batu. Perhatikan bahan runtuhan di jalan sebelum meneruskan perjalanan.",
     "image_url": "/signs/adc5145404e740b4.svg",
-    "source_url": "KPP General PDF page 53",
+    "source_url": "KPP General, PDF page 53",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1061,7 +1061,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Pass on the left. Follow the instruction shown on the sign.",
     "explanation_ms": "Lalu di sebelah kiri. Patuhi arahan pada papan tanda.",
     "image_url": "/signs/24dc89f9e7127cca.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 11
@@ -1087,7 +1087,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Pass on the right. Follow the instruction shown on the sign.",
     "explanation_ms": "Lalu di sebelah kanan. Patuhi arahan pada papan tanda.",
     "image_url": "/signs/a50c8dd8a202a25e.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 12
@@ -1113,7 +1113,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Pass on either side. Follow the instruction shown on the sign.",
     "explanation_ms": "Lalu di mana-mana sisi. Patuhi arahan pada papan tanda.",
     "image_url": "/signs/6103dff69316bf86.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 13
@@ -1141,7 +1141,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means blind pedestrians may cross. Slow down, give people time to cross and avoid sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud orang buta mungkin melintas. Perlahankan kenderaan, beri masa untuk orang melintas dan elakkan membunyikan hon.",
     "image_url": "/signs/f986766e1fca4c02.svg",
-    "source_url": "KPP General PDF page 54",
+    "source_url": "KPP General, PDF page 54",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1165,7 +1165,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Lane for motorcycles. Follow the instruction shown on the sign.",
     "explanation_ms": "Lorong untuk motosikal. Patuhi arahan pada papan tanda.",
     "image_url": "/signs/e0389a069e72ed52.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "quiz-a-3",
     "order_index": 15
@@ -1271,7 +1271,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Choose your lane before arriving. A sudden change of direction at the junction can endanger others.",
     "explanation_ms": "Pilih lorong sebelum tiba. Perubahan arah secara tiba-tiba di persimpangan boleh membahayakan orang lain.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 126",
+    "source_url": "KPP Kelas D Automatik, PDF page 126",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1297,7 +1297,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Reduce speed at a junction even when you have priority.",
     "explanation_ms": "Perlahankan kenderaan di persimpangan walaupun anda mempunyai keutamaan.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 126",
+    "source_url": "KPP Kelas D Automatik, PDF page 126",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1323,7 +1323,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Position the car in the correct lane and signal before you manoeuvre.",
     "explanation_ms": "Letakkan kereta di lorong yang betul dan beri isyarat sebelum melakukan olah gerak.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 127",
+    "source_url": "KPP Kelas D Automatik, PDF page 127",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1349,7 +1349,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check behind and to the side before moving right. A vehicle could already be overtaking you.",
     "explanation_ms": "Periksa keadaan di belakang dan di sisi sebelum bergerak ke kanan. Kenderaan lain mungkin sedang memotong anda.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 123",
+    "source_url": "KPP Kelas D Automatik, PDF page 123",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1375,7 +1375,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check the left mirror for the front of the car you passed. Return only when the lane is clear.",
     "explanation_ms": "Lihat bahagian depan kereta yang dipotong melalui cermin kiri. Masuk semula hanya apabila lorong selamat.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 123",
+    "source_url": "KPP Kelas D Automatik, PDF page 123",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1401,7 +1401,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "You are following too closely. Slow down, choose another fixed marker and repeat the count.",
     "explanation_ms": "Anda mengekori terlalu rapat. Perlahankan kenderaan, pilih penanda tetap yang lain dan ulang kiraan.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 119",
+    "source_url": "KPP Kelas D Automatik, PDF page 119",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1427,7 +1427,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Signal right at least three seconds before moving right to overtake.",
     "explanation_ms": "Beri isyarat kanan sekurang-kurangnya tiga saat sebelum bergerak ke kanan untuk memotong.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 123",
+    "source_url": "KPP Kelas D Automatik, PDF page 123",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1453,7 +1453,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Start counting when the vehicle ahead passes a fixed point. Ease off if you reach the same point before you finish counting two seconds.",
     "explanation_ms": "Mula mengira apabila kenderaan di hadapan melepasi penanda tetap. Perlahankan kenderaan jika anda tiba di penanda sebelum tamat kiraan dua saat.",
     "image_url": null,
-    "source_url": "KPP General, PDF pages 118–120",
+    "source_url": "KPP General, PDF page 118",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1479,7 +1479,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use a longer gap on slippery roads. The four-second rule also applies in poor weather and when towing or being tailgated.",
     "explanation_ms": "Jarakkan kenderaan apabila jalan licin. Peraturan empat saat juga digunakan semasa cuaca buruk, ketika menarik beban atau apabila diekori terlalu rapat.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 120",
+    "source_url": "KPP Kelas D Automatik, PDF page 120",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1505,7 +1505,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Pick a fixed marker such as a tree. Count from the moment the leading car passes it.",
     "explanation_ms": "Pilih penanda tetap seperti pokok. Mula mengira apabila kereta di hadapan melepasi penanda itu.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 118",
+    "source_url": "KPP Kelas D Automatik, PDF page 118",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1531,7 +1531,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Look ahead for potential hazards over the distance you will cover in about 12 seconds.",
     "explanation_ms": "Imbas ke hadapan untuk mengesan bahaya yang mungkin timbul dalam jarak yang akan dilalui dalam kira-kira 12 saat.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF pages 122–123",
+    "source_url": "KPP Kelas D Automatik, PDF page 122",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1583,7 +1583,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The T in CITO means titik buta. Look over your shoulder to check what the mirrors miss.",
     "explanation_ms": "T dalam CITO bermaksud titik buta. Toleh ke paras bahu untuk melihat kawasan yang tidak kelihatan dalam cermin.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 115",
+    "source_url": "KPP Kelas D Automatik, PDF page 115",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1609,7 +1609,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Choose a safe speed for the junction, then select a gear that suits it.",
     "explanation_ms": "Pilih kelajuan yang selamat untuk persimpangan, kemudian gunakan gear yang sepadan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 109",
+    "source_url": "KPP Kelas D Automatik, PDF page 109",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1635,7 +1635,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A shoulder check covers the area that the mirrors cannot show.",
     "explanation_ms": "Tolehan ke arah bahu membantu memeriksa kawasan yang tidak kelihatan dalam cermin.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 98",
+    "source_url": "KPP Kelas D Automatik, PDF page 98",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1661,7 +1661,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Plan your route early so you can position the vehicle without a last-minute change.",
     "explanation_ms": "Rancang arah lebih awal supaya anda boleh memilih posisi tanpa menukar haluan pada saat akhir.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 108",
+    "source_url": "KPP Kelas D Automatik, PDF page 108",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1687,7 +1687,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "With more space, the vehicle ahead blocks less of your view.",
     "explanation_ms": "Dengan ruang tambahan, kenderaan di hadapan kurang menghalang pandangan anda.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 104",
+    "source_url": "KPP Kelas D Automatik, PDF page 104",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1739,7 +1739,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check the left side mirror and make sure it is safe before moving back.",
     "explanation_ms": "Periksa cermin sisi kiri dan pastikan selamat sebelum kembali ke kiri.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 105",
+    "source_url": "KPP Kelas D Automatik, PDF page 105",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1765,7 +1765,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Keep a safe lateral gap throughout the pass.",
     "explanation_ms": "Kekalkan jarak sisi yang selamat sepanjang tindakan memotong.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 105",
+    "source_url": "KPP Kelas D Automatik, PDF page 105",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1791,7 +1791,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check the road and surrounding traffic before moving right to pass.",
     "explanation_ms": "Periksa jalan dan trafik sekeliling sebelum bergerak ke kanan untuk memotong.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 105",
+    "source_url": "KPP Kelas D Automatik, PDF page 105",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1817,7 +1817,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Wait until past the crest and check that there is clear road ahead.",
     "explanation_ms": "Tunggu sehingga melepasi puncak dan pastikan laluan di hadapan jelas.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 106",
+    "source_url": "KPP Kelas D Automatik, PDF page 106",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1843,7 +1843,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Avoid passing vehicles on the approach to a pedestrian crossing.",
     "explanation_ms": "Elakkan memotong kenderaan ketika menghampiri lintasan pejalan kaki.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 106",
+    "source_url": "KPP Kelas D Automatik, PDF page 106",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1869,7 +1869,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Brake lights must work so following drivers can see you slowing.",
     "explanation_ms": "Lampu brek mesti berfungsi supaya pemandu di belakang boleh melihat anda memperlahankan kenderaan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 120",
+    "source_url": "KPP Kelas D Automatik, PDF page 120",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1895,7 +1895,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Leave more space in front so you have time to slow down gradually.",
     "explanation_ms": "Tinggalkan lebih ruang di hadapan supaya anda boleh memperlahankan kenderaan secara beransur-ansur.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 102",
+    "source_url": "KPP Kelas D Automatik, PDF page 102",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1921,7 +1921,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Move left if safe and warn the oncoming driver with your horn or a flash of the headlights.",
     "explanation_ms": "Bergerak ke kiri jika selamat dan beri amaran dengan hon atau kelipan lampu hadapan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 107",
+    "source_url": "KPP Kelas D Automatik, PDF page 107",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -1973,7 +1973,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use the left lane unless it is blocked. Stay in your lane and signal left after passing the first exit.",
     "explanation_ms": "Gunakan lorong kiri kecuali jika terhalang. Kekal di lorong anda dan beri isyarat kiri selepas melepasi susur keluar pertama.",
     "image_url": null,
-    "source_url": "KPP Kelas D Automatik, PDF pages 258–259",
+    "source_url": "KPP Kelas D Automatik, PDF page 258",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2129,7 +2129,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "For this signal, traffic behind the officer stops. Traffic in front may turn right.",
     "explanation_ms": "Bagi isyarat ini, trafik di belakang anggota polis berhenti. Trafik di hadapannya boleh membelok ke kanan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 74",
+    "source_url": "KPP Kelas D Automatik, PDF page 74",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2181,7 +2181,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Reduce speed before turning so you can control the vehicle through the junction.",
     "explanation_ms": "Kurangkan kelajuan sebelum membelok supaya kenderaan dapat dikawal semasa melalui persimpangan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 112",
+    "source_url": "KPP Kelas D Automatik, PDF page 112",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2207,7 +2207,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Give priority to emergency vehicles sounding a siren even when you have the right of way.",
     "explanation_ms": "Beri keutamaan kepada kenderaan kecemasan yang membunyikan siren walaupun anda mempunyai hak laluan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 89",
+    "source_url": "KPP Kelas D Automatik, PDF page 89",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2233,7 +2233,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Start by drawing the rim down with one hand while the other slides along it.",
     "explanation_ms": "Mulakan dengan menarik rim stereng ke bawah dengan sebelah tangan sementara tangan lain melurut pada rim.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 216",
+    "source_url": "KPP Kelas D Automatik, PDF page 216",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2259,7 +2259,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "In the handbook example, too little steering opens the turn and can carry the car toward the edge of the road.",
     "explanation_ms": "Dalam contoh buku, putaran stereng yang kurang melebarkan belokan dan boleh membawa kereta ke tepi jalan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 260",
+    "source_url": "KPP Kelas D Automatik, PDF page 260",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2285,7 +2285,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Too much steering tightens the arc, potentially taking the vehicle into another lane.",
     "explanation_ms": "Putaran berlebihan mengecilkan lengkok dan boleh membawa kenderaan ke lorong lain.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 260",
+    "source_url": "KPP Kelas D Automatik, PDF page 260",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2311,7 +2311,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Wet roads reduce tyre grip. Lower speed helps you maintain control in a bend.",
     "explanation_ms": "Jalan basah mengurangkan cengkaman tayar. Kelajuan lebih rendah membantu mengekalkan kawalan di selekoh.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 146",
+    "source_url": "KPP Kelas D Automatik, PDF page 146",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2337,7 +2337,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Merge into a safe gap at a speed and position that suit the traffic.",
     "explanation_ms": "Masuk ke ruang selamat pada kelajuan dan posisi yang sesuai dengan trafik.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 117",
+    "source_url": "KPP Kelas D Automatik, PDF page 117",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2363,7 +2363,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "At 70 km/h the car travels about 19 metres per second. In seven seconds that is about 140 metres.",
     "explanation_ms": "Pada 70 km/j, kereta bergerak kira-kira 19 meter sesaat. Dalam tujuh saat jaraknya sekitar 140 meter.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 122",
+    "source_url": "KPP Kelas D Automatik, PDF page 122",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2389,7 +2389,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A brief flash can remind the other driver to dip their beams.",
     "explanation_ms": "Kelipan seketika boleh mengingatkan pemandu itu supaya merendahkan lampu.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 142",
+    "source_url": "KPP Kelas D Automatik, PDF page 142",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2415,7 +2415,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use low beam when following a vehicle. High beam can dazzle its driver through the mirrors.",
     "explanation_ms": "Gunakan lampu rendah ketika mengekori kenderaan. Lampu tinggi boleh menyilaukan pemandu melalui cermin.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 142",
+    "source_url": "KPP Kelas D Automatik, PDF page 142",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2441,7 +2441,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that the lights work and are adjusted before setting off at night.",
     "explanation_ms": "Pastikan lampu berfungsi dan dilaraskan sebelum memulakan perjalanan pada waktu malam.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 142",
+    "source_url": "KPP Kelas D Automatik, PDF page 142",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2467,7 +2467,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Water collects under the tyres. As they lose grip, steering and braking become less effective.",
     "explanation_ms": "Air terkumpul di bawah tayar. Apabila cengkaman hilang, stereng dan brek menjadi kurang berkesan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 146",
+    "source_url": "KPP Kelas D Automatik, PDF page 146",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2493,7 +2493,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Slow gradually by easing off the accelerator. Avoid braking or changing direction until grip returns.",
     "explanation_ms": "Perlahankan kenderaan dengan melepaskan pedal minyak secara beransur-ansur. Elakkan membrek atau menukar arah sehingga tayar kembali mencengkam.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 146",
+    "source_url": "KPP Kelas D Automatik, PDF page 146",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2519,7 +2519,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use headlights in poor visibility so other road users can see your vehicle.",
     "explanation_ms": "Gunakan lampu hadapan apabila penglihatan terhad supaya pengguna jalan raya lain dapat melihat kenderaan anda.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 146",
+    "source_url": "KPP Kelas D Automatik, PDF page 146",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2545,7 +2545,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Only cross after assessing the depth. Use a low gear and keep speed low.",
     "explanation_ms": "Lalui hanya selepas menilai kedalaman air. Gunakan gear rendah dan kekalkan kelajuan rendah.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 148",
+    "source_url": "KPP Kelas D Automatik, PDF page 148",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2571,7 +2571,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Choose another route. Deep water can stall the engine or damage it if water reaches the air intake.",
     "explanation_ms": "Pilih laluan lain. Air dalam boleh mematikan enjin atau merosakkannya jika air masuk melalui salur udara.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 148",
+    "source_url": "KPP Kelas D Automatik, PDF page 148",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2597,7 +2597,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use your headlights in the tunnel and leave a safe gap because visibility is limited.",
     "explanation_ms": "Gunakan lampu hadapan di dalam terowong dan kekalkan jarak selamat kerana penglihatan terhad.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 139",
+    "source_url": "KPP Kelas D Automatik, PDF page 139",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2623,7 +2623,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book lists fire hydrants among places where drivers should avoid stopping.",
     "explanation_ms": "Pili bomba ialah antara tempat yang perlu dielakkan ketika berhenti.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 263",
+    "source_url": "KPP Kelas D Automatik, PDF page 263",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2649,7 +2649,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The stopping lesson lists bends, junctions, fire hydrants and bus stops as places to avoid.",
     "explanation_ms": "Pelajaran berhenti menyenaraikan selekoh, persimpangan, pili bomba dan perhentian bas sebagai tempat yang perlu dielakkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 263",
+    "source_url": "KPP Kelas D Automatik, PDF page 263",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2675,7 +2675,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The lesson first uses the foot brake to stop the vehicle. It then calls for applying the parking brake once stationary.",
     "explanation_ms": "Pelajaran menggunakan pedal brek dahulu untuk menghentikan kereta. Tarik brek tangan selepas kereta berhenti.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 263",
+    "source_url": "KPP Kelas D Automatik, PDF page 263",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2701,7 +2701,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum flags leaving a vehicle without switching off the engine or applying the parking brake.",
     "explanation_ms": "Kurikulum menyenaraikan meninggalkan kenderaan tanpa mematikan enjin atau menggunakan brek tangan sebagai kesalahan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 166",
+    "source_url": "KPP Kelas D Automatik, PDF page 166",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2727,7 +2727,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The table distinguishes dangerous driving causing death from dangerous driving with no death.",
     "explanation_ms": "Jadual membezakan pemanduan berbahaya yang menyebabkan kematian daripada pemanduan berbahaya tanpa kematian.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 162",
+    "source_url": "KPP Kelas D Automatik, PDF page 162",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2753,7 +2753,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The handbook lists reckless or dangerous driving that causes death separately from the offence without that outcome.",
     "explanation_ms": "Buku panduan menyenaraikan pemanduan melulu atau berbahaya yang menyebabkan kematian secara berasingan daripada kesalahan tanpa akibat itu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 162",
+    "source_url": "KPP Kelas D Automatik, PDF page 162",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2779,7 +2779,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum’s offence table lists careless and inconsiderate driving under Section 43.",
     "explanation_ms": "Jadual kesalahan dalam kurikulum menyenaraikan pemanduan cuai dan tidak bertimbang rasa di bawah Seksyen 43.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 163",
+    "source_url": "KPP Kelas D Automatik, PDF page 163",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2805,7 +2805,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The offence table lists driving or being in charge of a motor vehicle with alcohol above the prescribed limit.",
     "explanation_ms": "Jadual menyenaraikan memandu atau menjaga kenderaan motor dengan kepekatan alkohol melebihi had yang ditetapkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 163",
+    "source_url": "KPP Kelas D Automatik, PDF page 163",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2831,7 +2831,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The offence table includes both organising and taking part in an unauthorised road race.",
     "explanation_ms": "Jadual kesalahan merangkumi kedua-dua menaja dan menyertai perlumbaan jalan raya tanpa kebenaran.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 164",
+    "source_url": "KPP Kelas D Automatik, PDF page 164",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2857,7 +2857,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The offence table identifies failing to obey traffic signs. It lists roadblocks and pedestrian crossing offences separately.",
     "explanation_ms": "Jadual menyenaraikan kegagalan mematuhi isyarat lalu lintas. Kesalahan sekatan jalan dan lintasan pejalan kaki disenaraikan berasingan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 164",
+    "source_url": "KPP Kelas D Automatik, PDF page 164",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2883,7 +2883,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Using a phone can draw your attention away from the road.",
     "explanation_ms": "Penggunaan telefon boleh mengalihkan perhatian daripada jalan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 78",
+    "source_url": "KPP Kelas D Automatik, PDF page 78",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2909,7 +2909,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Signal left, stop in the emergency lane and switch on your hazard lights.",
     "explanation_ms": "Beri isyarat kiri, berhenti di lorong kecemasan dan nyalakan lampu kecemasan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 128",
+    "source_url": "KPP Kelas D Automatik, PDF page 128",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2935,7 +2935,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The normal rule is to keep to the left side of the road.",
     "explanation_ms": "Peraturan biasa ialah memandu di sebelah kiri jalan.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 165",
+    "source_url": "KPP Kelas D Automatik, PDF page 165",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2961,7 +2961,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The textbook’s overtaking routine calls for checking ahead, behind and beside you before moving to the right.",
     "explanation_ms": "Rutin memotong dalam buku mengarahkan anda menyemak hadapan, belakang dan sisi sebelum bergerak ke kanan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 261",
+    "source_url": "KPP Kelas D Automatik, PDF page 261",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -2987,7 +2987,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The rule lists two duties after a crash: stop and report to the police within 24 hours.",
     "explanation_ms": "Peraturan menyenaraikan dua kewajipan selepas kemalangan: berhenti dan lapor kepada polis dalam masa 24 jam.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 164",
+    "source_url": "KPP Kelas D Automatik, PDF page 164",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3013,7 +3013,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The offence table lists failure to stop when directed by a uniformed officer. Follow the direction and stop safely.",
     "explanation_ms": "Jadual menyenaraikan kesalahan gagal berhenti apabila diarahkan oleh pegawai beruniform. Patuhi arahan dan berhenti dengan selamat.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 164",
+    "source_url": "KPP Kelas D Automatik, PDF page 164",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3039,7 +3039,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The licensing table lists driving on an expired licence as an offence. Renew it before driving.",
     "explanation_ms": "Jadual pelesenan menyenaraikan memandu dengan lesen tamat tempoh sebagai kesalahan. Perbaharui lesen sebelum memandu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 161",
+    "source_url": "KPP Kelas D Automatik, PDF page 161",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3065,7 +3065,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The handbook lists driving without third-party risk cover as an offence.",
     "explanation_ms": "Buku panduan menyenaraikan pemanduan tanpa perlindungan risiko pihak ketiga sebagai kesalahan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 168",
+    "source_url": "KPP Kelas D Automatik, PDF page 168",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3117,7 +3117,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Subtract braking distance from total stopping distance: 9 m minus 3 m is 6 m.",
     "explanation_ms": "Tolak jarak membrek daripada jumlah jarak berhenti: 9 m tolak 3 m ialah 6 m.",
     "image_url": null,
-    "source_url": "KPP Automatic Driving Curriculum, PDF page 264",
+    "source_url": "KPP Kelas D Automatik, PDF page 264",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3143,7 +3143,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum lists 16 as the minimum age for a motorcycle licence.",
     "explanation_ms": "Kurikulum menetapkan umur minimum 16 tahun bagi permohonan lesen motosikal.",
     "image_url": null,
-    "source_url": "KPP General, PDF 9",
+    "source_url": "KPP General, PDF page 9",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3169,7 +3169,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Applicants for a motorcar licence must be at least 17 years old.",
     "explanation_ms": "Pemohon lesen motokar mestilah berumur sekurang-kurangnya 17 tahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 11",
+    "source_url": "KPP Kelas D Automatik, PDF page 11",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3195,7 +3195,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Class E is listed for heavy motor vehicles over 7,500 kg unladen.",
     "explanation_ms": "Kelas E disenaraikan untuk motokar berat dengan berat tanpa muatan melebihi 7,500 kg.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3221,7 +3221,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The vocational categories list goods vehicle licensing, including motorcycles, under GDL.",
     "explanation_ms": "Kategori lesen vokasional menyenaraikan motosikal barangan di bawah lesen GDL.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 23",
+    "source_url": "KPP Kelas D Automatik, PDF page 23",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3247,7 +3247,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Class A1 covers adapted motorcars for drivers with disabilities. Class A covers adapted motorcycles.",
     "explanation_ms": "Kelas A1 meliputi motokar yang diubah suai untuk pemandu orang kurang upaya. Kelas A meliputi motosikal yang diubah suai.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 17",
+    "source_url": "KPP Kelas D Automatik, PDF page 17",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3273,7 +3273,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Class B2 covers personal motorcycles up to 250 cc.",
     "explanation_ms": "Kelas B2 meliputi motosikal persendirian sehingga 250 cc.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3299,7 +3299,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The Class D and DA classifications both have an unladen weight limit of 3,500 kg.",
     "explanation_ms": "Kelas D dan DA mempunyai had berat tanpa muatan sebanyak 3,500 kg.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3325,7 +3325,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "These classes cover tractors and mobile machinery. They distinguish wheels from tracks and lighter from heavier vehicles.",
     "explanation_ms": "Kelas ini meliputi traktor dan jentera bergerak. Kelasnya dibezakan mengikut roda atau rantai serta berat kenderaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3351,7 +3351,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Candidates attend six hours of KPP01 before taking the Part I test.",
     "explanation_ms": "Calon mengikuti KPP01 selama enam jam sebelum menduduki Ujian Bahagian I.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 15",
+    "source_url": "KPP Kelas D Automatik, PDF page 15",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3377,7 +3377,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The car practical test covers the circuit in Part II and the road in Part III.",
     "explanation_ms": "Ujian amali kereta meliputi litar dalam Bahagian II dan jalan raya dalam Bahagian III.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 15",
+    "source_url": "KPP Kelas D Automatik, PDF page 15",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3403,7 +3403,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The validity period starts on the day the candidate passes and lasts one year.",
     "explanation_ms": "Tempoh sah bermula pada tarikh calon lulus dan berakhir selepas setahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3429,7 +3429,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The diagram shows the clutch on the left, brake in the middle, and accelerator on the right.",
     "explanation_ms": "Rajah menunjukkan pedal cekam di kiri, brek di tengah dan pemecut di kanan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 218",
+    "source_url": "KPP Kelas D Manual, PDF page 218",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3455,7 +3455,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Pressing the clutch with the left foot disconnects engine power from the gearbox. Releasing it reconnects the power.",
     "explanation_ms": "Menekan cekam dengan kaki kiri memutuskan kuasa enjin ke kotak gear. Melepaskannya menyambungkan semula kuasa.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 215",
+    "source_url": "KPP Kelas D Manual, PDF page 215",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3481,7 +3481,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Raise the clutch slowly with slight accelerator pressure. The book says a drop in engine speed indicates the biting point.",
     "explanation_ms": "Angkat pedal cekam perlahan-lahan sambil menekan pemecut sedikit. Buku menyatakan putaran enjin yang mula perlahan menandakan titik pergerakan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 216",
+    "source_url": "KPP Kelas D Manual, PDF page 216",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3507,7 +3507,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "With first gear selected and slight accelerator pressure, raise the clutch gradually to the biting point.",
     "explanation_ms": "Dengan gear satu dipilih dan pemecut ditekan sedikit, angkat pedal cekam secara beransur-ansur hingga titik pergerakan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 216",
+    "source_url": "KPP Kelas D Manual, PDF page 216",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3533,7 +3533,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This curriculum lists five and a half hours of circuit training and ten hours of road training.",
     "explanation_ms": "Kurikulum ini menyenaraikan lima jam setengah di litar dan sepuluh jam di jalan raya.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3559,7 +3559,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Before Parts II and III, the learner licence must still be valid and more than 30 days must have passed since issue.",
     "explanation_ms": "Sebelum Ujian Bahagian II dan III, lesen belajar mesti masih sah dan lebih daripada 30 hari telah berlalu sejak tarikh ia dikeluarkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3585,7 +3585,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Learner licences can be renewed for three or six months at a time, up to two years from the first issue.",
     "explanation_ms": "Lesen belajar memandu boleh diperbaharui untuk tiga atau enam bulan pada satu masa, sehingga dua tahun dari tarikh pertama dikeluarkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 18",
+    "source_url": "KPP Kelas D Automatik, PDF page 18",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3611,7 +3611,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A learner motorcar driver must drive with a driving institute instructor.",
     "explanation_ms": "Pemegang lesen L bagi motokar mesti memandu bersama pengajar institut memandu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 18",
+    "source_url": "KPP Kelas D Automatik, PDF page 18",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3637,7 +3637,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A learner motorcar displays an L sign at the front and rear.",
     "explanation_ms": "Motokar pelajar mempamerkan tanda L di bahagian hadapan dan belakang.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 18",
+    "source_url": "KPP Kelas D Automatik, PDF page 18",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3663,7 +3663,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The practical test pass is valid for one year. Apply for the probationary licence within that period.",
     "explanation_ms": "Keputusan lulus ujian praktikal sah selama setahun. Mohon lesen memandu percubaan dalam tempoh itu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3689,7 +3689,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The probationary licence gives new drivers two years to build experience under probation conditions.",
     "explanation_ms": "Lesen memandu percubaan memberi pemandu baharu dua tahun untuk menimba pengalaman di bawah syarat percubaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 20",
+    "source_url": "KPP Kelas D Automatik, PDF page 20",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3715,7 +3715,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Display a P sign at the upper left corner of both the front and rear windscreens.",
     "explanation_ms": "Pamerkan tanda P di penjuru kiri atas cermin hadapan dan belakang.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 21",
+    "source_url": "KPP Kelas D Automatik, PDF page 21",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3741,7 +3741,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The probationary licence conditions specify 0.00% alcohol in breath, blood and urine.",
     "explanation_ms": "Syarat lesen percubaan menetapkan 0.00% alkohol dalam nafas, darah dan air kencing.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 20",
+    "source_url": "KPP Kelas D Automatik, PDF page 20",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3767,7 +3767,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Apply within one year of the probationary licence expiry date.",
     "explanation_ms": "Buat permohonan dalam tempoh setahun daripada tarikh tamat lesen percubaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 22",
+    "source_url": "KPP Kelas D Automatik, PDF page 22",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3793,7 +3793,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The table lists cancellation once a competent licence has remained expired for more than three years.",
     "explanation_ms": "Jadual menyenaraikan pembatalan apabila lesen kompeten telah tamat tempoh melebihi tiga tahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 25",
+    "source_url": "KPP Kelas D Automatik, PDF page 25",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3819,7 +3819,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Press the clutch all the way down before shifting, then release it to reconnect power.",
     "explanation_ms": "Tekan cekam sepenuhnya sebelum menukar gear, kemudian lepaskan untuk menyambungkan kuasa semula.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 215",
+    "source_url": "KPP Kelas D Manual, PDF page 215",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3845,7 +3845,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "In Neutral, the lever moves freely from side to side.",
     "explanation_ms": "Dalam kedudukan bebas, tombol gear boleh bergerak dengan bebas ke kiri dan ke kanan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 200",
+    "source_url": "KPP Kelas D Manual, PDF page 200",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3871,7 +3871,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Start in neutral and press the clutch fully before selecting reverse.",
     "explanation_ms": "Mulakan pada gear neutral dan tekan pedal cekam sepenuhnya sebelum memilih gear undur.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 214",
+    "source_url": "KPP Kelas D Manual, PDF page 214",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3897,7 +3897,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Select first gear before balancing the clutch and accelerator to move off.",
     "explanation_ms": "Pilih gear satu sebelum mengimbangi cekam dan pemecut untuk mula bergerak.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 216",
+    "source_url": "KPP Kelas D Manual, PDF page 216",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3923,7 +3923,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Drivers who complete probation apply to change from a probationary to a competent driving licence.",
     "explanation_ms": "Pemandu yang menamatkan tempoh percubaan memohon pertukaran daripada lesen percubaan kepada lesen kompeten.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 22",
+    "source_url": "KPP Kelas D Automatik, PDF page 22",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3949,7 +3949,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The same-group exemption covers the KPP01 course and Part I theory test. Practical training and tests still apply.",
     "explanation_ms": "Pengecualian bagi kumpulan yang sama meliputi kursus KPP01 dan ujian teori Bahagian I. Latihan dan ujian amali masih diperlukan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 14",
+    "source_url": "KPP Kelas D Automatik, PDF page 14",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -3975,7 +3975,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "PSV covers public service vehicles, including buses. GDL is for goods vehicles.",
     "explanation_ms": "PSV meliputi kenderaan perkhidmatan awam termasuk bas. GDL ialah lesen untuk kenderaan barangan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 23",
+    "source_url": "KPP Kelas D Automatik, PDF page 23",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4001,7 +4001,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Eligibility includes being able to see ahead for 23 metres and not being colour blind.",
     "explanation_ms": "Kelayakan termasuk boleh melihat ke hadapan sejauh 23 meter dan tidak buta warna.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 11",
+    "source_url": "KPP Kelas D Automatik, PDF page 11",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4027,7 +4027,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "KEJARA is short for Sistem Keselamatan Jalan Raya. It assigns demerit points for scheduled offences.",
     "explanation_ms": "KEJARA ialah singkatan bagi Sistem Keselamatan Jalan Raya. Sistem ini memberikan mata demerit bagi kesalahan terjadual.",
     "image_url": null,
-    "source_url": "KPP General, PDF 93",
+    "source_url": "KPP General, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4053,7 +4053,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The P licence conditions state that reaching 20 points or more results in cancellation.",
     "explanation_ms": "Syarat lesen P menyatakan bahawa 20 mata atau lebih mengakibatkan lesen dibatalkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 20",
+    "source_url": "KPP Kelas D Automatik, PDF page 20",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4079,7 +4079,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The first threshold shown in the schedule results in a warning.",
     "explanation_ms": "Ambang kali pertama dalam jadual ini membawa kepada amaran.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4105,7 +4105,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The table shows a first suspension of six to eight months for the second threshold.",
     "explanation_ms": "Jadual menunjukkan penggantungan pertama selama enam hingga lapan bulan bagi ambang kali kedua.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4131,7 +4131,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The third threshold in the table can result in a suspension of eight to ten months.",
     "explanation_ms": "Ambang kali ketiga dalam jadual boleh menyebabkan penggantungan lapan hingga sepuluh bulan.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4157,7 +4157,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The KEJARA schedule describes cancellation action after three suspensions within five years.",
     "explanation_ms": "Jadual KEJARA menerangkan tindakan pembatalan selepas tiga penggantungan dalam tempoh lima tahun.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4183,7 +4183,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The schedule lists a possible deduction of up to half the accumulated demerit points.",
     "explanation_ms": "Jadual menyenaraikan potongan sehingga separuh daripada mata demerit yang terkumpul.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4209,7 +4209,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "With the clutch fully pressed, move the lever back through Neutral into second.",
     "explanation_ms": "Tekan cekam sepenuhnya, kemudian tarik tombol ke belakang melalui kedudukan bebas hingga gear dua.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 213",
+    "source_url": "KPP Kelas D Manual, PDF page 213",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4235,7 +4235,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The illustrated second-to-third shift passes through Neutral and then goes forward into third.",
     "explanation_ms": "Pertukaran yang ditunjukkan melalui kedudukan bebas sebelum tombol ditolak ke hadapan ke gear tiga.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 213",
+    "source_url": "KPP Kelas D Manual, PDF page 213",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4261,7 +4261,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Press the clutch fully and move the lever straight back through Neutral.",
     "explanation_ms": "Tekan cekam sepenuhnya dan tarik tombol lurus ke belakang melalui kedudukan bebas.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 214",
+    "source_url": "KPP Kelas D Manual, PDF page 214",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4287,7 +4287,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "For the illustrated fourth-to-fifth shift, move from Neutral to the right and then forward.",
     "explanation_ms": "Untuk pertukaran dari gear empat ke gear lima dalam rajah, gerakkan tombol ke kanan dari kedudukan bebas, kemudian ke hadapan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 214",
+    "source_url": "KPP Kelas D Manual, PDF page 214",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4313,7 +4313,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum lists 16 as the minimum age for a motorcycle licence.",
     "explanation_ms": "Kurikulum menetapkan umur minimum 16 tahun bagi permohonan lesen motosikal.",
     "image_url": null,
-    "source_url": "KPP General, PDF 9",
+    "source_url": "KPP General, PDF page 9",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4339,7 +4339,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Applicants for a motorcar licence must be at least 17 years old.",
     "explanation_ms": "Pemohon lesen motokar mestilah berumur sekurang-kurangnya 17 tahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 11",
+    "source_url": "KPP Kelas D Automatik, PDF page 11",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4365,7 +4365,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Class E is listed for heavy motor vehicles over 7,500 kg unladen.",
     "explanation_ms": "Kelas E disenaraikan untuk motokar berat dengan berat tanpa muatan melebihi 7,500 kg.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4391,7 +4391,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The vocational categories list goods vehicle licensing, including motorcycles, under GDL.",
     "explanation_ms": "Kategori lesen vokasional menyenaraikan motosikal barangan di bawah lesen GDL.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 23",
+    "source_url": "KPP Kelas D Automatik, PDF page 23",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4417,7 +4417,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Class A1 covers adapted motorcars for drivers with disabilities. Class A covers adapted motorcycles.",
     "explanation_ms": "Kelas A1 meliputi motokar yang diubah suai untuk pemandu orang kurang upaya. Kelas A meliputi motosikal yang diubah suai.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 17",
+    "source_url": "KPP Kelas D Automatik, PDF page 17",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4443,7 +4443,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Class B2 covers personal motorcycles up to 250 cc.",
     "explanation_ms": "Kelas B2 meliputi motosikal persendirian sehingga 250 cc.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4469,7 +4469,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The Class D and DA classifications both have an unladen weight limit of 3,500 kg.",
     "explanation_ms": "Kelas D dan DA mempunyai had berat tanpa muatan sebanyak 3,500 kg.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4495,7 +4495,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "These classes cover tractors and mobile machinery. They distinguish wheels from tracks and lighter from heavier vehicles.",
     "explanation_ms": "Kelas ini meliputi traktor dan jentera bergerak. Kelasnya dibezakan mengikut roda atau rantai serta berat kenderaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4521,7 +4521,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Candidates attend six hours of KPP01 before taking the Part I test.",
     "explanation_ms": "Calon mengikuti KPP01 selama enam jam sebelum menduduki Ujian Bahagian I.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 15",
+    "source_url": "KPP Kelas D Automatik, PDF page 15",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4547,7 +4547,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The car practical test covers the circuit in Part II and the road in Part III.",
     "explanation_ms": "Ujian amali kereta meliputi litar dalam Bahagian II dan jalan raya dalam Bahagian III.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 15",
+    "source_url": "KPP Kelas D Automatik, PDF page 15",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4573,7 +4573,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The validity period starts on the day the candidate passes and lasts one year.",
     "explanation_ms": "Tempoh sah bermula pada tarikh calon lulus dan berakhir selepas setahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4599,7 +4599,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Park keeps the car from moving and is used when leaving it.",
     "explanation_ms": "Kedudukan P menghalang kereta daripada bergerak dan digunakan apabila meninggalkannya.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 210",
+    "source_url": "KPP Kelas D Automatik, PDF page 210",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4625,7 +4625,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop the car, press the brake pedal fully, and press the selector lock button when selecting P.",
     "explanation_ms": "Hentikan kereta, tekan pedal brek sepenuhnya dan tekan butang pengunci ketika memilih kedudukan P.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 215",
+    "source_url": "KPP Kelas D Automatik, PDF page 215",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4651,7 +4651,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Select R to move the car backwards.",
     "explanation_ms": "Pilih R untuk menggerakkan kereta ke belakang.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 210",
+    "source_url": "KPP Kelas D Automatik, PDF page 210",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4677,7 +4677,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "In Neutral, no drive gear is engaged. The book uses it as one option when starting the engine or stopping briefly.",
     "explanation_ms": "Pada kedudukan N, tiada gear pemacu dipilih. Buku menyatakan kedudukan ini boleh digunakan ketika menghidupkan enjin atau berhenti seketika.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 211",
+    "source_url": "KPP Kelas D Automatik, PDF page 211",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4703,7 +4703,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This curriculum lists five and a half hours of circuit training and ten hours of road training.",
     "explanation_ms": "Kurikulum ini menyenaraikan lima jam setengah di litar dan sepuluh jam di jalan raya.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4729,7 +4729,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Before Parts II and III, the learner licence must still be valid and more than 30 days must have passed since issue.",
     "explanation_ms": "Sebelum Ujian Bahagian II dan III, lesen belajar mesti masih sah dan lebih daripada 30 hari telah berlalu sejak tarikh ia dikeluarkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4755,7 +4755,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Learner licences can be renewed for three or six months at a time, up to two years from the first issue.",
     "explanation_ms": "Lesen belajar memandu boleh diperbaharui untuk tiga atau enam bulan pada satu masa, sehingga dua tahun dari tarikh pertama dikeluarkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 18",
+    "source_url": "KPP Kelas D Automatik, PDF page 18",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4781,7 +4781,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A learner motorcar driver must drive with a driving institute instructor.",
     "explanation_ms": "Pemegang lesen L bagi motokar mesti memandu bersama pengajar institut memandu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 18",
+    "source_url": "KPP Kelas D Automatik, PDF page 18",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4807,7 +4807,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A learner motorcar displays an L sign at the front and rear.",
     "explanation_ms": "Motokar pelajar mempamerkan tanda L di bahagian hadapan dan belakang.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 18",
+    "source_url": "KPP Kelas D Automatik, PDF page 18",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4833,7 +4833,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The practical test pass is valid for one year. Apply for the probationary licence within that period.",
     "explanation_ms": "Keputusan lulus ujian praktikal sah selama setahun. Mohon lesen memandu percubaan dalam tempoh itu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4859,7 +4859,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The probationary licence gives new drivers two years to build experience under probation conditions.",
     "explanation_ms": "Lesen memandu percubaan memberi pemandu baharu dua tahun untuk menimba pengalaman di bawah syarat percubaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 20",
+    "source_url": "KPP Kelas D Automatik, PDF page 20",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4885,7 +4885,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Display a P sign at the upper left corner of both the front and rear windscreens.",
     "explanation_ms": "Pamerkan tanda P di penjuru kiri atas cermin hadapan dan belakang.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 21",
+    "source_url": "KPP Kelas D Automatik, PDF page 21",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4911,7 +4911,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The probationary licence conditions specify 0.00% alcohol in breath, blood and urine.",
     "explanation_ms": "Syarat lesen percubaan menetapkan 0.00% alkohol dalam nafas, darah dan air kencing.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 20",
+    "source_url": "KPP Kelas D Automatik, PDF page 20",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4937,7 +4937,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Apply within one year of the probationary licence expiry date.",
     "explanation_ms": "Buat permohonan dalam tempoh setahun daripada tarikh tamat lesen percubaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 22",
+    "source_url": "KPP Kelas D Automatik, PDF page 22",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4963,7 +4963,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The table lists cancellation once a competent licence has remained expired for more than three years.",
     "explanation_ms": "Jadual menyenaraikan pembatalan apabila lesen kompeten telah tamat tempoh melebihi tiga tahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 25",
+    "source_url": "KPP Kelas D Automatik, PDF page 25",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -4989,7 +4989,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The transmission selects a gear to suit vehicle speed and the power needed.",
     "explanation_ms": "Transmisi memilih gear mengikut kelajuan kenderaan dan kuasa yang diperlukan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 211",
+    "source_url": "KPP Kelas D Automatik, PDF page 211",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5015,7 +5015,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Position 3 allows gears 1, 2 and 3. The book gives downhill driving as one example of its use.",
     "explanation_ms": "Kedudukan 3 membenarkan gear 1, 2 dan 3. Buku memberikan pemanduan menuruni bukit sebagai satu contoh penggunaannya.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 212",
+    "source_url": "KPP Kelas D Automatik, PDF page 212",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5041,7 +5041,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book describes using position 2 on steep descents to increase engine braking.",
     "explanation_ms": "Buku menerangkan penggunaan kedudukan 2 ketika menuruni cerun curam untuk menambah kesan brek enjin.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 212",
+    "source_url": "KPP Kelas D Automatik, PDF page 212",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5067,7 +5067,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "L holds the transmission in low gear. The book uses it for very steep slopes.",
     "explanation_ms": "Kedudukan L mengekalkan gear rendah. Buku menerangkan penggunaannya pada cerun yang sangat curam.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 213",
+    "source_url": "KPP Kelas D Automatik, PDF page 213",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5093,7 +5093,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Drivers who complete probation apply to change from a probationary to a competent driving licence.",
     "explanation_ms": "Pemandu yang menamatkan tempoh percubaan memohon pertukaran daripada lesen percubaan kepada lesen kompeten.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 22",
+    "source_url": "KPP Kelas D Automatik, PDF page 22",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5119,7 +5119,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The same-group exemption covers the KPP01 course and Part I theory test. Practical training and tests still apply.",
     "explanation_ms": "Pengecualian bagi kumpulan yang sama meliputi kursus KPP01 dan ujian teori Bahagian I. Latihan dan ujian amali masih diperlukan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 14",
+    "source_url": "KPP Kelas D Automatik, PDF page 14",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5145,7 +5145,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "PSV covers public service vehicles, including buses. GDL is for goods vehicles.",
     "explanation_ms": "PSV meliputi kenderaan perkhidmatan awam termasuk bas. GDL ialah lesen untuk kenderaan barangan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 23",
+    "source_url": "KPP Kelas D Automatik, PDF page 23",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5171,7 +5171,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Eligibility includes being able to see ahead for 23 metres and not being colour blind.",
     "explanation_ms": "Kelayakan termasuk boleh melihat ke hadapan sejauh 23 meter dan tidak buta warna.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 11",
+    "source_url": "KPP Kelas D Automatik, PDF page 11",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5197,7 +5197,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "KEJARA is short for Sistem Keselamatan Jalan Raya. It assigns demerit points for scheduled offences.",
     "explanation_ms": "KEJARA ialah singkatan bagi Sistem Keselamatan Jalan Raya. Sistem ini memberikan mata demerit bagi kesalahan terjadual.",
     "image_url": null,
-    "source_url": "KPP General, PDF 93",
+    "source_url": "KPP General, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5223,7 +5223,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The P licence conditions state that reaching 20 points or more results in cancellation.",
     "explanation_ms": "Syarat lesen P menyatakan bahawa 20 mata atau lebih mengakibatkan lesen dibatalkan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 20",
+    "source_url": "KPP Kelas D Automatik, PDF page 20",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5249,7 +5249,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The first threshold shown in the schedule results in a warning.",
     "explanation_ms": "Ambang kali pertama dalam jadual ini membawa kepada amaran.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5275,7 +5275,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The table shows a first suspension of six to eight months for the second threshold.",
     "explanation_ms": "Jadual menunjukkan penggantungan pertama selama enam hingga lapan bulan bagi ambang kali kedua.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5301,7 +5301,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The third threshold in the table can result in a suspension of eight to ten months.",
     "explanation_ms": "Ambang kali ketiga dalam jadual boleh menyebabkan penggantungan lapan hingga sepuluh bulan.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5327,7 +5327,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The KEJARA schedule describes cancellation action after three suspensions within five years.",
     "explanation_ms": "Jadual KEJARA menerangkan tindakan pembatalan selepas tiga penggantungan dalam tempoh lima tahun.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5353,7 +5353,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The schedule lists a possible deduction of up to half the accumulated demerit points.",
     "explanation_ms": "Jadual menyenaraikan potongan sehingga separuh daripada mata demerit yang terkumpul.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5379,7 +5379,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The lock helps prevent accidental selection of positions that need extra care.",
     "explanation_ms": "Pengunci membantu mengelakkan pemilihan gear yang memerlukan perhatian tambahan secara tidak sengaja.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 213",
+    "source_url": "KPP Kelas D Automatik, PDF page 213",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5405,7 +5405,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book says to press the button when selecting P or R. It also describes using the button for low positions 2 and L.",
     "explanation_ms": "Buku menyatakan butang perlu ditekan apabila memilih P atau R. Butang juga digunakan bagi kedudukan rendah 2 dan L.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 214",
+    "source_url": "KPP Kelas D Automatik, PDF page 214",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5431,7 +5431,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check the gear position on the instrument display. Avoid looking down at the gear lever while driving.",
     "explanation_ms": "Semak kedudukan gear pada paparan panel meter. Elakkan melihat ke bawah pada tombol gear semasa memandu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 215",
+    "source_url": "KPP Kelas D Automatik, PDF page 215",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5457,7 +5457,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The pre-drive routine says to start the engine without pressing the accelerator.",
     "explanation_ms": "Rutin sebelum memandu menyatakan enjin perlu dihidupkan tanpa menekan pedal pemecut.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 208",
+    "source_url": "KPP Kelas D Automatik, PDF page 208",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5483,7 +5483,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass on the left.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kiri.",
     "image_url": "/signs/24dc89f9e7127cca.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5509,7 +5509,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass on the right.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kanan.",
     "image_url": "/signs/a50c8dd8a202a25e.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5535,7 +5535,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass on either side.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di mana-mana sisi.",
     "image_url": "/signs/6103dff69316bf86.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5561,7 +5561,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means lane for motorcycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk motosikal.",
     "image_url": "/signs/e0389a069e72ed52.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5587,7 +5587,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means lane for bicycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk basikal.",
     "image_url": "/signs/e86785fec1877d75.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5613,7 +5613,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The crossed right arrow bans a right turn at that junction.",
     "explanation_ms": "Anak panah kanan yang dipalang melarang pemandu membelok ke kanan di simpang itu.",
     "image_url": "/signs/2eee15e55fa0ef48.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5639,7 +5639,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means lane for trishaws.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk beca.",
     "image_url": "/signs/fad437bbc08b75fa.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5665,7 +5665,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means hospital.",
     "explanation_ms": "Papan tanda ini bermaksud hospital.",
     "image_url": "/signs/dde5874c6044c5f3.svg",
-    "source_url": "KPP General PDF page 67",
+    "source_url": "KPP General, PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5691,7 +5691,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means vehicle parking.",
     "explanation_ms": "Papan tanda ini bermaksud tempat letak kenderaan.",
     "image_url": "/signs/f6459f68e216bc5d.svg",
-    "source_url": "KPP General PDF page 67",
+    "source_url": "KPP General, PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5717,7 +5717,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means road with no through access. The road does not continue through to another route.",
     "explanation_ms": "Papan tanda ini bermaksud jalan buntu di hadapan. Jalan itu tidak bersambung dengan laluan lain.",
     "image_url": "/signs/082877f6ec086be6.svg",
-    "source_url": "KPP General PDF page 68",
+    "source_url": "KPP General, PDF page 68",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5743,7 +5743,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means designated U-turn. It marks a place to turn around. Give way to oncoming traffic before turning.",
     "explanation_ms": "Papan tanda ini bermaksud tempat pusingan U. Tanda ini menunjukkan tempat untuk berpatah balik. Beri laluan kepada trafik dari arah bertentangan sebelum membelok.",
     "image_url": "/signs/8956fe8a103938b3.svg",
-    "source_url": "KPP General PDF page 69",
+    "source_url": "KPP General, PDF page 69",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5769,7 +5769,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no vehicle entry.",
     "explanation_ms": "Papan tanda ini bermaksud kenderaan dilarang masuk.",
     "image_url": "/signs/9a316a4baac9f49a.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5795,7 +5795,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no U-turn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membuat pusingan U.",
     "image_url": "/signs/a299aef5bccc0fca.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5821,7 +5821,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "You must use a route that does not require turning left here.",
     "explanation_ms": "Gunakan laluan yang tidak memerlukan anda membelok ke kiri di sini.",
     "image_url": "/signs/ef495735d6870ce2.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5847,7 +5847,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no parking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang meletak kenderaan.",
     "image_url": "/signs/fbd415b24ab21b44.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5873,7 +5873,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The single orange chevron points the way when the route changes direction in a work zone.",
     "explanation_ms": "Satu tanda serong jingga menunjukkan arah apabila laluan berubah dalam zon kerja.",
     "image_url": "/signs/263bc825012bcc83.svg",
-    "source_url": "KPP General PDF page 76",
+    "source_url": "KPP General, PDF page 76",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5899,7 +5899,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no stopping.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang berhenti.",
     "image_url": "/signs/ecd3d648f3d4a187.svg",
-    "source_url": "KPP General PDF page 59",
+    "source_url": "KPP General, PDF page 59",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5925,7 +5925,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membunyikan hon.",
     "image_url": "/signs/ce55b86645694f5d.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -5949,7 +5949,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The cross symbol warns that another road crosses yours. Check both sides on approach.",
     "explanation_ms": "Simbol silang memberi amaran bahawa jalan lain merentasi laluan anda. Periksa kedua-dua sisi apabila menghampiri.",
     "image_url": "/signs/4a3491aff2749365.svg",
-    "source_url": "KPP General PDF page 40",
+    "source_url": "KPP General, PDF page 40",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-1",
     "order_index": 19
@@ -5975,7 +5975,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The side branch on the left warns of a road joining from that side.",
     "explanation_ms": "Cabang di sebelah kiri memberi amaran tentang jalan yang bercantum dari arah itu.",
     "image_url": "/signs/e22292f492beec26.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-1",
     "order_index": 20
@@ -6001,7 +6001,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The branch on the right warns of traffic that may enter from a side road there.",
     "explanation_ms": "Cabang di sebelah kanan memberi amaran tentang trafik yang mungkin masuk dari jalan sisi itu.",
     "image_url": "/signs/12e8b0d727c5bdf1.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-1",
     "order_index": 21
@@ -6029,7 +6029,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A vehicle on the right can be hidden from both mirrors. Check that area directly before moving.",
     "explanation_ms": "Kenderaan di kanan boleh terlindung daripada kedua-dua cermin. Periksa kawasan itu secara langsung sebelum bergerak.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 99",
+    "source_url": "KPP Kelas D Manual, PDF page 99",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6055,7 +6055,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Cutting in reduces the space the heavy vehicle has to stop.",
     "explanation_ms": "Memotong masuk secara rapat mengurangkan ruang lori untuk berhenti.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 89",
+    "source_url": "KPP Kelas D Manual, PDF page 89",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6081,7 +6081,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A cyclist may turn into your path. Anticipate the movement and be ready to brake.",
     "explanation_ms": "Penunggang basikal mungkin membelok ke laluan anda. Jangkakan pergerakan itu dan bersedia untuk membrek.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 85",
+    "source_url": "KPP Kelas D Manual, PDF page 85",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6107,7 +6107,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop as the child steps onto the road. Wait until the crossing is clear.",
     "explanation_ms": "Berhenti apabila murid melangkah ke jalan. Tunggu sehingga lintasan kosong.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 81",
+    "source_url": "KPP Kelas D Manual, PDF page 81",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6133,7 +6133,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Passengers may cross from directly in front of or behind the bus, where you cannot see them.",
     "explanation_ms": "Penumpang mungkin melintas dari hadapan atau belakang bas, di tempat yang terlindung daripada pandangan anda.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 82",
+    "source_url": "KPP Kelas D Manual, PDF page 82",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6159,7 +6159,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A learner may stop unexpectedly. Leave a gap and give them time.",
     "explanation_ms": "Pemandu pelajar mungkin berhenti tanpa dijangka. Tinggalkan jarak dan beri mereka masa.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 87",
+    "source_url": "KPP Kelas D Manual, PDF page 87",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6185,7 +6185,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Give priority to an emergency vehicle sounding its siren, even if you ordinarily have right of way.",
     "explanation_ms": "Beri keutamaan kepada kenderaan kecemasan yang membunyikan siren walaupun anda biasanya mempunyai hak laluan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 90",
+    "source_url": "KPP Kelas D Manual, PDF page 90",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6211,7 +6211,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Keep the radio low enough to hear what is happening outside the vehicle.",
     "explanation_ms": "Rendahkan kelantangan radio supaya bunyi di luar kenderaan dapat didengar.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 93",
+    "source_url": "KPP Kelas D Manual, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6237,7 +6237,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Speed leaves less time to react, so look farther ahead to spot problems early.",
     "explanation_ms": "Kelajuan mengurangkan masa untuk bertindak. Lihat lebih jauh ke hadapan supaya bahaya dikesan awal.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 97",
+    "source_url": "KPP Kelas D Manual, PDF page 97",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6263,7 +6263,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Start counting when the vehicle ahead passes a fixed marker. Compare that with when you pass the same marker.",
     "explanation_ms": "Mula mengira apabila kenderaan di hadapan melepasi penanda tetap. Bandingkan dengan masa anda melepasi penanda yang sama.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 101",
+    "source_url": "KPP Kelas D Manual, PDF page 101",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6289,7 +6289,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A longer following gap gives you and the driver behind more room to stop in an emergency.",
     "explanation_ms": "Jarak mengekori yang lebih jauh memberikan anda dan pemandu di belakang lebih banyak ruang untuk berhenti semasa kecemasan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 103",
+    "source_url": "KPP Kelas D Manual, PDF page 103",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6315,7 +6315,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The towing vehicle and load need enough time and distance to stop together.",
     "explanation_ms": "Kenderaan dan beban yang ditunda memerlukan masa dan jarak yang mencukupi untuk berhenti bersama.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 105",
+    "source_url": "KPP Kelas D Manual, PDF page 105",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6341,7 +6341,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Avoid overtaking at a hill crest. Wait until you are past it and the road is clear.",
     "explanation_ms": "Elakkan memotong di puncak bukit. Tunggu sehingga anda melepasi puncak dan laluan jelas.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 107",
+    "source_url": "KPP Kelas D Manual, PDF page 107",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6367,7 +6367,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Pumping may restore hydraulic pressure. If it does not, the book advises a lower gear and gradual handbrake use where safe.",
     "explanation_ms": "Mengepam pedal mungkin memulihkan tekanan hidraulik. Jika gagal, gunakan gear rendah dan tarik brek tangan beransur-ansur apabila selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 126",
+    "source_url": "KPP Kelas D Manual, PDF page 126",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6393,7 +6393,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Keep the car stable and slow progressively. Find a flat, safe place to stop.",
     "explanation_ms": "Pastikan kenderaan stabil dan kurangkan kelajuan beransur-ansur. Cari tempat rata dan selamat untuk berhenti.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 127",
+    "source_url": "KPP Kelas D Manual, PDF page 127",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6419,7 +6419,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use hazard lights to warn others and get out of moving traffic safely.",
     "explanation_ms": "Gunakan lampu kecemasan untuk memberi amaran dan keluar daripada aliran trafik dengan selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 128",
+    "source_url": "KPP Kelas D Manual, PDF page 128",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6445,7 +6445,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Move passengers away from traffic. Keep the vehicle's lights visible to approaching drivers.",
     "explanation_ms": "Bawa penumpang jauh daripada trafik. Pastikan lampu kenderaan dapat dilihat oleh pemandu yang menghampiri.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 129",
+    "source_url": "KPP Kelas D Manual, PDF page 129",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6471,7 +6471,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop safely and switch off the engine. Let the radiator cool before opening its cap.",
     "explanation_ms": "Berhenti di tempat selamat dan matikan enjin. Tunggu radiator sejuk sebelum membuka penutupnya.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 131",
+    "source_url": "KPP Kelas D Manual, PDF page 131",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6497,7 +6497,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Break the nuts loose with the wheel on the ground, then lift the vehicle at the correct jacking point.",
     "explanation_ms": "Longgarkan nat ketika roda masih di atas tanah, kemudian angkat kenderaan pada titik jek yang betul.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 132",
+    "source_url": "KPP Kelas D Manual, PDF page 132",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6523,7 +6523,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Seeing the rear tyres leaves some room to move out if the vehicle ahead cannot move.",
     "explanation_ms": "Jika tayar belakang masih kelihatan, anda mempunyai sedikit ruang untuk keluar jika kenderaan di hadapan tidak dapat bergerak.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 134",
+    "source_url": "KPP Kelas D Manual, PDF page 134",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6549,7 +6549,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Choose the correct lane early. A sudden lane change at the plaza can put you in another driver's path.",
     "explanation_ms": "Pilih lorong yang betul lebih awal. Pertukaran lorong mengejut di plaza boleh memotong laluan kenderaan lain.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 136",
+    "source_url": "KPP Kelas D Manual, PDF page 136",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6575,7 +6575,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Allow the animals to clear the road. A horn may startle them.",
     "explanation_ms": "Tunggu haiwan selesai melintas. Bunyi hon boleh mengejutkannya.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 137",
+    "source_url": "KPP Kelas D Manual, PDF page 137",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6601,7 +6601,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Visibility is more limited in a tunnel. Use headlights and keep a safe following distance.",
     "explanation_ms": "Penglihatan lebih terhad di dalam terowong. Gunakan lampu hadapan dan kekalkan jarak mengekor yang selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 140",
+    "source_url": "KPP Kelas D Manual, PDF page 140",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6627,7 +6627,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Headlights make you more visible. Keep hazard lights for emergencies.",
     "explanation_ms": "Lampu hadapan memudahkan kenderaan dilihat. Gunakan lampu kecemasan apabila berlaku kecemasan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 142",
+    "source_url": "KPP Kelas D Manual, PDF page 142",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6653,7 +6653,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Full beam can dazzle the driver ahead through their mirrors.",
     "explanation_ms": "Lampu tinggi boleh menyilaukan pemandu di hadapan melalui cerminnya.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 143",
+    "source_url": "KPP Kelas D Manual, PDF page 143",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6679,7 +6679,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "In a residential area, look out for children who might step into your path suddenly.",
     "explanation_ms": "Di kawasan perumahan, awasi kanak-kanak yang mungkin tiba-tiba memasuki laluan anda.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 83",
+    "source_url": "KPP Kelas D Manual, PDF page 83",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6705,7 +6705,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Expect distracted pedestrians while your own visibility is reduced.",
     "explanation_ms": "Jangkakan pejalan kaki kurang memberi perhatian ketika penglihatan anda juga terhad.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 84",
+    "source_url": "KPP Kelas D Manual, PDF page 84",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6731,7 +6731,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Signal clearly and check that the lane is safe before pulling out.",
     "explanation_ms": "Beri isyarat dengan jelas dan pastikan lorong selamat sebelum keluar.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 85",
+    "source_url": "KPP Kelas D Manual, PDF page 85",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6757,7 +6757,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A horn can startle a rider and cause them to move out of their line.",
     "explanation_ms": "Hon boleh mengejutkan penunggang dan menyebabkan mereka terkeluar daripada laluan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 86",
+    "source_url": "KPP Kelas D Manual, PDF page 86",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6783,7 +6783,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Follow cautiously until an allowed, safe overtaking opportunity appears.",
     "explanation_ms": "Ikut dengan berhati-hati sehingga terdapat peluang memotong yang dibenarkan dan selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 88",
+    "source_url": "KPP Kelas D Manual, PDF page 88",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6809,7 +6809,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The larger hidden areas make it harder for a lorry driver to see a car alongside.",
     "explanation_ms": "Kawasan terlindung yang lebih besar menyukarkan pemandu lori melihat kereta di sebelahnya.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 89",
+    "source_url": "KPP Kelas D Manual, PDF page 89",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6835,7 +6835,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "How quickly you approach a hazard affects the time you have to respond.",
     "explanation_ms": "Kelajuan menghampiri bahaya menentukan masa yang ada untuk bertindak.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 97",
+    "source_url": "KPP Kelas D Manual, PDF page 97",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6861,7 +6861,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "At higher speeds you need more distance to stop if traffic ahead brakes suddenly.",
     "explanation_ms": "Pada kelajuan lebih tinggi, anda memerlukan jarak lebih panjang untuk berhenti jika trafik di hadapan membrek mengejut.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 100",
+    "source_url": "KPP Kelas D Manual, PDF page 100",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6887,7 +6887,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The airbag cushions occupants against the impact of a collision.",
     "explanation_ms": "Beg udara membantu mengurangkan kesan hentaman perlanggaran pada penghuni kenderaan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 160",
+    "source_url": "KPP Kelas D Manual, PDF page 160",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6913,7 +6913,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Following too closely lets the vehicle ahead block your view of the surrounding road.",
     "explanation_ms": "Mengekor terlalu rapat membolehkan kenderaan di hadapan menghalang pandangan anda terhadap keadaan jalan sekeliling.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 105",
+    "source_url": "KPP Kelas D Manual, PDF page 105",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6939,7 +6939,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The vocational application requirements list a competent driving licence. The probationary licence exception is for Class C only.",
     "explanation_ms": "Syarat permohonan lesen vokasional menyenaraikan lesen memandu kompeten. Pengecualian untuk lesen percubaan hanya bagi Kelas C.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 23",
+    "source_url": "KPP Kelas D Automatik, PDF page 23",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6965,7 +6965,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Vocational practical tests take place after a theory pass. PSV bus applicants are one of the groups required to take a practical test.",
     "explanation_ms": "Ujian amali lesen vokasional dijalankan selepas lulus ujian teori. Pemohon PSV bas ialah antara kumpulan yang perlu menjalani ujian amali.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 24",
+    "source_url": "KPP Kelas D Automatik, PDF page 24",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -6991,7 +6991,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum lists automatic cancellation for a vocational licence that has been expired for more than three years.",
     "explanation_ms": "Kurikulum menyenaraikan pembatalan automatik bagi lesen vokasional yang tamat tempoh melebihi tiga tahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 25",
+    "source_url": "KPP Kelas D Automatik, PDF page 25",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7017,7 +7017,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Part II tests circuit skills. Part III tests applying safe driving skills on the road.",
     "explanation_ms": "Bahagian II menguji kemahiran di litar. Bahagian III menguji amalan pemanduan selamat di jalan raya.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 15",
+    "source_url": "KPP Kelas D Automatik, PDF page 15",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7043,7 +7043,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book lists a one-week wait after failing the practical driving test before a candidate can retest.",
     "explanation_ms": "Buku menetapkan tempoh menunggu seminggu selepas gagal ujian amali sebelum calon boleh mengulang ujian.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 17",
+    "source_url": "KPP Kelas D Automatik, PDF page 17",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7069,7 +7069,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The booking requirements include a copy of the learner licence and the SM4 driving training record.",
     "explanation_ms": "Syarat tempahan termasuk salinan lesen belajar memandu dan rekod latihan memandu SM4.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7095,7 +7095,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum requires medical verification by a medical officer at a government health clinic.",
     "explanation_ms": "Kurikulum memerlukan pengesahan oleh pegawai perubatan di klinik kesihatan kerajaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 11",
+    "source_url": "KPP Kelas D Automatik, PDF page 11",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7121,7 +7121,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum ties demerit points to a scheduled offence after the compound payment or court fine has been paid.",
     "explanation_ms": "Kurikulum mengaitkan mata demerit bagi kesalahan terjadual dengan pembayaran kompaun atau denda mahkamah.",
     "image_url": null,
-    "source_url": "KPP General, PDF 93",
+    "source_url": "KPP General, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7147,7 +7147,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop with the front wheels on the yellow line and apply the parking brake. In the test, raise your hand when ready and wait for the instruction to move.",
     "explanation_ms": "Berhenti dengan roda hadapan di atas garisan kuning dan tarik brek tangan. Semasa ujian, angkat tangan apabila sedia dan tunggu arahan untuk bergerak.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 278",
+    "source_url": "KPP Kelas D Manual, PDF page 278",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7173,7 +7173,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book says to change gear according to vehicle speed and the power needed.",
     "explanation_ms": "Buku menyatakan gear perlu ditukar mengikut kelajuan dan kuasa yang diperlukan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 211",
+    "source_url": "KPP Kelas D Manual, PDF page 211",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7199,7 +7199,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "One purpose is to discourage repeat offences by educating and disciplining drivers.",
     "explanation_ms": "Antara tujuannya ialah mengurangkan kesalahan berulang dengan mendidik dan mendisiplinkan pemandu.",
     "image_url": null,
-    "source_url": "KPP General, PDF 94",
+    "source_url": "KPP General, PDF page 94",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7225,7 +7225,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The first 20-point threshold shown in the schedule results in a warning.",
     "explanation_ms": "Ambang 20 mata kali pertama dalam jadual ini membawa kepada amaran.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7251,7 +7251,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "KEJARA applies to scheduled offences under the road transport rules.",
     "explanation_ms": "KEJARA terpakai kepada kesalahan terjadual di bawah peraturan pengangkutan jalan.",
     "image_url": null,
-    "source_url": "KPP General, PDF 93",
+    "source_url": "KPP General, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7277,7 +7277,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum describes a possible reduction of up to 50% of the demerit points under the listed conditions.",
     "explanation_ms": "Kurikulum menerangkan potongan sehingga 50% daripada mata demerit tertakluk pada syarat yang disenaraikan.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7301,7 +7301,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The T shows that your road meets a crossroad and does not continue straight.",
     "explanation_ms": "Bentuk T menunjukkan bahawa jalan anda bertemu jalan melintang dan tidak bersambung lurus.",
     "image_url": "/signs/e3ccd470b3c6bc8e.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 1
@@ -7327,7 +7327,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The arrows split around the island. Choose the side that leads to your destination.",
     "explanation_ms": "Anak panah berpecah di sekeliling pulau. Pilih sisi yang menuju ke destinasi anda.",
     "image_url": "/signs/322e269754adeff6.svg",
-    "source_url": "KPP General PDF page 44",
+    "source_url": "KPP General, PDF page 44",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 2
@@ -7353,7 +7353,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The arrow turns sharply left. Reduce speed before the road bends.",
     "explanation_ms": "Anak panah membelok tajam ke kiri. Kurangkan kelajuan sebelum selekoh.",
     "image_url": "/signs/194637442da016e5.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 3
@@ -7379,7 +7379,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The arrow turns sharply right. Reduce speed before reaching that bend.",
     "explanation_ms": "Anak panah membelok tajam ke kanan. Kurangkan kelajuan sebelum tiba di selekoh itu.",
     "image_url": "/signs/8c4124b32afd3704.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 4
@@ -7405,7 +7405,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The chevron points in the direction of the sharp turn. Follow its direction through the bend.",
     "explanation_ms": "Chevron menunjukkan arah belokan tajam. Ikuti arah itu semasa melalui selekoh.",
     "image_url": "/signs/b716cb9e685088a5.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 5
@@ -7431,7 +7431,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The two sides come together where the divider ends. Watch for vehicles coming toward you.",
     "explanation_ms": "Kedua-dua sisi bertemu apabila pembahagi tamat. Awasi kenderaan dari arah bertentangan.",
     "image_url": "/signs/b12139221efc15b6.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 6
@@ -7457,7 +7457,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The symbol shows a divider starting between the opposite directions of travel.",
     "explanation_ms": "Simbol menunjukkan pembahagi bermula di antara dua arah perjalanan.",
     "image_url": "/signs/788d475c2d05336c.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 7
@@ -7483,7 +7483,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The circular arrows indicate a roundabout. Choose your lane before entering and give way to circulating traffic.",
     "explanation_ms": "Anak panah bulat menunjukkan bulatan. Pilih lorong sebelum masuk dan beri laluan kepada trafik yang beredar.",
     "image_url": "/signs/d26a8ccc75c5a905.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 8
@@ -7509,7 +7509,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The opposite arrows warn that traffic runs in both directions on the road ahead.",
     "explanation_ms": "Anak panah bertentangan memberi amaran bahawa trafik bergerak dalam kedua-dua arah di jalan hadapan.",
     "image_url": "/signs/ea082fc0b4c65733.svg",
-    "source_url": "KPP General PDF page 49",
+    "source_url": "KPP General, PDF page 49",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 9
@@ -7535,7 +7535,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Both edges of the symbol move inward, so the available width decreases on both sides.",
     "explanation_ms": "Kedua-dua tepi simbol menuju ke dalam, jadi lebar jalan berkurang pada kedua-dua sisi.",
     "image_url": "/signs/ce68f8896451a2c9.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 10
@@ -7561,7 +7561,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The left edge moves inward while the right edge stays straight. The narrowing is on the left.",
     "explanation_ms": "Tepi kiri menuju ke dalam manakala tepi kanan kekal lurus. Penyempitan berlaku di kiri.",
     "image_url": "/signs/2be93e13645351ef.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 11
@@ -7587,7 +7587,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The right edge moves inward while the left edge stays straight. The narrowing is on the right.",
     "explanation_ms": "Tepi kanan menuju ke dalam manakala tepi kiri kekal lurus. Penyempitan berlaku di kanan.",
     "image_url": "/signs/e08ca85fb4d9816f.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 12
@@ -7613,7 +7613,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The incline rises in your direction of travel. A lower gear can help on the climb.",
     "explanation_ms": "Cerun naik mengikut arah perjalanan anda. Gear rendah boleh membantu ketika mendaki.",
     "image_url": "/signs/fa01479a3e275ae3.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 13
@@ -7639,7 +7639,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The incline falls in your direction of travel. A lower gear can help control speed downhill.",
     "explanation_ms": "Cerun menurun mengikut arah perjalanan anda. Gear rendah boleh membantu mengawal kelajuan ketika menurun.",
     "image_url": "/signs/eb9c555ec03577f6.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 14
@@ -7665,7 +7665,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The bridge symbol warns of limited width. Slow down and check for oncoming traffic before crossing.",
     "explanation_ms": "Simbol jambatan memberi amaran tentang lebar yang terhad. Perlahankan kenderaan dan periksa trafik bertentangan sebelum melintas.",
     "image_url": "/signs/d1e9a6d6aab128b3.svg",
-    "source_url": "KPP General PDF page 51",
+    "source_url": "KPP General, PDF page 51",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 15
@@ -7691,7 +7691,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The sign warns of a slippery stretch. Brake carefully and keep control of the steering.",
     "explanation_ms": "Tanda ini memberi amaran tentang jalan licin. Brek dengan berhati-hati dan kekalkan kawalan stereng.",
     "image_url": "/signs/9702f462c37241a4.svg",
-    "source_url": "KPP General PDF page 51",
+    "source_url": "KPP General, PDF page 51",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 16
@@ -7717,7 +7717,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The warning is in advance of a stop sign. Slow down so you can stop at the sign itself.",
     "explanation_ms": "Amaran ini diletakkan sebelum tanda berhenti. Perlahankan kenderaan supaya anda boleh berhenti pada tanda sebenar.",
     "image_url": "/signs/add368369889404d.svg",
-    "source_url": "KPP General PDF page 52",
+    "source_url": "KPP General, PDF page 52",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 17
@@ -7743,7 +7743,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The exclamation mark warns of an unspecified danger ahead. Proceed with care.",
     "explanation_ms": "Tanda seru memberi amaran tentang bahaya yang tidak dinyatakan jenisnya. Pandu dengan berhati-hati.",
     "image_url": "/signs/3f13bbd2ffe5c466.svg",
-    "source_url": "KPP General PDF page 52",
+    "source_url": "KPP General, PDF page 52",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 18
@@ -7769,7 +7769,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The rocks shown falling from a slope warn that debris may reach the roadway.",
     "explanation_ms": "Batu yang ditunjukkan jatuh dari cerun memberi amaran bahawa runtuhan mungkin sampai ke jalan.",
     "image_url": "/signs/adc5145404e740b4.svg",
-    "source_url": "KPP General PDF page 53",
+    "source_url": "KPP General, PDF page 53",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 19
@@ -7795,7 +7795,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The sign alerts you to people with impaired vision who may be crossing. Slow and give them time.",
     "explanation_ms": "Tanda ini memberi amaran bahawa orang kurang upaya penglihatan mungkin melintas. Perlahankan kenderaan dan beri mereka masa.",
     "image_url": "/signs/f986766e1fca4c02.svg",
-    "source_url": "KPP General PDF page 54",
+    "source_url": "KPP General, PDF page 54",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 20
@@ -7821,7 +7821,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The symbol indicates a railway crossing with gates. Wait for the gates to open before proceeding.",
     "explanation_ms": "Simbol menunjukkan lintasan kereta api berpagar. Tunggu pagar dibuka sebelum meneruskan perjalanan.",
     "image_url": "/signs/e846f69e41c180a7.svg",
-    "source_url": "KPP General PDF page 56",
+    "source_url": "KPP General, PDF page 56",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-d-combined-2",
     "order_index": 21
@@ -7849,7 +7849,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Avoid overtaking on the approach to a pedestrian crossing.",
     "explanation_ms": "Elakkan memotong ketika menghampiri lintasan pejalan kaki.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 107",
+    "source_url": "KPP Kelas D Manual, PDF page 107",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7875,7 +7875,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The handbook says to release the accelerator immediately and steer in the direction the rear is skidding. Straighten as the vehicle recovers.",
     "explanation_ms": "Buku panduan menyatakan supaya pemecut dilepaskan serta-merta dan stereng dipusing mengikut arah bahagian belakang yang terbabas. Luruskan semula apabila kenderaan kembali terkawal.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 127",
+    "source_url": "KPP Kelas D Manual, PDF page 127",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7901,7 +7901,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Stop, turn off the engine and get passengers out before dealing with the fire.",
     "explanation_ms": "Berhenti, matikan enjin dan keluarkan penumpang sebelum menangani kebakaran.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 128",
+    "source_url": "KPP Kelas D Manual, PDF page 128",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7927,7 +7927,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Slow gradually and use the side window for guidance as you move to a safe place.",
     "explanation_ms": "Perlahankan kenderaan beransur-ansur dan gunakan tingkap sisi sebagai panduan untuk bergerak ke tempat selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 129",
+    "source_url": "KPP Kelas D Manual, PDF page 129",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7953,7 +7953,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Level ground helps keep the vehicle stable on a jack. Leave enough space from moving traffic.",
     "explanation_ms": "Permukaan rata membantu memastikan kenderaan stabil pada jek. Tinggalkan ruang yang cukup daripada trafik bergerak.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 131",
+    "source_url": "KPP Kelas D Manual, PDF page 131",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -7979,7 +7979,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A jack can fail or tip. Keep your body out from underneath the vehicle.",
     "explanation_ms": "Jek boleh gagal atau terbalik. Jangan letakkan badan di bawah kenderaan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 132",
+    "source_url": "KPP Kelas D Manual, PDF page 132",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8005,7 +8005,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A vehicle coming the other way may use part of your lane on a narrow bend.",
     "explanation_ms": "Kenderaan dari arah bertentangan mungkin menggunakan sebahagian lorong anda di selekoh sempit.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 136",
+    "source_url": "KPP Kelas D Manual, PDF page 136",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8031,7 +8031,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use a speed that lets you stop if an unseen pedestrian or animal appears.",
     "explanation_ms": "Pilih kelajuan yang membolehkan anda berhenti jika pejalan kaki atau haiwan yang tidak kelihatan muncul.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 138",
+    "source_url": "KPP Kelas D Manual, PDF page 138",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8057,7 +8057,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "People may cross in busy areas. Be ready to give way and obey any crossing signals.",
     "explanation_ms": "Orang mungkin melintas di kawasan sibuk. Bersedia untuk memberi laluan dan patuhi lampu isyarat lintasan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 140",
+    "source_url": "KPP Kelas D Manual, PDF page 140",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8083,7 +8083,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check tyre condition and inflation before setting out.",
     "explanation_ms": "Periksa keadaan dan tekanan angin tayar sebelum memulakan perjalanan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 141",
+    "source_url": "KPP Kelas D Manual, PDF page 141",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8109,7 +8109,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use an overtaking lane to pass. Return to the normal driving lane when safe.",
     "explanation_ms": "Gunakan lorong memotong untuk mendahului. Kembali ke lorong pemanduan apabila selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 142",
+    "source_url": "KPP Kelas D Manual, PDF page 142",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8135,7 +8135,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The shoulder is reserved for emergencies. A slow queue does not justify using it.",
     "explanation_ms": "Lorong kecemasan dikhaskan untuk keadaan kecemasan. Barisan trafik yang perlahan bukan alasan untuk menggunakannya.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF pages 129 and 142",
+    "source_url": "KPP Kelas D Manual, PDF page 129",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8161,7 +8161,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Clean glass helps reduce glare. Keep enough washer fluid to clean it when needed.",
     "explanation_ms": "Cermin yang bersih membantu mengurangkan silau. Pastikan cecair pencuci mencukupi.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 146",
+    "source_url": "KPP Kelas D Manual, PDF page 146",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8187,7 +8187,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Fatigue undermines concentration. Rest before driving.",
     "explanation_ms": "Keletihan menjejaskan tumpuan. Berehat sebelum memandu.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 78",
+    "source_url": "KPP Kelas D Manual, PDF page 78",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8213,7 +8213,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Keep calm. The handbook advises against retaliating when another driver behaves aggressively.",
     "explanation_ms": "Bertenang. Buku panduan menasihatkan supaya tidak membalas tindakan pemandu lain yang agresif.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 80",
+    "source_url": "KPP Kelas D Manual, PDF page 80",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8239,7 +8239,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check behind and beside you before moving right. Change lanes only when it is safe.",
     "explanation_ms": "Periksa belakang dan sisi sebelum bergerak ke kanan. Tukar lorong hanya apabila selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 106",
+    "source_url": "KPP Kelas D Manual, PDF page 106",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8265,7 +8265,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A suitable lower gear can supply more power for the manoeuvre.",
     "explanation_ms": "Gear rendah yang sesuai boleh memberikan lebih kuasa untuk olah gerak itu.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 106",
+    "source_url": "KPP Kelas D Manual, PDF page 106",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8291,7 +8291,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check the left side mirror for the front of the vehicle you passed. Use CITO before returning.",
     "explanation_ms": "Periksa cermin sisi kiri untuk melihat bahagian hadapan kenderaan yang dipotong. Gunakan CITO sebelum kembali.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 106",
+    "source_url": "KPP Kelas D Manual, PDF page 106",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8317,7 +8317,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Do not overtake at a bend where you cannot see approaching traffic.",
     "explanation_ms": "Jangan memotong di selekoh apabila trafik dari arah bertentangan tidak dapat dilihat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 107",
+    "source_url": "KPP Kelas D Manual, PDF page 107",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8343,7 +8343,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Reduce speed while keeping control. Check that it is safe before moving left.",
     "explanation_ms": "Kurangkan kelajuan sambil mengekalkan kawalan. Pastikan selamat sebelum bergerak ke kiri.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 108",
+    "source_url": "KPP Kelas D Manual, PDF page 108",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8369,7 +8369,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Priority does not prevent another road user from entering your path.",
     "explanation_ms": "Keutamaan tidak menghalang pengguna jalan lain daripada memasuki laluan anda.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 109",
+    "source_url": "KPP Kelas D Manual, PDF page 109",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8395,7 +8395,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Select the correct lane before entering and give priority to traffic approaching from the right.",
     "explanation_ms": "Pilih lorong yang betul sebelum masuk dan beri keutamaan kepada trafik dari arah kanan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 115",
+    "source_url": "KPP Kelas D Manual, PDF page 115",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8421,7 +8421,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Hazard lights warn others that your vehicle has stopped in an emergency.",
     "explanation_ms": "Lampu kecemasan memberi amaran bahawa kenderaan anda berhenti dalam keadaan kecemasan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 119",
+    "source_url": "KPP Kelas D Manual, PDF page 119",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8447,7 +8447,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "When visibility becomes too poor, pause your journey in a safe place.",
     "explanation_ms": "Apabila penglihatan terlalu terhad, hentikan perjalanan sementara di tempat selamat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 122",
+    "source_url": "KPP Kelas D Manual, PDF page 122",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8473,7 +8473,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Adjust your speed to suit the visibility when glare makes it harder to see.",
     "explanation_ms": "Sesuaikan kelajuan dengan jarak penglihatan apabila silau menyukarkan anda melihat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 123",
+    "source_url": "KPP Kelas D Manual, PDF page 123",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8499,7 +8499,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "High beam extends your view but should not be used where it dazzles others.",
     "explanation_ms": "Lampu tinggi memanjangkan jarak penglihatan tetapi tidak patut digunakan jika menyilaukan orang lain.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 145",
+    "source_url": "KPP Kelas D Manual, PDF page 145",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8525,7 +8525,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Reduced grip increases the distance needed to stop.",
     "explanation_ms": "Cengkaman yang berkurangan meningkatkan jarak yang diperlukan untuk berhenti.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 147",
+    "source_url": "KPP Kelas D Manual, PDF page 147",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8551,7 +8551,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A gust can displace the car toward an adjacent lane.",
     "explanation_ms": "Tiupan angin boleh menolak kereta ke arah lorong bersebelahan.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 148",
+    "source_url": "KPP Kelas D Manual, PDF page 148",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8577,7 +8577,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Do not risk deep water. Water entering the air intake can damage the engine.",
     "explanation_ms": "Jangan mengambil risiko melalui air dalam. Air yang memasuki salur masuk udara boleh merosakkan enjin.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 149",
+    "source_url": "KPP Kelas D Manual, PDF page 149",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8603,7 +8603,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Fog makes it hard to judge oncoming traffic, so avoid overtaking and leave room to stop.",
     "explanation_ms": "Kabus menyukarkan anda menilai trafik bertentangan. Elakkan memotong dan tinggalkan ruang untuk berhenti.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 150",
+    "source_url": "KPP Kelas D Manual, PDF page 150",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8629,7 +8629,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Use the dipstick to check the oil level during regular maintenance.",
     "explanation_ms": "Gunakan batang penyukat untuk memeriksa aras minyak semasa penyelenggaraan berkala.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 152",
+    "source_url": "KPP Kelas D Manual, PDF page 152",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8655,7 +8655,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The radiator is part of the cooling system that regulates engine temperature.",
     "explanation_ms": "Radiator ialah sebahagian daripada sistem penyejuk yang mengawal suhu enjin.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 153",
+    "source_url": "KPP Kelas D Manual, PDF page 153",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8681,7 +8681,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Inspect hoses for leaks and loose fittings. Tighten or replace a faulty hose.",
     "explanation_ms": "Periksa hos untuk kebocoran dan sambungan longgar. Ketatkan atau gantikan hos yang rosak.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 155",
+    "source_url": "KPP Kelas D Manual, PDF page 155",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8707,7 +8707,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Wear a seat belt even on a short trip.",
     "explanation_ms": "Pakai tali pinggang keledar walaupun untuk perjalanan singkat.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 157",
+    "source_url": "KPP Kelas D Manual, PDF page 157",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8733,7 +8733,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "A child restraint helps protect a child passenger if a collision happens.",
     "explanation_ms": "Kerusi keselamatan kanak-kanak membantu melindungi penumpang kanak-kanak jika berlaku perlanggaran.",
     "image_url": null,
-    "source_url": "KPP_D_Manual.pdf PDF page 158",
+    "source_url": "KPP Kelas D Manual, PDF page 158",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8759,7 +8759,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Suspension prevents the person from driving. Changing vehicles does not remove the restriction.",
     "explanation_ms": "Penggantungan melarang orang itu daripada memandu. Menukar kenderaan tidak menamatkan larangan tersebut.",
     "image_url": null,
-    "source_url": "KPP General, PDF 96",
+    "source_url": "KPP General, PDF page 96",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8785,7 +8785,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum requires the training and tests again, followed by a new probation period.",
     "explanation_ms": "Kurikulum memerlukan latihan dan ujian semula, diikuti tempoh percubaan yang baharu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 21",
+    "source_url": "KPP Kelas D Automatik, PDF page 21",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8811,7 +8811,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Look underneath to see whether anything is leaking before setting off.",
     "explanation_ms": "Lihat di bawah kereta untuk mengesan sebarang kebocoran sebelum bergerak.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 231",
+    "source_url": "KPP Kelas D Manual, PDF page 231",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8837,7 +8837,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that the plates are clean and undamaged.",
     "explanation_ms": "Pastikan plat nombor bersih dan tidak rosak.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 230",
+    "source_url": "KPP Kelas D Manual, PDF page 230",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8863,7 +8863,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Choose a suitable speed as you approach, maintain control through the bend, and only increase speed after clearing it.",
     "explanation_ms": "Pilih kelajuan yang sesuai ketika menghampiri selekoh, kekalkan kawalan semasa melaluinya dan tingkatkan kelajuan selepas melepasi selekoh.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 251",
+    "source_url": "KPP Kelas D Manual, PDF page 251",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8889,7 +8889,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The lesson says to use the pull-push steering technique, keep speed steady, and avoid gear changes and braking while passing through the bend.",
     "explanation_ms": "Gunakan teknik tarik dan tolak pada stereng, kekalkan kelajuan dan elakkan menukar gear serta membrek semasa melalui selekoh.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 253",
+    "source_url": "KPP Kelas D Manual, PDF page 253",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8915,7 +8915,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Hardened, cracked or torn blade rubber may leave water behind or scratch the glass.",
     "explanation_ms": "Getah bilah yang keras, retak atau koyak mungkin meninggalkan air atau mencalarkan cermin.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 229",
+    "source_url": "KPP Kelas D Manual, PDF page 229",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8941,7 +8941,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Look for the manufacturer’s tyre pressure label on the side of the driver’s door.",
     "explanation_ms": "Cari label tekanan angin tayar pengeluar di bahagian tepi pintu pemandu.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 228",
+    "source_url": "KPP Kelas D Manual, PDF page 228",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8967,7 +8967,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "During the visual inspection, check that tyres are free from bulges, cracks and tears.",
     "explanation_ms": "Pastikan tayar tidak menggelembung, merekah atau koyak semasa pemeriksaan.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 228",
+    "source_url": "KPP Kelas D Manual, PDF page 228",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -8993,7 +8993,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Alignment helps tread wear evenly. Balancing helps the wheel turn without vibration.",
     "explanation_ms": "Penjajaran membantu bunga tayar haus secara sekata. Pengimbangan membantu roda berputar tanpa gegaran.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 228",
+    "source_url": "KPP Kelas D Manual, PDF page 228",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9019,7 +9019,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book says to check that the level is between the minimum and maximum marks.",
     "explanation_ms": "Buku menyatakan paras minyak perlu berada antara tanda minimum dan maksimum.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 232",
+    "source_url": "KPP Kelas D Manual, PDF page 232",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9045,7 +9045,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that the washer reservoir contains enough fluid.",
     "explanation_ms": "Pastikan cecair dalam tangki pencuci cermin mencukupi.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 233",
+    "source_url": "KPP Kelas D Manual, PDF page 233",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9071,7 +9071,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that hoses have no leaks, cracks or swelling.",
     "explanation_ms": "Pastikan hos tidak bocor, merekah atau mengembang.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 234",
+    "source_url": "KPP Kelas D Manual, PDF page 234",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9097,7 +9097,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book includes a wheel-nut wrench among the emergency tools to check in the boot.",
     "explanation_ms": "Buku menyenaraikan pembuka nat roda antara peralatan kecemasan yang perlu diperiksa dalam but.",
     "image_url": null,
-    "source_url": "KPP Kelas D Manual, PDF 231",
+    "source_url": "KPP Kelas D Manual, PDF page 231",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9123,7 +9123,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass on the left.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kiri.",
     "image_url": "/signs/24dc89f9e7127cca.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9149,7 +9149,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass on the right.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di sebelah kanan.",
     "image_url": "/signs/a50c8dd8a202a25e.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9175,7 +9175,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means pass on either side.",
     "explanation_ms": "Papan tanda ini bermaksud lalu di mana-mana sisi.",
     "image_url": "/signs/6103dff69316bf86.svg",
-    "source_url": "KPP General PDF page 64",
+    "source_url": "KPP General, PDF page 64",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9201,7 +9201,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means lane for motorcycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk motosikal.",
     "image_url": "/signs/e0389a069e72ed52.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9227,7 +9227,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means lane for bicycles.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk basikal.",
     "image_url": "/signs/e86785fec1877d75.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9253,7 +9253,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The crossed right arrow bans a right turn at that junction.",
     "explanation_ms": "Anak panah kanan yang dipalang melarang pemandu membelok ke kanan di simpang itu.",
     "image_url": "/signs/2eee15e55fa0ef48.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9279,7 +9279,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means lane for trishaws.",
     "explanation_ms": "Papan tanda ini bermaksud lorong untuk beca.",
     "image_url": "/signs/fad437bbc08b75fa.png",
-    "source_url": "KPP General PDF page 65",
+    "source_url": "KPP General, PDF page 65",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9305,7 +9305,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means hospital.",
     "explanation_ms": "Papan tanda ini bermaksud hospital.",
     "image_url": "/signs/dde5874c6044c5f3.svg",
-    "source_url": "KPP General PDF page 67",
+    "source_url": "KPP General, PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9331,7 +9331,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means vehicle parking.",
     "explanation_ms": "Papan tanda ini bermaksud tempat letak kenderaan.",
     "image_url": "/signs/f6459f68e216bc5d.svg",
-    "source_url": "KPP General PDF page 67",
+    "source_url": "KPP General, PDF page 67",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9357,7 +9357,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means road with no through access. The road does not continue through to another route.",
     "explanation_ms": "Papan tanda ini bermaksud jalan buntu di hadapan. Jalan itu tidak bersambung dengan laluan lain.",
     "image_url": "/signs/082877f6ec086be6.svg",
-    "source_url": "KPP General PDF page 68",
+    "source_url": "KPP General, PDF page 68",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9383,7 +9383,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means designated U-turn. It marks a place to turn around. Give way to oncoming traffic before turning.",
     "explanation_ms": "Papan tanda ini bermaksud tempat pusingan U. Tanda ini menunjukkan tempat untuk berpatah balik. Beri laluan kepada trafik dari arah bertentangan sebelum membelok.",
     "image_url": "/signs/8956fe8a103938b3.svg",
-    "source_url": "KPP General PDF page 69",
+    "source_url": "KPP General, PDF page 69",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9409,7 +9409,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no vehicle entry.",
     "explanation_ms": "Papan tanda ini bermaksud kenderaan dilarang masuk.",
     "image_url": "/signs/9a316a4baac9f49a.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9435,7 +9435,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no U-turn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membuat pusingan U.",
     "image_url": "/signs/a299aef5bccc0fca.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9461,7 +9461,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "You must use a route that does not require turning left here.",
     "explanation_ms": "Gunakan laluan yang tidak memerlukan anda membelok ke kiri di sini.",
     "image_url": "/signs/ef495735d6870ce2.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9487,7 +9487,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no parking.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang meletak kenderaan.",
     "image_url": "/signs/fbd415b24ab21b44.svg",
-    "source_url": "KPP General PDF page 58",
+    "source_url": "KPP General, PDF page 58",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9513,7 +9513,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The single orange chevron points the way when the route changes direction in a work zone.",
     "explanation_ms": "Satu tanda serong jingga menunjukkan arah apabila laluan berubah dalam zon kerja.",
     "image_url": "/signs/263bc825012bcc83.svg",
-    "source_url": "KPP General PDF page 76",
+    "source_url": "KPP General, PDF page 76",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9539,7 +9539,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no stopping.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang berhenti.",
     "image_url": "/signs/ecd3d648f3d4a187.svg",
-    "source_url": "KPP General PDF page 59",
+    "source_url": "KPP General, PDF page 59",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9565,7 +9565,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "This sign means no sounding the horn.",
     "explanation_ms": "Papan tanda ini bermaksud dilarang membunyikan hon.",
     "image_url": "/signs/ce55b86645694f5d.svg",
-    "source_url": "KPP General PDF page 57",
+    "source_url": "KPP General, PDF page 57",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -9589,7 +9589,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The cross symbol warns that another road crosses yours. Check both sides on approach.",
     "explanation_ms": "Simbol silang memberi amaran bahawa jalan lain merentasi laluan anda. Periksa kedua-dua sisi apabila menghampiri.",
     "image_url": "/signs/4a3491aff2749365.svg",
-    "source_url": "KPP General PDF page 40",
+    "source_url": "KPP General, PDF page 40",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-1",
     "order_index": 19
@@ -9615,7 +9615,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The side branch on the left warns of a road joining from that side.",
     "explanation_ms": "Cabang di sebelah kiri memberi amaran tentang jalan yang bercantum dari arah itu.",
     "image_url": "/signs/e22292f492beec26.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-1",
     "order_index": 20
@@ -9641,7 +9641,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The branch on the right warns of traffic that may enter from a side road there.",
     "explanation_ms": "Cabang di sebelah kanan memberi amaran tentang trafik yang mungkin masuk dari jalan sisi itu.",
     "image_url": "/signs/12e8b0d727c5bdf1.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-1",
     "order_index": 21
@@ -9669,7 +9669,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Candidates must deal honestly with the driving institute and JPJ. Never offer a reward in exchange for a guaranteed pass.",
     "explanation_ms": "Calon mesti berurusan secara jujur dengan institut memandu dan JPJ. Jangan tawarkan ganjaran sebagai pertukaran untuk jaminan lulus.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 100",
+    "source_url": "KPP Kelas D Automatik, PDF page 100",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10007,7 +10007,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Avoid giving a road-crash casualty anything to eat or drink at the scene.",
     "explanation_ms": "Jangan beri mangsa kemalangan jalan raya makanan atau minuman di tempat kejadian.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 200",
+    "source_url": "KPP Kelas D Automatik, PDF page 200",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10033,7 +10033,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Photograph the scene, vehicle damage and any road marks that may help explain what happened.",
     "explanation_ms": "Ambil gambar tempat kejadian, kerosakan kenderaan dan sebarang kesan di jalan yang boleh membantu menjelaskan kejadian.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 200",
+    "source_url": "KPP Kelas D Automatik, PDF page 200",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10059,7 +10059,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Report the crash to the police, especially if someone was injured or the property damage was serious.",
     "explanation_ms": "Laporkan kemalangan kepada polis, terutama jika terdapat kecederaan atau kerosakan harta benda yang serius.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 199",
+    "source_url": "KPP Kelas D Automatik, PDF page 199",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10085,7 +10085,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Call for urgent medical assistance if someone is seriously injured.",
     "explanation_ms": "Hubungi perkhidmatan perubatan kecemasan jika ada orang yang cedera parah.",
     "image_url": null,
-    "source_url": "Kurikulum Pendidikan Pemandu, PDF page 199",
+    "source_url": "KPP Kelas D Automatik, PDF page 199",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10397,7 +10397,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The rear-door child lock helps stop a child from opening the door from inside.",
     "explanation_ms": "Kunci keselamatan kanak-kanak pada pintu belakang membantu menghalang kanak-kanak daripada membuka pintu dari dalam.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 158",
+    "source_url": "KPP Kelas D Automatik, PDF page 158",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10579,7 +10579,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The vocational application requirements list a competent driving licence. The probationary licence exception is for Class C only.",
     "explanation_ms": "Syarat permohonan lesen vokasional menyenaraikan lesen memandu kompeten. Pengecualian untuk lesen percubaan hanya bagi Kelas C.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 23",
+    "source_url": "KPP Kelas D Automatik, PDF page 23",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10605,7 +10605,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Vocational practical tests take place after a theory pass. PSV bus applicants are one of the groups required to take a practical test.",
     "explanation_ms": "Ujian amali lesen vokasional dijalankan selepas lulus ujian teori. Pemohon PSV bas ialah antara kumpulan yang perlu menjalani ujian amali.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 24",
+    "source_url": "KPP Kelas D Automatik, PDF page 24",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10631,7 +10631,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum lists automatic cancellation for a vocational licence that has been expired for more than three years.",
     "explanation_ms": "Kurikulum menyenaraikan pembatalan automatik bagi lesen vokasional yang tamat tempoh melebihi tiga tahun.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 25",
+    "source_url": "KPP Kelas D Automatik, PDF page 25",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10657,7 +10657,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Part II tests circuit skills. Part III tests applying safe driving skills on the road.",
     "explanation_ms": "Bahagian II menguji kemahiran di litar. Bahagian III menguji amalan pemanduan selamat di jalan raya.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 15",
+    "source_url": "KPP Kelas D Automatik, PDF page 15",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10683,7 +10683,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book lists a one-week wait after failing the practical driving test before a candidate can retest.",
     "explanation_ms": "Buku menetapkan tempoh menunggu seminggu selepas gagal ujian amali sebelum calon boleh mengulang ujian.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 17",
+    "source_url": "KPP Kelas D Automatik, PDF page 17",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10709,7 +10709,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The booking requirements include a copy of the learner licence and the SM4 driving training record.",
     "explanation_ms": "Syarat tempahan termasuk salinan lesen belajar memandu dan rekod latihan memandu SM4.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 16",
+    "source_url": "KPP Kelas D Automatik, PDF page 16",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10735,7 +10735,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum requires medical verification by a medical officer at a government health clinic.",
     "explanation_ms": "Kurikulum memerlukan pengesahan oleh pegawai perubatan di klinik kesihatan kerajaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 11",
+    "source_url": "KPP Kelas D Automatik, PDF page 11",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10761,7 +10761,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum ties demerit points to a scheduled offence after the compound payment or court fine has been paid.",
     "explanation_ms": "Kurikulum mengaitkan mata demerit bagi kesalahan terjadual dengan pembayaran kompaun atau denda mahkamah.",
     "image_url": null,
-    "source_url": "KPP General, PDF 93",
+    "source_url": "KPP General, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10787,7 +10787,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Selector position 3 allows the first three gears. It can be used on descents or when more power is needed for overtaking or climbing.",
     "explanation_ms": "Kedudukan 3 membenarkan tiga gear pertama. Ia boleh digunakan ketika menuruni bukit atau apabila memerlukan lebih kuasa untuk memotong atau mendaki.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 212",
+    "source_url": "KPP Kelas D Automatik, PDF page 212",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10813,7 +10813,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The table lists Class DA for cars without a clutch pedal and with an unladen weight of no more than 3,500 kg.",
     "explanation_ms": "Jadual menyenaraikan Kelas DA bagi motokar tanpa pedal cekam dengan berat tanpa muatan tidak melebihi 3,500 kg.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 10",
+    "source_url": "KPP Kelas D Automatik, PDF page 10",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10839,7 +10839,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "One purpose is to discourage repeat offences by educating and disciplining drivers.",
     "explanation_ms": "Antara tujuannya ialah mengurangkan kesalahan berulang dengan mendidik dan mendisiplinkan pemandu.",
     "image_url": null,
-    "source_url": "KPP General, PDF 94",
+    "source_url": "KPP General, PDF page 94",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10865,7 +10865,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The first 20-point threshold shown in the schedule results in a warning.",
     "explanation_ms": "Ambang 20 mata kali pertama dalam jadual ini membawa kepada amaran.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10891,7 +10891,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "KEJARA applies to scheduled offences under the road transport rules.",
     "explanation_ms": "KEJARA terpakai kepada kesalahan terjadual di bawah peraturan pengangkutan jalan.",
     "image_url": null,
-    "source_url": "KPP General, PDF 93",
+    "source_url": "KPP General, PDF page 93",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10917,7 +10917,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum describes a possible reduction of up to 50% of the demerit points under the listed conditions.",
     "explanation_ms": "Kurikulum menerangkan potongan sehingga 50% daripada mata demerit tertakluk pada syarat yang disenaraikan.",
     "image_url": null,
-    "source_url": "KPP General, PDF 95",
+    "source_url": "KPP General, PDF page 95",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -10941,7 +10941,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The T shows that your road meets a crossroad and does not continue straight.",
     "explanation_ms": "Bentuk T menunjukkan bahawa jalan anda bertemu jalan melintang dan tidak bersambung lurus.",
     "image_url": "/signs/e3ccd470b3c6bc8e.svg",
-    "source_url": "KPP General PDF page 42",
+    "source_url": "KPP General, PDF page 42",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 1
@@ -10967,7 +10967,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The arrows split around the island. Choose the side that leads to your destination.",
     "explanation_ms": "Anak panah berpecah di sekeliling pulau. Pilih sisi yang menuju ke destinasi anda.",
     "image_url": "/signs/322e269754adeff6.svg",
-    "source_url": "KPP General PDF page 44",
+    "source_url": "KPP General, PDF page 44",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 2
@@ -10993,7 +10993,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The arrow turns sharply left. Reduce speed before the road bends.",
     "explanation_ms": "Anak panah membelok tajam ke kiri. Kurangkan kelajuan sebelum selekoh.",
     "image_url": "/signs/194637442da016e5.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 3
@@ -11019,7 +11019,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The arrow turns sharply right. Reduce speed before reaching that bend.",
     "explanation_ms": "Anak panah membelok tajam ke kanan. Kurangkan kelajuan sebelum tiba di selekoh itu.",
     "image_url": "/signs/8c4124b32afd3704.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 4
@@ -11045,7 +11045,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The chevron points in the direction of the sharp turn. Follow its direction through the bend.",
     "explanation_ms": "Chevron menunjukkan arah belokan tajam. Ikuti arah itu semasa melalui selekoh.",
     "image_url": "/signs/b716cb9e685088a5.svg",
-    "source_url": "KPP General PDF page 47",
+    "source_url": "KPP General, PDF page 47",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 5
@@ -11071,7 +11071,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The two sides come together where the divider ends. Watch for vehicles coming toward you.",
     "explanation_ms": "Kedua-dua sisi bertemu apabila pembahagi tamat. Awasi kenderaan dari arah bertentangan.",
     "image_url": "/signs/b12139221efc15b6.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 6
@@ -11097,7 +11097,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The symbol shows a divider starting between the opposite directions of travel.",
     "explanation_ms": "Simbol menunjukkan pembahagi bermula di antara dua arah perjalanan.",
     "image_url": "/signs/788d475c2d05336c.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 7
@@ -11123,7 +11123,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The circular arrows indicate a roundabout. Choose your lane before entering and give way to circulating traffic.",
     "explanation_ms": "Anak panah bulat menunjukkan bulatan. Pilih lorong sebelum masuk dan beri laluan kepada trafik yang beredar.",
     "image_url": "/signs/d26a8ccc75c5a905.svg",
-    "source_url": "KPP General PDF page 48",
+    "source_url": "KPP General, PDF page 48",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 8
@@ -11149,7 +11149,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The opposite arrows warn that traffic runs in both directions on the road ahead.",
     "explanation_ms": "Anak panah bertentangan memberi amaran bahawa trafik bergerak dalam kedua-dua arah di jalan hadapan.",
     "image_url": "/signs/ea082fc0b4c65733.svg",
-    "source_url": "KPP General PDF page 49",
+    "source_url": "KPP General, PDF page 49",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 9
@@ -11175,7 +11175,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Both edges of the symbol move inward, so the available width decreases on both sides.",
     "explanation_ms": "Kedua-dua tepi simbol menuju ke dalam, jadi lebar jalan berkurang pada kedua-dua sisi.",
     "image_url": "/signs/ce68f8896451a2c9.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 10
@@ -11201,7 +11201,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The left edge moves inward while the right edge stays straight. The narrowing is on the left.",
     "explanation_ms": "Tepi kiri menuju ke dalam manakala tepi kanan kekal lurus. Penyempitan berlaku di kiri.",
     "image_url": "/signs/2be93e13645351ef.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 11
@@ -11227,7 +11227,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The right edge moves inward while the left edge stays straight. The narrowing is on the right.",
     "explanation_ms": "Tepi kanan menuju ke dalam manakala tepi kiri kekal lurus. Penyempitan berlaku di kanan.",
     "image_url": "/signs/e08ca85fb4d9816f.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 12
@@ -11253,7 +11253,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The incline rises in your direction of travel. A lower gear can help on the climb.",
     "explanation_ms": "Cerun naik mengikut arah perjalanan anda. Gear rendah boleh membantu ketika mendaki.",
     "image_url": "/signs/fa01479a3e275ae3.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 13
@@ -11279,7 +11279,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The incline falls in your direction of travel. A lower gear can help control speed downhill.",
     "explanation_ms": "Cerun menurun mengikut arah perjalanan anda. Gear rendah boleh membantu mengawal kelajuan ketika menurun.",
     "image_url": "/signs/eb9c555ec03577f6.svg",
-    "source_url": "KPP General PDF page 50",
+    "source_url": "KPP General, PDF page 50",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 14
@@ -11305,7 +11305,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The bridge symbol warns of limited width. Slow down and check for oncoming traffic before crossing.",
     "explanation_ms": "Simbol jambatan memberi amaran tentang lebar yang terhad. Perlahankan kenderaan dan periksa trafik bertentangan sebelum melintas.",
     "image_url": "/signs/d1e9a6d6aab128b3.svg",
-    "source_url": "KPP General PDF page 51",
+    "source_url": "KPP General, PDF page 51",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 15
@@ -11331,7 +11331,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The sign warns of a slippery stretch. Brake carefully and keep control of the steering.",
     "explanation_ms": "Tanda ini memberi amaran tentang jalan licin. Brek dengan berhati-hati dan kekalkan kawalan stereng.",
     "image_url": "/signs/9702f462c37241a4.svg",
-    "source_url": "KPP General PDF page 51",
+    "source_url": "KPP General, PDF page 51",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 16
@@ -11357,7 +11357,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The warning is in advance of a stop sign. Slow down so you can stop at the sign itself.",
     "explanation_ms": "Amaran ini diletakkan sebelum tanda berhenti. Perlahankan kenderaan supaya anda boleh berhenti pada tanda sebenar.",
     "image_url": "/signs/add368369889404d.svg",
-    "source_url": "KPP General PDF page 52",
+    "source_url": "KPP General, PDF page 52",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 17
@@ -11383,7 +11383,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The exclamation mark warns of an unspecified danger ahead. Proceed with care.",
     "explanation_ms": "Tanda seru memberi amaran tentang bahaya yang tidak dinyatakan jenisnya. Pandu dengan berhati-hati.",
     "image_url": "/signs/3f13bbd2ffe5c466.svg",
-    "source_url": "KPP General PDF page 52",
+    "source_url": "KPP General, PDF page 52",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 18
@@ -11409,7 +11409,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The rocks shown falling from a slope warn that debris may reach the roadway.",
     "explanation_ms": "Batu yang ditunjukkan jatuh dari cerun memberi amaran bahawa runtuhan mungkin sampai ke jalan.",
     "image_url": "/signs/adc5145404e740b4.svg",
-    "source_url": "KPP General PDF page 53",
+    "source_url": "KPP General, PDF page 53",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 19
@@ -11435,7 +11435,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The sign alerts you to people with impaired vision who may be crossing. Slow and give them time.",
     "explanation_ms": "Tanda ini memberi amaran bahawa orang kurang upaya penglihatan mungkin melintas. Perlahankan kenderaan dan beri mereka masa.",
     "image_url": "/signs/f986766e1fca4c02.svg",
-    "source_url": "KPP General PDF page 54",
+    "source_url": "KPP General, PDF page 54",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 20
@@ -11461,7 +11461,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The symbol indicates a railway crossing with gates. Wait for the gates to open before proceeding.",
     "explanation_ms": "Simbol menunjukkan lintasan kereta api berpagar. Tunggu pagar dibuka sebelum meneruskan perjalanan.",
     "image_url": "/signs/e846f69e41c180a7.svg",
-    "source_url": "KPP General PDF page 56",
+    "source_url": "KPP General, PDF page 56",
     "created_at": "2026-11-10T00:00:00Z",
     "set_id": "mock-da-combined-2",
     "order_index": 21
@@ -12399,7 +12399,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Suspension prevents the person from driving. Changing vehicles does not remove the restriction.",
     "explanation_ms": "Penggantungan melarang orang itu daripada memandu. Menukar kenderaan tidak menamatkan larangan tersebut.",
     "image_url": null,
-    "source_url": "KPP General, PDF 96",
+    "source_url": "KPP General, PDF page 96",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12425,7 +12425,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The curriculum requires the training and tests again, followed by a new probation period.",
     "explanation_ms": "Kurikulum memerlukan latihan dan ujian semula, diikuti tempoh percubaan yang baharu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 21",
+    "source_url": "KPP Kelas D Automatik, PDF page 21",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12451,7 +12451,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Look underneath to see whether anything is leaking before setting off.",
     "explanation_ms": "Lihat di bawah kereta untuk mengesan sebarang kebocoran sebelum bergerak.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 227",
+    "source_url": "KPP Kelas D Automatik, PDF page 227",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12477,7 +12477,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that the plates are clean and undamaged.",
     "explanation_ms": "Pastikan plat nombor bersih dan tidak rosak.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 226",
+    "source_url": "KPP Kelas D Automatik, PDF page 226",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12503,7 +12503,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Select D and release the brakes as instructed, then press the accelerator gently to leave the ramp.",
     "explanation_ms": "Pilih D dan lepaskan brek mengikut langkah yang diterangkan, kemudian tekan pemecut perlahan-lahan untuk keluar dari tanjakan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 284",
+    "source_url": "KPP Kelas D Automatik, PDF page 284",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12529,7 +12529,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "With the parking brake released, ease off the foot brake to start moving without using the accelerator.",
     "explanation_ms": "Selepas melepaskan brek tangan, lepaskan pedal brek perlahan-lahan untuk bergerak tanpa menekan pemecut.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 233",
+    "source_url": "KPP Kelas D Automatik, PDF page 233",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12555,7 +12555,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Hardened, cracked or torn blade rubber may leave water behind or scratch the glass.",
     "explanation_ms": "Getah bilah yang keras, retak atau koyak mungkin meninggalkan air atau mencalarkan cermin.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 225",
+    "source_url": "KPP Kelas D Automatik, PDF page 225",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12581,7 +12581,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Look for the manufacturer’s tyre pressure label on the side of the driver’s door.",
     "explanation_ms": "Cari label tekanan angin tayar pengeluar di bahagian tepi pintu pemandu.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 224",
+    "source_url": "KPP Kelas D Automatik, PDF page 224",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12607,7 +12607,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "During the visual inspection, check that tyres are free from bulges, cracks and tears.",
     "explanation_ms": "Pastikan tayar tidak menggelembung, merekah atau koyak semasa pemeriksaan.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 224",
+    "source_url": "KPP Kelas D Automatik, PDF page 224",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12633,7 +12633,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Correct wheel alignment helps the tyre tread wear evenly. The book describes wheel balancing separately as a way to reduce vibration.",
     "explanation_ms": "Penjajaran roda yang betul membantu bunga tayar haus secara sekata. Pengimbangan roda pula membantu mengurangkan gegaran.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 224",
+    "source_url": "KPP Kelas D Automatik, PDF page 224",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12659,7 +12659,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book says to check that the level is between the minimum and maximum marks.",
     "explanation_ms": "Buku menyatakan paras minyak perlu berada antara tanda minimum dan maksimum.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 228",
+    "source_url": "KPP Kelas D Automatik, PDF page 228",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12685,7 +12685,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that the washer reservoir contains enough fluid.",
     "explanation_ms": "Pastikan cecair dalam tangki pencuci cermin mencukupi.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 229",
+    "source_url": "KPP Kelas D Automatik, PDF page 229",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12711,7 +12711,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "Check that hoses have no leaks, cracks or swelling.",
     "explanation_ms": "Pastikan hos tidak bocor, merekah atau mengembang.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 230",
+    "source_url": "KPP Kelas D Automatik, PDF page 230",
     "created_at": "2026-11-08T00:00:00Z"
   },
   {
@@ -12737,7 +12737,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "explanation_en": "The book includes a wheel-nut wrench among the emergency tools to check in the boot.",
     "explanation_ms": "Buku menyenaraikan pembuka nat roda antara peralatan kecemasan yang perlu diperiksa dalam but.",
     "image_url": null,
-    "source_url": "KPP Kelas DA Automatik, PDF 227",
+    "source_url": "KPP Kelas D Automatik, PDF page 227",
     "created_at": "2026-11-08T00:00:00Z"
   }
 ];

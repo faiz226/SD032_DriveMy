@@ -39,7 +39,15 @@ export function TestResultsView({
   setId,
 }: TestResultsViewProps) {
   const navigate = useNavigate();
-  const [showWrongOnly, setShowWrongOnly] = useState(false);
+
+  // Wrong question IDs
+  const wrongIds = useMemo(
+    () => result.questions.filter((q) => result.answers[q.id] !== q.correct_index).map((q) => q.id),
+    [result]
+  );
+
+  // The review opens on what to fix; an all-correct attempt lists every question.
+  const [showWrongOnly, setShowWrongOnly] = useState(wrongIds.length > 0);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
 
@@ -64,11 +72,8 @@ export function TestResultsView({
 
   const categories = Object.keys(categoryBreakdown).sort();
 
-  // Wrong question IDs
-  const wrongIds = useMemo(
-    () => result.questions.filter((q) => result.answers[q.id] !== q.correct_index).map((q) => q.id),
-    [result]
-  );
+  // Quizzes lead with the retry that fixes mistakes; Try Again steps back to outline.
+  const retryWrong = mode === "quiz" && wrongIds.length > 0 ? onRetryWrong : undefined;
 
   // Filtered questions for review
   const filteredQuestions = useMemo(() => {
@@ -98,7 +103,7 @@ export function TestResultsView({
     const filename = `drivemy-${mode}-result.pdf`;
 
     // Try native share on mobile, fall back to download
-    if (navigator.share && navigator.canShare?.({ files: [new File([blob], filename)] })) {
+    if (matchMedia("(pointer: coarse)").matches && navigator.share && navigator.canShare?.({ files: [new File([blob], filename)] })) {
       try {
         await navigator.share({
           files: [new File([blob], filename, { type: "application/pdf" })],
@@ -160,16 +165,16 @@ export function TestResultsView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-border bg-muted/40 px-6 py-4 sm:px-8">
-          <Button onClick={onRetry}>
-            <ArrowCounterClockwise aria-hidden />
-            {t("results.tryAgain")}
-          </Button>
-          {mode === "quiz" && wrongIds.length > 0 && onRetryWrong && (
-            <Button variant="outline" onClick={() => onRetryWrong(wrongIds)}>
+          {retryWrong && (
+            <Button onClick={() => retryWrong(wrongIds)}>
               <ArrowCounterClockwise aria-hidden />
               {t("exam.retryWrong")}
             </Button>
           )}
+          <Button variant={retryWrong ? "outline" : "default"} onClick={onRetry}>
+            <ArrowCounterClockwise aria-hidden />
+            {t("results.tryAgain")}
+          </Button>
           {mode === "mock" && reviewAvailable && (
             <Button variant="outline" onClick={handlePDF}>
               <Download aria-hidden />
@@ -311,6 +316,7 @@ export function TestResultsView({
                         <div className="rounded-xl border border-brand-ink/20 bg-brand/15 p-3 text-sm">
                           <span className="font-semibold text-brand-ink">{t("quiz.explanation")}:</span> {explanation}
                           <SpeechControl kind="explanation" text={explanation} />
+                          {q.source_url && <p className="mt-2 text-muted-foreground">{t("exam.sourceCitation")}: {q.source_url}</p>}
                         </div>
                       )}
                     </div>

@@ -215,7 +215,7 @@ export function TheoryPage() {
 
         {/* Primary Tabs List */}
         <div className="mt-3">
-          <TabsList aria-label={lang === "en" ? "Theory topics" : "Topik teori"} className="w-full sm:w-auto overflow-x-auto justify-start inline-flex flex-nowrap hide-scrollbar">
+          <TabsList aria-label={lang === "en" ? "Theory topics" : "Topik teori"} className="h-auto w-full sm:w-auto justify-start inline-flex flex-wrap">
             <TabsTrigger value="signs" className="min-h-11 px-3">
               {lang === "en" ? "Road Signs" : "Papan Tanda"}
             </TabsTrigger>
@@ -613,7 +613,7 @@ export function TheoryPage() {
                                       ?.focus(),
                                   );
                                 }}
-                                className="flex items-center gap-1 text-[0.8125rem] font-semibold text-primary hover:underline cursor-pointer"
+                                className="flex min-h-6 min-w-6 items-center gap-1 text-[0.8125rem] font-semibold text-primary hover:underline cursor-pointer"
                               >
                                 <Repeat size={12} aria-hidden="true" />
                                 {lang === "en" ? "Flip back" : "Pusing semula"}

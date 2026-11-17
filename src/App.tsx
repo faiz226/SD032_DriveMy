@@ -47,6 +47,7 @@ const LazySimPageDev = import.meta.env.DEV || import.meta.env.VITE_SIM_PERF === 
 import { preloadSimAssets } from "@/sim/assets";
 import { currentTier } from "@/sim/quality";
 import { ROUTES }        from "@/lib/constants";
+import { usePageTitle }   from "@/hooks/usePageTitle";
 import { useTheme }      from "@/hooks/useTheme";
 import { useLanguage }   from "@/hooks/useLanguage";
 
@@ -86,6 +87,12 @@ const PageSpinner = (
   </div>
 );
 
+/** Sets the document title on every route; lives inside the router so it can read the path. */
+function PageTitle() {
+  usePageTitle();
+  return null;
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   useTheme();
@@ -98,6 +105,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
             <BrowserRouter>
+              <PageTitle />
               <Suspense fallback={PageSpinner}>
                 <Routes>
 
