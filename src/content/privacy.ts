@@ -3,7 +3,7 @@ import type { Language } from "@/lib/constants";
 type Text = Record<Language, string>;
 
 /** When this notice last changed. Update it with any change below. */
-export const PRIVACY_UPDATED: Text = { en: "Last updated 17 November 2026", ms: "Dikemas kini 17 November 2026" };
+export const PRIVACY_UPDATED: Text = { en: "Last updated 18 November 2026", ms: "Dikemas kini 18 November 2026" };
 
 export const PRIVACY_SUMMARY: Text = {
   en: "DriveMy keeps your account and your learning results so you can see your progress. We never sell your data. You can download or delete all of it in Settings, at any time.",

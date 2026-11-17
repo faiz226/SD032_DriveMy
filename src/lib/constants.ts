@@ -28,7 +28,7 @@ export const ROUTES = {
  * shown a contact that could not reach anyone. Set a real, monitored inbox here and the notice shows a contact
  * section again; until then it points people to the self-service tools in Settings.
  */
-export const PRIVACY_CONTACT_EMAIL: string | null = null;
+export const PRIVACY_CONTACT_EMAIL: string | null = "ahmadfaizacb2468abc@gmail.com";
 
 /**
  * The colour test is off in production: its Ishihara plates have no licence, so none ships with the app.
