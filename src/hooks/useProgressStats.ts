@@ -20,12 +20,12 @@ export function useQuizStats() {
   });
 }
 
-export function useMockStats() {
+export function useMockStats(enabled = true) {
   const { user } = useAuthStore();
   return useQuery({
     queryKey: learnerKeys.mockStats(user?.id),
     queryFn: () => getMockStats(user!.id),
-    enabled: !!user,
+    enabled: !!user && enabled,
   });
 }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,8 +7,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useMockStats } from "@/hooks/useProgressStats";
 import type { TranslationKey } from "@/lib/translations";
-import type { LicenseTrack } from "@/types/database";
+import type { LicenseTrack, MockTestResult } from "@/types/database";
 
 const TRACK_STORAGE_KEY = "drivemy-license-track";
 
@@ -45,6 +46,27 @@ function buildMockSetId(setNum: number, track: LicenseTrack): string {
   return track === "D" ? `mock-d-combined-${setNum}` : `mock-da-combined-${setNum}`;
 }
 
+/** Newest attempt per mock set number for this class. */
+export function lastMockAttempts(history: MockTestResult[], track: LicenseTrack) {
+  const last = new Map<number, MockTestResult>();
+  for (const row of history) {
+    const set = MOCK_NUMBERS.find((m) => buildMockSetId(m.num, track) === row.set_id);
+    if (!set) continue;
+    const prev = last.get(set.num);
+    if (!prev || Date.parse(row.completed_at) > Date.parse(prev.completed_at)) last.set(set.num, row);
+  }
+  return last;
+}
+
+/** The set to suggest: one never tried, else the one tried longest ago. */
+export function nextMockSet(last: Map<number, MockTestResult>) {
+  const at = (num: number) => {
+    const row = last.get(num);
+    return row ? Date.parse(row.completed_at) || 0 : -Infinity;
+  };
+  return MOCK_NUMBERS.reduce((a, b) => (at(b.num) < at(a.num) ? b : a)).num;
+}
+
 export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
   const { language } = useLanguage();
   const [track, setTrack] = useState<LicenseTrack>(() => {
@@ -65,6 +87,22 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
 
   const selectedSet = watch("setId");
   const rulesAccepted = watch("rulesAccepted") || false;
+
+  // Mock only: what the learner has already sat, per set, for this class.
+  const { data: mockStats } = useMockStats(mode === "mock");
+  const lastAttempts = useMemo(
+    () => (mode === "mock" && mockStats ? lastMockAttempts(mockStats.history, track) : null),
+    [mode, mockStats, track]
+  );
+
+  // Once the history is in, and again on a class change, suggest the next set.
+  // The learner can still switch.
+  useEffect(() => {
+    if (!lastAttempts) return;
+    const num = nextMockSet(lastAttempts);
+    setSelectedMockNum(num);
+    setValue("setId", buildMockSetId(num, track));
+  }, [lastAttempts]);
 
   const handleTrackChange = (nextTrack: LicenseTrack) => {
     setTrack(nextTrack);
@@ -270,6 +308,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {MOCK_NUMBERS.map((sec) => {
                 const isSelected = selectedMockNum === sec.num;
+                const last = lastAttempts?.get(sec.num);
                 return (
                   <button
                     key={sec.num}
@@ -297,6 +336,13 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                       <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
                         {t(sec.descKey as TranslationKey)}
                       </span>
+                      {lastAttempts && (
+                        <span className={cn("mt-1.5 block text-sm font-semibold leading-snug tabular-nums", !last && "font-medium text-muted-foreground")}>
+                          {last
+                            ? t("launch.mockLast", { score: last.score, total: last.total_questions })
+                            : t("launch.mockNotTried")}
+                        </span>
+                      )}
                     </span>
                   </button>
                 );

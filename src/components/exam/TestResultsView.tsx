@@ -39,7 +39,15 @@ export function TestResultsView({
   setId,
 }: TestResultsViewProps) {
   const navigate = useNavigate();
-  const [showWrongOnly, setShowWrongOnly] = useState(false);
+
+  // Wrong question IDs
+  const wrongIds = useMemo(
+    () => result.questions.filter((q) => result.answers[q.id] !== q.correct_index).map((q) => q.id),
+    [result]
+  );
+
+  // The review opens on what to fix; an all-correct attempt lists every question.
+  const [showWrongOnly, setShowWrongOnly] = useState(wrongIds.length > 0);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
 
@@ -64,11 +72,8 @@ export function TestResultsView({
 
   const categories = Object.keys(categoryBreakdown).sort();
 
-  // Wrong question IDs
-  const wrongIds = useMemo(
-    () => result.questions.filter((q) => result.answers[q.id] !== q.correct_index).map((q) => q.id),
-    [result]
-  );
+  // Quizzes lead with the retry that fixes mistakes; Try Again steps back to outline.
+  const retryWrong = mode === "quiz" && wrongIds.length > 0 ? onRetryWrong : undefined;
 
   // Filtered questions for review
   const filteredQuestions = useMemo(() => {
@@ -160,16 +165,16 @@ export function TestResultsView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 border-t border-border bg-muted/40 px-6 py-4 sm:px-8">
-          <Button onClick={onRetry}>
-            <ArrowCounterClockwise aria-hidden />
-            {t("results.tryAgain")}
-          </Button>
-          {mode === "quiz" && wrongIds.length > 0 && onRetryWrong && (
-            <Button variant="outline" onClick={() => onRetryWrong(wrongIds)}>
+          {retryWrong && (
+            <Button onClick={() => retryWrong(wrongIds)}>
               <ArrowCounterClockwise aria-hidden />
               {t("exam.retryWrong")}
             </Button>
           )}
+          <Button variant={retryWrong ? "outline" : "default"} onClick={onRetry}>
+            <ArrowCounterClockwise aria-hidden />
+            {t("results.tryAgain")}
+          </Button>
           {mode === "mock" && reviewAvailable && (
             <Button variant="outline" onClick={handlePDF}>
               <Download aria-hidden />
