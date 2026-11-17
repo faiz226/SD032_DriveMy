@@ -14,6 +14,16 @@ describe("authoritative mock result display", () => {
     expect(screen.getByText("results.failed")).toBeInTheDocument();
     expect(screen.queryByText("results.passed")).not.toBeInTheDocument();
   });
+  it("shows the pass pill and a not-JPJ line on a mock", () => {
+    render(<MemoryRouter><TestResultsView result={result} mode="mock" language="en" t={(key) => key} onRetry={() => {}} /></MemoryRouter>);
+    expect(screen.getByText("results.failed")).toBeInTheDocument();
+    expect(screen.getByText("results.notJpj")).toBeInTheDocument();
+  });
+  it("shows no pass or fail on a practice quiz", () => {
+    render(<MemoryRouter><TestResultsView result={{ ...result, passed: undefined, percentage: 90 }} mode="quiz" language="en" t={(key) => key} onRetry={() => {}} /></MemoryRouter>);
+    expect(screen.queryByText("results.failed")).not.toBeInTheDocument();
+    expect(screen.queryByText("results.passed")).not.toBeInTheDocument();
+  });
   it("does not offer per-question review, categorical grading or PDF when the key is unavailable", () => {
     render(<MemoryRouter><TestResultsView result={result} mode="mock" language="en" t={(key) => key} onRetry={() => {}} /></MemoryRouter>);
     expect(screen.getByText("exam.reviewUnavailable")).toBeInTheDocument();

@@ -118,7 +118,6 @@ export default defineConfig({
         theme_color: "#0f172a",
         background_color: "#ffffff",
         display: "standalone",
-        orientation: "portrait",
         scope: "/",
         start_url: "/",
         icons: [
@@ -311,7 +310,7 @@ export default defineConfig({
           //    cannot leak anything between accounts — and caching it is what
           //    makes offline study actually work.
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/kpp_questions/i,
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/kpp_(practice_)?questions/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "supabase-questions",

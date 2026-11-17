@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react";
 import { hasTelemetryConsent } from "@/lib/consent";
 
 let initialised = false;
@@ -11,12 +10,16 @@ let initialised = false;
  * too, rather than silently unmonitored until the next reload).
  *
  * Idempotent — calling it twice does not double-register.
+ *
+ * Sentry is imported on demand, so learners who never consent never download it.
  */
-export function initTelemetry(): void {
+export async function initTelemetry(): Promise<void> {
   if (initialised) return;
   if (!import.meta.env.VITE_SENTRY_DSN) return;
   if (!hasTelemetryConsent()) return;
+  initialised = true;
 
+  const Sentry = await import("@sentry/react");
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.MODE,
@@ -55,8 +58,6 @@ export function initTelemetry(): void {
       return event;
     },
   });
-
-  initialised = true;
 }
 
 /**
@@ -68,8 +69,7 @@ export function initTelemetry(): void {
  */
 export function shutdownTelemetry(): void {
   if (!initialised) return;
-  void Sentry.close(0);
-  initialised = true;
+  void import("@sentry/react").then((Sentry) => Sentry.close(0));
 }
 
 /** Whether telemetry is currently active — used by the ErrorBoundary. */

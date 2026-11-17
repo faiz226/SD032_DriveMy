@@ -1,7 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Warning, ArrowClockwise } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
-import * as Sentry from "@sentry/react";
 import { isTelemetryActive } from "@/lib/telemetry";
 import { useLanguageStore } from "@/stores/languageStore";
 
@@ -77,12 +76,14 @@ export class ErrorBoundary extends Component<Props, State> {
     // while the user has declined or not yet decided, and capturing then would
     // route around their choice.
     if (isTelemetryActive()) {
-      const eventId = Sentry.captureException(error, {
-        extra: { componentStack: info.componentStack },
+      void import("@sentry/react").then((Sentry) => {
+        const eventId = Sentry.captureException(error, {
+          extra: { componentStack: info.componentStack },
+        });
+        // Surfaced to the user so support can correlate a report to an event
+        // without exposing the underlying error text.
+        this.setState({ eventId });
       });
-      // Surfaced to the user so support can correlate a report to an event
-      // without exposing the underlying error text.
-      this.setState({ eventId });
     }
   }
 

@@ -209,7 +209,7 @@ export function ExamShell({
         <button
           type="button"
           onClick={() => setShowNavigator(true)}
-          aria-label={t("exam.openNavigator")}
+          aria-label={t("exam.openNavigatorAt", { num: currentIndex + 1, total: shuffledQuestions.length })}
           className="tap-sm mx-auto flex flex-col items-center justify-center gap-1.5 rounded-xl px-3 lg:hidden"
         >
           {position}
@@ -279,7 +279,24 @@ export function ExamShell({
               </div>
             )}
 
-            <div className="mt-7 space-y-3" ref={optionsRef} role="radiogroup" aria-labelledby="exam-question">
+            <div
+              className="mt-7 space-y-3"
+              ref={optionsRef}
+              role="radiogroup"
+              aria-labelledby="exam-question"
+              // Arrow keys move through the options and select, as a radio group should; Tab then leaves the group.
+              onKeyDown={(e) => {
+                const step = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+                if (!step) return;
+                const radios = [...e.currentTarget.querySelectorAll<HTMLButtonElement>("[role=radio]:not(:disabled)")];
+                const at = radios.indexOf(document.activeElement as HTMLButtonElement);
+                if (at < 0) return;
+                e.preventDefault();
+                const next = radios[(at + step + radios.length) % radios.length];
+                next.focus();
+                next.click();
+              }}
+            >
               {optionsEn.map((optEn, i) => {
                 const optMs = optionsMs[i] || "";
                 const isSelected = selectedOption === i;
@@ -309,6 +326,7 @@ export function ExamShell({
                     key={i}
                     role="radio"
                     aria-checked={isSelected}
+                    tabIndex={(selectedOption === null ? i === 0 : isSelected) ? 0 : -1}
                     onClick={() => handleSelectOption(i)}
                     disabled={isRevealed}
                     className={cn(

@@ -127,10 +127,13 @@ export function TestResultsView({
                 <span className="text-[0.45em] font-semibold text-muted-foreground"> / {result.total}</span>
               </p>
             </div>
-            <span className={cn("pill px-3.5 py-1.5 text-sm", passed ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground")}>
-              {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
-              {passed ? t("results.passed") : t("results.failed")}
-            </span>
+            {/* A practice quiz is not a pass or a fail: only the mock mirrors the exam's mark. */}
+            {mode === "mock" && (
+              <span className={cn("pill px-3.5 py-1.5 text-sm", passed ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground")}>
+                {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
+                {passed ? t("results.passed") : t("results.failed")}
+              </span>
+            )}
           </div>
 
           {/* Factual, in marks, never consoling. */}
@@ -142,6 +145,7 @@ export function TestResultsView({
                   ? t("results.headroom", { count: result.score - passMark })
                   : t("results.short", { count: passMark - result.score })}
               </span>
+              <span className="mt-1 block text-sm text-muted-foreground">{t("results.notJpj")}</span>
             </p>
           )}
 
