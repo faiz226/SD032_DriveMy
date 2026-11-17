@@ -381,6 +381,7 @@ export function ExamShell({
                     : question.explanation_ms || question.explanation_en}
                 </p>
                 <SpeechControl kind="explanation" text={(language === "en" ? question.explanation_en || question.explanation_ms : question.explanation_ms || question.explanation_en) ?? ""} />
+                {question.source_url && <p className="mt-3 text-sm text-muted-foreground">{t("exam.sourceCitation")}: {question.source_url}</p>}
               </div>
             )}
           </div>

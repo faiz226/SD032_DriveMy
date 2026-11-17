@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMockStats } from "@/hooks/useProgressStats";
+import { useAuthStore } from "@/stores/authStore";
+import { loadProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
+import { MOCK_TIME_LIMIT } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations";
 import type { LicenseTrack, MockTestResult } from "@/types/database";
 
@@ -154,6 +157,11 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
       buttonLabel = t("launch.btnStartMock");
     }
   }
+
+  // An unfinished mock for the picked set: say so before Start, since starting resumes it with the clock still running.
+  const userId = useAuthStore((s) => s.user?.id);
+  const saved = mode === "mock" && selectedSet && userId ? loadProgress<{ answers?: Record<string, number> }>(PROGRESS_SCOPES.mock(selectedSet), userId) : null;
+  const minutesLeft = saved ? Math.max(0, Math.ceil((MOCK_TIME_LIMIT - (Date.now() - saved.startedAt) / 1000) / 60)) : 0;
 
   const activePartConfig = KPP_SECTIONS.find((s) => s.id === (selectedPart || "A")) ?? KPP_SECTIONS[0];
 
@@ -377,6 +385,11 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
         )}
 
         <div>
+          {saved && (
+            <p role="status" className="mb-3 rounded-xl border border-brand-ink/25 bg-brand/15 p-3 text-sm font-medium">
+              {t("launch.resumeNotice", { answered: Object.keys(saved.data.answers ?? {}).length, minutes: minutesLeft })}
+            </p>
+          )}
           {/* A disabled start keeps a readable label (5.2:1), because the label
               states the unmet condition a learner needs to see. */}
           <Button

@@ -2,7 +2,7 @@ import { mockPassMark } from "@/lib/constants";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { ExamResult } from "@/lib/exam/scoring";
-import { translate } from "@/lib/translations";
+import { translate, type TranslationKey } from "@/lib/translations";
 import type { Language } from "@/lib/constants";
 
 interface GeneratePDFOptions {
@@ -11,6 +11,12 @@ interface GeneratePDFOptions {
   mode: "quiz" | "mock";
   setId?: string;
 }
+
+const CATEGORY_KEYS: Record<string, TranslationKey> = {
+  "road-signs": "progress.category.road-signs",
+  "traffic-rules": "progress.category.traffic-rules",
+  "safety-principles": "progress.category.safety-principles",
+};
 
 const PRIMARY_RGB: [number, number, number] = [17, 17, 17];
 
@@ -84,7 +90,7 @@ export function generatePDF({ result, language, mode, setId }: GeneratePDFOption
     body: Object.entries(categoryMap)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([cat, { correct, total }]) => [
-        cat.replace(/-/g, " "),
+        CATEGORY_KEYS[cat] ? t(CATEGORY_KEYS[cat]) : cat.replace(/-/g, " "),
         String(correct),
         String(total),
         `${Math.round((correct / total) * 100)}%`,
@@ -129,7 +135,7 @@ export function generatePDF({ result, language, mode, setId }: GeneratePDFOption
         qText.length > 80 ? qText.slice(0, 77) + "..." : qText,
         userAns.length > 40 ? userAns.slice(0, 37) + "..." : userAns,
         correctAns.length > 40 ? correctAns.slice(0, 37) + "..." : correctAns,
-        isCorrect ? "✓" : "✗",
+        isCorrect ? t("exam.pdf.ansRight") : t("exam.pdf.ansWrong"),
       ];
     }),
     theme: "striped",
@@ -138,7 +144,7 @@ export function generatePDF({ result, language, mode, setId }: GeneratePDFOption
     columnStyles: {
       0: { cellWidth: 10 },
       1: { cellWidth: 60 },
-      4: { cellWidth: 12, halign: "center" },
+      4: { cellWidth: 16, halign: "center" },
     },
   });
 

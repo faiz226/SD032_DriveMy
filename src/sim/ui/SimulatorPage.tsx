@@ -64,7 +64,37 @@ const onResize = (cb: () => void) => { window.addEventListener('resize', cb); re
 /** A duplicate key means the row is already there: this run was saved. */
 const isDuplicate = (err: unknown) => (err as { code?: string } | null)?.code === '23505';
 
+const canWebGL = () => {
+  try {
+    const c = document.createElement('canvas');
+    return Boolean(c.getContext('webgl2') || c.getContext('webgl'));
+  } catch { return false; }
+};
+
+/** The 3D scene needs WebGL. Without it, or after the browser drops it, say so rather than load forever. */
 export function SimulatorPage() {
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const supported = useMemo(() => canWebGL(), []);
+  const [lost, setLost] = useState(false);
+  useEffect(() => {
+    const onLost = () => setLost(true);
+    window.addEventListener('webglcontextlost', onLost, true);   // the event does not bubble: listen while it travels down
+    return () => window.removeEventListener('webglcontextlost', onLost, true);
+  }, []);
+  if (supported && !lost) return <SimulatorScene />;
+  return (
+    <div role="alert" className="fixed inset-0 z-[70] flex flex-col items-center justify-center gap-4 bg-background p-6 text-center">
+      <p className="max-w-sm text-lg font-semibold">{t(supported ? 'sim.webglLost' : 'sim.noWebgl')}</p>
+      <div className="flex gap-2">
+        {supported && <button type="button" className="rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground" onClick={() => window.location.reload()}>{t('sim.reload')}</button>}
+        <button type="button" className="rounded-lg border border-border bg-card px-5 py-3 font-semibold" onClick={() => navigate(ROUTES.SIMULATIONS)}>{t('common.back')}</button>
+      </div>
+    </div>
+  );
+}
+
+function SimulatorScene() {
   const { id } = useParams<{ id: string }>();
   const [params] = useSearchParams();
   const autopilotMode = PERF_TOOLS ? params.get('autopilot') : null;

@@ -107,7 +107,7 @@ function SideNavLink({ item, onClick }: SideNavLinkProps) {
           <span className="min-w-0 text-sm tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
             {label}
           </span>
-          {isActive && <span className="sr-only">(current page)</span>}
+          {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
         </>
       )}
     </NavLink>
@@ -429,7 +429,7 @@ function MobileBottomNav() {
                 <span className={cn("text-[9px] font-medium tracking-tight mt-0.5", isActive ? "text-brand-ink font-semibold" : "text-muted-foreground")}>
                   {label}
                 </span>
-                {isActive && <span className="sr-only">(current page)</span>}
+                {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
               </>
             )}
           </NavLink>

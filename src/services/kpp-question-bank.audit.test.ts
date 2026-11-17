@@ -247,6 +247,13 @@ describe("KPP Question Bank & Architecture Audit", () => {
     }
   });
 
+  // Audit F15: every question names its textbook and page the same way, so the exam can show where it comes from.
+  it("labels every question's source as '<book>, PDF page N'", () => {
+    for (const q of KPP_TEXTBOOK_QUESTIONS) {
+      expect(q.source_url).toMatch(/^(KPP General|KPP Kelas D Automatik|KPP Kelas D Manual), PDF page \d+$/);
+    }
+  });
+
   // Audit F01 and F02: two graded mock questions had the wrong key. Migration 20261118000100 fixes the same two rows.
   it.each([
     ["KPP Kelas D Automatik p.249, pull-and-push steering through bends", "92bda1e2-47b5-49ac-a6d2-09362de676fe", 1, "Alternate pulling and pushing"],

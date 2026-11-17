@@ -52,6 +52,7 @@ export function SimulationsPage() {
         <header className="page-header">
           <h1 className="page-title">{t("sim.title")}</h1>
           <p className="page-lead">{t("sim.selectManeuver")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("sim.breakNote")}</p>
         </header>
         <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border surface-card text-foreground text-sm font-semibold font-mono font-tabular-nums shrink-0 min-h-[38px]">
           <Trophy className="w-4 h-4 text-muted-foreground" />

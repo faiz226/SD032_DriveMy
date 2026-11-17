@@ -103,7 +103,7 @@ export function TestResultsView({
     const filename = `drivemy-${mode}-result.pdf`;
 
     // Try native share on mobile, fall back to download
-    if (navigator.share && navigator.canShare?.({ files: [new File([blob], filename)] })) {
+    if (matchMedia("(pointer: coarse)").matches && navigator.share && navigator.canShare?.({ files: [new File([blob], filename)] })) {
       try {
         await navigator.share({
           files: [new File([blob], filename, { type: "application/pdf" })],
@@ -316,6 +316,7 @@ export function TestResultsView({
                         <div className="rounded-xl border border-brand-ink/20 bg-brand/15 p-3 text-sm">
                           <span className="font-semibold text-brand-ink">{t("quiz.explanation")}:</span> {explanation}
                           <SpeechControl kind="explanation" text={explanation} />
+                          {q.source_url && <p className="mt-2 text-muted-foreground">{t("exam.sourceCitation")}: {q.source_url}</p>}
                         </div>
                       )}
                     </div>

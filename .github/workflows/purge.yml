@@ -1,0 +1,41 @@
+name: Purge expired results
+
+# The privacy notice promises results are deleted after 2 years. public.purge_expired_results()
+# (migration 20260804000200) does it, but nothing called it. This runs it monthly and prints how many rows went.
+on:
+  schedule:
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          # `supabase db query` first ships in CLI v3 (see the CLI reference); ci.yml stays on 2.x for `db push`.
+          version: 3.2.0
+
+      # A scratch project: the repo's config.toml is written for 2.x and v3 rejects it, and nothing here needs it.
+      - name: Link the project
+        run: |
+          mkdir "$RUNNER_TEMP/purge" && cd "$RUNNER_TEMP/purge"
+          supabase init
+          supabase link --project-ref "$SUPABASE_PROJECT_ID"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+
+      # The command cannot tell a read from a write, so a hosted database needs --yes.
+      - name: Purge expired results
+        run: |
+          cd "$RUNNER_TEMP/purge"
+          supabase db query --linked --yes "select * from public.purge_expired_results();"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
