@@ -1,4 +1,5 @@
 import { SpeechControl } from "@/components/shared/SpeechControl";
+import { Fragment } from "react";
 import { createPortal } from "react-dom";
 import {
   Flag,
@@ -27,6 +28,12 @@ import type { ExamResult } from "@/lib/exam/scoring";
 import { useExamSession } from "./useExamSession";
 
 export type { ExamResult };
+
+const CATEGORY_LABELS: Record<string, TranslationKey> = {
+  "road-signs": "progress.category.road-signs",
+  "traffic-rules": "progress.category.traffic-rules",
+  "safety-principles": "progress.category.safety-principles",
+};
 
 interface ExamShellProps {
   questions: ExamQuestion[];
@@ -114,6 +121,10 @@ export function ExamShell({
 
   const timeIsShort = Boolean(timeLimit) && timer.secondsRemaining <= 300;
 
+  // A mock runs in fixed parts (signs, rules, safety). Naming each run makes 70
+  // squares read as three blocks; a one-category attempt needs no headings.
+  const namedRuns = new Set(shuffledQuestions.map((q) => q.category)).size > 1;
+
   const navigator = (
     <>
       <div className="grid grid-cols-5 gap-2 sm:grid-cols-6">
@@ -124,31 +135,37 @@ export function ExamShell({
           // Answered is filled, flagged is amber, current carries a ring:
           // three states that stay distinct in greyscale too.
           return (
-            <button
-              key={q.id}
-              type="button"
-              onClick={() => {
-                handleJump(i);
-                setShowNavigator(false);
-              }}
-              aria-label={t("exam.questionAria", {
-                num: i + 1,
-                answered: isAnswered ? t("exam.questionAriaAnswered") : "",
-                flagged: isFlag ? t("exam.questionAriaFlagged") : "",
-              })}
-              aria-current={isCurrent ? "true" : undefined}
-              className={cn(
-                "type-figure grid aspect-square min-h-0 min-w-0 place-items-center rounded-lg border text-sm transition-colors duration-150",
-                isFlag
-                  ? "pill-flag"
-                  : isAnswered
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border bg-card text-muted-foreground hover:border-foreground/30 hover:text-foreground",
-                isCurrent && "ring-2 ring-brand-ink ring-offset-2 ring-offset-background"
+            <Fragment key={q.id}>
+              {namedRuns && q.category !== shuffledQuestions[i - 1]?.category && (
+                <h3 className={cn("col-span-full text-sm font-semibold", i > 0 && "mt-3")}>
+                  {CATEGORY_LABELS[q.category] ? t(CATEGORY_LABELS[q.category]) : q.category}
+                </h3>
               )}
-            >
-              {i + 1}
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleJump(i);
+                  setShowNavigator(false);
+                }}
+                aria-label={t("exam.questionAria", {
+                  num: i + 1,
+                  answered: isAnswered ? t("exam.questionAriaAnswered") : "",
+                  flagged: isFlag ? t("exam.questionAriaFlagged") : "",
+                })}
+                aria-current={isCurrent ? "true" : undefined}
+                className={cn(
+                  "type-figure grid aspect-square min-h-0 min-w-0 place-items-center rounded-lg border text-sm transition-colors duration-150",
+                  isFlag
+                    ? "pill-flag"
+                    : isAnswered
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border bg-card text-muted-foreground hover:border-foreground/30 hover:text-foreground",
+                  isCurrent && "ring-2 ring-brand-ink ring-offset-2 ring-offset-background"
+                )}
+              >
+                {i + 1}
+              </button>
+            </Fragment>
           );
         })}
       </div>

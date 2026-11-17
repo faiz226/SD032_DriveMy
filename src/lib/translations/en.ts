@@ -215,6 +215,8 @@ export const en = {
   "launch.mock5": "Mock Set 5",
   "launch.mock6": "Mock Set 6",
   "launch.mockDesc": "70 questions · 75 min",
+  "launch.mockNotTried": "Not tried yet",
+  "launch.mockLast": "Last: {{score}}/{{total}}",
   "exam.sourceCitation": "Textbook reference",
 
   // ── Exam (shared) ───────────────────────────────────────────────────────
@@ -837,6 +839,7 @@ export const en = {
   "dashboard.hello.night":         "Good evening",
   "dashboard.gantry.title":        "Distance to your P licence",
   "dashboard.gantry.marksLeft":    "points to go",
+  "dashboard.gantry.notJpj":       "Practice readiness, not a JPJ result.",
   "dashboard.gantry.split":        "Theory: {{theory}} of 85. Practical: {{practical}} of 15.",
   "dashboard.gantry.lTitle":       "KPP theory test",
   "dashboard.gantry.lDone":        "Pass mark reached in practice. Not a JPJ record.",

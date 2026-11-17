@@ -47,7 +47,8 @@ export function GantrySign({ score, theory, practical, bestMock, passMark, mockT
             </span>
             <span className="max-w-[6ch] pb-1 text-[1.125rem] font-extrabold leading-[1.1] sm:text-[1.25rem]">{t("dashboard.gantry.marksLeft")}</span>
           </div>
-          <p className="mt-3 max-w-[36ch] text-[0.9375rem] sm:text-base">
+          <p className="mt-2 text-[0.9375rem] font-bold sm:text-base">{t("dashboard.gantry.notJpj")}</p>
+          <p className="mt-1.5 max-w-[36ch] text-[0.9375rem] sm:text-base">
             {t("dashboard.gantry.split", { theory: Math.round(theory), practical: Math.round(practical) })}
           </p>
         </div>

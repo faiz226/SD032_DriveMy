@@ -216,6 +216,8 @@ export const ms: Record<TranslationKey, string> = {
   "launch.mock5": "Set Percubaan 5",
   "launch.mock6": "Set Percubaan 6",
   "launch.mockDesc": "70 soalan · 75 min",
+  "launch.mockNotTried": "Belum dicuba",
+  "launch.mockLast": "Terakhir: {{score}}/{{total}}",
   "exam.sourceCitation": "Rujukan buku teks",
 
   // ── Exam (shared) ───────────────────────────────────────────────────────
@@ -838,6 +840,7 @@ export const ms: Record<TranslationKey, string> = {
   "dashboard.hello.night":         "Selamat malam",
   "dashboard.gantry.title":        "Jarak ke lesen P",
   "dashboard.gantry.marksLeft":    "markah lagi",
+  "dashboard.gantry.notJpj":       "Kesediaan latihan, bukan keputusan rasmi JPJ.",
   "dashboard.gantry.split":        "Teori: {{theory}} daripada 85. Amali: {{practical}} daripada 15.",
   "dashboard.gantry.lTitle":       "Ujian teori KPP",
   "dashboard.gantry.lDone":        "Markah lulus dicapai dalam latihan, belum direkod sebagai lulus JPJ",
