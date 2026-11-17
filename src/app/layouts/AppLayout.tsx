@@ -368,7 +368,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               <div className="min-w-0">
                 <p className="text-xs font-medium text-sidebar-foreground truncate">{displayName}</p>
                 {user?.email && (
-                  <p className="text-[11px] text-sidebar-foreground/50 truncate">{user.email}</p>
+                  <p className="text-[11px] text-sidebar-foreground/70 truncate">{user.email}</p>
                 )}
               </div>
             </div>
@@ -461,6 +461,8 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
   // than hidden, so it is also out of the tab order and the accessibility tree
   // — a learner tabbing through a timed test cannot land on "Simulator".
   const showSidebar = showSidebarProp && !examMode;
+  // The simulator draws full screen over the shell: keep the menu behind it out of the tab order and the reading order.
+  const behindSimulator = /^\/simulations\/[^/]+/.test(useLocation().pathname) ? true : undefined;
 
   return (
     <MotionConfig reducedMotion="user">
@@ -484,6 +486,7 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
             sidebarCollapsed ? "w-[4.5rem]" : "w-64"
           )}
           aria-label="Main navigation"
+          inert={behindSimulator}
         >
           <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
         </aside>
@@ -509,6 +512,7 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
           <header
             className="glass flex md:hidden h-14 items-center justify-between px-4 border-b border-border shrink-0"
             role="banner"
+            inert={behindSimulator}
           >
             <button
               type="button"
@@ -543,7 +547,7 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
           </div>
         </main>
 
-        {showSidebar && <MobileBottomNav />}
+        {showSidebar && <div inert={behindSimulator}><MobileBottomNav /></div>}
       </div>
     </div>
     </MotionConfig>

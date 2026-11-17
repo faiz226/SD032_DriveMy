@@ -24,6 +24,11 @@ const DrawerPopup = React.forwardRef<
         "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-3xl border bg-card",
         className
       )}
+      // Open on the first control, so the first Tab stays inside the sheet.
+      onOpenAutoFocus={(e) => {
+        e.preventDefault();
+        (e.currentTarget as HTMLElement).querySelector<HTMLElement>("input, button, [href]")?.focus();
+      }}
       {...props}
     >
       {showBar && (

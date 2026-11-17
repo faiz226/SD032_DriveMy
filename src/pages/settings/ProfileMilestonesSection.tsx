@@ -90,7 +90,7 @@ export function ProfileMilestonesSection() {
           </div>
         </div>
 
-        <dl className="space-y-4 pt-2">
+        <div className="space-y-4 pt-2">
           <div className="flex items-start gap-3 min-h-[48px]">
             <Envelope
               className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5"
@@ -98,12 +98,12 @@ export function ProfileMilestonesSection() {
               aria-hidden
             />
             <div>
-              <dt className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 {t("profile.email")}
-              </dt>
-              <dd className="text-sm text-foreground mt-1 break-all">
+              </p>
+              <p className="text-sm text-foreground mt-1 break-all">
                 {user?.email ?? "-"}
-              </dd>
+              </p>
             </div>
           </div>
           <div className="flex items-start gap-3 min-h-[48px]">
@@ -113,15 +113,15 @@ export function ProfileMilestonesSection() {
               aria-hidden
             />
             <div>
-              <dt className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 {t("profile.memberSince")}
-              </dt>
-              <dd className="text-sm font-tabular-nums text-foreground mt-1">
+              </p>
+              <p className="text-sm font-tabular-nums text-foreground mt-1">
                 {memberSince}
-              </dd>
+              </p>
             </div>
           </div>
-        </dl>
+        </div>
       </SettingsPanel>
 
       <SettingsPanel title={t("profile.licensingMilestones")}>

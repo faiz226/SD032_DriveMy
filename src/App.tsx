@@ -55,6 +55,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime:            1000 * 60 * 5,
+      // Offline, run the query anyway so the service worker's cached question bank can answer it.
+      networkMode:          "offlineFirst",
       retry:                1,
       refetchOnWindowFocus: false,
     },
