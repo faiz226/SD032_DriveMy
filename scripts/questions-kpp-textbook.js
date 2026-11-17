@@ -9925,7 +9925,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Tarik ke bawah dengan kedua-dua tangan",
       "Pusing dengan kedua-dua tangan kekal"
     ],
-    "correct_index": 0,
+    "correct_index": 1,
     "explanation_en": "Use the pull-and-push steering technique throughout the Z-bend.",
     "explanation_ms": "Gunakan teknik stereng tarik dan tolak sepanjang selekoh Z.",
     "image_url": null,
@@ -11927,7 +11927,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Menyedari perubahan bunyi enjin",
       "Menjangka perubahan trafik"
     ],
-    "correct_index": 0,
+    "correct_index": 3,
     "explanation_en": "Alcohol impairs concentration and makes it harder to anticipate hazards. Do not drive under its influence.",
     "explanation_ms": "Alkohol menjejaskan tumpuan dan menyukarkan anda menjangka bahaya. Jangan memandu di bawah pengaruh alkohol.",
     "image_url": null,

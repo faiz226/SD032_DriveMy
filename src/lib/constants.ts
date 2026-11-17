@@ -30,6 +30,13 @@ export const ROUTES = {
  */
 export const PRIVACY_CONTACT_EMAIL: string | null = null;
 
+/**
+ * The colour test is off in production: its Ishihara plates have no licence, so none ships with the app.
+ * A private demo build, with plates the operator keeps in public/color-plates/ (gitignored), sets
+ * VITE_COLOUR_TEST=1 to bring back the menu entry, the route and the progress and milestone entries.
+ */
+export const COLOUR_TEST = import.meta.env.VITE_COLOUR_TEST === "1";
+
 export const STORAGE_KEYS = {
   QUIZ_PROGRESS: "drivemy-quiz-progress",
 } as const;

@@ -257,8 +257,8 @@ export function useExamSession({
     setQuizPhase("revealed");
   };
 
+  // The clock keeps running behind the confirm dialog: opening it must never buy time. Expiry still auto-submits.
   const handleRequestSubmit = () => {
-    if (timeLimit) timer.pause();
     setShowSubmitModal(true);
   };
 
@@ -298,7 +298,6 @@ export function useExamSession({
 
   const handleCancelSubmit = () => {
     setShowSubmitModal(false);
-    if (timeLimit) timer.start();
   };
 
   const handleConfirmSubmit = () => {

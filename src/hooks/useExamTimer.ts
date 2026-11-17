@@ -18,6 +18,15 @@ interface UseExamTimerReturn {
   formattedTime: string;
 }
 
+/** Whole seconds until `endAt` (a wall-clock time in ms), rounded up so the clock reads 0 only when time is up. */
+const secondsUntil = (endAt: number) => Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+
+/**
+ * Counts down against the wall clock, not against interval ticks. A sleeping phone or a throttled background
+ * tab runs fewer ticks than seconds pass; counting ticks let a 75-minute mock run longer than 75 minutes.
+ * Each tick (and the moment the page becomes visible again) re-reads the clock, so the time that passed is
+ * always the time that is taken off.
+ */
 export function useExamTimer({
   totalSeconds,
   onWarning,
@@ -28,6 +37,9 @@ export function useExamTimer({
   const [isRunning, setIsRunning] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Wall-clock time (ms) the exam ends at while it runs; the seconds left while it is stopped.
+  const endAtRef = useRef(0);
+  const remainingRef = useRef(totalSeconds);
   const warningFiredRef = useRef(false);
   const onWarningRef = useRef(onWarning);
   const onExpireRef = useRef(onExpire);
@@ -43,41 +55,55 @@ export function useExamTimer({
     }
   }, []);
 
+  const tick = useCallback(() => {
+    const remaining = secondsUntil(endAtRef.current);
+    remainingRef.current = remaining;
+    setSecondsRemaining(remaining);
+    if (remaining <= warningAt && !warningFiredRef.current) {
+      warningFiredRef.current = true;
+      onWarningRef.current?.();
+    }
+    if (remaining <= 0) {
+      clearTimer();
+      setIsRunning(false);
+      setIsExpired(true);
+      onExpireRef.current?.();
+    }
+  }, [clearTimer, warningAt]);
+
   const start = useCallback(() => {
-    if (isExpired) return;
-    clearTimer();
+    if (isExpired || intervalRef.current) return;
+    endAtRef.current = Date.now() + remainingRef.current * 1000;
     setIsRunning(true);
-    intervalRef.current = setInterval(() => {
-      setSecondsRemaining((prev) => {
-        const next = prev - 1;
-        if (next <= warningAt && !warningFiredRef.current) {
-          warningFiredRef.current = true;
-          onWarningRef.current?.();
-        }
-        if (next <= 0) {
-          clearTimer();
-          setIsRunning(false);
-          setIsExpired(true);
-          onExpireRef.current?.();
-          return 0;
-        }
-        return next;
-      });
-    }, 1000);
-  }, [isExpired, clearTimer, warningAt]);
+    intervalRef.current = setInterval(tick, 1000);
+  }, [isExpired, tick]);
 
   const pause = useCallback(() => {
+    if (intervalRef.current) {
+      remainingRef.current = secondsUntil(endAtRef.current);
+      setSecondsRemaining(remainingRef.current);
+    }
     clearTimer();
     setIsRunning(false);
   }, [clearTimer]);
 
   const reset = useCallback(() => {
     clearTimer();
+    remainingRef.current = totalSeconds;
     setSecondsRemaining(totalSeconds);
     setIsRunning(false);
     setIsExpired(false);
     warningFiredRef.current = false;
   }, [clearTimer, totalSeconds]);
+
+  // Catch up the moment the page is back, rather than on the next tick.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && intervalRef.current) tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [tick]);
 
   // Cleanup on unmount
   useEffect(() => clearTimer, [clearTimer]);

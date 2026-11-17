@@ -739,10 +739,8 @@ export const ms: Record<TranslationKey, string> = {
   "color.question":                "Apakah nombor yang anda nampak?",
   "color.nothing":                 "Tiada nombor",
   "color.retake":                  "Ambil ujian sekali lagi",
-  "color.saved":                   "Keputusan ujian warna disimpan",
   "color.plateLabel":              "Plat {{num}}",
   "color.plateAlt":                "Plat Ishihara {{num}}",
-  "color.error.saveFailed":        "Gagal menyimpan keputusan.",
 
   // ── Phase 8: Safety Ethics ─────────────────────────────────────────────
   "safety.title":                  "Keselamatan jalan raya",
@@ -957,7 +955,7 @@ export const ms: Record<TranslationKey, string> = {
   "privacy.title": "Privasi",
   "privacy.openSettings": "Buka Tetapan",
   "privacy.contact": "Hubungi kami",
-  "privacy.contactBody": "Ada soalan tentang data anda? E-mel",
+  "privacy.contactBody": "Hubungi kami untuk melihat, membetulkan atau memadam data anda, atau untuk membuat aduan. Kami membalas dalam masa 21 hari. E-mel",
   "progress.lead": "Kedudukan anda untuk ujian JPJ, dan prestasi setiap percubaan.",
   "progress.score.title": "Skor pembelajaran",
   "progress.score.lead": "Skor yang sama seperti papan tanda di papan pemuka, dipecahkan mengikut bahagian yang menyumbang.",

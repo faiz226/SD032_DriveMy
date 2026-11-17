@@ -23,7 +23,9 @@ const LazyRpkRsmPage = lazy(() => import("@/pages/RpkRsmPage").then(m => ({ defa
 const LazyTheoryPage      = lazy(() => import("@/pages/TheoryPage").then(m => ({ default: m.TheoryPage })));
 const LazyQuizPage        = lazy(() => import("@/pages/QuizPage").then(m => ({ default: m.QuizPage })));
 const LazyMockTestPage    = lazy(() => import("@/pages/MockTestPage").then(m => ({ default: m.MockTestPage })));
-const LazyColorVisionPage = lazy(() => import("@/pages/ColorVisionPage").then(m => ({ default: m.ColorVisionPage })));
+// The colour test: absent from production builds (no plates are licensed), present in private demo builds
+// (VITE_COLOUR_TEST=1, see COLOUR_TEST). Read here as a literal so the page's chunk is not built at all without it.
+const LazyColorVisionPage = import.meta.env.VITE_COLOUR_TEST === "1" ? lazy(() => import("@/pages/ColorVisionPage").then(m => ({ default: m.ColorVisionPage }))) : null;
 const LazySimulationsPage = lazy(() => import("@/pages/SimulationsPage").then(m => ({ default: m.SimulationsPage })));
 // The simulator: its car and textures start downloading the moment the route opens, alongside its code.
 const LazySimulation3DView = lazy(() => { preloadSimAssets(currentTier()); return import("@/pages/Simulation3DView").then(m => ({ default: m.Simulation3DView })); });
@@ -118,7 +120,7 @@ function App() {
                     <Route path={ROUTES.THEORY}               element={routed(<LazyTheoryPage />)} />
                     <Route path={ROUTES.QUIZ}                 element={routed(<LazyQuizPage />)} />
                     <Route path={ROUTES.MOCK_TEST}            element={routed(<LazyMockTestPage />)} />
-                    <Route path={ROUTES.COLOR_VISION}         element={routed(<LazyColorVisionPage />)} />
+                    {LazyColorVisionPage && <Route path={ROUTES.COLOR_VISION} element={routed(<LazyColorVisionPage />)} />}
                     <Route path={ROUTES.PROGRESS}             element={routed(<LazyProgressPage />)} />
                     <Route path={ROUTES.SAFETY}               element={routed(<LazySafetyPage />)} />
                     <Route path={ROUTES.SETTINGS}             element={routed(<LazySettingsPage />)} />

@@ -70,3 +70,6 @@ KPP_*.pdf
 # Ishihara source PDF for the colour test plates (never commit)
 Ishihara_Tests.pdf
 
+# Ishihara colour test plates: not distributed (no licence). A private demo build keeps its own copies here
+# and sets VITE_COLOUR_TEST=1.
+public/color-plates/

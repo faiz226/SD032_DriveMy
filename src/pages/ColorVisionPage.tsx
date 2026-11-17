@@ -3,8 +3,6 @@ import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { useActivityStore } from "@/stores/activityStore";
-import { useSaveResultMutation } from "@/hooks/useResults";
-import { saveColorblindResult } from "@/services/results.service";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Panel, Pill, type PillTone } from "@/components/ui/surface";
@@ -41,8 +39,6 @@ function PlateImage({ plate, className }: { plate: Plate; className?: string }) 
 export function ColorVisionPage() {
   const { t } = useLanguage();
   const user = useAuthStore(s => s.user);
-  const isDevBypass = useAuthStore(s => s.isDevBypass);
-  const saveMutation = useSaveResultMutation(saveColorblindResult, { successToastKey: "color.saved", errorToastKey: "color.error.saveFailed" });
 
   // Read once, before the first paint, so a resumed test opens on the plate the learner left.
   const [restored] = useState(() => {
@@ -107,18 +103,8 @@ export function ColorVisionPage() {
     if (index < PLATES.length - 1) return goTo(index + 1, next);
 
     if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
+    // The result is health-related and stays on this device: nothing is sent to the server.
     setPhase("result");
-    // The dev sign-in has no real session, so nothing is written for it.
-    if (user && !isDevBypass) {
-      const { normal } = scoreTest(next);
-      saveMutation.mutate({
-        user_id: user.id,
-        score: normal,
-        total_plates: PLATES.length,
-        percentage: Math.round((normal / PLATES.length) * 100),
-        answers: Object.fromEntries(Object.entries(next)),
-      });
-    }
   };
 
   if (phase === "intro") {
