@@ -35,7 +35,7 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Designated U-turn",
       "One-way traffic",
       "Turn right only",
-      "Keep right"
+      "Keep to the right side"
     ],
     "options_ms": [
       "Tempat pusingan U",
@@ -321,9 +321,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Pass either side of the island",
-      "Limited clearance ahead",
-      "Obstacle at the divider",
-      "Risk of falling rocks"
+      "Limited clearance beside the road",
+      "Obstacle at the traffic divider",
+      "Risk of falling rocks ahead"
     ],
     "options_ms": [
       "Lalui pulau dari mana-mana sisi",
@@ -528,8 +528,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_en": [
       "End of the posted speed limit",
       "Stop for children crossing",
-      "No sounding the horn",
-      "Stop at the junction"
+      "No sounding of the horn here",
+      "Stop at the next junction"
     ],
     "options_ms": [
       "Had laju yang dipaparkan tamat",
@@ -664,8 +664,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_ms": [
       "Kenderaan melebihi 8 tan dilarang masuk",
       "Berhenti untuk kanak-kanak melintas",
-      "Had laju yang dipaparkan tamat",
-      "Dilarang membunyikan hon"
+      "Had laju yang dipaparkan telah tamat",
+      "Dilarang membunyikan hon di kawasan ini"
     ],
     "correct_index": 0,
     "explanation_en": "No entry over 8 tonnes. Use another route if your vehicle exceeds the weight shown.",
@@ -1803,9 +1803,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Anda menghampiri kereta perlahan berhampiran puncak bukit. Bilakah anda patut mempertimbangkan untuk memotong?",
     "options_en": [
       "After the road ahead is clear",
-      "Just before the crest",
-      "As you reach the crest",
-      "As soon as the car slows"
+      "Just before you reach the crest",
+      "Just as you reach the crest",
+      "As soon as the car ahead slows"
     ],
     "options_ms": [
       "Selepas laluan di hadapan jelas",
@@ -1965,9 +1965,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Sejurus selepas melepasi susur pertama",
-      "Sebelum memasuki bulatan",
+      "Sebelum anda memasuki bulatan itu",
       "Sejurus sebelum tiba di susur pertama",
-      "Selepas meninggalkan bulatan"
+      "Selepas anda meninggalkan bulatan itu"
     ],
     "correct_index": 0,
     "explanation_en": "Use the left lane unless it is blocked. Stay in your lane and signal left after passing the first exit.",
@@ -2485,9 +2485,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Lepaskan pedal minyak perlahan-lahan",
-      "Tekan brek secara berselang",
-      "Pusing stereng ke bahu jalan",
-      "Kekalkan kelajuan semasa"
+      "Tekan brek beberapa kali secara berselang",
+      "Pusing stereng ke arah bahu jalan",
+      "Kekalkan kelajuan anda yang sedia ada"
     ],
     "correct_index": 0,
     "explanation_en": "Slow gradually by easing off the accelerator. Avoid braking or changing direction until grip returns.",
@@ -2822,9 +2822,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Joining an unapproved road race"
     ],
     "options_ms": [
-      "Mengabaikan tanda dilarang masuk",
-      "Memotong kereta lain di sebelah kiri",
-      "Menghalang lintasan pejalan kaki",
+      "Mengabaikan tanda dilarang masuk yang jelas",
+      "Memotong kereta lain di sebelah kiri jalan",
+      "Menghalang lintasan pejalan kaki yang ditanda",
       "Menyertai perlumbaan jalan tanpa kebenaran"
     ],
     "correct_index": 3,
@@ -3316,10 +3316,10 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Motorcars and small vans"
     ],
     "options_ms": [
-      "Lori dan treler bersendi",
+      "Lori dan treler bersendi berat",
       "Traktor dan jentera bergerak",
-      "Bas dan van penumpang",
-      "Motokar dan van kecil"
+      "Bas dan van penumpang awam",
+      "Motokar dan van kecil persendirian"
     ],
     "correct_index": 1,
     "explanation_en": "These classes cover tractors and mobile machinery. They distinguish wheels from tracks and lighter from heavier vehicles.",
@@ -4486,10 +4486,10 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Motorcars and small vans"
     ],
     "options_ms": [
-      "Lori dan treler bersendi",
+      "Lori dan treler bersendi berat",
       "Traktor dan jentera bergerak",
-      "Bas dan van penumpang",
-      "Motokar dan van kecil"
+      "Bas dan van penumpang awam",
+      "Motokar dan van kecil persendirian"
     ],
     "correct_index": 1,
     "explanation_en": "These classes cover tractors and mobile machinery. They distinguish wheels from tracks and lighter from heavier vehicles.",
@@ -5371,8 +5371,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Untuk mengelakkan pertukaran tertentu secara tidak sengaja",
-      "Untuk membantu tuil bergerak lebih pantas",
-      "Untuk memudahkan bacaan gear terpilih",
+      "Untuk membantu tuil gear bergerak dengan lebih pantas",
+      "Untuk memudahkan pemandu membaca gear yang terpilih",
       "Untuk membolehkan pemandu melangkau kedudukan tertentu"
     ],
     "correct_index": 0,
@@ -5448,9 +5448,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Leave it released"
     ],
     "options_ms": [
-      "Tekan sedikit",
-      "Tekan sepenuhnya",
-      "Pam sekali",
+      "Tekan sedikit sahaja",
+      "Tekan hingga ke lantai",
+      "Pam pedal sekali sahaja",
       "Biarkan tanpa ditekan"
     ],
     "correct_index": 3,
@@ -5547,9 +5547,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Lane for motorcycles",
-      "Lane for bicycles",
-      "Lane for taxis",
-      "Lane for buses"
+      "Lane for bicycles only",
+      "Lane for taxis only",
+      "Lane for buses only"
     ],
     "options_ms": [
       "Lorong untuk motosikal",
@@ -5683,9 +5683,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Tempat letak kenderaan",
-      "Klinik perubatan",
-      "Stesen timbang JPJ",
-      "Telefon awam"
+      "Klinik perubatan awam",
+      "Stesen timbang berat JPJ",
+      "Telefon awam berhampiran"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means vehicle parking.",
@@ -5761,9 +5761,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Kenderaan dilarang masuk",
-      "Dilarang memotong",
-      "Dilarang berhenti",
-      "Jalan buntu"
+      "Dilarang memotong di sini",
+      "Dilarang berhenti di sini",
+      "Jalan buntu di hadapan"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no vehicle entry.",
@@ -5858,9 +5858,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Left lane closes ahead",
-      "Keep right of an obstacle",
-      "Traffic merges from the right",
+      "Left lane closes a short way ahead",
+      "Keep to the right of an obstacle",
+      "Traffic merges in from the right",
       "Route changes direction to the right"
     ],
     "options_ms": [
@@ -6015,9 +6015,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Cermin menunjukkan laluan lapang sebelum anda berpindah ke lorong sebelah. Apakah semakan terakhir meliputi kawasan di sisi kereta?",
     "options_en": [
       "Glance over the shoulder toward that lane",
-      "Look again in the interior mirror",
-      "Check the centre of the windscreen",
-      "Watch the car immediately ahead"
+      "Look once more in the interior mirror",
+      "Check the centre of the windscreen glass",
+      "Watch the car immediately ahead of you"
     ],
     "options_ms": [
       "Toleh ke bahu menghala ke lorong itu",
@@ -6308,8 +6308,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "options_ms": [
       "Berat tambahan memerlukan ruang berhenti lebih panjang",
       "Panjang tambahan memerlukan ruang membelok lebih luas",
-      "Cermin tambahan meluaskan titik buta",
-      "Sambungan tunda mengubah sudut stereng"
+      "Cermin tambahan itu meluaskan lagi titik buta pemandu",
+      "Sambungan tunda mengubah sudut pusingan stereng"
     ],
     "correct_index": 0,
     "explanation_en": "The towing vehicle and load need enough time and distance to stop together.",
@@ -6410,10 +6410,10 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Stop immediately in the traffic lane"
     ],
     "options_ms": [
-      "Ikut kereta lain hingga ke destinasi",
+      "Ikut kereta lain di hadapan hingga ke destinasi anda",
       "Perlahankan kenderaan dan cari tempat selamat untuk berhenti",
-      "Kekalkan kelajuan dan ikut garisan tepi",
-      "Berhenti serta-merta di lorong trafik"
+      "Kekalkan kelajuan dan ikut garisan tepi jalan sahaja",
+      "Berhenti serta-merta di tengah lorong trafik yang sibuk"
     ],
     "correct_index": 1,
     "explanation_en": "Use hazard lights to warn others and get out of moving traffic safely.",
@@ -7893,9 +7893,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Berhenti dengan selamat dan keluarkan semua orang",
-      "Buka bonet sebelum berhenti",
-      "Terus memandu ke bengkel terdekat",
-      "Tunggu di dalam sehingga asap hilang"
+      "Buka bonet dahulu sebelum anda berhenti sepenuhnya",
+      "Terus memandu ke bengkel yang terdekat dengan anda",
+      "Tunggu di dalam kereta sehingga asap hilang"
     ],
     "correct_index": 0,
     "explanation_en": "Stop, turn off the engine and get passengers out before dealing with the fire.",
@@ -8042,10 +8042,10 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What should you do in a busy market area with pedestrians nearby?",
     "question_ms": "Apakah yang patut dilakukan di kawasan pasar sibuk dengan pejalan kaki berhampiran?",
     "options_en": [
-      "Move closer to the kerb",
+      "Move closer to the kerb and pass",
       "Hold speed and sound the horn",
       "Slow down and watch for crossings",
-      "Focus on the vehicle ahead"
+      "Focus on the vehicle directly ahead"
     ],
     "options_ms": [
       "Gerakkan kenderaan lebih dekat dengan bebendul",
@@ -8335,9 +8335,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Lepaskan pemecut dan perlahankan kenderaan",
-      "Kekalkan kelajuan semasa",
-      "Pecut untuk berselisih lebih awal",
-      "Luncur tanpa membrek"
+      "Kekalkan kelajuan semasa anda sekarang",
+      "Pecut untuk berselisih dengan lebih awal",
+      "Luncur terus tanpa menekan sebarang brek"
     ],
     "correct_index": 0,
     "explanation_en": "Reduce speed while keeping control. Check that it is safe before moving left.",
@@ -8464,10 +8464,10 @@ export const KPP_TEXTBOOK_QUESTIONS = [
       "Match the speed of the car ahead"
     ],
     "options_ms": [
-      "Kekalkan kelajuan dan tambah jarak",
-      "Perlahankan hanya sebelum selekoh",
+      "Kekalkan kelajuan dan tambah jarak antara kereta",
+      "Perlahankan hanya apabila hampir ke selekoh",
       "Kurangkan kelajuan mengikut jarak penglihatan",
-      "Ikut kelajuan kereta di hadapan"
+      "Ikut sahaja kelajuan kereta di hadapan anda"
     ],
     "correct_index": 2,
     "explanation_en": "Adjust your speed to suit the visibility when glare makes it harder to see.",
@@ -9187,9 +9187,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
       "Lane for motorcycles",
-      "Lane for bicycles",
-      "Lane for taxis",
-      "Lane for buses"
+      "Lane for bicycles only",
+      "Lane for taxis only",
+      "Lane for buses only"
     ],
     "options_ms": [
       "Lorong untuk motosikal",
@@ -9323,9 +9323,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Tempat letak kenderaan",
-      "Klinik perubatan",
-      "Stesen timbang JPJ",
-      "Telefon awam"
+      "Klinik perubatan awam",
+      "Stesen timbang berat JPJ",
+      "Telefon awam berhampiran"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means vehicle parking.",
@@ -9401,9 +9401,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Kenderaan dilarang masuk",
-      "Dilarang memotong",
-      "Dilarang berhenti",
-      "Jalan buntu"
+      "Dilarang memotong di sini",
+      "Dilarang berhenti di sini",
+      "Jalan buntu di hadapan"
     ],
     "correct_index": 0,
     "explanation_en": "This sign means no vehicle entry.",
@@ -9498,9 +9498,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "What does this sign mean?",
     "question_ms": "Apakah maksud papan tanda ini?",
     "options_en": [
-      "Left lane closes ahead",
-      "Keep right of an obstacle",
-      "Traffic merges from the right",
+      "Left lane closes a short way ahead",
+      "Keep to the right of an obstacle",
+      "Traffic merges in from the right",
       "Route changes direction to the right"
     ],
     "options_ms": [
@@ -10356,9 +10356,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "You have just passed a car on a three-lane motorway. Where should you drive once the road ahead is clear?",
     "question_ms": "Anda baru memotong kereta di lebuh raya tiga lorong. Di manakah anda patut memandu apabila jalan di hadapan lapang?",
     "options_en": [
-      "Stay in the right lane",
+      "Stay in the right lane for a while",
       "Return to the normal driving lane",
-      "Stay in the centre lane",
+      "Stay in the centre lane for a while",
       "Return to the emergency lane"
     ],
     "options_ms": [
@@ -10389,9 +10389,9 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Kunci keselamatan kanak-kanak",
-      "Suis kunci pusat",
+      "Suis kunci pusat kenderaan",
       "Kunci pintu kawalan jauh",
-      "Kunci pintu pemandu"
+      "Kunci pintu bahagian pemandu"
     ],
     "correct_index": 0,
     "explanation_en": "The rear-door child lock helps stop a child from opening the door from inside.",
@@ -11793,8 +11793,8 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     ],
     "options_ms": [
       "Berhenti di tempat yang sesuai di luar aliran trafik",
-      "Teruskan di belakang kenderaan lain",
-      "Perlahankan dan kekal di lorong trafik",
+      "Teruskan di belakang kenderaan lain di hadapan",
+      "Perlahankan kenderaan dan kekal di lorong trafik",
       "Teruskan sehingga penglihatan bertambah baik"
     ],
     "correct_index": 0,
@@ -11864,15 +11864,15 @@ export const KPP_TEXTBOOK_QUESTIONS = [
     "question_en": "Where should a probationary car driver display the P signs?",
     "question_ms": "Di manakah pemandu kereta dengan lesen percubaan perlu mempamerkan tanda P?",
     "options_en": [
-      "Front windscreen only",
-      "Rear windscreen only",
-      "Both side windows",
+      "The front windscreen only",
+      "The rear windscreen only",
+      "Both side windows only",
       "Front and rear windscreens"
     ],
     "options_ms": [
-      "Cermin hadapan sahaja",
-      "Cermin belakang sahaja",
-      "Kedua-dua tingkap sisi",
+      "Cermin hadapan kereta sahaja",
+      "Cermin belakang kereta sahaja",
+      "Kedua-dua tingkap sisi kereta",
       "Cermin hadapan dan belakang"
     ],
     "correct_index": 3,

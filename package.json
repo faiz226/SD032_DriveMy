@@ -24,6 +24,7 @@
     "db:upload-images": "node scripts/upload-images.js"
   },
   "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/overpass": "^5.3.0",
     "@fontsource/dotgothic16": "^5.3.1",

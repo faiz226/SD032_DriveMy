@@ -6,7 +6,10 @@ This document records all third-party content (images, datasets, and media) used
 
 ## Colour Vision Test Plates (Ishihara)
 
-Not distributed. The colour test is available only in private demo builds with locally held plates.
+**Location:** `public/color-plates/1.jpg` to `25.jpg`
+**Used in:** the Colour test page
+**Source:** the plate images in `Ishihara_Tests.pdf` ("Ishihara charts", Challenge TB, 2018), taken from the PDF unchanged.
+**Licence:** none granted. They are used only because DriveMy is a final-year-project prototype and is not commercial. **Replace or license them before any commercial release.**
 
 ---
 
@@ -32,6 +35,14 @@ Road sign images are reproduced from the **Malaysian Highway Code (Kod Jalan Ray
 | Overpass | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | DotGothic16 | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | JetBrains Mono | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
+
+**Sign lettering:** JKR road signs on ordinary roads are set in Transport Heavy (JKR guideline ATJ 2E/87); expressway signs use LLM Lettering. Neither is openly licensed, so the page titles use Overpass in heavy capitals, the closest open face (Overpass descends from Highway Gothic, a sibling of the sign alphabets). No font file was copied from either sign face.
+
+## Kuala Lumpur Skyline
+
+**Location:** `src/assets/skyline/kl-night.svg`, `kl-day.svg`
+**Used in:** the page backdrop (night and morning haze)
+**Source:** drawn for this project as plain SVG shapes (towers are simplified silhouettes, not traced from any photograph). MIT (this project).
 
 ---
 

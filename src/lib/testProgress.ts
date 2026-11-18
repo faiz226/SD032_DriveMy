@@ -135,6 +135,8 @@ export function clearAllProgress(userId: string): void {
 export const PROGRESS_SCOPES = {
   quiz: "quiz",
   colorVision: "color-vision",
+  /** The colour test result, kept on the device. */
+  colorResult: "color-result",
   /** Mock progress is per set, so mock-1 and mock-2 do not overwrite each other. */
   mock: (setId: string) => `mock:${setId}`,
 } as const;

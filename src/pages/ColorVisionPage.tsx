@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
@@ -9,6 +10,8 @@ import { Panel, Pill, type PillTone } from "@/components/ui/surface";
 import { ArrowClockwise, ArrowLeft, ArrowRight, CheckCircle, Info, Warning } from "@/components/ui/icons";
 import { PLATES, plateImage, scoreTest, type Plate, type Reading } from "@/content/color-vision";
 import { saveProgress, loadProgress, clearProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
+import { saveColourResult } from "@/lib/colourResult";
+import { learnerKeys } from "@/lib/queryKeys";
 import type { TranslationKey } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +42,7 @@ function PlateImage({ plate, className }: { plate: Plate; className?: string }) 
 export function ColorVisionPage() {
   const { t } = useLanguage();
   const user = useAuthStore(s => s.user);
+  const queryClient = useQueryClient();
 
   // Read once, before the first paint, so a resumed test opens on the plate the learner left.
   const [restored] = useState(() => {
@@ -102,8 +106,16 @@ export function ColorVisionPage() {
     setAnswers(next);
     if (index < PLATES.length - 1) return goTo(index + 1, next);
 
-    if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
-    // The result is health-related and stays on this device: nothing is sent to the server.
+    if (user?.id) {
+      clearProgress(PROGRESS_SCOPES.colorVision, user.id);
+      // The result is health-related and stays on this device: nothing is sent to the server. A test whose
+      // plate 1 was missed says nothing about the learner's eyes, so it is not remembered.
+      const score = scoreTest(next);
+      if (score.outcome !== "invalid") {
+        const best = saveColourResult(user.id, Math.round((score.normal / PLATES.length) * 100));
+        queryClient.setQueryData(learnerKeys.profileBest("color", user.id), best);
+      }
+    }
     setPhase("result");
   };
 

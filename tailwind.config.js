@@ -54,7 +54,7 @@ export default {
       // on the VMS board; JetBrains Mono only for code and simulator readouts.
       fontFamily: {
         sans: ['"Overpass Variable"', "Overpass", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
-        heading: ['"Overpass Variable"', "Overpass", "system-ui", "sans-serif"],
+        heading: ['"Archivo Variable"', "Archivo", '"Overpass Variable"', "system-ui", "sans-serif"],
         body: ['"Overpass Variable"', "Overpass", "system-ui", "sans-serif"],
         vms: ["DotGothic16", "ui-monospace", "monospace"],
         mono: ['"JetBrains Mono Variable"', '"JetBrains Mono"', "ui-monospace", "monospace"],
@@ -91,6 +91,7 @@ export default {
         sidebar: "var(--shadow-lg)",
       },
       transitionTimingFunction: {
+        spring: "var(--ease-spring)",
         out: "var(--ease-out)",
       },
       keyframes: {
@@ -113,6 +114,7 @@ export default {
           from: { opacity: "0", transform: "scale(0.97)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "content-in": { from: { opacity: "0", transform: "translateY(8px)" }, to: { opacity: "1", transform: "none" } },
         "spin-slow": { from: { transform: "rotate(0deg)" }, to: { transform: "rotate(360deg)" } },
         shimmer: { from: { backgroundPosition: "200% 0" }, to: { backgroundPosition: "-200% 0" } },
       },
@@ -121,9 +123,10 @@ export default {
         "accordion-up": "accordion-up 0.2s var(--ease-out)",
         "fade-in": "fade-in 0.2s var(--ease-out)",
         "fade-out": "fade-out 0.2s var(--ease-out)",
-        "slide-in-right": "slide-in-right 0.32s var(--ease-out)",
+        "slide-in-right": "slide-in-right 0.46s var(--ease-spring)",
         "slide-out-right": "slide-out-right 0.28s var(--ease-out)",
-        "scale-in": "scale-in 0.18s var(--ease-out)",
+        "scale-in": "scale-in 0.34s var(--ease-spring)",
+        "content-in": "content-in 0.42s var(--ease-spring) backwards",
         "spin-slow": "spin-slow 2s linear infinite",
         shimmer: "shimmer 1.6s linear infinite",
       },

@@ -97,6 +97,16 @@ export function TheoryPage() {
     setFlipped((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  /** Flips a card; the button path then moves focus to the face now showing, so keyboard users keep their place. */
+  const flipCard = (from: Element, id: string, refocus: boolean) => {
+    const card = from.closest("[data-sign-card]");
+    toggleFlip(id);
+    if (refocus)
+      requestAnimationFrame(() =>
+        card?.querySelector<HTMLButtonElement>("button[data-flip]:not([inert] button)")?.focus(),
+      );
+  };
+
   // Filtered signs based on search, category pill, and favorites filter
   const filteredSigns = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -481,10 +491,14 @@ export function TheoryPage() {
                       <div
                         key={sign.id}
                         data-sign-card
+                        onClick={(event) => {
+                          // Anywhere on the card flips it; the star and the footer button keep their own jobs.
+                          if (!(event.target as HTMLElement).closest("button")) flipCard(event.currentTarget, sign.id, false);
+                        }}
                         className="relative h-[290px] perspective-1000 cursor-pointer group"
                       >
                         <div
-                          className={`w-full h-full transition-transform [transition-duration:var(--motion)] [transition-timing-function:var(--ease-out)] motion-reduce:transition-none transform-style-3d ${
+                          className={`w-full h-full transition-transform [transition-duration:var(--motion-slow)] [transition-timing-function:var(--ease-spring)] motion-reduce:transition-none transform-style-3d ${
                             isFlipped ? "rotate-y-180" : ""
                           }`}
                         >
@@ -498,7 +512,7 @@ export function TheoryPage() {
                             <button
                               type="button"
                               onClick={(e) => toggleLearned(e, sign.id)}
-                              className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-background/85 backdrop-blur flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
+                              className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-background/90 flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
                               aria-label={learnedLabel(isLearned)}
                             >
                               <Star
@@ -516,32 +530,17 @@ export function TheoryPage() {
                             <div className="w-full flex-1 flex flex-col items-center justify-center p-4 bg-muted/10 group-hover:bg-muted/25 transition-colors">
                               <img
                                 src={sign.img}
-                                alt={lang === "en" ? sign.name : sign.nameMs}
+                                alt={lang === "en" ? "Road sign" : "Papan tanda jalan"}
                                 className="max-w-[110px] max-h-[110px] object-contain drop-shadow-xs transition-transform duration-300 group-hover:scale-105"
                                 loading="lazy"
                               />
-                              <div className="mt-2 text-center px-2">
-                                <span className="text-xs font-bold text-foreground line-clamp-1">
-                                  {lang === "en" ? sign.name : sign.nameMs}
-                                </span>
-                              </div>
                             </div>
 
                             {/* Flip trigger footer */}
                             <button
                               type="button"
                               data-flip
-                              onClick={(event) => {
-                                const card = event.currentTarget.closest("[data-sign-card]");
-                                toggleFlip(sign.id);
-                                requestAnimationFrame(() =>
-                                  card
-                                    ?.querySelector<HTMLButtonElement>(
-                                      "button[data-flip]:not([inert] button)",
-                                    )
-                                    ?.focus(),
-                                );
-                              }}
+                              onClick={(event) => flipCard(event.currentTarget, sign.id, true)}
                               className="w-full p-2.5 border-t border-border bg-background/95 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary group-hover:bg-primary/5 transition-colors cursor-pointer"
                             >
                               <span>{lang === "en" ? "Tap to reveal" : "Ketik untuk jawapan"}</span>
@@ -602,17 +601,7 @@ export function TheoryPage() {
                               <button
                                 type="button"
                                 data-flip
-                                onClick={(event) => {
-                                  const card = event.currentTarget.closest("[data-sign-card]");
-                                  toggleFlip(sign.id);
-                                  requestAnimationFrame(() =>
-                                    card
-                                      ?.querySelector<HTMLButtonElement>(
-                                        "button[data-flip]:not([inert] button)",
-                                      )
-                                      ?.focus(),
-                                  );
-                                }}
+                                onClick={(event) => flipCard(event.currentTarget, sign.id, true)}
                                 className="flex min-h-6 min-w-6 items-center gap-1 text-[0.8125rem] font-semibold text-primary hover:underline cursor-pointer"
                               >
                                 <Repeat size={12} aria-hidden="true" />

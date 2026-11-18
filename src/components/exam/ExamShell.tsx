@@ -261,7 +261,7 @@ export function ExamShell({
           somewhere comfortable. */}
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:max-w-5xl lg:flex-row lg:gap-12 lg:py-12">
-          <div className="min-w-0 flex-1">
+          <div key={question.id} className="min-w-0 flex-1 animate-content-in">
             {mode === "mock" && (
               <button
                 type="button"

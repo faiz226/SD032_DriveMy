@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/authStore";
 import { TOTAL_SIMULATION_MANEUVERS } from "@/lib/constants";
 import { learnerKeys } from "@/lib/queryKeys";
+import { loadColourBest } from "@/lib/colourResult";
 import {
   getQuizStats,
   getMockStats,
   getSimStats,
   getTheoryProgressStats,
-  getBestColorVisionScore,
 } from "@/services/analytics.service";
 
 export function useQuizStats() {
@@ -51,7 +51,7 @@ export function useBestColorVisionScore() {
   const { user } = useAuthStore();
   return useQuery({
     queryKey: learnerKeys.profileBest("color", user?.id),
-    queryFn: () => getBestColorVisionScore(user!.id),
+    queryFn: () => loadColourBest(user!.id),
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
   });

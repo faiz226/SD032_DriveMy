@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { clearUserResultsQueue, markUserDeleted } from "./results.service";
 import { useAuthStore } from "@/stores/authStore";
+import { clearProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
 
 /**
  * PDPA 2010 / GDPR data-subject rights: export (access & portability) and
@@ -70,6 +71,8 @@ export async function resetProgress(userId: string): Promise<void> {
   const results = await Promise.all(USER_DATA_TABLES.map(table => supabase.from(table).delete().eq("user_id", userId)));
   const failed = results.find(result => result.error);
   if (failed?.error) throw failed.error;
+  // The colour test result lives only on this device, so Reset Progress clears it here.
+  clearProgress(PROGRESS_SCOPES.colorResult, userId);
 }
 
 /**

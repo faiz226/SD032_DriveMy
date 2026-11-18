@@ -70,8 +70,8 @@ describe("privacy notice content (PDPA 2010)", () => {
     expect(document.body).toHaveTextContent(minors);
   });
 
-  it("no longer describes colour test results as stored", () => {
+  it("says the colour test result stays on the device", () => {
     open("en");
-    expect(document.body).not.toHaveTextContent(/colour test/i);
+    expect(document.body).toHaveTextContent(/colour test result\. It stays on this device and is never sent to us/i);
   });
 });

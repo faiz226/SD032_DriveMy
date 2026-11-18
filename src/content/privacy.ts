@@ -51,6 +51,10 @@ export const PRIVACY_SECTIONS: { id: string; title: Text; items: Text[] }[] = [
         en: "An unfinished test, so you can carry on where you left off, and results waiting to upload after you were offline. Signing out clears unfinished tests.",
         ms: "Ujian yang belum selesai, supaya anda boleh menyambungnya, dan keputusan yang menunggu untuk dimuat naik selepas anda di luar talian. Log keluar akan memadam ujian yang belum selesai.",
       },
+      {
+        en: "Your colour test result. It stays on this device and is never sent to us. Signing out or Reset Progress clears it.",
+        ms: "Keputusan ujian warna anda. Ia kekal pada peranti ini dan tidak pernah dihantar kepada kami. Log keluar atau Tetapkan Semula Kemajuan akan memadamnya.",
+      },
     ],
   },
   {

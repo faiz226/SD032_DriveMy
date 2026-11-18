@@ -498,7 +498,7 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
             <Dialog.Overlay className="fixed inset-0 z-40 bg-overlay/50 md:hidden" />
             <Dialog.Content 
               aria-describedby={undefined}
-              className="fixed inset-y-0 left-0 z-50 h-full w-64 flex-shrink-0 shadow-2xl md:hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full duration-300"
+              className="fixed inset-y-0 left-0 z-50 h-full w-64 flex-shrink-0 shadow-2xl md:hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full duration-500 [animation-timing-function:var(--ease-spring)]"
             >
               <Dialog.Title className="sr-only">{t("a11y.openMenu")}</Dialog.Title>
               <Sidebar isMobile onClose={() => setMobileOpen(false)} />

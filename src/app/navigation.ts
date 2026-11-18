@@ -10,7 +10,7 @@ import {
   Eye,
   type Icon,
 } from "@/components/ui/icons";
-import { COLOUR_TEST, ROUTES } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations";
 
 export interface NavDestination {
@@ -31,5 +31,5 @@ export const NAV_DESTINATIONS: NavDestination[] = [
   { labelKey: "nav.simulator",  href: ROUTES.SIMULATIONS,  icon: Car,           mobile: true },
   { labelKey: "nav.progress",   href: ROUTES.PROGRESS,     icon: TrendUp,       mobile: true },
   { labelKey: "nav.roadSafety", href: ROUTES.SAFETY,       icon: ShieldWarning },
-  ...(COLOUR_TEST ? [{ labelKey: "nav.colorblind" as const, href: ROUTES.COLOR_VISION, icon: Eye }] : []),
+  { labelKey: "nav.colorblind", href: ROUTES.COLOR_VISION, icon: Eye },
 ];

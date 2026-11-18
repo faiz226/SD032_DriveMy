@@ -12,7 +12,6 @@ import {
   useBestColorVisionScore,
 } from "@/hooks/useProgressStats";
 import { Skeleton } from "@/components/ui/skeleton";
-import { COLOUR_TEST } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations/en";
 import { MilestoneRow, SettingsPanel, type MilestoneState } from "./SettingsPrimitives";
 
@@ -51,7 +50,7 @@ export function ProfileMilestonesSection() {
   const quizState: MilestoneState = quizBest >= 70 ? "complete" : quizBest > 0 ? "inProgress" : "notStarted";
   const mockState: MilestoneState = mockBest >= 70 ? "complete" : mockBest > 0 ? "inProgress" : "notStarted";
   const simState: MilestoneState = simsDone >= 8 ? "complete" : simsDone > 0 ? "inProgress" : "notStarted";
-  const colorState: MilestoneState = colorBest !== null && colorBest !== undefined ? (colorBest >= 70 ? "complete" : "inProgress") : "notStarted";
+  const colorState: MilestoneState = colorBest !== null && colorBest !== undefined ? (colorBest >= 100 ? "complete" : "inProgress") : "notStarted";
 
   const readinessLabel = useMemo(() => {
     const composite = readiness?.composite ?? 0;
@@ -133,7 +132,7 @@ export function ProfileMilestonesSection() {
 
         <div className="space-y-2 mt-2">
           {theoryPending || quizPending || mockPending || simsPending || colorPending || readinessPending ? (
-            Array.from({ length: COLOUR_TEST ? 6 : 5 }).map((_, i) => (
+            Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-3 px-4 rounded-md bg-background border border-border items-center min-h-[58px]">
                 <Skeleton className="h-4 w-1/3" />
                 <div className="flex flex-col sm:items-end gap-1.5 shrink-0">
@@ -168,14 +167,12 @@ export function ProfileMilestonesSection() {
                 state={simState}
                 stateLabel={statusLabel(simState)}
               />
-              {COLOUR_TEST && (
-                <MilestoneRow
+              <MilestoneRow
                   module={t("profile.milestone.color")}
                   result={colorBest !== null && colorBest !== undefined ? `${Math.round(colorBest)}%` : "-"}
                   state={colorState}
                   stateLabel={statusLabel(colorState)}
                 />
-              )}
               <MilestoneRow
                 module={t("profile.milestone.examReadiness")}
                 result={readiness ? t("profile.readinessScore", { score: Math.round(readiness.composite) }) : "-"}
