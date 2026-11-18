@@ -1,0 +1,196 @@
+/**
+ * Continuous (G2) corners, everywhere.
+ *
+ * Chrome and Edge 139+ draw them natively with `corner-shape` (src/index.css). Safari, iOS and older browsers do
+ * not, so there the corners are cut with an SVG `clip-path` built from each box's own size, with the same curve
+ * Figma uses for its "corner smoothing". A clip would also cut the border and a focus ring, so on a clipped box
+ * the border is repainted as a stroke along the same curve (a background layer, so inputs work too) and the
+ * focus ring becomes a thicker stroke. A box with a small outer shadow is clipped to the squircle plus the open
+ * space around the box, so its corners are cut and its shadow still shows; a big halo is dropped on that box.
+ */
+
+const SMOOTHING = 0.6;
+
+const rad = (deg: number) => (deg * Math.PI) / 180;
+const n = (value: number) => Math.round(value * 100) / 100;
+
+/** The outline of a width x height box with continuous corners of the given radius, as an SVG path. */
+export function squirclePath(width: number, height: number, radius: number, smoothing = SMOOTHING): string {
+  const limit = Math.min(width, height) / 2;
+  const r = Math.min(radius, limit);
+  if (r <= 0) return `M0 0H${n(width)}V${n(height)}H0Z`;
+  let s = smoothing;
+  let p = (1 + s) * r;
+  // The curve may not run past the middle of an edge: spend what is left on smoothing.
+  s = Math.min(s, limit / r - 1);
+  p = Math.min(p, limit);
+  const arcMeasure = 90 * (1 - s);
+  const arcLength = Math.sin(rad(arcMeasure / 2)) * r * Math.SQRT2;
+  const alpha = (90 - arcMeasure) / 2;
+  const p3p4 = r * Math.tan(rad(alpha / 2));
+  const beta = 45 * s;
+  const c = p3p4 * Math.cos(rad(beta));
+  const d = c * Math.tan(rad(beta));
+  const b = (p - arcLength - c - d) / 3;
+  const a = 2 * b;
+  const R = n(r);
+  const arc = (dx: number, dy: number) => `a${R} ${R} 0 0 1 ${n(dx)} ${n(dy)}`;
+  const bez = (...v: number[]) => `c${v.map(n).join(" ")}`;
+  return [
+    `M${n(width - p)} 0`,
+    bez(a, 0, a + b, 0, a + b + c, d), arc(arcLength, arcLength), bez(d, c, d, b + c, d, a + b + c),
+    `L${n(width)} ${n(height - p)}`,
+    bez(0, a, 0, a + b, -d, a + b + c), arc(-arcLength, arcLength), bez(-c, d, -(b + c), d, -(a + b + c), d),
+    `L${n(p)} ${n(height)}`,
+    bez(-a, 0, -(a + b), 0, -(a + b + c), -d), arc(-arcLength, -arcLength), bez(-d, -c, -d, -(b + c), -d, -(a + b + c)),
+    `L0 ${n(p)}`,
+    bez(0, -a, 0, -(a + b), d, -(a + b + c)), arc(arcLength, -arcLength), bez(c, -d, b + c, -d, a + b + c, -d),
+    "Z",
+  ].join("");
+}
+
+const TARGETS = "button, input, select, textarea, .panel, .tile, .hero-panel, [role=dialog]";
+const SKIP_INPUTS = /^(checkbox|radio|range|file|color|hidden)$/;
+const MIN_RADIUS = 6;
+/** Shadows reaching further than this (px) are dropped on a clipped box. */
+const MAX_KEPT_SHADOW = 20;
+
+interface Painted {
+  width: number;
+  height: number;
+  radius: number;
+  ring: string;
+}
+
+const done = new WeakMap<Element, Painted>();
+const watched = new WeakSet<Element>();
+
+function ringImage(width: number, height: number, radius: number, colour: string, stroke: number): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${n(width)}" height="${n(height)}" viewBox="0 0 ${n(width)} ${n(height)}"><path d="${squirclePath(width, height, radius)}" fill="none" stroke="${colour}" stroke-width="${stroke * 2}"/></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+const INLINE = ["clipPath", "borderRadius", "borderColor", "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "outline", "boxShadow"] as const;
+
+function release(el: HTMLElement) {
+  for (const key of INLINE) el.style[key] = "";
+  done.delete(el);
+}
+
+function paint(el: HTMLElement) {
+  if (el instanceof HTMLInputElement && SKIP_INPUTS.test(el.type)) return;
+  // Read the settled styles: a running colour transition would otherwise hand back a half-faded border colour.
+  el.style.transition = "none";
+  release(el);
+  paintSettled(el);
+  void el.offsetWidth;
+  el.style.transition = "";
+}
+
+function paintSettled(el: HTMLElement) {
+  const cs = getComputedStyle(el);
+  const radius = parseFloat(cs.borderTopLeftRadius);
+  const { width, height } = el.getBoundingClientRect();
+  // How far an outer shadow reaches past the box: the clip must leave room for it, or it would be cut off.
+  const reach = cs.boxShadow.split(/,(?![^(]*\))/).reduce((most, layer) => {
+    const m = /(-?[\d.]+)px (-?[\d.]+)px (-?[\d.]+)px(?: (-?[\d.]+)px)?/.exec(layer);
+    if (layer.trim() === "none" || layer.includes("inset") || !m) return most;
+    const [x, y, blur, spread] = [m[1], m[2], m[3], m[4] ?? "0"].map(parseFloat);
+    // A layer with no offset and no blur is a ring (a focus ring, say): the stroke below replaces it.
+    return blur === 0 && x === 0 && y === 0 ? most : Math.max(most, Math.max(Math.abs(x), Math.abs(y)) + blur + Math.max(0, spread));
+  }, 0);
+  // Plain radius stays for pills and circles, tiny corners and hidden boxes.
+  if (!(radius >= MIN_RADIUS) || radius * 2 >= Math.min(width, height) - 1 || width < 24 || height < 24) return;
+
+  const border = parseFloat(cs.borderTopWidth) || 0;
+  const focused = el.matches(":focus-visible");
+  // A solid inset ring (a sign's white inner edge) follows the squircle too, as one more stroke.
+  const ringLayers = cs.boxShadow.split(/,(?![^(]*\))/).map(layer => /^\s*(rgba?\([^)]*\)) 0px 0px 0px ([\d.]+)px inset/.exec(layer)).filter(Boolean);
+  const layers: string[] = ringLayers.map(m => ringImage(width, height, radius, m![1], parseFloat(m![2])));
+  if (focused) layers.push(ringImage(width, height, radius, "rgb(242, 183, 5)", 2));
+  if (border > 0) layers.push(ringImage(width, height, radius, cs.borderTopColor, border));
+  const images = cs.backgroundImage !== "none" ? [cs.backgroundImage] : [];
+  const stacked = [...layers, ...images];
+  const sizes = [...layers.map(() => "100% 100%"), ...(images.length ? [cs.backgroundSize] : [])];
+  const positions = [...layers.map(() => "0 0"), ...(images.length ? [cs.backgroundPosition] : [])];
+  const repeats = [...layers.map(() => "no-repeat"), ...(images.length ? [cs.backgroundRepeat] : [])];
+
+  // With a shadow, the clip is the squircle plus everything outside the box (even-odd: outer area, minus the box,
+  // plus the squircle), so the corners are cut but the shadow around them stays.
+  // A big halo (the gantry glow, a hover lift) cannot be kept without leaving square notches at the corners, so on
+  // those the corner wins and the halo goes; ordinary card shadows stay.
+  const dropShadow = reach > MAX_KEPT_SHADOW;
+  // Inset layers (a sign's white inner edge, say) are inside the box and stay.
+  const keptInset = cs.boxShadow.split(/,(?![^(]*\))/).filter(layer => layer.includes("inset") && !/ 0px 0px 0px [\d.]+px inset/.test(layer));
+  if (dropShadow || ringLayers.length) el.style.boxShadow = [...(dropShadow ? [] : cs.boxShadow.split(/,(?![^(]*\))/).filter(layer => !layer.includes("inset"))), ...keptInset].join(", ") || "none";
+  const margin = dropShadow ? 0 : Math.ceil(reach);
+  const curve = squirclePath(width, height, radius);
+  el.style.clipPath = margin
+    ? `path(evenodd, "M${-margin} ${-margin}H${width + margin}V${height + margin}H${-margin}ZM0 0H${width}V${height}H0Z${curve}")`
+    : `path("${curve}")`;
+  el.style.borderRadius = "0";
+  if (border > 0) el.style.borderColor = "transparent";
+  if (focused) el.style.outline = "none";
+  if (stacked.length) {
+    el.style.backgroundImage = stacked.join(", ");
+    el.style.backgroundSize = sizes.join(", ");
+    el.style.backgroundPosition = positions.join(", ");
+    el.style.backgroundRepeat = repeats.join(", ");
+  }
+  done.set(el, { width, height, radius, ring: cs.borderTopColor });
+}
+
+/** Install the clip-path corners on browsers without `corner-shape`. Safe to call once at start-up. */
+export function installSquircles(root: Document = document): void {
+  // ?squircle=js draws every corner with the clip-path path, ?squircle=off with plain radii: for checking each route.
+  const mode = typeof location !== "undefined" ? new URLSearchParams(location.search).get("squircle") : null;
+  if (mode) root.documentElement.dataset.squircle = mode;
+  const native = mode !== "js" && typeof CSS !== "undefined" && CSS.supports("corner-shape", "squircle");
+  if (mode === "off") return;
+  if (native || typeof CSS === "undefined" || !CSS.supports("clip-path", 'path("M0 0")')) return;
+
+  let queued = new Set<HTMLElement>();
+  let frame = 0;
+  const flush = () => {
+    frame = 0;
+    const batch = queued;
+    queued = new Set();
+    batch.forEach(paint);
+  };
+  const queue = (el: HTMLElement) => {
+    queued.add(el);
+    if (!frame) frame = requestAnimationFrame(flush);
+  };
+
+  const resizer = new ResizeObserver(entries => entries.forEach(entry => queue(entry.target as HTMLElement)));
+  const watch = (el: Element) => {
+    if (!(el instanceof HTMLElement) || watched.has(el)) return;
+    watched.add(el);
+    resizer.observe(el);
+  };
+  const scan = (node: ParentNode) => {
+    if (node instanceof HTMLElement && node.matches(TARGETS)) watch(node);
+    node.querySelectorAll?.(TARGETS).forEach(watch);
+  };
+
+  new MutationObserver(records => {
+    for (const record of records) {
+      if (record.type === "attributes") {
+        const el = record.target as HTMLElement;
+        if (el.matches?.(TARGETS) && watched.has(el)) queue(el);
+      } else record.addedNodes.forEach(node => node.nodeType === 1 && scan(node as ParentNode));
+    }
+  }).observe(root.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "disabled", "aria-pressed", "aria-checked", "data-state"] });
+
+  // Hover and focus change the border colour or draw the focus ring, so repaint on those too.
+  for (const type of ["pointerover", "pointerout", "focusin", "focusout"])
+    root.addEventListener(type, event => {
+      const el = (event.target as Element | null)?.closest?.(TARGETS) as HTMLElement | null;
+      if (el && watched.has(el)) queue(el);
+    });
+  // The theme switches colours without touching the box: repaint every clipped box.
+  new MutationObserver(() => document.querySelectorAll<HTMLElement>(TARGETS).forEach(el => watched.has(el) && queue(el)))
+    .observe(root.documentElement, { attributes: true, attributeFilter: ["class", "data-theme"] });
+
+  scan(root);
+}

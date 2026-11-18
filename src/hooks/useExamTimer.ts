@@ -14,7 +14,7 @@ interface UseExamTimerReturn {
   elapsed: number;
   start: () => void;
   pause: () => void;
-  reset: () => void;
+  reset: (seconds?: number) => void;
   formattedTime: string;
 }
 
@@ -87,10 +87,10 @@ export function useExamTimer({
     setIsRunning(false);
   }, [clearTimer]);
 
-  const reset = useCallback(() => {
+  const reset = useCallback((seconds: number = totalSeconds) => {
     clearTimer();
-    remainingRef.current = totalSeconds;
-    setSecondsRemaining(totalSeconds);
+    remainingRef.current = seconds;
+    setSecondsRemaining(seconds);
     setIsRunning(false);
     setIsExpired(false);
     warningFiredRef.current = false;

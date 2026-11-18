@@ -32,11 +32,12 @@ Road sign images are reproduced from the **Malaysian Highway Code (Kod Jalan Ray
 
 | Font | License |
 |------|---------|
+| Archivo | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | Overpass | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | DotGothic16 | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 | JetBrains Mono | [SIL Open Font License 1.1](https://scripts.sil.org/OFL) |
 
-**Sign lettering:** JKR road signs on ordinary roads are set in Transport Heavy (JKR guideline ATJ 2E/87); expressway signs use LLM Lettering. Neither is openly licensed, so the page titles use Overpass in heavy capitals, the closest open face (Overpass descends from Highway Gothic, a sibling of the sign alphabets). No font file was copied from either sign face.
+**Sign lettering:** JKR road signs are set in Transport Heavy (JKR guideline ATJ 2E/87) and expressway signs in LLM Lettering, neither openly licensed. Headings and sign text use Archivo (width axis set to about 88 to 92 percent, weight 600 to 700, wide tracking on capitals), which matched the owner's sign reference best of the open faces tried (Archivo, Overpass, an Arial-class face). Body text stays Overpass. No font file was copied from either sign face.
 
 ## Kuala Lumpur Skyline
 

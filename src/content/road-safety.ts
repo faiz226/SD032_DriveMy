@@ -30,8 +30,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Pump the brake pedal a few times. If that fails, pull the handbrake up gradually and change to a lower gear.",
         ms: "Pam pedal brek beberapa kali. Jika gagal, tarik brek tangan secara beransur-ansur dan tukar ke gear rendah.",
       },
-      { en: "Pull the handbrake up hard, all at once.", ms: "Tarik brek tangan sekuat-kuatnya sekali gus." },
-      { en: "Switch off the engine straight away.", ms: "Matikan enjin dengan segera." },
+      { en: "Pull the handbrake up hard and fast, then switch off the engine so the car stops sooner.", ms: "Tarik brek tangan sekuat-kuatnya dengan pantas, kemudian matikan enjin supaya kenderaan berhenti lebih cepat." },
+      { en: "Keep the pedal pressed to the floor and carry on driving until the brake pressure slowly comes back by itself.", ms: "Tekan pedal hingga ke lantai dan terus memandu sehingga tekanan brek pulih." },
     ],
     steps: {
       en: [
@@ -59,8 +59,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Slow down with the foot brake, find a place to stop, then apply the handbrake, select neutral and switch off the engine.",
         ms: "Perlahankan kenderaan dengan brek kaki, cari tempat untuk berhenti, kemudian tarik brek tangan, bebaskan gear dan matikan enjin.",
       },
-      { en: "Reach down and pull the pedal up with your hand while you drive.", ms: "Tunduk dan tarik pedal ke atas dengan tangan semasa memandu." },
-      { en: "Keep driving and wait for the pedal to free itself.", ms: "Teruskan memandu dan tunggu pedal bebas dengan sendiri." },
+      { en: "Lift the pedal with the toe of your shoe while you keep steering, and carry on driving to your destination as normal, without stopping.", ms: "Angkat pedal dengan hujung kasut sambil memegang stereng dan teruskan perjalanan ke destinasi anda." },
+      { en: "Press the clutch in and rev the engine hard so the stuck pedal frees itself, then keep on driving.", ms: "Tekan klac dan pecut enjin kuat-kuat supaya pedal yang terlekat itu terbebas semula, kemudian terus memandu tanpa berhenti di mana-mana." },
     ],
     steps: {
       en: [
@@ -86,8 +86,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Hold the steering wheel firmly, brake gently and stop somewhere safe and level.",
         ms: "Pegang stereng dengan kemas, brek perlahan-lahan dan berhenti di tempat yang rata dan selamat.",
       },
-      { en: "Brake hard to stop as quickly as you can.", ms: "Brek dengan kuat supaya berhenti secepat mungkin." },
-      { en: "Keep going at the same speed to the next exit.", ms: "Teruskan pada kelajuan yang sama hingga ke susur keluar seterusnya." },
+      { en: "Brake hard and steer sharply to the side of the road to stop as quickly as you can.", ms: "Brek sekuat-kuatnya dan pusing stereng dengan cepat ke tepi jalan supaya berhenti secepat mungkin." },
+      { en: "Ease off the pedal, loosen your grip on the wheel and drive slowly on to the next exit.", ms: "Lepaskan pedal, longgarkan pegangan stereng dan pandu perlahan ke susur keluar seterusnya." },
     ],
     steps: {
       en: [
@@ -113,8 +113,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Slow down, follow the white lines or other vehicles' lights, switch on the hazard lights and stop somewhere safe.",
         ms: "Perlahankan kenderaan, ikut garisan putih atau cahaya kenderaan lain, nyalakan lampu kecemasan dan berhenti di tempat yang selamat.",
       },
-      { en: "Speed up to reach a lit stretch of road sooner.", ms: "Pecut supaya lebih cepat sampai ke jalan yang berlampu." },
-      { en: "Stop at once, right where you are in your lane.", ms: "Berhenti serta-merta di lorong anda." },
+      { en: "Switch on the interior light, speed up and keep to the middle of the road until you reach a lit area ahead of you.", ms: "Nyalakan lampu dalam kenderaan, pecut dan kekal di tengah jalan sehingga sampai ke kawasan yang berlampu." },
+      { en: "Brake hard, stop in your lane right where you are and wait for another driver to stop and help.", ms: "Brek mengejut, berhenti di lorong anda di tempat anda berada dan tunggu pemandu lain berhenti untuk membantu anda di situ dengan sabar." },
     ],
     steps: {
       en: [
@@ -142,8 +142,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Stop at once, switch off the engine and get everyone out.",
         ms: "Berhenti dengan segera, matikan enjin dan keluarkan semua penumpang.",
       },
-      { en: "Keep driving to the nearest workshop.", ms: "Teruskan memandu ke bengkel yang terdekat." },
-      { en: "Stay inside the car and phone for help.", ms: "Tunggu di dalam kenderaan dan telefon untuk meminta bantuan." },
+      { en: "Pull over and open the bonnet to look for the fire first of all.", ms: "Berhenti dan buka bonet untuk memeriksa punca api dahulu." },
+      { en: "Drive to the nearest petrol station for an extinguisher.", ms: "Pandu terus ke stesen minyak yang terdekat untuk mendapatkan pemadam api." },
     ],
     steps: {
       en: [
@@ -171,8 +171,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Signal left, stop in the emergency lane, switch on the hazard lights and put the warning triangle behind the car.",
         ms: "Beri isyarat ke kiri, berhenti di lorong kecemasan, nyalakan lampu kecemasan dan letakkan tanda amaran segi tiga di belakang kenderaan.",
       },
-      { en: "Stop in the left lane, where it broke down, and fix it there.", ms: "Berhenti di lorong kiri, tempat kenderaan rosak, dan baiki di situ." },
-      { en: "Stand behind the car and wave the traffic past.", ms: "Berdiri di belakang kenderaan dan lambai kenderaan lain supaya melintas." },
+      { en: "Stop in the nearest lane, switch on the hazard lights and stay in the car until help arrives.", ms: "Berhenti di lorong terdekat, nyalakan lampu kecemasan dan kekal di dalam kereta sehingga bantuan tiba." },
+      { en: "Keep the car moving slowly in the left lane with the hazard lights on until you reach the next exit ahead of you on the road.", ms: "Teruskan memandu perlahan di lorong kiri dengan lampu kecemasan menyala sehingga sampai ke susur keluar seterusnya di hadapan anda di lebuh raya itu." },
     ],
     steps: {
       en: [
@@ -200,8 +200,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Stop and judge how deep the water is. If it is too deep, turn back and use another route.",
         ms: "Berhenti dan nilai kedalaman air. Jika terlalu dalam, patah balik dan gunakan laluan lain.",
       },
-      { en: "Drive through fast so the car does not get stuck.", ms: "Redah dengan laju supaya kenderaan tidak tersangkut." },
-      { en: "Follow the car in front through the water.", ms: "Ikut kenderaan di hadapan meredah air." },
+      { en: "Drive through in a low gear with the engine revving high, however deep the water looks to you.", ms: "Redah dengan gear rendah dan enjin dipecut tinggi, walau sedalam mana air kelihatan." },
+      { en: "Wait until the car in front is through, then follow its path at the same speed.", ms: "Tunggu sehingga kenderaan di hadapan melepasi air, kemudian ikut laluannya pada kelajuan yang sama." },
     ],
     steps: {
       en: [
@@ -227,8 +227,8 @@ export const EMERGENCIES: Emergency[] = [
         en: "Stop at a rest area and rest before you carry on.",
         ms: "Berhenti di kawasan rehat dan berehat sebelum meneruskan perjalanan.",
       },
-      { en: "Open the windows and turn the radio up.", ms: "Buka tingkap dan kuatkan radio." },
-      { en: "Drive faster so you get home sooner.", ms: "Pandu lebih laju supaya cepat sampai ke rumah." },
+      { en: "Open the windows and turn the radio up to stay awake until you arrive.", ms: "Buka tingkap dan kuatkan radio untuk kekal berjaga sehingga tiba." },
+      { en: "Drink a strong coffee and keep going, stopping only if you feel worse.", ms: "Minum kopi pekat dan teruskan memandu, berhenti hanya jika anda bertambah letih." },
     ],
     steps: {
       en: [

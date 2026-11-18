@@ -87,6 +87,7 @@ export function useExamSession({
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showNavigator, setShowNavigator] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showStartOver, setShowStartOver] = useState(false);
   const navigate = useNavigate();
 
   // Shuffle options once per mount — reusing the resumed attempt's option order
@@ -338,6 +339,23 @@ export function useExamSession({
     navigate(ROUTES.DASHBOARD);
   };
 
+  // Start over: a fresh attempt at the same questions. Answers, flags and the saved snapshot go, the clock restarts
+  // at the full time limit, and the learner is back on question 1.
+  const handleConfirmStartOver = () => {
+    setShowStartOver(false);
+    clearSavedProgress();
+    startTimeRef.current = Date.now();
+    setAnswers({});
+    setFlagged(new Set());
+    setSelectedOption(null);
+    setQuizPhase("answering");
+    setCurrentIndex(0);
+    if (timeLimit) {
+      timer.reset(timeLimit);
+      timer.start();
+    }
+  };
+
   const isCorrect = (optionIndex: number) => optionIndex === question.correct_index;
 
   return {
@@ -352,6 +370,9 @@ export function useExamSession({
     setShowNavigator,
     showExitModal,
     setShowExitModal,
+    showStartOver,
+    setShowStartOver,
+    handleConfirmStartOver,
     shuffledQuestions,
     optionsRef,
     question,

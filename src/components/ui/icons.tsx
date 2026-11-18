@@ -39,7 +39,6 @@ import {
   ChampionIcon,
   CheckmarkCircle02Icon,
   CircleArrowLeft01Icon,
-  CircleArrowReload01Icon,
   CircleArrowRight01Icon,
   CircleIcon,
   ClipboardIcon,
@@ -86,6 +85,7 @@ import {
   Target02Icon,
   Task01Icon,
   Tick02Icon,
+  UndoIcon,
   UserGroupIcon,
   UserIcon,
   Video01Icon,
@@ -136,8 +136,8 @@ function icon(svg: IconSvgElement, name: string): Icon {
 export const Activity = icon(Activity01Icon, "Activity");
 export const ArrowCircleLeft = icon(CircleArrowLeft01Icon, "ArrowCircleLeft");
 export const ArrowCircleRight = icon(CircleArrowRight01Icon, "ArrowCircleRight");
-export const ArrowClockwise = icon(CircleArrowReload01Icon, "ArrowClockwise");
-export const ArrowCounterClockwise = icon(CircleArrowReload01Icon, "ArrowCounterClockwise");
+export const ArrowClockwise = icon(UndoIcon, "ArrowClockwise");
+export const ArrowCounterClockwise = icon(UndoIcon, "ArrowCounterClockwise");
 export const ArrowDown = icon(ArrowDown02Icon, "ArrowDown");
 export const ArrowFatLeft = icon(ArrowLeftBigIcon, "ArrowFatLeft");
 export const ArrowFatRight = icon(ArrowRightBigIcon, "ArrowFatRight");

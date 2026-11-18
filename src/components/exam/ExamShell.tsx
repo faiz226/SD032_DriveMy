@@ -9,6 +9,7 @@ import {
   X,
   ArrowLeft,
   ArrowRight,
+  ArrowCounterClockwise,
 } from "@/components/ui/icons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { SectionTitle } from "@/components/ui/surface";
+import { StartOverDialog } from "@/components/exam/StartOverDialog";
 import { Button } from "@/components/ui/button";
 import type { ExamQuestion } from "@/types/database";
 import type { TranslationKey } from "@/lib/translations";
@@ -79,6 +81,9 @@ export function ExamShell({
     setShowNavigator,
     showExitModal,
     setShowExitModal,
+    showStartOver,
+    setShowStartOver,
+    handleConfirmStartOver,
     shuffledQuestions,
     optionsRef,
     question,
@@ -221,6 +226,16 @@ export function ExamShell({
         >
           <X className="h-5 w-5 shrink-0" aria-hidden />
           <span className="hidden sm:inline">{t("exam.exit")}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setShowStartOver(true)}
+          aria-label={t("exam.startOver")}
+          className="tap-sm flex items-center gap-1.5 rounded-full px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <ArrowCounterClockwise className="h-5 w-5 shrink-0" aria-hidden />
+          <span className="hidden sm:inline">{t("exam.startOver")}</span>
         </button>
 
         <button
@@ -469,6 +484,8 @@ export function ExamShell({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <StartOverDialog open={showStartOver} onOpenChange={setShowStartOver} onConfirm={handleConfirmStartOver} timed={Boolean(timeLimit)} />
 
       {/* ── Exit confirmation ───────────────────────────────────────────────
           Exiting is the only way out, so it is honest about the cost: the work

@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import { toast } from "sonner";
 import { initTelemetry } from "./lib/telemetry";
+import { installSquircles } from "./lib/squircle";
 
 // Telemetry starts ONLY if the user has already granted consent. A first-time
 // visitor sends nothing until they choose — see components/shared/ConsentBanner.
@@ -47,6 +48,8 @@ if (!rootElement) {
     "[DriveMy] Root element #root not found. Check index.html."
   );
 }
+
+installSquircles();
 
 createRoot(rootElement).render(
   <StrictMode>

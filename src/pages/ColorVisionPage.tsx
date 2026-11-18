@@ -6,8 +6,9 @@ import { useAuthStore } from "@/stores/authStore";
 import { useActivityStore } from "@/stores/activityStore";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { StartOverDialog } from "@/components/exam/StartOverDialog";
 import { Panel, Pill, type PillTone } from "@/components/ui/surface";
-import { ArrowClockwise, ArrowLeft, ArrowRight, CheckCircle, Info, Warning } from "@/components/ui/icons";
+import { ArrowClockwise, ArrowCounterClockwise, ArrowLeft, ArrowRight, CheckCircle, Info, Warning } from "@/components/ui/icons";
 import { PLATES, plateImage, scoreTest, type Plate, type Reading } from "@/content/color-vision";
 import { saveProgress, loadProgress, clearProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
 import { saveColourResult } from "@/lib/colourResult";
@@ -55,6 +56,7 @@ export function ColorVisionPage() {
   const [index, setIndex] = useState(restored?.data.index ?? 0);
   const [draft, setDraft] = useState(() => (restored ? restored.data.answers[PLATES[restored.data.index].n] ?? "" : ""));
   const [showAll, setShowAll] = useState(false);
+  const [showStartOver, setShowStartOver] = useState(false);
   const startedAt = useRef(restored?.startedAt ?? Date.now());
   const input = useRef<HTMLInputElement>(null);
 
@@ -93,6 +95,13 @@ export function ColorVisionPage() {
     setIndex(0);
     setDraft("");
     setPhase("test");
+  };
+
+  // Start over: clear the answers and the saved snapshot and go back to plate 1.
+  const startOver = () => {
+    setShowStartOver(false);
+    if (user?.id) clearProgress(PROGRESS_SCOPES.colorVision, user.id);
+    start();
   };
 
   const goTo = (next: number, all: Record<number, string>) => {
@@ -174,12 +183,18 @@ export function ColorVisionPage() {
         <Panel className="mx-auto w-full max-w-xl p-5 sm:p-8">
           <div className="flex items-center justify-between gap-4 text-sm">
             <p className="type-figure" aria-live="polite">{t("color.plate", { current: index + 1, total: PLATES.length })}</p>
-            {index > 0 && (
-              <Button variant="ghost" className="-mr-3 px-3" onClick={() => goTo(index - 1, answers)}>
-                <ArrowLeft aria-hidden="true" />
-                {t("color.previous")}
+            <div className="-mr-3 flex items-center gap-1">
+              {index > 0 && (
+                <Button variant="ghost" className="px-3" onClick={() => goTo(index - 1, answers)}>
+                  <ArrowLeft aria-hidden="true" />
+                  {t("color.previous")}
+                </Button>
+              )}
+              <Button variant="ghost" className="px-3" onClick={() => setShowStartOver(true)}>
+                <ArrowCounterClockwise aria-hidden="true" />
+                {t("exam.startOver")}
               </Button>
-            )}
+            </div>
           </div>
           <Progress value={((index + 1) / PLATES.length) * 100} className="mt-3" aria-label={t("color.plate", { current: index + 1, total: PLATES.length })} />
 
@@ -213,6 +228,7 @@ export function ColorVisionPage() {
             </div>
           </form>
         </Panel>
+        <StartOverDialog open={showStartOver} onOpenChange={setShowStartOver} onConfirm={startOver} />
       </div>
     );
   }

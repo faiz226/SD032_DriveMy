@@ -315,7 +315,28 @@ export function TheoryPage() {
               </div>
 
               {/* Category Filter Pills & Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory("all")}
+                  aria-pressed={selectedCategory === "all"}
+                  className={`tile p-3 text-left flex flex-col justify-between gap-2 cursor-pointer transition-all ${
+                    selectedCategory === "all" ? "tile-selected" : ""
+                  }`}
+                >
+                  <div className="flex w-full items-start justify-between gap-2">
+                    <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+                      {selectedCategory === "all" && <Check size={14} className="shrink-0 text-brand-ink" aria-hidden="true" />}
+                      {lang === "en" ? "All signs" : "Semua papan tanda"}
+                    </span>
+                    <span className="type-figure shrink-0 text-xs text-muted-foreground">
+                      {Object.values(categoryMastery).reduce((sum, m) => sum + m.learned, 0)}/{roadSigns.length}
+                    </span>
+                  </div>
+                  <span className="text-[0.8125rem] leading-snug text-muted-foreground">
+                    {lang === "en" ? "Every category together" : "Semua kategori sekali gus"}
+                  </span>
+                </button>
                 {ROAD_SIGN_CATEGORIES.map((cat) => {
                   const mastery = categoryMastery[cat.id] ?? { total: 0, learned: 0 };
                   const isSelected = selectedCategory === cat.id;
@@ -333,7 +354,8 @@ export function TheoryPage() {
                       }`}
                     >
                       <div className="flex w-full items-start justify-between gap-2">
-                        <span className="text-sm font-bold text-foreground">
+                        <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+                          {isSelected && <Check size={14} className="shrink-0 text-brand-ink" aria-hidden="true" />}
                           {lang === "en" ? cat.labelEn : cat.labelMs}
                         </span>
                         <span className="type-figure shrink-0 text-xs text-muted-foreground">
