@@ -668,13 +668,17 @@ html[data-magicui-theme-vt] *::after {
 /* Apple's corners are curvature-continuous (a squircle), not a circular arc. Where the browser can draw them
    (corner-shape, Chrome 139 and later) every rounded box gets them; elsewhere the plain radius stays. Circles
    and pills keep their round ends. */
-/* The curve's exponent as 2^k: 1 is a circle, 2 the CSS `squircle`. 2.3 reads as iOS's corner at card and button sizes. */
-:root { --corner-k: 2.3; }
+/* The curve's exponent as 2^k (1 is a circle, 2 the CSS `squircle`). K and the radius growth below were fitted by
+   rendering corner-shape and the clip-path curve (src/lib/squircle.ts) on card, button, input and gantry sizes and
+   taking the pair with the smallest pixel difference: K 2.05, radii x1.9. */
+:root { --corner-k: 2.05; }
 @supports (corner-shape: squircle) {
-  /* A superellipse corner spans only the radius, where the clip-path curve spans twice it, so the radii grow a quarter
-     here to give the same visible corner. */
-  :root { --radius: 0.9375rem; --radius-panel: 1.5625rem; --radius-hero: 1.875rem; }
+  /* A superellipse corner spans only its radius, where the clip-path curve spans twice it, so the radii grow with it
+     (x1.9) to give the same visible corner. A radius longer than half a short side is clamped by CSS, as the clip is. */
+  :root { --radius: 1.425rem; --radius-panel: 2.375rem; --radius-hero: 2.85rem; }
   *, ::before, ::after { corner-shape: superellipse(var(--corner-k)); }
   .rounded-full, [class*="rounded-full"], .plate-sign { corner-shape: round; }
   html[data-squircle="js"] *, html[data-squircle="off"] * { corner-shape: round; }
+  /* The two test modes stand in for a browser without corner-shape, so they keep the plain radii. */
+  html[data-squircle="js"], html[data-squircle="off"] { --radius: 0.75rem; --radius-panel: 1.25rem; --radius-hero: 1.5rem; }
 }
