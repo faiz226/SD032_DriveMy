@@ -78,7 +78,8 @@ export function LanguageToggle({ variant = "pill", className }: LanguageTogglePr
           lang={lang.code === "ms" ? "ms-MY" : "en-MY"}
           className={cn(
             "inline-flex h-9 min-w-11 items-center justify-center rounded-full px-3 text-xs font-semibold tracking-wide",
-            "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "transition-[color,background-color,box-shadow,transform] duration-300 ease-spring active:scale-[0.96] motion-reduce:active:scale-100",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             language === lang.code
               ? "bg-card text-foreground shadow-sm dark:bg-secondary"
               : "text-muted-foreground hover:text-foreground"

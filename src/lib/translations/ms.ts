@@ -325,7 +325,7 @@ export const ms: Record<TranslationKey, string> = {
   "theory.tabs.roadSigns":         "Tanda Jalan",
   "theory.tabs.trafficRules":      "Peraturan Lalu Lintas",
   "theory.tabs.safetyPrinciples":  "Prinsip Keselamatan",
-  "theory.search":                 "Cari topik...",
+  "theory.search":                 "Cari topik…",
   "theory.imageUnavailable":       "Gambar tidak tersedia",
   "theory.rules.rightOfWay":       "Hak Jalan",
   "theory.rules.overtaking":       "Memotong",

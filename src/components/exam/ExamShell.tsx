@@ -369,7 +369,7 @@ export function ExamShell({
                   >
                     <span
                       aria-hidden
-                      className={cn("type-figure grid h-9 w-9 shrink-0 place-items-center rounded-[0.625rem] border text-sm transition-colors duration-150", chip)}
+                      className={cn("type-figure grid h-9 w-9 shrink-0 place-items-center rounded-[2px] border text-sm tabular-nums transition-colors duration-150", chip)}
                     >
                       {isRevealed && optionIsCorrect ? (
                         <CheckCircle className="h-5 w-5" weight="fill" />
@@ -464,7 +464,7 @@ export function ExamShell({
                 {t("quiz.answered", { count: answeredCount, total: shuffledQuestions.length })}
               </DrawerDescription>
             </DrawerHeader>
-            <div className="max-h-[50vh] overflow-y-auto px-4 pb-6">{navigator}</div>
+            <div className="max-h-[50dvh] overflow-y-auto px-4 pb-6">{navigator}</div>
           </DrawerPanel>
         </DrawerPopup>
       </Drawer>

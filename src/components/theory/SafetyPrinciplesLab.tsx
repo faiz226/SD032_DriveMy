@@ -425,14 +425,14 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
                 <div aria-hidden="true" className="w-full h-8 rounded-xl bg-muted overflow-hidden flex border border-border">
                   <div
-                    className="h-full bg-brand transition-all duration-200"
+                    className="h-full bg-brand transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
                     style={{
                       width: `${(speedSpec.thinkingMeters / MAX_STOPPING_METERS) * 100}%`,
                     }}
                     title={lang === "en" ? "Thinking distance" : "Jarak berfikir"}
                   />
                   <div
-                    className="h-full bg-destructive transition-all duration-200"
+                    className="h-full bg-destructive transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
                     style={{
                       width: `${(brakingMeters / MAX_STOPPING_METERS) * 100}%`,
                     }}

@@ -292,7 +292,7 @@ function SimulatorScene() {
   };
 
   return (
-    <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[rgb(var(--road))]', phase === 'explore' && EXPLORE_CANVAS, phase === 'drive' && '[&_canvas]:touch-none')}>
+    <div className={cn('fixed inset-0 z-[70] overflow-hidden bg-[oklch(var(--road))]', phase === 'explore' && EXPLORE_CANVAS, phase === 'drive' && '[&_canvas]:touch-none')}>
       <Canvas key={tier} dpr={dprFor(spec, 1)} shadows={spec.shadows && 'percentage'} gl={{ powerPreference: 'high-performance' }}>
         <RenderScale spec={spec} />
         {probe && <FrameProbe />}
@@ -357,7 +357,7 @@ function SimulatorScene() {
         />
       )}
       {portrait && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[rgb(var(--road)/0.92)] p-6" role="alert">
+        <div className="absolute inset-0 flex items-center justify-center bg-[oklch(var(--road)/0.92)] p-6" role="alert">
           <div className={`${HUD_PLATE} flex max-w-xs flex-col items-center gap-3 p-5 text-center`}>
             <ArrowsClockwise size={40} />
             <p className="type-label-strong">{t('sim.rotate')}</p>

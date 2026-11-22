@@ -45,7 +45,7 @@ describe('the verdict', () => {
     expect(screen.getByText('rubric: touching a pole fails the element')).toBeInTheDocument();
     expect(screen.getAllByText('Why this rule?')).toHaveLength(3);
     const map = screen.getByRole('img', { name: 'Where each fault happened' });
-    expect(map.querySelectorAll('circle[fill="rgb(var(--destructive))"]')).toHaveLength(3);
+    expect(map.querySelectorAll('circle[fill="oklch(var(--destructive))"]')).toHaveLength(3);
     expect(container).toBeTruthy();
   });
 

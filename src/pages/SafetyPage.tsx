@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Panel } from "@/components/ui/surface";
 import { ArrowClockwise, ArrowRight, CheckCircle, XCircle } from "@/components/ui/icons";
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { cn } from "@/lib/utils";
 
 /** A fresh option order for every emergency, so the right answer is not always in the same place. */
@@ -135,7 +136,7 @@ export function SafetyPage() {
         {answered && (
           <div className="mt-8 space-y-4 border-t border-border pt-6">
             <h3 ref={feedback} tabIndex={-1} className="flex items-center gap-2 text-xl focus-visible:shadow-none focus-visible:outline-none">
-              {right ? <CheckCircle size={24} className="text-success" aria-hidden="true" /> : <XCircle size={24} className="text-destructive" aria-hidden="true" />}
+              <SwapIcon id={right ? "right" : "wrong"}>{right ? <CheckCircle size={24} className="text-success" aria-hidden="true" /> : <XCircle size={24} className="text-destructive" aria-hidden="true" />}</SwapIcon>
               {right ? t("safety.right") : t("safety.wrong")}
             </h3>
             <p className="font-bold">{t("safety.steps")}</p>

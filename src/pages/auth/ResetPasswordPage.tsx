@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Lock, Eye, EyeSlash, CheckCircle, Warning } from "@/components/ui/icons";
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { AuthFormAlert } from "./AuthFormAlert";
@@ -160,7 +161,7 @@ export function ResetPasswordPage() {
                 "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               )}
             >
-              {showPassword ? <EyeSlash className="h-4 w-4" weight="regular" /> : <Eye className="h-4 w-4" weight="regular" />}
+              <SwapIcon id={showPassword ? "hide" : "show"}>{showPassword ? <EyeSlash className="h-4 w-4" weight="regular" /> : <Eye className="h-4 w-4" weight="regular" />}</SwapIcon>
             </button>
           }
           hint={t("validation.passwordMin")}
@@ -184,7 +185,7 @@ export function ResetPasswordPage() {
                 "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               )}
             >
-              {showConfirm ? <EyeSlash className="h-4 w-4" weight="regular" /> : <Eye className="h-4 w-4" weight="regular" />}
+              <SwapIcon id={showConfirm ? "hide" : "show"}>{showConfirm ? <EyeSlash className="h-4 w-4" weight="regular" /> : <Eye className="h-4 w-4" weight="regular" />}</SwapIcon>
             </button>
           }
           error={errors.confirmPassword ? t(errors.confirmPassword.message as never) : undefined}

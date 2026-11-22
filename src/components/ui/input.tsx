@@ -24,7 +24,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             ref={ref}
             className={cn(
-              "flex h-11 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-[0.9375rem] shadow-xs",
+              "flex h-11 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-base shadow-xs",
               "ring-offset-background",
               "placeholder:text-muted-foreground",
               "focus-visible:outline-none focus-visible:border-brand-ink focus-visible:ring-4 focus-visible:ring-brand-ink/20",
@@ -52,7 +52,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         type={type}
         ref={ref}
         className={cn(
-          "flex h-11 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-[0.9375rem] shadow-xs",
+          "flex h-11 w-full rounded-lg border border-input bg-card px-3.5 py-2 text-base shadow-xs",
           "ring-offset-background",
           "placeholder:text-muted-foreground",
           "focus-visible:outline-none focus-visible:border-brand-ink focus-visible:ring-4 focus-visible:ring-brand-ink/20",

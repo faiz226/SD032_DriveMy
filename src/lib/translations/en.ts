@@ -324,7 +324,7 @@ export const en = {
   "theory.tabs.roadSigns":         "Road Signs",
   "theory.tabs.trafficRules":      "Traffic Rules",
   "theory.tabs.safetyPrinciples":  "Safety Principles",
-  "theory.search":                 "Search topics...",
+  "theory.search":                 "Search topics…",
   "theory.imageUnavailable":       "Image unavailable",
   "theory.rules.rightOfWay":       "Right of Way",
   "theory.rules.overtaking":       "Overtaking",

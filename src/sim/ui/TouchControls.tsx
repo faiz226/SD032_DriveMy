@@ -3,6 +3,7 @@
 // indicator, D/R, handbrake, pause, the top-down view and the right indicator (on a short landscape phone, nothing
 // over the side mirrors). Every control writes the same driver inputs as the keyboard.
 import { ArrowFatLeft, ArrowFatRight, MapTrifold, Pause, Play } from '@/components/ui/icons';
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { type CSSProperties, type PointerEvent, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDriver } from '../input';
@@ -14,14 +15,14 @@ const capture = (e: PointerEvent<HTMLElement>) => e.currentTarget.setPointerCapt
 
 // Jalan: controls are road, not signage, so asphalt and paint only (awas, berhenti and lulus mean progress,
 // fail and pass); plate corners, except the round steering pad.
-const IDLE = 'rgb(var(--road) / 0.5)';
-const LIT = 'rgb(var(--paint) / 0.92)';
+const IDLE = 'oklch(var(--road) / 0.5)';
+const LIT = 'oklch(var(--paint) / 0.92)';
 const pad: CSSProperties = {
   position: 'absolute', pointerEvents: 'auto', touchAction: 'none', userSelect: 'none',
-  background: IDLE, border: '1px solid rgb(var(--paint) / 0.6)', color: 'rgb(var(--paint))', borderRadius: 'var(--radius)',
+  background: IDLE, border: '1px solid oklch(var(--paint) / 0.6)', color: 'oklch(var(--paint))', borderRadius: 'var(--radius)',
   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
 };
-const lit = (on: boolean): CSSProperties => (on ? { background: LIT, color: 'rgb(var(--road))' } : {});
+const lit = (on: boolean): CSSProperties => (on ? { background: LIT, color: 'oklch(var(--road))' } : {});
 
 export function TouchControls() {
   const { t } = useLanguage();
@@ -91,7 +92,7 @@ export function TouchControls() {
         <button type="button" className="type-label-strong tap" aria-label={t('sim.touch.gear')} style={button(gear === 'R')} onClick={() => d().toggleGear()}>{gear}</button>
         <button type="button" className="type-label-strong tap" aria-label={t('sim.touch.handbrake')} aria-pressed={handbrake} style={button(handbrake)} onClick={() => d().toggleHandbrake()}>(P)</button>
         <button type="button" className="tap" aria-label={t('sim.touch.pause')} aria-pressed={paused} style={button(paused)} onClick={() => d().set({ paused: !paused })}>
-          {paused ? <Play size={22} weight="fill" /> : <Pause size={22} />}
+          <SwapIcon id={paused ? "play" : "pause"}>{paused ? <Play size={22} weight="fill" /> : <Pause size={22} />}</SwapIcon>
         </button>
         <button type="button" className="tap" aria-label={t('sim.touch.topDown')} aria-pressed={topDown} style={button(topDown)} onClick={() => d().set({ topDown: !topDown })}>
           <MapTrifold size={22} />

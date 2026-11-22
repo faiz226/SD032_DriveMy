@@ -287,7 +287,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                       <span
                         aria-hidden
                         className={cn(
-                          "type-figure grid h-8 w-8 shrink-0 place-items-center rounded-lg text-sm transition-colors duration-150",
+                          "type-figure grid h-8 w-8 shrink-0 place-items-center rounded-[4px] text-sm transition-colors duration-150",
                           isSelected ? "bg-brand text-brand-foreground" : "bg-muted text-muted-foreground"
                         )}
                       >

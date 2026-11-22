@@ -34,7 +34,7 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite 
   const score = Math.round(Math.min(100, Math.max(0, composite)));
   const slices = [
     ...PARTS.map(part => ({ label: t(part.labelKey), value: contributions[part.key], color: part.color })),
-    { label: t("progress.chart.stillToEarn"), value: Math.max(0, 100 - composite), color: "rgb(var(--muted))" },
+    { label: t("progress.chart.stillToEarn"), value: Math.max(0, 100 - composite), color: "oklch(var(--muted))" },
   ];
   const ofMax = (value: number, weight: number) => t("progress.chart.ofMax", { value: value.toFixed(1), max: Math.round(weight * 100) });
 

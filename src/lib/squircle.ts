@@ -2,14 +2,15 @@
  * Continuous (G2) corners, everywhere.
  *
  * Chrome and Edge 139+ draw them natively with `corner-shape` (src/index.css). Safari, iOS and older browsers do
- * not, so there the corners are cut with an SVG `clip-path` built from each box's own size, with the same curve
- * Figma uses for its "corner smoothing". A clip would also cut the border and a focus ring, so on a clipped box
+ * not, so there the corners are cut with an SVG `clip-path` built from each box's own size, with the curve
+ * Figma uses for its "corner smoothing", at its maximum. A clip would also cut the border and a focus ring, so on a clipped box
  * the border is repainted as a stroke along the same curve (a background layer, so inputs work too) and the
- * focus ring becomes a thicker stroke. A box with a small outer shadow is clipped to the squircle plus the open
- * space around the box, so its corners are cut and its shadow still shows; a big halo is dropped on that box.
+ * focus ring becomes a thicker stroke. A clipped box loses its outer shadow (a clip would cut it, or leave square ghosts at the corners) and keeps its
+ * border and inset edges.
  */
 
-const SMOOTHING = 0.6;
+/** Figma's corner smoothing, 0 (a circular arc) to 1 (the most): 1 is the full iOS look, the curve starting at twice the radius. */
+const SMOOTHING = 1;
 
 const rad = (deg: number) => (deg * Math.PI) / 180;
 const n = (value: number) => Math.round(value * 100) / 100;
@@ -52,8 +53,6 @@ export function squirclePath(width: number, height: number, radius: number, smoo
 const TARGETS = "button, input, select, textarea, .panel, .tile, .hero-panel, [role=dialog]";
 const SKIP_INPUTS = /^(checkbox|radio|range|file|color|hidden)$/;
 const MIN_RADIUS = 6;
-/** Shadows reaching further than this (px) are dropped on a clipped box. */
-const MAX_KEPT_SHADOW = 20;
 
 interface Painted {
   width: number;
@@ -70,7 +69,7 @@ function ringImage(width: number, height: number, radius: number, colour: string
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
-const INLINE = ["clipPath", "borderRadius", "borderColor", "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "outline", "boxShadow"] as const;
+const INLINE = ["clipPath", "borderRadius", "borderColor", "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "backgroundOrigin", "outline", "boxShadow"] as const;
 
 function release(el: HTMLElement) {
   for (const key of INLINE) el.style[key] = "";
@@ -91,23 +90,15 @@ function paintSettled(el: HTMLElement) {
   const cs = getComputedStyle(el);
   const radius = parseFloat(cs.borderTopLeftRadius);
   const { width, height } = el.getBoundingClientRect();
-  // How far an outer shadow reaches past the box: the clip must leave room for it, or it would be cut off.
-  const reach = cs.boxShadow.split(/,(?![^(]*\))/).reduce((most, layer) => {
-    const m = /(-?[\d.]+)px (-?[\d.]+)px (-?[\d.]+)px(?: (-?[\d.]+)px)?/.exec(layer);
-    if (layer.trim() === "none" || layer.includes("inset") || !m) return most;
-    const [x, y, blur, spread] = [m[1], m[2], m[3], m[4] ?? "0"].map(parseFloat);
-    // A layer with no offset and no blur is a ring (a focus ring, say): the stroke below replaces it.
-    return blur === 0 && x === 0 && y === 0 ? most : Math.max(most, Math.max(Math.abs(x), Math.abs(y)) + blur + Math.max(0, spread));
-  }, 0);
   // Plain radius stays for pills and circles, tiny corners and hidden boxes.
   if (!(radius >= MIN_RADIUS) || radius * 2 >= Math.min(width, height) - 1 || width < 24 || height < 24) return;
 
   const border = parseFloat(cs.borderTopWidth) || 0;
   const focused = el.matches(":focus-visible");
   // A solid inset ring (a sign's white inner edge) follows the squircle too, as one more stroke.
-  const ringLayers = cs.boxShadow.split(/,(?![^(]*\))/).map(layer => /^\s*(rgba?\([^)]*\)) 0px 0px 0px ([\d.]+)px inset/.exec(layer)).filter(Boolean);
+  const ringLayers = cs.boxShadow.split(/,(?![^(]*\))/).map(layer => /^\s*((?:rgba?|oklch|hsla?|lab|lch|color)\([^)]*\)) 0px 0px 0px ([\d.]+)px inset/.exec(layer)).filter(Boolean);
   const layers: string[] = ringLayers.map(m => ringImage(width, height, radius, m![1], parseFloat(m![2])));
-  if (focused) layers.push(ringImage(width, height, radius, "rgb(242, 183, 5)", 2));
+  if (focused) layers.push(ringImage(width, height, radius, cs.outlineColor, 2));
   if (border > 0) layers.push(ringImage(width, height, radius, cs.borderTopColor, border));
   const images = cs.backgroundImage !== "none" ? [cs.backgroundImage] : [];
   const stacked = [...layers, ...images];
@@ -115,19 +106,12 @@ function paintSettled(el: HTMLElement) {
   const positions = [...layers.map(() => "0 0"), ...(images.length ? [cs.backgroundPosition] : [])];
   const repeats = [...layers.map(() => "no-repeat"), ...(images.length ? [cs.backgroundRepeat] : [])];
 
-  // With a shadow, the clip is the squircle plus everything outside the box (even-odd: outer area, minus the box,
-  // plus the squircle), so the corners are cut but the shadow around them stays.
-  // A big halo (the gantry glow, a hover lift) cannot be kept without leaving square notches at the corners, so on
-  // those the corner wins and the halo goes; ordinary card shadows stay.
-  const dropShadow = reach > MAX_KEPT_SHADOW;
-  // Inset layers (a sign's white inner edge, say) are inside the box and stay.
-  const keptInset = cs.boxShadow.split(/,(?![^(]*\))/).filter(layer => layer.includes("inset") && !/ 0px 0px 0px [\d.]+px inset/.test(layer));
-  if (dropShadow || ringLayers.length) el.style.boxShadow = [...(dropShadow ? [] : cs.boxShadow.split(/,(?![^(]*\))/).filter(layer => !layer.includes("inset"))), ...keptInset].join(", ") || "none";
-  const margin = dropShadow ? 0 : Math.ceil(reach);
-  const curve = squirclePath(width, height, radius);
-  el.style.clipPath = margin
-    ? `path(evenodd, "M${-margin} ${-margin}H${width + margin}V${height + margin}H${-margin}ZM0 0H${width}V${height}H0Z${curve}")`
-    : `path("${curve}")`;
+  // A clip cuts anything outside the curve, so an outer shadow cannot survive it (kept, it would show as a square
+  // ghost at each corner); a clipped box loses its outer shadow and keeps its border and inset edges.
+  const layersOfShadow = cs.boxShadow.split(/,(?![^(]*\))/).map(layer => layer.trim()).filter(layer => layer && layer !== "none");
+  const keptInset = layersOfShadow.filter(layer => layer.includes("inset") && !/ 0px 0px 0px [\d.]+px inset/.test(layer));
+  if (layersOfShadow.length) el.style.boxShadow = keptInset.join(", ") || "none";
+  el.style.clipPath = `path("${squirclePath(width, height, radius)}")`;
   el.style.borderRadius = "0";
   if (border > 0) el.style.borderColor = "transparent";
   if (focused) el.style.outline = "none";
@@ -136,6 +120,8 @@ function paintSettled(el: HTMLElement) {
     el.style.backgroundSize = sizes.join(", ");
     el.style.backgroundPosition = positions.join(", ");
     el.style.backgroundRepeat = repeats.join(", ");
+    // The strokes are drawn for the whole box, border included, so they start at its outer edge.
+    el.style.backgroundOrigin = "border-box";
   }
   done.set(el, { width, height, radius, ring: cs.borderTopColor });
 }

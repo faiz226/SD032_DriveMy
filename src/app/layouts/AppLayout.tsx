@@ -1,4 +1,4 @@
-import { useState, useId } from "react";
+import { useState, useId, isValidElement, cloneElement } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { MotionConfig } from "motion/react";
 import {
@@ -13,6 +13,7 @@ import {
   Moon,
   Translate,
 } from "@/components/ui/icons";
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { OfflineBanner } from "@/components/shared/OfflineBanner";
@@ -32,6 +33,11 @@ import type { TranslationKey } from "@/lib/translations";
 
 // ─── Nav item definition ──────────────────────────────────────────────────────
 
+/** Icon stroke follows the label: a regular label gets a regular stroke, the current page a heavier one. */
+function withWeight(icon: React.ReactNode, weight: "regular" | "bold") {
+  return isValidElement<{ weight?: string }>(icon) ? cloneElement(icon, { weight }) : icon;
+}
+
 interface NavItem {
   labelKey: TranslationKey;
   href:     string;
@@ -42,11 +48,11 @@ interface NavItem {
 // Every destination in navigation.ts, in the order learners meet them.
 const NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.map(({ icon: Icon, ...item }) => ({
   ...item,
-  icon: <Icon weight="fill" className="h-5 w-5" />,
+  icon: <Icon weight="regular" className="h-5 w-5" />,
 }));
 
 const UTILITY_ITEMS: NavItem[] = [
-  { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="fill" className="h-5 w-5" /> },
+  { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="regular" className="h-5 w-5" /> },
 ];
 
 const MOBILE_NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.filter((item) => item.mobile).map(
@@ -88,7 +94,7 @@ function SideNavLink({ item, onClick }: SideNavLinkProps) {
             aria-hidden
             className={cn(
               "absolute inset-0 w-full h-full bg-accent rounded-md opacity-0 scale-[0.97]",
-              "transition-all duration-200 ease-out-quart -z-10",
+              "transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ease-out-quart -z-10",
               "group-hover:opacity-100 group-hover:scale-100",
               isActive && "opacity-100 scale-100"
             )}
@@ -102,7 +108,7 @@ function SideNavLink({ item, onClick }: SideNavLinkProps) {
             )}
           />
           <span aria-hidden className="shrink-0">
-            {item.icon}
+            {withWeight(item.icon, isActive ? "bold" : "regular")}
           </span>
           <span className="min-w-0 text-sm tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
             {label}
@@ -173,7 +179,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               type="button"
               onClick={onToggleCollapse}
               aria-label={collapsed ? t("a11y.expandSidebar") : t("a11y.collapseSidebar")}
-              className="touch-target rounded-md text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="touch-target rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-[color,background-color,transform] duration-300 ease-spring active:scale-95 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {collapsed ? (
                 <CaretRight className="h-5 w-5" aria-hidden />
@@ -187,7 +193,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               type="button"
               onClick={onClose}
               aria-label={t("a11y.closeMenu")}
-              className="touch-target rounded-md text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="touch-target rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-[color,background-color,transform] duration-300 ease-spring active:scale-95 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <X className="h-5 w-5" aria-hidden />
             </button>
@@ -260,7 +266,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
                   <TooltipTrigger asChild>
                     <div className="flex h-full w-full items-center justify-center outline-none">
                       <DockIcon>
-                        <Translate weight="fill" className="h-5 w-5" />
+                        <Translate weight="regular" className="h-5 w-5" />
                       </DockIcon>
                     </div>
                   </TooltipTrigger>
@@ -278,7 +284,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
                     <div className="flex h-full w-full items-center justify-center outline-none">
                       <AnimatedThemeToggler variant="circle" className="w-full h-full flex items-center justify-center bg-transparent border-none p-0 outline-none hover:bg-transparent">
                         <DockIcon>
-                          {isDark ? <Sun weight="fill" className="h-5 w-5 text-brand" /> : <Moon weight="fill" className="h-5 w-5" />}
+                          <SwapIcon id={isDark ? "sun" : "moon"}><SwapIcon id={isDark ? "sun" : "moon"}>{isDark ? <Sun weight="regular" className="h-5 w-5 text-brand" /> : <Moon weight="regular" className="h-5 w-5" />}</SwapIcon></SwapIcon>
                         </DockIcon>
                       </AnimatedThemeToggler>
                     </div>
@@ -296,7 +302,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
                   <TooltipTrigger asChild>
                     <div className="flex h-full w-full items-center justify-center outline-none">
                       <DockIcon>
-                        <SignOut weight="fill" className="h-5 w-5" />
+                        <SignOut weight="regular" className="h-5 w-5" />
                       </DockIcon>
                     </div>
                   </TooltipTrigger>
@@ -333,7 +339,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               )}
               aria-label={t("settings.theme")}
             >
-              {isDark ? <Sun className="h-5 w-5 shrink-0" aria-hidden /> : <Moon className="h-5 w-5 shrink-0" aria-hidden />}
+              <SwapIcon id={isDark ? "sun" : "moon"}><SwapIcon id={isDark ? "sun" : "moon"}>{isDark ? <Sun className="h-5 w-5 shrink-0" aria-hidden /> : <Moon className="h-5 w-5 shrink-0" aria-hidden />}</SwapIcon></SwapIcon>
               <span className="min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
                 {t("settings.theme")}
               </span>
@@ -420,11 +426,11 @@ function MobileBottomNav() {
                 <div
                   aria-hidden
                   className={cn(
-                    "flex items-center justify-center h-8 px-4 rounded-full transition-all duration-200 ease-out-quart",
+                    "flex items-center justify-center h-8 px-4 rounded-full transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ease-out-quart",
                     isActive ? "bg-brand/20 text-brand-ink" : "text-muted-foreground group-hover:text-foreground"
                   )}
                 >
-                  {item.icon}
+                  {withWeight(item.icon, isActive ? "bold" : "regular")}
                 </div>
                 <span className={cn("text-[9px] font-medium tracking-tight mt-0.5", isActive ? "text-brand-ink font-semibold" : "text-muted-foreground")}>
                   {label}
@@ -507,7 +513,7 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
         </Dialog.Root>
       )}
 
-      <div className="flex flex-1 flex-col overflow-hidden min-w-0 transition-all duration-300 ease-in-out relative">
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0 transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-300 ease-in-out relative">
         {showSidebar && (
           <header
             className="glass flex md:hidden h-14 items-center justify-between px-4 border-b border-border shrink-0"

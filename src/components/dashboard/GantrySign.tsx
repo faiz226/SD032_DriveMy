@@ -42,13 +42,13 @@ export function GantrySign({ score, theory, practical, bestMock, passMark, mockT
           <h1 id="gantry-title" className="text-[1.0625rem] font-extrabold text-white sm:text-[1.125rem]">{t("dashboard.gantry.title")}</h1>
           <p className="sr-only">{left} {t("dashboard.gantry.marksLeft")}</p>
           <div aria-hidden="true" className="mt-1 flex items-end gap-3">
-            <span className="font-heading text-[clamp(4.25rem,12vw,7.5rem)] font-black leading-[0.8] tracking-[-0.05em] tabular-nums [text-shadow:0_0_30px_rgb(255_255_255/0.35)]">
+            <span className="font-heading text-[clamp(4.25rem,12vw,7.5rem)] font-black leading-[0.8] tracking-[-0.022em] tabular-nums [text-shadow:0_0_30px_rgb(255_255_255/0.35)]">
               <NumberFlow value={left} />
             </span>
             <span className="max-w-[6ch] pb-1 text-[1.125rem] font-extrabold leading-[1.1] sm:text-[1.25rem]">{t("dashboard.gantry.marksLeft")}</span>
           </div>
           <p className="mt-2 text-[0.9375rem] font-bold sm:text-base">{t("dashboard.gantry.notJpj")}</p>
-          <p className="mt-1.5 max-w-[36ch] text-[0.9375rem] sm:text-base">
+          <p className="mt-1.5 max-w-[36ch] text-[0.9375rem] tabular-nums sm:text-base">
             {t("dashboard.gantry.split", { theory: Math.round(theory), practical: Math.round(practical) })}
           </p>
         </div>
@@ -68,7 +68,7 @@ function PlateRow({ letter, reached, title, detail }: { letter: "L" | "P"; reach
       <span aria-hidden="true" className={cn("plate-sign", !reached && "plate-sign-ahead")}>{letter}</span>
       <div className="min-w-0">
         <p className="text-[1.125rem] font-extrabold leading-tight sm:text-xl">{title}</p>
-        <p className="mt-0.5 text-[0.875rem] leading-snug sm:text-[0.9375rem]">{detail}</p>
+        <p className="mt-0.5 text-[0.875rem] leading-snug tabular-nums sm:text-[0.9375rem]">{detail}</p>
       </div>
     </div>
   );

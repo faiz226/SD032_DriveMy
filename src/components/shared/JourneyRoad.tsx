@@ -76,7 +76,7 @@ export function JourneyRoad({ value, label, horn = true, lReached = false }: { v
         </span>
       </div>
 
-      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-[linear-gradient(180deg,#10304A,rgb(var(--road)))] px-16 ring-1 ring-border">
+      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-[linear-gradient(in_oklch_180deg,#10304A,oklch(var(--road)))] px-16 ring-1 ring-border">
         <span aria-hidden="true" className="absolute inset-x-0 top-3 h-[3px] bg-white/75" />
         <span aria-hidden="true" className="absolute inset-x-0 bottom-3 h-[3px] bg-white/75" />
         <div
@@ -97,7 +97,7 @@ export function JourneyRoad({ value, label, horn = true, lReached = false }: { v
                   key={i}
                   className={cn(
                     "h-[9px] w-[9px] rounded-full transition-[background-color,box-shadow] duration-300",
-                    on ? "bg-brand shadow-[0_0_12px_3px_rgb(var(--brand)/0.7)]" : "bg-[#2c4a63]",
+                    on ? "bg-brand shadow-[0_0_12px_3px_oklch(var(--brand)/0.7)]" : "bg-[#2c4a63]",
                   )}
                   style={{ transitionDelay: on ? `${i * 14}ms` : "0ms" }}
                 />
@@ -111,11 +111,11 @@ export function JourneyRoad({ value, label, horn = true, lReached = false }: { v
             tabIndex={horn ? 0 : -1}
             aria-hidden={horn ? undefined : true}
             aria-label={horn ? t("dashboard.road.car") : undefined}
-            className="absolute top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-[left] ease-out"
+            className="absolute top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 rounded-xl transition-[left] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             // Inline, because an arbitrary Tailwind duration class is ambiguous with the animate plugin and gets dropped.
             style={{ left: `${shown}%`, transitionDuration: "1100ms" }}
           >
-            <span aria-hidden="true" className="pointer-events-none absolute left-[90%] top-[48%] h-[80px] w-[150px] -translate-y-1/2 bg-[linear-gradient(90deg,rgb(255_240_170/0.6),transparent)] [clip-path:polygon(0_44%,100%_0,100%_100%,0_58%)] sm:w-[280px]" />
+            <span aria-hidden="true" className="pointer-events-none absolute left-[90%] top-[48%] h-[80px] w-[150px] -translate-y-1/2 bg-[linear-gradient(in_oklch_90deg,rgb(255_240_170/0.6),transparent)] [clip-path:polygon(0_44%,100%_0,100%_100%,0_58%)] sm:w-[280px]" />
             {driving && [0, 1, 2, 3, 4].map(i => (
               <span key={i} aria-hidden="true" className="exhaust-puff left-0 top-[37px]" style={{ animationDelay: `${i * 0.15}s` }} />
             ))}
@@ -146,7 +146,7 @@ const WHEELS = [
  */
 function Hatchback({ driving }: { driving: boolean }) {
   return (
-    <span aria-hidden="true" className="car-idle relative block aspect-[480/217] w-[116px] drop-shadow-[0_0_14px_rgb(var(--brand)/0.45)]">
+    <span aria-hidden="true" className="car-idle relative block aspect-[480/217] w-[116px] drop-shadow-[0_0_14px_oklch(var(--brand)/0.45)]">
       <span className={cn("absolute inset-0", driving && "car-launch")}>
         <img src={myviBody} alt="" draggable={false} className="absolute inset-0 h-full w-full" />
         {WHEELS.map(place => (

@@ -38,7 +38,7 @@ export function VerdictView({ verdict, chase = false, save, onRetry, onPractise,
   const names = useKeyNames();
   const practise = verdict.failedStations[0] ?? verdict.faults[0]?.station ?? null;
   return (
-    <div className="absolute inset-0 overflow-y-auto bg-[rgb(var(--road)/0.86)] p-3 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="sim-verdict">
+    <div className="absolute inset-0 overflow-y-auto bg-[oklch(var(--road)/0.86)] p-3 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="sim-verdict">
       <Panel className="mx-auto max-w-3xl space-y-6 p-4 sm:p-7">
         <header className="space-y-3">
           <p className="type-label">{t('sim.verdict.title')}</p>

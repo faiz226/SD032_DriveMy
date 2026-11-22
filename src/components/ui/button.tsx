@@ -12,6 +12,8 @@ const buttonVariants = cva(
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "disabled:pointer-events-none disabled:opacity-45",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    // The icon stroke follows the semibold label beside it.
+    "[&_svg_*]:[stroke-width:2]",
   ],
   {
     variants: {

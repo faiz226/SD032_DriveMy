@@ -33,7 +33,7 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExpl
   const names = useKeyNames();
   const choice = (selected: boolean) => cn('tile text-left', selected ? 'tile-selected' : 'tile-open');
   return (
-    <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[rgb(var(--road)/0.55)] p-3 sm:items-center">
+    <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[oklch(var(--road)/0.55)] p-3 sm:items-center">
       <Panel className="w-full max-w-xl space-y-4 p-4 sm:p-6">
         <h1 className="type-display text-2xl">{t('sim.mode.title')}</h1>
         <div role="radiogroup" aria-label={t('sim.mode.title')} className="grid gap-3 sm:grid-cols-3">

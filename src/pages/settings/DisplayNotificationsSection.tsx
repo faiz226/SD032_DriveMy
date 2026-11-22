@@ -49,10 +49,10 @@ export function DisplayNotificationsSection() {
                   type="button"
                   onClick={() => setTheme(tKey)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-300 ease-spring active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isActive
                       ? "bg-card text-foreground shadow-sm border border-border/10"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                      : "text-muted-foreground hover:bg-accent/60 hover:text-foreground border border-transparent"
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />

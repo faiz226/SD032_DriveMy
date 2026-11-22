@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
-const channel = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+const channel = (name) => `oklch(var(--${name}) / <alpha-value>)`;
+/** A line colour that carries its own opacity (--border-a, --input-a): solid by day, white at low alpha at night. */
+const edge = (name, alpha) => ({ opacityValue }) => `oklch(var(--${name}) / calc(${opacityValue ?? 1} * var(--${alpha}, 1)))`;
 
 export default {
+  // Hover styles only where a pointer can hover, so a tap on a phone does not leave one stuck on.
+  future: { hoverOnlyWhenSupported: true },
   darkMode: "class",
   content: [
     "./index.html",
@@ -18,8 +22,8 @@ export default {
     extend: {
       // ─── Colour tokens (src/index.css) ──────────────────────────────────
       colors: {
-        border: channel("border"),
-        input: channel("input"),
+        border: edge("border", "border-a"),
+        input: edge("input", "input-a"),
         ring: channel("ring"),
         background: channel("background"),
         foreground: channel("foreground"),
@@ -40,7 +44,7 @@ export default {
         sidebar: {
           DEFAULT: channel("sidebar-background"),
           foreground: channel("sidebar-foreground"),
-          border: channel("sidebar-border"),
+          border: edge("sidebar-border", "border-a"),
           accent: channel("sidebar-accent"),
           "accent-foreground": channel("sidebar-accent-foreground"),
           primary: channel("sidebar-primary"),
@@ -86,7 +90,7 @@ export default {
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
         xl: "var(--shadow-xl)",
-        "focus-ring": "0 0 0 3px rgb(var(--ring) / 0.35)",
+        "focus-ring": "0 0 0 3px oklch(var(--ring) / 0.35)",
         "card-hover": "var(--shadow-md)",
         sidebar: "var(--shadow-lg)",
       },

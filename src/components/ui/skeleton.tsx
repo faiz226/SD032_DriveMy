@@ -19,7 +19,7 @@ function Skeleton({ className, circle = false, ...props }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-shimmer bg-[linear-gradient(90deg,rgb(var(--muted))_0%,rgb(var(--muted)/0.45)_50%,rgb(var(--muted))_100%)] bg-[length:200%_100%]",
+        "animate-shimmer bg-[linear-gradient(90deg,oklch(var(--muted))_0%,oklch(var(--muted)/0.45)_50%,oklch(var(--muted))_100%)] bg-[length:200%_100%]",
         circle ? "rounded-full" : "rounded-xl",
         className
       )}

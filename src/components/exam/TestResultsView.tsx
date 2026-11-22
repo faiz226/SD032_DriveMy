@@ -4,6 +4,7 @@ import { SpeechControl } from "@/components/shared/SpeechControl";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { XCircle, CheckCircle, CaretDown, ArrowCounterClockwise, Download, House, FunnelSimple, Clock } from "@/components/ui/icons";
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -135,7 +136,7 @@ export function TestResultsView({
             {/* A practice quiz is not a pass or a fail: only the mock mirrors the exam's mark. */}
             {mode === "mock" && (
               <span className={cn("pill px-3.5 py-1.5 text-sm", passed ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground")}>
-                {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
+                <SwapIcon id={passed ? "pass" : "fail"}>{passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}</SwapIcon>
                 {passed ? t("results.passed") : t("results.failed")}
               </span>
             )}

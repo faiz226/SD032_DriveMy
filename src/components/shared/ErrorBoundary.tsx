@@ -11,7 +11,7 @@ function DefaultErrorFallback({ onReset, eventId }: { onReset: () => void, event
     <div
       role="alert"
       aria-live="assertive"
-      className="flex min-h-[40vh] flex-col items-center justify-center gap-4 p-8 text-center"
+      className="flex min-h-[40dvh] flex-col items-center justify-center gap-4 p-8 text-center"
     >
       <Warning className="h-12 w-12 text-destructive" aria-hidden />
       <div>

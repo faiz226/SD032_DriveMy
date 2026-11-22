@@ -87,7 +87,7 @@ export function AuthCallbackPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 space-y-4">
+      <div className="flex min-h-[60dvh] flex-col items-center justify-center p-6 space-y-4">
         <AuthFormAlert>{error}</AuthFormAlert>
         <button
           onClick={() => navigate(ROUTES.AUTH)}
@@ -100,7 +100,7 @@ export function AuthCallbackPage() {
   }
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center p-6">
+    <div className="flex min-h-[60dvh] items-center justify-center p-6">
       <div
         className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"
         aria-label="Authenticating..."

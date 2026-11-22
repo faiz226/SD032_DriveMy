@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { SpeakerHigh, Stop, Pause, Play } from "@/components/ui/icons";
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { requestSpeech, SpeechUnavailableError } from "@/services/speech.service";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
@@ -50,13 +51,13 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
   const running = state === "playing" || state === "paused" || state === "loading";
   return <div className="my-3">
     <Button type="button" variant="outline" onClick={() => { if (running) stop(); else void play(); }} aria-pressed={running}>
-      {running ? <Stop aria-hidden="true"/> : <SpeakerHigh aria-hidden="true"/>}
+      <SwapIcon id={running ? "stop" : "speak"}>{running ? <Stop aria-hidden="true"/> : <SpeakerHigh aria-hidden="true"/>}</SwapIcon>
       {t(state === "loading" ? "speech.cancel" : running ? "speech.stop" : "speech.listen")}
     </Button>
     {(state === "playing" || state === "paused") && <Button type="button" variant="outline" className="ml-2" onClick={() => {
       if (state === "playing") { active.current?.audio?.pause(); setState("paused"); }
       else { const session = active.current; void session?.audio?.play().then(() => { if (session === active.current) setState("playing"); }).catch(() => { if (session === active.current) { stop(); setState("error"); } }); }
-    }}>{state === "playing" ? <Pause aria-hidden="true"/> : <Play aria-hidden="true"/>}{t(state === "playing" ? "speech.pause" : "speech.resume")}</Button>}
+    }}><SwapIcon id={state === "playing" ? "pause" : "play"}>{state === "playing" ? <Pause aria-hidden="true"/> : <Play aria-hidden="true"/>}</SwapIcon>{t(state === "playing" ? "speech.pause" : "speech.resume")}</Button>}
     <span role="status" className="ml-3 text-sm">
       {state === "loading" ? t("speech.preparing") : state === "error" ? t("speech.unavailable") : state === "limit" ? t("speech.limit") : ""}
     </span>

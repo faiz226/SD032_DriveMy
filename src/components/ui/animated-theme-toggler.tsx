@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from "react"
 import { flushSync } from "react-dom"
 import { Moon, Sun } from "@/components/ui/icons"
+import { SwapIcon } from "@/components/ui/swap-icon";
 
 import { cn } from "@/lib/utils"
 
@@ -256,7 +257,7 @@ export const AnimatedThemeToggler = React.forwardRef<HTMLButtonElement, Animated
     >
       {children ? children : (
         <>
-          {isDark ? <Sun className="h-5 w-5 shrink-0" aria-hidden /> : <Moon className="h-5 w-5 shrink-0" aria-hidden />}
+          <SwapIcon id={isDark ? "sun" : "moon"}>{isDark ? <Sun className="h-5 w-5 shrink-0" aria-hidden /> : <Moon className="h-5 w-5 shrink-0" aria-hidden />}</SwapIcon>
           <span className="sr-only">Toggle theme</span>
         </>
       )}

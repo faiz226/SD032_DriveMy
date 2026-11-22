@@ -89,7 +89,7 @@ export function LoadingMap({ ready }: { ready: boolean }) {
 
   return (
     <div
-      className={cn('absolute inset-0 z-20 flex items-center justify-center bg-[rgb(var(--road))] p-4 transition-opacity', phase === 'fading' && 'opacity-0')}
+      className={cn('absolute inset-0 z-20 flex items-center justify-center bg-[oklch(var(--road))] p-4 transition-opacity', phase === 'fading' && 'opacity-0')}
       style={{ transitionDuration: `${FADE_MS}ms` }}
       role="progressbar"
       aria-valuemin={0}
@@ -98,8 +98,8 @@ export function LoadingMap({ ready }: { ready: boolean }) {
       aria-label={t('sim.loading', { pct })}
     >
       <div className="flex w-full max-w-2xl flex-col gap-3">
-        <p className="type-label-strong text-[rgb(var(--paint))]">{t('sim.loading', { pct })}</p>
-        <svg viewBox={`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`} className="max-h-[52vh] w-full rounded-[var(--radius)]" aria-hidden>
+        <p className="type-label-strong text-[oklch(var(--paint))]">{t('sim.loading', { pct })}</p>
+        <svg viewBox={`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`} className="max-h-[52dvh] w-full rounded-[var(--radius)]" aria-hidden>
           <rect width={W} height={H} fill={GRASS} />
           <path d={PAVEMENT} fillRule="evenodd" fill="#E4E3DE" stroke={KERB} strokeWidth={0.6} />
           {/* the whole route, faint, then the paint over the part already driven */}
@@ -118,20 +118,20 @@ export function LoadingMap({ ready }: { ready: boolean }) {
             const reached = s >= st.s;
             return (
               <g key={st.id} transform={`translate(${x} ${y})`}>
-                <circle r={dot} fill={reached ? 'rgb(var(--road))' : 'rgb(var(--paint))'} stroke="rgb(var(--road))" strokeWidth={dot * 0.15} />
+                <circle r={dot} fill={reached ? 'oklch(var(--road))' : 'oklch(var(--paint))'} stroke="oklch(var(--road))" strokeWidth={dot * 0.15} />
                 <text textAnchor="middle" dominantBaseline="central" fontSize={dot * 1.2} fontWeight={700}
-                  fill={reached ? 'rgb(var(--paint))' : 'rgb(var(--road))'}>{st.n}</text>
+                  fill={reached ? 'oklch(var(--paint))' : 'oklch(var(--road))'}>{st.n}</text>
               </g>
             );
           })}
           {/* the car: a road-marking pictogram, nose along the route */}
           <g transform={`translate(${cx} ${cy}) rotate(${heading})`}>
-            <rect x={-3} y={-1.45} width={6} height={2.9} rx={0.9} fill="rgb(var(--road))" stroke="rgb(var(--paint))" strokeWidth={0.35} />
-            <rect x={0.55} y={-1.05} width={1.25} height={2.1} rx={0.3} fill="rgb(var(--paint))" opacity={0.9} />
-            <rect x={-2.25} y={-1} width={0.85} height={2} rx={0.25} fill="rgb(var(--paint))" opacity={0.6} />
+            <rect x={-3} y={-1.45} width={6} height={2.9} rx={0.9} fill="oklch(var(--road))" stroke="oklch(var(--paint))" strokeWidth={0.35} />
+            <rect x={0.55} y={-1.05} width={1.25} height={2.1} rx={0.3} fill="oklch(var(--paint))" opacity={0.9} />
+            <rect x={-2.25} y={-1} width={0.85} height={2} rx={0.25} fill="oklch(var(--paint))" opacity={0.6} />
           </g>
         </svg>
-        <div className="min-h-[4.5rem] space-y-1 text-[rgb(var(--paint))]" aria-live="off">
+        <div className="min-h-[4.5rem] space-y-1 text-[oklch(var(--paint))]" aria-live="off">
           {next && (
             <>
               <p className="type-label-strong">{t('sim.hud.next')}: {next.n} · {stationName(t, next.id)}</p>

@@ -38,7 +38,7 @@ export function ChartFigure({ label, table, note, className, children }: ChartFi
       </StaticChartPreviewProvider>
       {note && <figcaption className="mt-3 text-sm text-muted-foreground">{note}</figcaption>}
       <details className="mt-3 text-sm">
-        <summary className="inline-flex min-h-12 cursor-pointer items-center font-semibold">{t("progress.chart.showNumbers")}</summary>
+        <summary className="inline-flex min-h-12 cursor-pointer items-center rounded-md font-semibold underline-offset-4 transition-opacity hover:underline active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t("progress.chart.showNumbers")}</summary>
         <table className="mt-2 w-full text-left">
           <caption className="sr-only">{label}</caption>
           <thead className="text-xs text-muted-foreground">

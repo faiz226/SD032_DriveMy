@@ -83,7 +83,7 @@ export function DockItem({
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
       className={cn(
-        "relative inline-flex items-center justify-center rounded-xl transition-colors outline-none",
+        "relative inline-flex items-center justify-center rounded-xl transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "bg-transparent hover:bg-accent hover:text-accent-foreground text-muted-foreground",
         className
       )}

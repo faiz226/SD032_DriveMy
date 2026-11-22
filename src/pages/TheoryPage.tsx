@@ -30,6 +30,29 @@ import { toast } from "sonner";
 
 const LEARNED_STORAGE_KEY = "drivemy_theory_learned_signs_v2";
 
+/** One sign-category filter card: the title and its tabular count on top, the note under it, a corner tick when chosen. */
+function CategoryTile({ selected, onSelect, title, count, note }: { selected: boolean; onSelect: () => void; title: string; count: string; note: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`tile relative flex flex-col items-stretch justify-start gap-1.5 p-3 text-left cursor-pointer ${selected ? "tile-selected" : ""}`}
+    >
+      {selected && (
+        <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-5 w-5 place-items-center rounded-full bg-brand text-brand-foreground ring-2 ring-card">
+          <Check size={12} weight="bold" />
+        </span>
+      )}
+      <span className="flex items-start justify-between gap-2">
+        <span className="text-sm font-bold leading-tight text-foreground text-balance">{title}</span>
+        <span className="type-figure shrink-0 text-xs tabular-nums text-muted-foreground">{count}</span>
+      </span>
+      <span className="text-[0.8125rem] leading-snug text-muted-foreground">{note}</span>
+    </button>
+  );
+}
+
 export function TheoryPage() {
   const navigate = useNavigate();
   const { language } = useLanguage();
@@ -197,10 +220,10 @@ export function TheoryPage() {
                 type="text"
                 placeholder={
                   lang === "en"
-                    ? "Search signs, rules, or safety..."
-                    : "Cari tanda, undang-undang, keselamatan..."
+                    ? "Search signs, rules, or safety…"
+                    : "Cari tanda, undang-undang, keselamatan…"
                 }
-                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-muted/40 text-sm focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-background transition-colors"
+                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-muted/40 text-base focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-background transition-colors"
                 aria-label={
                   lang === "en"
                     ? "Search learning topics"
@@ -298,7 +321,7 @@ export function TheoryPage() {
                     type="button"
                     onClick={() => setShowOnlyLearned(!showOnlyLearned)}
                     aria-pressed={showOnlyLearned}
-                    className={`tap-sm px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
+                    className={`tap-sm px-3 py-1.5 rounded-lg text-xs font-semibold border transition-[color,background-color,border-color,transform] duration-300 ease-spring active:scale-[0.97] motion-reduce:active:scale-100 cursor-pointer inline-flex items-center gap-1.5 ${
                       showOnlyLearned
                         ? "bg-brand text-brand-foreground border-foreground"
                         : "bg-background text-foreground border-border hover:border-foreground/40"
@@ -315,57 +338,26 @@ export function TheoryPage() {
               </div>
 
               {/* Category Filter Pills & Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategory("all")}
-                  aria-pressed={selectedCategory === "all"}
-                  className={`tile p-3 text-left flex flex-col justify-between gap-2 cursor-pointer transition-all ${
-                    selectedCategory === "all" ? "tile-selected" : ""
-                  }`}
-                >
-                  <div className="flex w-full items-start justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-                      {selectedCategory === "all" && <Check size={14} className="shrink-0 text-brand-ink" aria-hidden="true" />}
-                      {lang === "en" ? "All signs" : "Semua papan tanda"}
-                    </span>
-                    <span className="type-figure shrink-0 text-xs text-muted-foreground">
-                      {Object.values(categoryMastery).reduce((sum, m) => sum + m.learned, 0)}/{roadSigns.length}
-                    </span>
-                  </div>
-                  <span className="text-[0.8125rem] leading-snug text-muted-foreground">
-                    {lang === "en" ? "Every category together" : "Semua kategori sekali gus"}
-                  </span>
-                </button>
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+                <CategoryTile
+                  selected={selectedCategory === "all"}
+                  onSelect={() => setSelectedCategory("all")}
+                  title={lang === "en" ? "All signs" : "Semua papan tanda"}
+                  count={`${Object.values(categoryMastery).reduce((sum, m) => sum + m.learned, 0)}/${roadSigns.length}`}
+                  note={lang === "en" ? "Every category together" : "Semua kategori sekali gus"}
+                />
                 {ROAD_SIGN_CATEGORIES.map((cat) => {
                   const mastery = categoryMastery[cat.id] ?? { total: 0, learned: 0 };
                   const isSelected = selectedCategory === cat.id;
-
                   return (
-                    <button
+                    <CategoryTile
                       key={cat.id}
-                      type="button"
-                      onClick={() =>
-                        setSelectedCategory(isSelected ? "all" : cat.id)
-                      }
-                      aria-pressed={isSelected}
-                      className={`tile p-3 text-left flex flex-col justify-between gap-2 cursor-pointer transition-all ${
-                        isSelected ? "tile-selected" : ""
-                      }`}
-                    >
-                      <div className="flex w-full items-start justify-between gap-2">
-                        <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-                          {isSelected && <Check size={14} className="shrink-0 text-brand-ink" aria-hidden="true" />}
-                          {lang === "en" ? cat.labelEn : cat.labelMs}
-                        </span>
-                        <span className="type-figure shrink-0 text-xs text-muted-foreground">
-                          {mastery.learned}/{mastery.total}
-                        </span>
-                      </div>
-                      <span className="text-[0.8125rem] leading-snug text-muted-foreground">
-                        {lang === "en" ? cat.colorRuleEn : cat.colorRuleMs}
-                      </span>
-                    </button>
+                      selected={isSelected}
+                      onSelect={() => setSelectedCategory(isSelected ? "all" : cat.id)}
+                      title={lang === "en" ? cat.labelEn : cat.labelMs}
+                      count={`${mastery.learned}/${mastery.total}`}
+                      note={lang === "en" ? cat.colorRuleEn : cat.colorRuleMs}
+                    />
                   );
                 })}
               </div>
@@ -378,13 +370,13 @@ export function TheoryPage() {
                   <span className="pill pill-info">
                     {lang === "en" ? "Interactive knowledge drill" : "Latihan uji minda pantas"}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs tabular-nums text-muted-foreground">
                     {lang === "en" ? "Question" : "Soalan"} {drillNumber + 1} of{" "}
                     {roadSigns.length}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-foreground">
+                  <span className="text-xs font-semibold tabular-nums text-foreground">
                     {lang === "en" ? "Score:" : "Skor:"} {drillScore}
                   </span>
                 </div>
@@ -412,7 +404,7 @@ export function TheoryPage() {
                         type="button"
                         disabled={answered}
                         onClick={() => handlePickDrill(idx)}
-                        className={`tile p-4 h-36 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all disabled:cursor-default ${stateClass} ${
+                        className={`tile p-4 h-36 flex flex-col items-center justify-center gap-2 cursor-pointer transition-[color,background-color,border-color,box-shadow,opacity,transform] disabled:cursor-default ${stateClass} ${
                           picked ? "tile-selected" : ""
                         }`}
                       >
@@ -539,7 +531,7 @@ export function TheoryPage() {
                             >
                               <Star
                                 size={15}
-                                className={`transition-all duration-200 ${
+                                className={`transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ${
                                   isLearned
                                     ? "fill-brand text-brand-foreground scale-110"
                                     : "text-muted-foreground hover:text-foreground"

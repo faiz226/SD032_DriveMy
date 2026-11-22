@@ -47,7 +47,7 @@ export function ScoreTrendChart({ data, label, limit, passMark }: ScoreTrendChar
           horizontal
           strokeDasharray="2 6"
           highlightRowValues={passMark === undefined ? undefined : [passMark]}
-          highlightRowStroke="rgb(var(--foreground))"
+          highlightRowStroke="oklch(var(--foreground))"
           highlightRowStrokeDasharray="8 6"
           highlightRowStrokeOpacity={0.8}
         />

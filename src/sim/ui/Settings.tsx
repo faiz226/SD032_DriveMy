@@ -73,7 +73,7 @@ export function SettingsDialog({ settings }: { settings: SettingsProps }) {
   return (
     <Dialog open={open} onOpenChange={(o) => (o ? useSettingsPanel.getState().show() : useSettingsPanel.getState().hide())}>
       {/* above the simulator's own layer (z-70); its paused screen dims the drive behind */}
-      <DialogContent className="z-[90] max-h-[85vh] overflow-y-auto" aria-describedby={undefined}>
+      <DialogContent className="z-[90] max-h-[85dvh] overflow-y-auto" aria-describedby={undefined}>
         <DialogTitle className="type-label-strong text-lg">{t('sim.settings.title')}</DialogTitle>
         <SimSettings settings={settings} />
       </DialogContent>

@@ -1,6 +1,7 @@
 // What the learner sees while driving. It keeps out of the mirrors' three areas (the top centre, and the
 // side edges a little above the middle) and clear of the touch controls along the bottom.
 import { ArrowCounterClockwise, ArrowFatLeft, ArrowFatRight, Gear, Headlights, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut, VideoCamera } from '@/components/ui/icons';
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { Figure } from '@/components/ui/surface';
@@ -27,7 +28,7 @@ const NOTICE_S = 4.5;
 const INTERIOR_MIRROR_H = 60;
 
 // the HUD's own surface: asphalt with paint, the on-road palette
-export const HUD_PLATE = 'rounded-[var(--radius)] border border-[rgb(var(--paint)/0.25)] bg-[rgb(var(--road)/0.72)] text-[rgb(var(--paint))]';
+export const HUD_PLATE = 'rounded-[var(--radius)] border border-[oklch(var(--paint)/0.25)] bg-[oklch(var(--road)/0.72)] text-[oklch(var(--paint))]';
 
 const sizeNow = () => `${window.innerWidth}x${window.innerHeight}`;
 const onResize = (cb: () => void) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); };
@@ -108,7 +109,7 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
             <>
               <HudButton label={t('sim.touch.topDown')} pressed={topDown} onClick={() => useDriver.getState().set({ topDown: !topDown })}><MapTrifold size={20} /></HudButton>
               <HudButton label={paused ? t('sim.hud.resume') : t('sim.touch.pause')} pressed={paused} onClick={() => useDriver.getState().set({ paused: !paused })}>
-                {paused ? <Play size={20} weight="fill" /> : <Pause size={20} />}
+                <SwapIcon id={paused ? "play" : "pause"}>{paused ? <Play size={20} weight="fill" /> : <Pause size={20} />}</SwapIcon>
               </HudButton>
             </>
           )}
@@ -147,7 +148,7 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
       {done && <DrillDone station={done} onRestart={onRestart} onNext={onNext} onStations={onStations} />}
       <SettingsDialog settings={settings} />
       {paused && (
-        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[rgb(var(--road)/0.45)]">
+        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[oklch(var(--road)/0.45)]">
           <div className={cn(HUD_PLATE, 'max-w-sm space-y-3 p-4 text-center')} role="status">
             <p className="type-label-strong text-lg">{t('sim.hud.paused')}</p>
             <p className="type-label">{t('sim.hud.pausedHint', names)}</p>
@@ -167,7 +168,7 @@ function HudButton({ label, pressed, onClick, children }: { label: string; press
       title={label}
       aria-pressed={pressed}
       onClick={onClick}
-      className={cn(HUD_PLATE, 'tap-sm flex items-center justify-center', pressed && 'bg-[rgb(var(--paint)/0.92)] text-[rgb(var(--road))]')}
+      className={cn(HUD_PLATE, 'tap-sm flex items-center justify-center', pressed && 'bg-[oklch(var(--paint)/0.92)] text-[oklch(var(--road))]')}
     >
       {children}
     </button>
@@ -324,7 +325,7 @@ export function DrillDone({ station, onRestart, onNext, onStations }: { station:
   const cleared = station.status === 'cleared';
   const reason = voidKey ? `sim.fault.${voidKey}` : cleared ? undefined : fault?.reasonKey;
   const fix = voidKey ? `sim.fix.${voidKey}` : cleared ? undefined : fault?.fixKey;
-  const edge = voidKey ? 'border-l-[rgb(var(--warning))]' : cleared ? 'border-l-[rgb(var(--success))]' : 'border-l-[rgb(var(--destructive))]';
+  const edge = voidKey ? 'border-l-[oklch(var(--warning))]' : cleared ? 'border-l-[oklch(var(--success))]' : 'border-l-[oklch(var(--destructive))]';
   return (
     <div className="pointer-events-auto absolute inset-x-0 top-1/3 mx-auto w-[min(92vw,380px)]">
       <div className={cn(HUD_PLATE, 'space-y-3 border-l-4 p-4', edge)} role="status">

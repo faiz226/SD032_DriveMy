@@ -104,10 +104,10 @@ export function SimulationsPage() {
           <Link
             key={m.id}
             to={`${ROUTES.SIMULATIONS}/${m.id}`}
-            className="feature-link flex flex-col gap-4 relative group overflow-hidden transition-all duration-200"
+            className="feature-link flex flex-col gap-4 relative group overflow-hidden transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
           >
             <div className="flex items-start justify-between">
-              <div className="p-2.5 bg-muted rounded-full text-foreground transition-all duration-200 ease-out-quart group-hover:bg-primary/10 group-hover:text-primary">
+              <div className="p-2.5 bg-muted rounded-full text-foreground transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ease-out-quart group-hover:bg-primary/10 group-hover:text-primary">
                 {m.icon}
               </div>
               <span className={cn(

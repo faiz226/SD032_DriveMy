@@ -48,8 +48,8 @@ export function Minimap({ marks = [], label, className }: { marks?: MapMark[]; l
         const [x, y] = px(s.at).split(' ').map(Number);
         return (
           <g key={s.id} transform={`translate(${x} ${y})`}>
-            <circle r={r} fill="rgb(var(--road))" />
-            <text textAnchor="middle" dominantBaseline="central" fontSize={r * 1.2} fontWeight={700} fill="rgb(var(--paint))">{s.n}</text>
+            <circle r={r} fill="oklch(var(--road))" />
+            <text textAnchor="middle" dominantBaseline="central" fontSize={r * 1.2} fontWeight={700} fill="oklch(var(--paint))">{s.n}</text>
           </g>
         );
       })}
@@ -57,8 +57,8 @@ export function Minimap({ marks = [], label, className }: { marks?: MapMark[]; l
         const [x, y] = px(m.at).split(' ').map(Number);
         return (
           <g key={i} transform={`translate(${x} ${y})`}>
-            <circle r={r * 0.95} fill="rgb(var(--destructive))" stroke="rgb(var(--paint))" strokeWidth={r * 0.18} />
-            <text textAnchor="middle" dominantBaseline="central" fontSize={r * 1.05} fontWeight={700} fill="rgb(var(--paint))">{m.label}</text>
+            <circle r={r * 0.95} fill="oklch(var(--destructive))" stroke="oklch(var(--paint))" strokeWidth={r * 0.18} />
+            <text textAnchor="middle" dominantBaseline="central" fontSize={r * 1.05} fontWeight={700} fill="oklch(var(--paint))">{m.label}</text>
           </g>
         );
       })}

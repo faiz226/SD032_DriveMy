@@ -34,8 +34,8 @@ const READING: Record<Reading, { key: TranslationKey; tone: PillTone }> = {
 function PlateImage({ plate, className }: { plate: Plate; className?: string }) {
   const { t } = useLanguage();
   return (
-    <span className={cn("block aspect-square shrink-0 overflow-hidden rounded-full bg-white shadow-sm ring-1 ring-border", className)}>
-      <img src={plateImage(plate.n)} alt={t("color.plateAlt", { num: plate.n })} className="h-full w-full scale-[1.04] object-cover" width={233} height={233} />
+    <span className={cn("block aspect-square shrink-0 overflow-hidden rounded-full bg-card shadow-sm ring-1 ring-border dark:bg-white", className)}>
+      <img src={plateImage(plate.n)} alt={t("color.plateAlt", { num: plate.n })} className="h-full w-full scale-[1.04] object-cover mix-blend-multiply dark:mix-blend-normal" width={233} height={233} />
     </span>
   );
 }

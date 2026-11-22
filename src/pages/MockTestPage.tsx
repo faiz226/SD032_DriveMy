@@ -170,7 +170,7 @@ export function MockTestPage() {
 
       {phase === "grading" && (
         <div
-          className="flex min-h-[50vh] flex-col items-center justify-center gap-4"
+          className="flex min-h-[50dvh] flex-col items-center justify-center gap-4"
           role="status"
           aria-live="polite"
         >
