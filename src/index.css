@@ -199,9 +199,10 @@
     pointer-events: none;
   }
 
-  /* Kuala Lumpur behind the page, drawn as SVG and kept low and dim so text stays clear of it. At night the towers
-     (the KL Tower, the Petronas Towers and the blocks between them, traced as a flat outline) carry lit windows, with street lamps along the road; by day the
-     same skyline stands in morning haze. The lit windows only twinkle when motion is allowed. */
+  /* Kuala Lumpur behind the page, traced from a reference silhouette in three depths (lighter is further away, as in
+     haze): the KL Tower, the Petronas Towers and skybridge, the bridge, the arch, the mosque and the towers between.
+     Kept low and dim so text stays clear of it. At night the near buildings carry lit windows, which only twinkle when
+     motion is allowed. */
   body::after {
     content: "";
     position: fixed;
