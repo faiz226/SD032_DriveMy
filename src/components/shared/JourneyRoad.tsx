@@ -76,7 +76,7 @@ export function JourneyRoad({ value, label, horn = true, lReached = false }: { v
         </span>
       </div>
 
-      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-[linear-gradient(in_oklch_180deg,#10304A,oklch(var(--road)))] px-16 ring-1 ring-border">
+      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-[#0b2234] px-16 ring-1 ring-border">
         <span aria-hidden="true" className="absolute inset-x-0 top-3 h-[3px] bg-white/75" />
         <span aria-hidden="true" className="absolute inset-x-0 bottom-3 h-[3px] bg-white/75" />
         <div

@@ -6,7 +6,7 @@ import { BrandMark } from "@/components/shared/BrandMark";
 import { JourneyRoad } from "@/components/shared/JourneyRoad";
 import { useLanguage } from "@/hooks/useLanguage";
 
-const POST = "absolute bottom-0 h-20 w-4 bg-[linear-gradient(90deg,#55524c,#8d8a83,#55524c)]";
+const POST = "absolute bottom-0 h-20 w-4 bg-[#77746d]";
 
 /**
  * Sign-in, sign-up and recovery, under the same night sky as the app. On a wide
@@ -38,7 +38,7 @@ export function AuthLayout() {
             <span className={`${POST} right-[12%]`} />
             <div className="hero-panel px-9 py-9">
               <p className="type-display max-w-md text-[2.5rem] text-white xl:text-[3rem]">{t("auth.brand.title")}</p>
-              <p className="mt-4 max-w-md text-[1.0625rem] text-white/85">{t("auth.brand.lead")}</p>
+              <p className="mt-4 max-w-md text-[1.0625rem] text-white">{t("auth.brand.lead")}</p>
               <ul className="mt-6 space-y-2.5">
                 {points.map(({ icon: Glyph, label }) => (
                   <li key={label} className="flex items-center gap-3 font-semibold text-white">

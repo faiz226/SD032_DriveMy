@@ -70,11 +70,8 @@
     --plate-red: 0.5304 0.2074 22.3;             /* L-plate red #C8102E */
     --vms: 0.8124 0.1704 76.4;                   /* VMS amber */
 
-    /* The sky behind everything. */
-    --sky:
-      radial-gradient(in oklch 900px 520px at 50% -60px, rgb(18 170 100 / 0.16), transparent 70%),
-      linear-gradient(in oklch 180deg, #E6F1FA 0%, #EEF3F7 55%, #FFE9D2 100%);
-    --sheen: rgb(70 160 255 / 0.08);
+    /* The page behind everything: one flat colour. Depth comes from the surface steps and the borders. */
+    --sky: oklch(var(--background));
 
     --sidebar-background: var(--card);
     --sidebar-foreground: var(--foreground);
@@ -152,7 +149,6 @@
     --overlay: 0.1023 0.0244 242.2;
 
     --sky: oklch(var(--background));
-    --sheen: rgb(70 160 255 / 0.14);
 
     --shadow-xs: none;
     --shadow-sm: none;
@@ -210,13 +206,11 @@
     content: "";
     position: fixed;
     inset: auto 0 0 0;
-    height: min(58vh, 38.7vw);
-    height: min(58dvh, 38.7vw);
+    height: min(58vh, 40vw);
+    height: min(58dvh, 40vw);
     z-index: -1;
     pointer-events: none;
-    background:
-      linear-gradient(in oklch 0deg, rgb(255 233 210 / 0.6), rgb(255 233 210 / 0) 70%),
-      url("./assets/skyline/kl-day.svg") center bottom / auto 100% no-repeat;
+    background: url("./assets/skyline/kl-day.svg") center bottom / auto 100% no-repeat;
     opacity: 0.7;
   }
   .dark body::after {
@@ -295,11 +289,9 @@
 
 /* --- Surfaces ------------------------------------------------------------------ */
 @layer components {
-  /* A resting card, with the faint blue sheen of street light across its top. */
+  /* A resting card: a flat surface one step above the page. */
   .panel {
-    background:
-      linear-gradient(in oklch 180deg, var(--sheen), transparent 55%),
-      oklch(var(--card));
+    background: oklch(var(--card));
     color: oklch(var(--card-foreground));
     border: 1px solid oklch(var(--border) / var(--border-a));
     border-radius: var(--radius-panel);
@@ -309,9 +301,7 @@
   /* A card you act on: it lifts toward you, and presses back. */
   .tile {
     position: relative;
-    background:
-      linear-gradient(in oklch 180deg, var(--sheen), transparent 62%),
-      oklch(var(--card));
+    background: oklch(var(--card));
     color: oklch(var(--card-foreground));
     border: 1px solid oklch(var(--border) / var(--border-a));
     border-radius: calc(var(--radius) + 0.25rem);
@@ -336,17 +326,17 @@
   .tile-open { }
   .tile-selected {
     border-color: oklch(var(--brand-ink));
-    background: linear-gradient(in oklch 180deg, oklch(var(--brand) / 0.16), oklch(var(--brand) / 0.06)), oklch(var(--card));
+    background: linear-gradient(oklch(var(--brand) / 0.12), oklch(var(--brand) / 0.12)), oklch(var(--card));
     box-shadow: 0 0 0 1px oklch(var(--brand-ink));
   }
   .tile-progress { border-color: oklch(var(--brand-ink) / 0.5); }
   .tile-done {
     border-color: oklch(var(--success) / 0.55);
-    background: linear-gradient(in oklch 180deg, oklch(var(--success) / 0.16), oklch(var(--success) / 0.06)), oklch(var(--card));
+    background: linear-gradient(oklch(var(--success) / 0.12), oklch(var(--success) / 0.12)), oklch(var(--card));
   }
   .tile-fail {
     border-color: oklch(var(--destructive) / 0.6);
-    background: linear-gradient(in oklch 180deg, oklch(var(--destructive) / 0.16), oklch(var(--destructive) / 0.06)), oklch(var(--card));
+    background: linear-gradient(oklch(var(--destructive) / 0.12), oklch(var(--destructive) / 0.12)), oklch(var(--card));
   }
   .tile-locked {
     background: transparent;
@@ -388,12 +378,11 @@
     position: relative;
     isolation: isolate;
     color: #fff;
-    background: linear-gradient(in oklch 180deg, #0A8049, #08683C);
+    background: oklch(var(--sign));
     border-radius: var(--radius-hero);
     box-shadow:
       inset 0 0 0 5px oklch(var(--sign)),
       inset 0 0 0 9px #fff,
-      0 0 90px rgb(18 170 100 / 0.45),
       0 30px 40px -20px rgb(0 0 0 / 0.8);
   }
 
@@ -597,15 +586,12 @@
     padding: var(--layout-gutter);
   }
   .page-header { @apply max-w-readable space-y-2; }
-  /* Road-sign lettering: heavy capitals with a little air, the way a JKR sign sets them. */
   .page-title {
     @apply text-foreground;
     font-size: clamp(1.5rem, 1.25rem + 1.2vw, 2.25rem);
     font-weight: 700;
-    font-stretch: 88%;
-    letter-spacing: 0.08em;
+    letter-spacing: -0.015em;
     line-height: 1.12;
-    text-transform: uppercase;
   }
   .page-lead { @apply text-muted-foreground text-sm sm:text-base leading-relaxed; }
 }

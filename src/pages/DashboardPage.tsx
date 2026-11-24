@@ -116,8 +116,7 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
       />
 
       <section aria-labelledby="lanes-title">
-        <h2 id="lanes-title" className={SECTION_TITLE}>{t("dashboard.lanes.title")}</h2>
-        <p className="mb-6 mt-1 text-muted-foreground">{t("dashboard.lanes.lead")}</p>
+        <h2 id="lanes-title" className={`${SECTION_TITLE} mb-6`}>{t("dashboard.lanes.title")}</h2>
         <div className="space-y-8">
           <TollPlaza name={t("dashboard.lanes.theory")} lanes={theoryLanes} firstLane={1} />
           <TollPlaza name={t("dashboard.lanes.practical")} lanes={practicalLanes} firstLane={4} />
@@ -127,11 +126,13 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
       <section aria-labelledby="score-title">
         <h2 id="score-title" className={SECTION_TITLE}>{t("dashboard.score.title")}</h2>
         <p className="mb-6 mt-1 text-muted-foreground">{t("dashboard.score.lead")}</p>
-        <div className="grid grid-cols-2 items-center gap-6 lg:grid-cols-4">
-          <dl className="contents">
-            <RoundSign value={MOCK_PASS_MARK} caption={t("dashboard.score.passMark")} />
-            <RoundSign value={bestMock?.score} caption={bestMock ? t("dashboard.score.best", { total: bestMock.total_questions }) : t("dashboard.score.none")} />
-            <RoundSign
+        <div className="grid items-center gap-6 md:grid-cols-2 lg:grid-cols-[auto_1.2fr_1fr]">
+          <dl>
+            <RoundSign large value={bestMock?.score} caption={bestMock ? t("dashboard.score.best", { total: bestMock.total_questions }) : t("dashboard.score.none")} />
+          </dl>
+          <dl className="panel divide-y divide-border px-5">
+            <Fact value={MOCK_PASS_MARK} caption={t("dashboard.score.passMark")} />
+            <Fact
               value={headroom}
               signed
               caption={headroom === undefined ? t("dashboard.score.none") : t(headroom < 0 ? "dashboard.score.short" : "dashboard.score.above")}
@@ -154,11 +155,23 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
 }
 
 /** A stat on a round sign: white disc, dark ring, like a speed-limit plate. */
-function RoundSign({ value, caption, signed }: { value: number | undefined; caption: string; signed?: boolean }) {
+function RoundSign({ value, caption, signed, large }: { value: number | undefined; caption: string; signed?: boolean; large?: boolean }) {
   return (
     <div className="grid justify-items-center gap-3 text-center">
       <dt className="order-2 max-w-[18ch] text-sm text-muted-foreground">{caption}</dt>
-      <dd className="order-1 grid aspect-square w-[min(100%,10rem)] place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_12px_30px_-10px_#000] sm:text-5xl">
+      <dd className={`order-1 grid aspect-square ${large ? "w-[min(100%,12rem)]" : "w-[min(100%,10rem)]"} place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_12px_30px_-10px_#000] sm:text-5xl`}>
+        {value === undefined ? "-" : <NumberFlow value={value} format={{ signDisplay: signed ? "exceptZero" : "auto" }} />}
+      </dd>
+    </div>
+  );
+}
+
+/** A plain figure beside its caption, for the facts that are not the headline. */
+function Fact({ value, caption, signed }: { value: number | undefined; caption: string; signed?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-4">
+      <dt className="text-sm text-muted-foreground">{caption}</dt>
+      <dd className="text-3xl font-black tabular-nums">
         {value === undefined ? "-" : <NumberFlow value={value} format={{ signDisplay: signed ? "exceptZero" : "auto" }} />}
       </dd>
     </div>
@@ -171,7 +184,7 @@ function RoadTip() {
   const tips = [t("dashboard.tip.1"), t("dashboard.tip.2"), t("dashboard.tip.3")];
   const [index, setIndex] = useState(0);
   return (
-    <div className="col-span-2 grid min-h-[11.25rem] content-center gap-2.5 rounded-[0.875rem] bg-[#6A4220] p-[1.375rem] text-white shadow-[inset_0_0_0_3px_#6A4220,inset_0_0_0_5px_#fff] lg:col-span-1">
+    <div className="grid min-h-[11.25rem] content-center gap-2.5 rounded-xl bg-[#6A4220] p-[1.375rem] text-white shadow-[inset_0_0_0_3px_#6A4220,inset_0_0_0_5px_#fff] md:col-span-2 lg:col-span-1">
       <p className="text-lg font-extrabold">{t("dashboard.tip.title")}</p>
       <p aria-live="polite">{tips[index % tips.length]}</p>
       <button

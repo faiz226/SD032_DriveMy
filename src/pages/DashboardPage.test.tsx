@@ -49,3 +49,18 @@ describe("DashboardView", () => {
     expect((await axe(container)).violations).toEqual([]);
   });
 });
+
+describe("DashboardView on a phone", () => {
+  it("still offers all six lanes, as one set of links", () => {
+    const original = window.matchMedia;
+    window.matchMedia = ((query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false, onchange: null })) as typeof window.matchMedia;
+    try {
+      view();
+      const lanes = within(screen.getByRole("region", { name: "Pick a lane" }));
+      expect(lanes.getAllByRole("link")).toHaveLength(6);
+      expect(lanes.getByRole("link", { name: /KPP 01 mock test/ })).toBeInTheDocument();
+    } finally {
+      window.matchMedia = original;
+    }
+  });
+});

@@ -32,9 +32,9 @@ const MANEUVERS: Maneuver[] = [
 ];
 
 const DIFFICULTY_COLORS: Record<Difficulty, string> = {
-  Easy:   "bg-success/15 text-success",
-  Medium: "bg-warning/15 text-warning",
-  Hard:   "bg-destructive/15 text-destructive",
+  Easy:   "bg-success/10 text-success",
+  Medium: "bg-warning/10 text-warning",
+  Hard:   "bg-destructive/10 text-destructive",
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ export function SimulationsPage() {
                 {m.icon}
               </div>
               <span className={cn(
-                "px-2.5 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider",
+                "px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize",
                 DIFFICULTY_COLORS[m.difficulty]
               )}>
                 {m.difficulty}

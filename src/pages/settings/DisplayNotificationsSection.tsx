@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, Sun, Moon, Monitor } from "@/components/ui/icons";
+import { Sun, Moon, Monitor } from "@/components/ui/icons";
 import { useLanguage } from "@/hooks/useLanguage";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { useThemeStore } from "@/stores/themeStore";
@@ -70,19 +70,6 @@ export function DisplayNotificationsSection() {
           description={t("settings.notificationsDesc")}
         >
           <div className="flex items-center gap-3">
-            <span
-              className={cn(
-                "inline-flex items-center gap-1.5 text-xs font-medium rounded-md px-2 py-1 border",
-                notifications
-                  ? "border-success/30 bg-success/10 text-success"
-                  : "border-border bg-muted text-muted-foreground"
-              )}
-            >
-              <Bell className="h-3.5 w-3.5" weight="regular" aria-hidden />
-              {notifications
-                ? t("settings.notificationsOn")
-                : t("settings.notificationsOff")}
-            </span>
             <Switch
               checked={notifications}
               onCheckedChange={handleNotificationsChange}

@@ -15,7 +15,7 @@ interface GantrySignProps {
   mockTotal?: number;
 }
 
-const POST = "absolute bottom-0 h-28 w-[18px] bg-[linear-gradient(90deg,#55524c,#8d8a83,#55524c)]";
+const POST = "absolute bottom-0 h-28 w-[18px] bg-[#77746d]";
 
 /**
  * The readiness score as an expressway gantry: how far the learner still has
@@ -42,7 +42,7 @@ export function GantrySign({ score, theory, practical, bestMock, passMark, mockT
           <h1 id="gantry-title" className="text-[1.0625rem] font-extrabold text-white sm:text-[1.125rem]">{t("dashboard.gantry.title")}</h1>
           <p className="sr-only">{left} {t("dashboard.gantry.marksLeft")}</p>
           <div aria-hidden="true" className="mt-1 flex items-end gap-3">
-            <span className="font-heading text-[clamp(4.25rem,12vw,7.5rem)] font-black leading-[0.8] tracking-[-0.022em] tabular-nums [text-shadow:0_0_30px_rgb(255_255_255/0.35)]">
+            <span className="font-heading text-[clamp(4.25rem,12vw,7.5rem)] font-black leading-[0.8] tracking-[-0.022em] tabular-nums">
               <NumberFlow value={left} />
             </span>
             <span className="max-w-[6ch] pb-1 text-[1.125rem] font-extrabold leading-[1.1] sm:text-[1.25rem]">{t("dashboard.gantry.marksLeft")}</span>

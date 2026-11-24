@@ -2,30 +2,27 @@ import { useState, useId, isValidElement, cloneElement } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { MotionConfig } from "motion/react";
 import {
-  User,
   Gear,
   SignOut,
   List,
   X,
   CaretLeft,
   CaretRight,
-  Sun,
-  Moon,
+  SquaresFour,
   Translate,
 } from "@/components/ui/icons";
-import { SwapIcon } from "@/components/ui/swap-icon";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { OfflineBanner } from "@/components/shared/OfflineBanner";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { NAV_DESTINATIONS } from "@/app/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { Drawer, DrawerPopup, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { useLanguage } from "@/hooks/useLanguage";
 import { VerticalDock, DockItem, DockIcon } from "@/components/ui/vertical-dock";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/stores/authStore";
-import { useThemeStore } from "@/stores/themeStore";
 import { useUIStore } from "@/stores/uiStore";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/constants";
@@ -43,6 +40,7 @@ interface NavItem {
   href:     string;
   icon:     React.ReactNode;
   end?:     boolean;
+  tabKey?:  TranslationKey;
 }
 
 // Every destination in navigation.ts, in the order learners meet them.
@@ -55,12 +53,13 @@ const UTILITY_ITEMS: NavItem[] = [
   { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="regular" className="h-5 w-5" /> },
 ];
 
-const MOBILE_NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.filter((item) => item.mobile).map(
-  ({ icon: Icon, ...item }) => ({
-    ...item,
-    icon: <Icon className="h-5 w-5" />,
-  })
-);
+// The phone bar holds four tabs and a "More" sheet; everything else in the menu lives in that sheet.
+const MOBILE_TABS: NavItem[] = NAV_ITEMS.filter((item) => item.tabKey);
+const MORE_ORDER = [ROUTES.SIMULATIONS, ROUTES.PROGRESS, ROUTES.SAFETY, ROUTES.COLOR_VISION, ROUTES.RPK_RSM];
+const MORE_ITEMS: NavItem[] = [
+  ...MORE_ORDER.map((href) => NAV_ITEMS.find((item) => item.href === href)).filter((item): item is NavItem => !!item),
+  ...UTILITY_ITEMS,
+];
 
 
 // ─── Sidebar nav link ─────────────────────────────────────────────────────────
@@ -133,11 +132,9 @@ interface SidebarProps {
 function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollapse }: SidebarProps) {
   const { t, language, setLanguage } = useLanguage();
   const { signOut, user } = useAuthStore();
-  const { theme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isDark = theme === "dark" || (theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const isRouteActive = (href: string, exact?: boolean) => 
     exact ? location.pathname === href : location.pathname.startsWith(href);
@@ -277,25 +274,6 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               </TooltipProvider>
             </DockItem>
             
-            <DockItem>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex h-full w-full items-center justify-center outline-none">
-                      <AnimatedThemeToggler variant="circle" className="w-full h-full flex items-center justify-center bg-transparent border-none p-0 outline-none hover:bg-transparent">
-                        <DockIcon>
-                          <SwapIcon id={isDark ? "sun" : "moon"}><SwapIcon id={isDark ? "sun" : "moon"}>{isDark ? <Sun weight="regular" className="h-5 w-5 text-brand" /> : <Moon weight="regular" className="h-5 w-5" />}</SwapIcon></SwapIcon>
-                        </DockIcon>
-                      </AnimatedThemeToggler>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={16}>
-                    {t("settings.theme")}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DockItem>
-            
             <DockItem onClick={handleSignOut} className="hover:bg-destructive/20 hover:text-destructive text-destructive mt-2">
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
@@ -329,22 +307,6 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               <SideNavLink key={item.href} item={item} onClick={onClose} />
             ))}
 
-            <AnimatedThemeToggler
-              variant="circle"
-              className={cn(
-                "flex items-center gap-3 rounded-md min-h-[48px] w-full px-4",
-                "text-sm font-medium text-muted-foreground",
-                "hover:bg-accent hover:text-foreground transition-colors duration-200",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              )}
-              aria-label={t("settings.theme")}
-            >
-              <SwapIcon id={isDark ? "sun" : "moon"}><SwapIcon id={isDark ? "sun" : "moon"}>{isDark ? <Sun className="h-5 w-5 shrink-0" aria-hidden /> : <Moon className="h-5 w-5 shrink-0" aria-hidden />}</SwapIcon></SwapIcon>
-              <span className="min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
-                {t("settings.theme")}
-              </span>
-            </AnimatedThemeToggler>
-
             <button
               type="button"
               onClick={handleSignOut}
@@ -365,12 +327,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
 
           <div className="flex items-center justify-between px-4 py-3 shrink-0 border-t border-sidebar-border">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div
-                className="h-8 w-8 rounded-full bg-brand flex items-center justify-center shrink-0"
-                aria-hidden
-              >
-                <User className="h-4 w-4 text-brand-foreground" />
-              </div>
+              <UserAvatar className="h-8 w-8 text-xs" />
               <div className="min-w-0">
                 <p className="text-xs font-medium text-sidebar-foreground truncate">{displayName}</p>
                 {user?.email && (
@@ -392,55 +349,79 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
 
 function MobileBottomNav() {
   const { t } = useLanguage();
+  const location = useLocation();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreActive = MORE_ITEMS.some((item) => location.pathname.startsWith(item.href));
+
+  const tabClass = (active: boolean) =>
+    cn(
+      "relative flex min-w-0 flex-col items-center justify-center gap-0.5",
+      "min-h-[48px] rounded-md px-1 text-[11px] font-medium leading-none transition-colors duration-150",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+      active ? "text-brand-ink" : "text-muted-foreground hover:text-foreground"
+    );
+  const pill = (active: boolean) =>
+    cn(
+      "flex h-8 w-14 items-center justify-center rounded-full transition-colors duration-200 ease-out-quart",
+      active ? "bg-brand/20 text-brand-ink" : "text-muted-foreground"
+    );
 
   return (
     <nav
-      className={cn(
-        "flex md:hidden h-16 items-center justify-around",
-        "glass border-t border-border shrink-0",
-        "safe-area-inset-bottom" 
-      )}
+      className="grid md:hidden grid-cols-5 items-center glass border-t border-border shrink-0 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
       aria-label="Mobile navigation"
     >
-      {MOBILE_NAV_ITEMS.map((item) => {
-        const label = t(item.labelKey);
-        return (
-          <NavLink
-            key={item.href}
-            to={item.href}
-            end={item.end}
-            className={({ isActive }) =>
-              cn(
-                "relative flex flex-col items-center justify-center gap-0.5",
-                "min-h-[48px] min-w-[48px] px-2 rounded-md",
-                "text-[10px] font-medium transition-colors duration-150",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                isActive
-                  ? "text-brand-ink"
-                  : "text-muted-foreground hover:text-foreground"
-              )
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <div
-                  aria-hidden
-                  className={cn(
-                    "flex items-center justify-center h-8 px-4 rounded-full transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ease-out-quart",
-                    isActive ? "bg-brand/20 text-brand-ink" : "text-muted-foreground group-hover:text-foreground"
-                  )}
+      {MOBILE_TABS.map((item) => (
+        <NavLink key={item.href} to={item.href} end={item.end} className={({ isActive }) => tabClass(isActive)}>
+          {({ isActive }) => (
+            <>
+              <span aria-hidden className={pill(isActive)}>{withWeight(item.icon, isActive ? "bold" : "regular")}</span>
+              <span className="max-w-full truncate">{t(item.tabKey!)}</span>
+              {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
+            </>
+          )}
+        </NavLink>
+      ))}
+
+      <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
+        <button
+          type="button"
+          onClick={() => setMoreOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={moreOpen}
+          className={tabClass(moreActive)}
+        >
+          <span aria-hidden className={pill(moreActive)}>
+            <SquaresFour weight={moreActive ? "bold" : "regular"} className="h-5 w-5" />
+          </span>
+          <span className="max-w-full truncate">{t("nav.more")}</span>
+          {moreActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
+        </button>
+        <DrawerPopup showBar>
+          <DrawerTitle className="sr-only">{t("nav.more")}</DrawerTitle>
+          <DrawerDescription className="sr-only">{t("nav.more")}</DrawerDescription>
+          <ul className="grid gap-1 px-3 pt-3">
+            {MORE_ITEMS.map((item) => (
+              <li key={item.href}>
+                <NavLink
+                  to={item.href}
+                  onClick={() => setMoreOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex min-h-[48px] items-center gap-3 rounded-md px-3 text-sm font-medium no-underline",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      isActive ? "bg-brand/15 text-brand-ink" : "text-foreground hover:bg-accent"
+                    )
+                  }
                 >
-                  {withWeight(item.icon, isActive ? "bold" : "regular")}
-                </div>
-                <span className={cn("text-[9px] font-medium tracking-tight mt-0.5", isActive ? "text-brand-ink font-semibold" : "text-muted-foreground")}>
-                  {label}
-                </span>
-                {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
-              </>
-            )}
-          </NavLink>
-        );
-      })}
+                  <span aria-hidden className="shrink-0">{item.icon}</span>
+                  <span className="min-w-0 truncate">{t(item.labelKey)}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </DrawerPopup>
+      </Drawer>
     </nav>
   );
 }
@@ -535,6 +516,9 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
 
             <div className="flex items-center gap-1">
               <LanguageToggle variant="pill" />
+              <NavLink to={ROUTES.SETTINGS} aria-label={t("nav.settings")} className="grid h-11 w-11 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <UserAvatar className="h-8 w-8 text-xs" />
+              </NavLink>
             </div>
           </header>
         )}
