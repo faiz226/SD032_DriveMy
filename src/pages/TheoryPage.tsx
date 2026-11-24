@@ -30,25 +30,50 @@ import { toast } from "sonner";
 
 const LEARNED_STORAGE_KEY = "drivemy_theory_learned_signs_v2";
 
-/** One sign-category filter card: the title and its tabular count on top, the note under it, a corner tick when chosen. */
-function CategoryTile({ selected, onSelect, title, count, note }: { selected: boolean; onSelect: () => void; title: string; count: string; note: string }) {
+type BoardKind = "all" | RoadSignCategory;
+
+/**
+ * Each category card is the sign board of its category, so the colour is the code. Board colours are fixed (a
+ * real sign does not change with the theme); every pair clears 4.5:1. Chosen is a thick ring in the brand ink and
+ * a tick, never a change of board colour, so it reads on every board.
+ */
+const BOARDS: Record<BoardKind, string> = {
+  // Warning: amber, black border and text.
+  warning: "bg-[#F6C21A] text-[#111] border-4 border-[#111]",
+  // Prohibitory: white, a thick red border, dark text.
+  prohibitory: "bg-white text-[#111] border-[6px] border-plate-red",
+  // Mandatory: blue, white text, a thin white inner edge.
+  mandatory: "bg-[#0A5FBF] text-white border-4 border-[#0A5FBF] shadow-[inset_0_0_0_2px_#fff]",
+  // Informational: blue, white text. (JKR uses green only for direction signs on expressways.)
+  informational: "bg-[#0A5FBF] text-white border-4 border-[#0A5FBF]",
+  // Temporary: orange, black text.
+  temporary: "bg-[#F28C28] text-[#111] border-4 border-[#111]",
+  // All signs: a calm dark board with the five colours as a strip.
+  all: "bg-[#2B3239] text-white border-4 border-[#2B3239]",
+};
+
+const STRIP = ["#F6C21A", "#FFFFFF", "#0A5FBF", "#0A5FBF", "#F28C28"];
+
+function CategoryTile({ kind, selected, onSelect, title, count }: { kind: BoardKind; selected: boolean; onSelect: () => void; title: string; count: string }) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`tile relative flex flex-col items-stretch justify-start gap-1.5 p-3 text-left cursor-pointer ${selected ? "tile-selected" : ""}`}
+      className={`relative flex min-h-[4.75rem] flex-col justify-between gap-2 overflow-hidden rounded-xl p-3 text-left outline-none transition-shadow focus-visible:ring-4 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-background ${BOARDS[kind]} ${selected ? "ring-4 ring-brand-ink ring-offset-2 ring-offset-background" : ""}`}
     >
       {selected && (
-        <span aria-hidden="true" className="absolute -right-2 -top-2 grid h-5 w-5 place-items-center rounded-full bg-brand text-brand-foreground ring-2 ring-card">
+        <span aria-hidden="true" className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-brand text-brand-foreground ring-2 ring-[#111]">
           <Check size={12} weight="bold" />
         </span>
       )}
-      <span className="flex items-start justify-between gap-2">
-        <span className="text-sm font-bold leading-tight text-foreground text-balance">{title}</span>
-        <span className="type-figure shrink-0 text-xs tabular-nums text-muted-foreground">{count}</span>
-      </span>
-      <span className="text-[0.8125rem] leading-snug text-muted-foreground">{note}</span>
+      <span className="pr-5 text-sm font-extrabold leading-tight text-balance">{title}</span>
+      <span className="type-figure text-base font-bold tabular-nums">{count}</span>
+      {kind === "all" && (
+        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 flex h-1.5">
+          {STRIP.map((c, i) => <span key={i} className="flex-1" style={{ background: c }} />)}
+        </span>
+      )}
     </button>
   );
 }
@@ -340,11 +365,11 @@ export function TheoryPage() {
               {/* Category Filter Pills & Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
                 <CategoryTile
+                  kind="all"
                   selected={selectedCategory === "all"}
                   onSelect={() => setSelectedCategory("all")}
                   title={lang === "en" ? "All signs" : "Semua papan tanda"}
                   count={`${Object.values(categoryMastery).reduce((sum, m) => sum + m.learned, 0)}/${roadSigns.length}`}
-                  note={lang === "en" ? "Every category together" : "Semua kategori sekali gus"}
                 />
                 {ROAD_SIGN_CATEGORIES.map((cat) => {
                   const mastery = categoryMastery[cat.id] ?? { total: 0, learned: 0 };
@@ -352,11 +377,11 @@ export function TheoryPage() {
                   return (
                     <CategoryTile
                       key={cat.id}
+                      kind={cat.id}
                       selected={isSelected}
                       onSelect={() => setSelectedCategory(isSelected ? "all" : cat.id)}
                       title={lang === "en" ? cat.labelEn : cat.labelMs}
                       count={`${mastery.learned}/${mastery.total}`}
-                      note={lang === "en" ? cat.colorRuleEn : cat.colorRuleMs}
                     />
                   );
                 })}
