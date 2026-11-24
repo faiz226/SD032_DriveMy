@@ -8,10 +8,13 @@ import { Panel, Divider } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { LoadError } from "@/components/shared/LoadError";
+import { PartPicture } from "@/components/rpk/PartPicture";
+import { PowderRow } from "@/components/rpk/PowderRow";
 import { cn } from "@/lib/utils";
+import type { TranslationKey } from "@/lib/translations/en";
 
 const GROUPS = [
-  { routine: "rpk", titleKey: "rpk.group.rpk", noteKey: "rpk.powder" },
+  { routine: "rpk", titleKey: "rpk.group.rpk", noteKey: null },
   { routine: "rsm", titleKey: "rpk.group.rsm", noteKey: "rpk.rsmOrder" },
 ] as const;
 
@@ -26,6 +29,9 @@ export function RpkRsmPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [ticked, setTicked] = useState<Record<string, number[]>>({});
   const panel = useRef<HTMLDivElement>(null);
+  // A step lit from its picture (tapped, stays) or by pointer or focus (while it lasts). Each is tied to its part.
+  const [pinned, setPinned] = useState<{ id: string; step: number } | null>(null);
+  const [hovered, setHovered] = useState<{ id: string; step: number } | null>(null);
 
   if (progress.isError) return <div className="page-shell"><LoadError onRetry={() => { void progress.refetch(); }} /></div>;
 
@@ -37,6 +43,7 @@ export function RpkRsmPage() {
   const allTicked = ticks.length === steps.length;
   // Saved but not yet refetched still counts, so the button does not flash back for a moment.
   const isDone = done.has(current.id) || (save.isSuccess && save.variables?.module_id === current.id);
+  const lit = hovered?.id === current.id ? hovered.step : pinned?.id === current.id ? pinned.step : null;
   const nextTopic = RPK_TOPICS.find(topic => !done.has(topic.id) && topic.id !== current.id);
 
   const open = (topic: Topic) => {
@@ -44,6 +51,12 @@ export function RpkRsmPage() {
     save.reset();
     // On a phone the list sits above the steps: bring the steps into view.
     if (window.matchMedia("(max-width: 767px)").matches) panel.current?.scrollIntoView({ block: "start" });
+  };
+
+  const selectStep = (step: number) => {
+    setPinned({ id: current.id, step });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(`rpk-step-${step}`)?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
   };
 
   const toggle = (step: number) => setTicked(prev => {
@@ -95,7 +108,7 @@ export function RpkRsmPage() {
                       );
                     })}
                   </ul>
-                  <p className="mt-3 text-sm text-muted-foreground">{t(group.noteKey)}</p>
+                  {group.noteKey ? <p className="mt-3 text-sm text-muted-foreground">{t(group.noteKey)}</p> : <PowderRow />}
                 </section>
               ))}
             </nav>
@@ -105,12 +118,28 @@ export function RpkRsmPage() {
                 <h2 className="text-[1.75rem]">{current.title[language]}</h2>
                 {current.intro && <p className="mt-3 max-w-readable">{current.intro[language]}</p>}
 
-                <ol className="my-6 space-y-2" aria-label={t("rpk.stepsLabel")}>
+                <PartPicture
+                  topicId={current.id}
+                  label={t(`rpk.art.${current.id}` as TranslationKey)}
+                  stepCount={steps.length}
+                  active={lit}
+                  stepName={i => t("rpk.hotspot", { n: i + 1, total: steps.length })}
+                  onSelect={selectStep}
+                  onHover={i => setHovered(i === null ? null : { id: current.id, step: i })}
+                />
+
+                <ol className="mb-6 space-y-2" aria-label={t("rpk.stepsLabel")}>
                   {steps.map((step, i) => {
                     const on = isDone || ticks.includes(i);
                     return (
-                      <li key={step}>
-                        <label className={cn("flex min-h-12 items-start gap-3.5 rounded-xl p-2.5 transition-base", isDone ? "cursor-default" : "cursor-pointer hover:bg-muted/60", on && "text-muted-foreground")}>
+                      <li key={step} id={`rpk-step-${i}`} className="scroll-mt-24">
+                        <label
+                          onMouseEnter={() => setHovered({ id: current.id, step: i })}
+                          onMouseLeave={() => setHovered(null)}
+                          onFocus={() => setHovered({ id: current.id, step: i })}
+                          onBlur={() => setHovered(null)}
+                          className={cn("flex min-h-12 items-start gap-3.5 rounded-xl p-2.5 transition-base", isDone ? "cursor-default" : "cursor-pointer hover:bg-muted/60", on && "text-muted-foreground", lit === i && "bg-brand/15 ring-1 ring-brand-ink/50")}
+                        >
                           <input type="checkbox" className="peer sr-only" checked={on} disabled={isDone} onChange={() => toggle(i)} />
                           <span aria-hidden="true" className={cn("type-figure grid h-7 w-7 shrink-0 place-items-center rounded-full border text-xs transition-base peer-focus-visible:ring-2 peer-focus-visible:ring-brand-ink", on ? "border-success bg-success text-success-foreground" : "border-input bg-card")}>
                             {on ? <Check size={14} weight="bold" /> : i + 1}
