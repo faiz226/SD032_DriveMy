@@ -59,8 +59,8 @@ export const RPK_TOPICS: Topic[] = [
       en: [
         "Engine oil: pull out the dipstick. The level must be between minimum and maximum.",
         "Brake fluid: between minimum and maximum.",
-        "Power steering fluid, if the car has it: between minimum and maximum.",
-        "Gear oil: check the dipstick. The level must be between minimum and maximum.",
+        "Power steering fluid, if the car has it: between minimum and maximum. The Axia's steering is electric, so it has no fluid to check.",
+        "Gear oil: check the dipstick. The level must be between minimum and maximum. The Axia's automatic gearbox is sealed with no dipstick: look under the car for leaks instead.",
         "Water: radiator, reserve tank, battery (for a wet battery) and windscreen washer all have enough. Open the radiator cap only when the engine is cool.",
         "Belts: not cracked or frayed. Press each one with your thumb: it should give 0.5 to 1.0 cm.",
         "Fan blades: not damaged, and nothing stops them turning.",
@@ -69,8 +69,8 @@ export const RPK_TOPICS: Topic[] = [
       ms: [
         "Minyak enjin: tarik batang penyukat. Paras minyak mesti di antara minimum dan maksimum.",
         "Minyak brek: di antara paras minimum dan maksimum.",
-        "Minyak stereng kuasa, jika ada: di antara paras minimum dan maksimum.",
-        "Minyak gear: periksa batang penyukat. Paras minyak mesti di antara minimum dan maksimum.",
+        "Minyak stereng kuasa, jika ada: di antara paras minimum dan maksimum. Stereng Axia ialah elektrik, jadi tiada minyak untuk diperiksa.",
+        "Minyak gear: periksa batang penyukat. Paras minyak mesti di antara minimum dan maksimum. Kotak gear automatik Axia tertutup tanpa batang penyukat: periksa kebocoran di bawah kereta.",
         "Air: radiator, tangki simpanan, air bateri (bagi bateri basah) dan air pencuci cermin mencukupi. Buka penutup radiator hanya apabila enjin sejuk.",
         "Tali sawat: tidak pecah atau berbulu. Tekan setiap tali sawat dengan ibu jari: kekendurannya mestilah 0.5 hingga 1.0 cm.",
         "Bilah kipas: tidak rosak dan tidak terhalang semasa berpusing.",
