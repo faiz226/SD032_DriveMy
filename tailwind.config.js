@@ -75,11 +75,11 @@ export default {
       minWidth: { touch: "48px" },
       // Controls 12px, cards 20px, the gantry sign and road 24px, pills round.
       borderRadius: {
-        DEFAULT: "0.5rem",
+        DEFAULT: "calc(0.5rem * var(--g2, 1))",
         sm: "calc(var(--radius) - 4px)",
         md: "calc(var(--radius) - 2px)",
         lg: "var(--radius)",
-        xl: "1rem",
+        xl: "calc(1rem * var(--g2, 1))",
         "2xl": "var(--radius-panel)",
         "3xl": "var(--radius-hero)",
       },

@@ -204,7 +204,7 @@ export function TheoryPage() {
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-6xl mx-auto pb-24 px-4 sm:px-6 lg:px-8">
       {/* Sticky Header with Search and Navigation */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border shadow-xs -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+      <div className="sticky top-0 z-20 bg-background border-b border-border -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-4 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="page-title">
             {lang === "en" ? "KPP01 theory" : "Teori KPP01"}
@@ -570,7 +570,7 @@ export function TheoryPage() {
                           >
                             <div className="space-y-2">
                               <div className="flex items-center justify-between gap-1">
-                                <Badge variant="outline" className="text-[0.8125rem] uppercase font-bold tracking-wider">
+                                <Badge variant="outline" className="text-[0.8125rem] font-semibold">
                                   {sign.type}
                                 </Badge>
                                 <button

@@ -2,15 +2,15 @@
  * Continuous (G2) corners, everywhere.
  *
  * Chrome and Edge 139+ draw them natively with `corner-shape` (src/index.css). Safari, iOS and older browsers do
- * not, so there the corners are cut with an SVG `clip-path` built from each box's own size, with the curve
- * Figma uses for its "corner smoothing", at its maximum. A clip would also cut the border and a focus ring, so on a clipped box
+ * not, so there the corners are cut with an SVG `clip-path` built from each box's own size, with the iOS curve
+ * (Figma's 60% "corner smoothing"). A clip would also cut the border and a focus ring, so on a clipped box
  * the border is repainted as a stroke along the same curve (a background layer, so inputs work too) and the
  * focus ring becomes a thicker stroke. A clipped box loses its outer shadow (a clip would cut it, or leave square ghosts at the corners) and keeps its
  * border and inset edges.
  */
 
-/** Figma's corner smoothing, 0 (a circular arc) to 1 (the most): 1 is the full iOS look, the curve starting at twice the radius. */
-const SMOOTHING = 1;
+/** Figma's corner smoothing, 0 (a circular arc) to 1 (the most). 0.6 is the curve iOS uses: it starts at 1.6 x the radius. */
+const SMOOTHING = 0.6;
 
 const rad = (deg: number) => (deg * Math.PI) / 180;
 const n = (value: number) => Math.round(value * 100) / 100;

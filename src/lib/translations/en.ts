@@ -26,6 +26,11 @@ export const en = {
   "nav.signOut":             "Sign out",
   "nav.rpkRsm":              "RPK / RSM",
   "nav.roadSafety":          "Road safety",
+  "nav.tab.home":            "Home",
+  "nav.tab.learn":           "Learn",
+  "nav.tab.quiz":            "Quiz",
+  "nav.tab.test":            "Test",
+  "nav.more":                "More",
 
   // ── Auth ───────────────────────────────────────────────────────────────
   "auth.signIn":             "Sign In",
@@ -681,6 +686,13 @@ export const en = {
   // ── Profile ────────────────────────────────────────────────────────────
   "profile.identity":              "Identity",
   "profile.accountDetails":        "Account details",
+  "profile.avatar.change":          "Change picture",
+  "profile.avatar.remove":          "Remove picture",
+  "profile.avatar.updated":         "Picture updated.",
+  "profile.avatar.removed":         "Picture removed.",
+  "profile.avatar.notImage":        "Choose an image file.",
+  "profile.avatar.tooLarge":        "That picture is too large. Choose one under 15 MB.",
+  "profile.avatar.failed":          "Could not save your picture. Check your connection and try again.",
   "profile.email":                 "Email",
   "profile.memberSince":           "Member since",
   "profile.licensingMilestones":   "Licensing milestones",

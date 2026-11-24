@@ -27,6 +27,11 @@ export const ms: Record<TranslationKey, string> = {
   "nav.signOut":             "Log keluar",
   "nav.rpkRsm":              "RPK / RSM",
   "nav.roadSafety":          "Keselamatan jalan raya",
+  "nav.tab.home":            "Utama",
+  "nav.tab.learn":           "Belajar",
+  "nav.tab.quiz":            "Kuiz",
+  "nav.tab.test":            "Ujian",
+  "nav.more":                "Lagi",
 
   // ── Auth ───────────────────────────────────────────────────────────────
   "auth.signIn":             "Log Masuk",
@@ -682,6 +687,13 @@ export const ms: Record<TranslationKey, string> = {
   // ── Profile ────────────────────────────────────────────────────────────
   "profile.identity":              "Identiti",
   "profile.accountDetails":        "Butiran akaun",
+  "profile.avatar.change":          "Tukar gambar",
+  "profile.avatar.remove":          "Buang gambar",
+  "profile.avatar.updated":         "Gambar dikemas kini.",
+  "profile.avatar.removed":         "Gambar dibuang.",
+  "profile.avatar.notImage":        "Pilih fail imej.",
+  "profile.avatar.tooLarge":        "Gambar itu terlalu besar. Pilih yang kurang daripada 15 MB.",
+  "profile.avatar.failed":          "Gambar tidak dapat disimpan. Semak sambungan anda dan cuba lagi.",
   "profile.email":                 "E-mel",
   "profile.memberSince":           "Ahli sejak",
   "profile.licensingMilestones":   "Pencapaian lesen",

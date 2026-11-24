@@ -36,7 +36,7 @@ export function ConsentBanner() {
       role="dialog"
       aria-modal="false"
       aria-label={t("consent.title")}
-      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-card/95 backdrop-blur p-4 shadow-lg"
+      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-card p-4"
     >
       <div className="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">

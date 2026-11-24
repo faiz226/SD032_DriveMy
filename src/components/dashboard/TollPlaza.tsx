@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import type { Icon } from "@/components/ui/icons";
-import { ArrowRight, Check, Clock } from "@/components/ui/icons";
+import { Check, Clock } from "@/components/ui/icons";
 import { Pill, type PillTone } from "@/components/ui/surface";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { LearningState } from "@/lib/dashboard/model";
 import { cn } from "@/lib/utils";
 
@@ -27,21 +28,81 @@ const BOARDS: Board[] = ["blue", "yellow", "white"];
  * frame with the class sign, lane light and lane board; the red and white
  * height-limit bar across the entrance; the booth's notice board; and the toll
  * barrier, which lifts as you drive in (hover, focus or tap). The approach road
- * runs toward the viewer in perspective. On a phone the plaza is wider than the
- * screen and slides sideways.
+ * runs toward the viewer in perspective. On a phone the whole plaza fits the
+ * screen: a compact canopy, narrow lanes, and the booth cards stacked beneath.
  */
 export function TollPlaza({ name, lanes, firstLane }: { name: string; lanes: Lane[]; firstLane: number }) {
+  // One set of links at a time: the wide plaza from md up, the stacked one below.
+  const wide = useMediaQuery("(min-width: 768px)", true);
   return (
-    <div className="hide-scrollbar fade-x -mx-4 overflow-x-auto px-4 md:mx-0 md:overflow-visible md:px-0">
-      <div className="relative min-w-[52rem] overflow-hidden rounded-[1.5rem] ring-1 ring-border md:min-w-0">
-        <PlazaRoof name={name} />
-        <div className="relative grid grid-cols-3 bg-[linear-gradient(in_oklch_180deg,#2a3540,#1a222a)]">
+    <div className="relative overflow-hidden rounded-3xl ring-1 ring-border">
+      <PlazaRoof name={name} />
+      {wide ? (
+        <div className="relative grid grid-cols-3 bg-[#222c35]">
           {lanes.map((lane, index) => (
             <TollLane key={lane.to + lane.title} lane={lane} number={firstLane + index} board={BOARDS[index % BOARDS.length]} first={index === 0} />
           ))}
         </div>
-        <ApproachRoad lanes={lanes.length} />
+      ) : (
+        <PhoneLanes lanes={lanes} firstLane={firstLane} />
+      )}
+      <ApproachRoad lanes={lanes.length} />
+    </div>
+  );
+}
+
+/** How a lane reads: its state, or "info" for a reference module that is still open. */
+function laneKind(lane: Lane): LearningState | "info" {
+  return lane.info && lane.state === "open" ? "info" : lane.state;
+}
+
+/** The state chip: a check for a finished lane and a clock for one in progress, plain words otherwise. */
+function laneChip(kind: LearningState | "info", t: ReturnType<typeof useLanguage>["t"]): { tone: PillTone; label: string; icon?: Icon } {
+  return kind === "done" ? { tone: "success", label: t("dashboard.exits.state.done"), icon: Check }
+    : kind === "progress" ? { tone: "brand", label: t("dashboard.exits.state.progress"), icon: Clock }
+      : kind === "info" ? { tone: "info", label: t("dashboard.exits.state.info") }
+        : { tone: "neutral", label: t("dashboard.exits.state.open") };
+}
+
+/** On a phone: the lanes as a narrow, decorative row, and every booth as a full-width card underneath. */
+function PhoneLanes({ lanes, firstLane }: { lanes: Lane[]; firstLane: number }) {
+  const { t } = useLanguage();
+  return (
+    <div className="bg-[#222c35] pb-3">
+      <div aria-hidden="true" className="grid grid-cols-3 gap-2 px-3 pt-4">
+        {lanes.map((lane, index) => (
+          <span key={lane.to + lane.title} className="relative block">
+            <span className="relative block rounded-t-xl border-[3px] border-b-0 border-[#eef2f4] px-1.5 pb-1.5 pt-4">
+              <LaneLight kind={laneKind(lane)} number={firstLane + index} />
+              <LaneBoard board={BOARDS[index % BOARDS.length]} compact>{lane.sign}</LaneBoard>
+            </span>
+            <span className="mt-1.5 block h-2 bg-[repeating-linear-gradient(90deg,#fff_0_12px,oklch(var(--plate-red))_12px_24px)] shadow-[0_2px_4px_rgb(0_0_0/0.5)]" />
+          </span>
+        ))}
       </div>
+      <ul className="mt-3 space-y-2 px-3">
+        {lanes.map((lane, index) => {
+          const chip = laneChip(laneKind(lane), t);
+          const ChipIcon = chip.icon;
+          return (
+            <li key={lane.to + lane.title}>
+              <Link
+                to={lane.to}
+                className="flex min-h-[3.5rem] items-center gap-3 rounded-xl bg-[#fbfcfd] px-3 py-2 text-[#0B1A2A] no-underline ring-1 ring-black/10 outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              >
+                <span aria-hidden="true" className="type-vms grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[#0b0f13] text-sm text-vms">{String(firstLane + index).padStart(2, "0")}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="line-clamp-2 block text-[0.9375rem] font-extrabold leading-tight">{lane.title}</span>
+                  <span className="line-clamp-2 block text-xs leading-snug tabular-nums text-[#455F77]">{lane.description}</span>
+                </span>
+                <Pill tone={chip.tone} className="shrink-0 !text-[#0B1A2A]">
+                  {ChipIcon && <ChipIcon size={14} weight="bold" aria-hidden="true" />}{chip.label}
+                </Pill>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -51,11 +112,11 @@ function PlazaRoof({ name }: { name: string }) {
   const { t } = useLanguage();
   return (
     <div className="relative">
-      <div aria-hidden="true" className="relative h-[5.5rem]">
+      <div aria-hidden="true" className="relative h-[3.75rem] md:h-[5.5rem]">
         {/* Tiled wings, narrowing toward the ridge. */}
-        <div className="absolute inset-x-0 bottom-0 h-14 bg-[repeating-linear-gradient(180deg,#2f9461_0_9px,#1f6e46_9px_11px),repeating-linear-gradient(90deg,transparent_0_26px,rgb(0_0_0/0.12)_26px_28px)] [background-blend-mode:multiply] [clip-path:polygon(0_100%,4%_0,96%_0,100%_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-9 md:h-14 bg-[repeating-linear-gradient(180deg,#2f9461_0_9px,#1f6e46_9px_11px),repeating-linear-gradient(90deg,transparent_0_26px,rgb(0_0_0/0.12)_26px_28px)] [background-blend-mode:multiply] [clip-path:polygon(0_100%,4%_0,96%_0,100%_100%)]" />
         {/* The gable: white pediment, upturned eaves, a fan window. */}
-        <svg viewBox="0 0 320 120" className="absolute bottom-0 left-1/2 h-[5.5rem] w-auto -translate-x-1/2" aria-hidden="true">
+        <svg viewBox="0 0 320 120" className="absolute bottom-0 left-1/2 h-[3.75rem] w-auto -translate-x-1/2 md:h-[5.5rem]" aria-hidden="true">
           <path d="M0 120 Q58 116 86 84 L160 6 L234 84 Q262 116 320 120 Z" fill="#f2f5f7" />
           <path d="M62 112 Q92 104 108 80 L160 26 L212 80 Q228 104 258 112 Z" fill="#26343f" />
           <path d="M112 104 A48 48 0 0 1 208 104 Z" fill="#f2f5f7" opacity="0.92" />
@@ -65,10 +126,10 @@ function PlazaRoof({ name }: { name: string }) {
         </svg>
       </div>
       {/* Fascia: a white trim, then the dark band with the plaza's name, which
-          rides along at the left edge on a phone as the lanes slide past. */}
-      <div aria-hidden="true" className="h-2 bg-[#e8edf0]" />
-      <div className="flex h-11 items-center bg-[linear-gradient(in_oklch_180deg,#22303b,#18232c)] px-4 text-white md:justify-center">
-        <span className="sticky left-4 flex items-baseline gap-2">
+          sits centred. */}
+      <div aria-hidden="true" className="h-1.5 bg-[#e8edf0] md:h-2" />
+      <div className="flex h-9 items-center justify-center bg-[#1d2a34] px-4 text-white md:h-11">
+        <span className="flex items-baseline gap-2">
           <span className="text-sm font-semibold text-white/70">{t("dashboard.lanes.plaza")}</span>
           <span className="text-lg font-black tracking-[-0.01em]">{name}</span>
         </span>
@@ -79,12 +140,8 @@ function PlazaRoof({ name }: { name: string }) {
 
 function TollLane({ lane, number, board, first }: { lane: Lane; number: number; board: Board; first: boolean }) {
   const { t } = useLanguage();
-  const kind = lane.info && lane.state === "open" ? "info" : lane.state;
-  const chip: { tone: PillTone; label: string; icon: Icon } =
-    kind === "done" ? { tone: "success", label: t("dashboard.exits.state.done"), icon: Check }
-      : kind === "progress" ? { tone: "brand", label: t("dashboard.exits.state.progress"), icon: Clock }
-        : kind === "info" ? { tone: "info", label: t("dashboard.exits.state.info"), icon: ArrowRight }
-          : { tone: "neutral", label: t("dashboard.exits.state.open"), icon: ArrowRight };
+  const kind = laneKind(lane);
+  const chip = laneChip(kind, t);
   const ChipIcon = chip.icon;
 
   return (
@@ -113,7 +170,7 @@ function TollLane({ lane, number, board, first }: { lane: Lane; number: number; 
         <span className="block text-[1.0625rem] font-extrabold leading-tight tracking-[-0.01em]">{lane.title}</span>
         <span className="mb-3 mt-1 block text-sm leading-snug tabular-nums text-[#455F77]">{lane.description}</span>
         <Pill tone={chip.tone} className="mt-auto !text-[#0B1A2A]">
-          <ChipIcon size={14} weight="bold" aria-hidden="true" />{chip.label}
+          {ChipIcon && <ChipIcon size={14} weight="bold" aria-hidden="true" />}{chip.label}
         </Pill>
       </span>
 
@@ -121,7 +178,7 @@ function TollLane({ lane, number, board, first }: { lane: Lane; number: number; 
           the lane in front of everything, which swings upright as you drive in.
           Raised, it runs up the right edge, clear of the board's text. */}
       <span aria-hidden="true" className="relative z-20 mt-3 block h-10">
-        <span className="absolute -right-3 bottom-0 h-10 w-7 rounded-t-md bg-[linear-gradient(180deg,#d9dee2,#9aa3ab)] shadow-[0_2px_6px_rgb(0_0_0/0.5)]">
+        <span className="absolute -right-3 bottom-0 h-10 w-7 rounded-t-md bg-[#b9c0c6] shadow-[0_2px_6px_rgb(0_0_0/0.5)]">
           <span className="absolute inset-x-1 top-1.5 h-3 rounded-sm bg-[#2b4a63]" />
         </span>
         <span className="absolute bottom-3 right-4 h-2.5 w-[min(calc(100%-1.5rem),15rem)] origin-[calc(100%-0.25rem)_50%] rounded-full bg-[repeating-linear-gradient(90deg,oklch(var(--plate-red))_0_14px,#fff_14px_28px)] shadow-[0_3px_6px_rgb(0_0_0/0.55)] transition-transform duration-500 [transition-timing-function:var(--ease-out)] group-hover:rotate-[84deg] group-focus-visible:rotate-[84deg] group-active:rotate-[84deg] motion-reduce:transition-none" />
@@ -139,7 +196,7 @@ function ApproachRoad({ lanes }: { lanes: number }) {
   const far = (x: number) => x;
   const near = (x: number) => W / 2 + (x - W / 2) * spread;
   return (
-    <svg aria-hidden="true" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-32 w-full">
+    <svg aria-hidden="true" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-14 w-full md:h-32">
       <defs>
         <linearGradient id="approach-road" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#2d3640" />
@@ -170,6 +227,7 @@ function ApproachRoad({ lanes }: { lanes: number }) {
             d={`M${cx - 26} 112 L${cx - 26} 84 L${cx - 52} 84 L${cx} 44 L${cx + 52} 84 L${cx + 26} 84 L${cx + 26} 112 Z`}
             fill="#e8edf0"
             opacity="0.5"
+            className="max-md:hidden"
           />
         );
       })}
@@ -208,16 +266,18 @@ function LaneLight({ kind, number }: { kind: LearningState | "info"; number: num
 }
 
 /** The coloured board over the lane, styled after plaza payment boards. */
-function LaneBoard({ board, children }: { board: Board; children: React.ReactNode }) {
+function LaneBoard({ board, compact, children }: { board: Board; compact?: boolean; children: React.ReactNode }) {
   return (
     <span className={cn(
-      "flex min-h-[4.25rem] items-center justify-center rounded-md px-3 text-center shadow-[0_6px_12px_-6px_rgb(0_0_0/0.7)]",
+      "flex items-center justify-center rounded-md text-center shadow-[0_6px_12px_-6px_rgb(0_0_0/0.7)]",
+      compact ? "min-h-[2.75rem] px-1" : "min-h-[4.25rem] px-3",
       board === "blue" && "border-[3px] border-white bg-[#1f5fbf]",
       board === "yellow" && "border-[3px] border-[#1a1a1a] bg-[#f6c21a]",
       board === "white" && "border-[3px] border-[#d5dbe0] bg-white",
     )}>
       <span className={cn(
-        "text-[1.625rem] font-black italic leading-none tracking-[-0.02em]",
+        "font-black italic leading-none tracking-[-0.02em]",
+        compact ? "text-[1.0625rem]" : "text-[1.625rem]",
         board === "blue" && "text-[#f6c21a] [text-shadow:0_2px_0_rgb(0_0_0/0.35)]",
         board === "yellow" && "text-[#123f9a]",
         board === "white" && "text-[#1b3d8f]",

@@ -13,8 +13,8 @@ describe("squirclePath", () => {
   });
 
   it("starts the curve earlier than a circular corner would", () => {
-    // A circular corner of radius 20 starts 20px from the corner; the continuous one, at full smoothing, starts at 2 x 20.
-    expect(squirclePath(200, 100, 20).startsWith("M160 0")).toBe(true);
+    // A circular corner of radius 20 starts 20px from the corner; the iOS curve (60% smoothing) starts at 1.6 x 20.
+    expect(squirclePath(200, 100, 20).startsWith("M168 0")).toBe(true);
   });
 
   it("keeps every point inside the box", () => {

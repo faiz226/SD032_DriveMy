@@ -32,6 +32,7 @@ import {
   Brain01Icon,
   BulbIcon,
   Calendar03Icon,
+  Camera01Icon,
   Cancel01Icon,
   CancelCircleIcon,
   Car01Icon,
@@ -154,6 +155,7 @@ export const BookmarkSimple = icon(Bookmark01Icon, "BookmarkSimple");
 export const BookOpen = icon(BookOpen01Icon, "BookOpen");
 export const Brain = icon(Brain01Icon, "Brain");
 export const Calendar = icon(Calendar03Icon, "Calendar");
+export const Camera = icon(Camera01Icon, "Camera");
 export const Car = icon(Car01Icon, "Car");
 export const CaretDown = icon(ArrowDown01Icon, "CaretDown");
 export const CaretLeft = icon(ArrowLeft01Icon, "CaretLeft");

@@ -8,7 +8,7 @@ export function NotFoundPage() {
   return (
     <div className="page-shell max-w-2xl">
       <section className="min-h-[60dvh] card-premium p-8 md:p-10 flex flex-col items-center justify-center gap-4 text-center">
-        <p className="font-heading text-6xl font-semibold text-muted-foreground/40 font-tabular-nums" aria-hidden>
+        <p className="font-heading text-6xl font-semibold text-muted-foreground font-tabular-nums" aria-hidden>
           404
         </p>
         <h1 className="font-heading text-xl font-semibold">{t("common.notFoundTitle")}</h1>

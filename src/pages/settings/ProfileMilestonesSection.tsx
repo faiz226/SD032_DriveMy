@@ -13,17 +13,16 @@ import {
 } from "@/hooks/useProgressStats";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TranslationKey } from "@/lib/translations/en";
+import { AvatarEditor } from "./AvatarEditor";
 import { MilestoneRow, SettingsPanel, type MilestoneState } from "./SettingsPrimitives";
 
 export function ProfileMilestonesSection() {
   const { t } = useLanguage();
   const { user } = useAuthStore();
-  const userId = user?.id;
 
   // --- Profile Data Fetching ---
   const displayName = (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email?.split("@")[0] ?? "";
   const memberSince = user?.created_at ? format(new Date(user.created_at), "d MMM yyyy") : "-";
-  const initial = displayName.charAt(0).toUpperCase() || "?";
 
   const { data: theory, isPending: theoryPending } = useTheoryProgressStats();
   const { data: readiness, isPending: readinessPending } = useOverallReadiness();
@@ -64,30 +63,7 @@ export function ProfileMilestonesSection() {
   return (
     <>
       <SettingsPanel title={t("profile.identity")}>
-        <div className="flex items-center gap-4">
-          <div
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground font-heading text-xl font-bold"
-            aria-hidden
-          >
-            {user?.user_metadata?.["avatar_url"] ? (
-              <img
-                src={user.user_metadata["avatar_url"] as string}
-                alt=""
-                className="h-full w-full rounded-md object-cover"
-              />
-            ) : (
-              initial
-            )}
-          </div>
-          <div className="min-w-0 space-y-1">
-            <p className="font-heading text-lg font-semibold truncate">
-              {displayName || t("nav.profile")}
-            </p>
-            <p className="text-xs text-muted-foreground font-tabular-nums">
-              ID {userId?.slice(0, 8) ?? "-"}
-            </p>
-          </div>
-        </div>
+        <AvatarEditor displayName={displayName} />
 
         <div className="space-y-4 pt-2">
           <div className="flex items-start gap-3 min-h-[48px]">

@@ -67,7 +67,6 @@ export function ProgressPage() {
   const header = (
     <header className="page-header">
       <h1 className="page-title">{t("progress.title")}</h1>
-      <p className="page-lead">{t("progress.lead")}</p>
     </header>
   );
 
@@ -195,7 +194,6 @@ export function ProgressPage() {
       <div className="grid items-start gap-[var(--panel-gap)] lg:grid-cols-[20rem_1fr]">
         <Panel className="p-5 sm:p-6">
           <h2 className="text-xl">{t("progress.score.title")}</h2>
-          <p className="mt-1 mb-4 text-sm text-muted-foreground">{t("progress.score.lead")}</p>
           <ReadinessDonut {...readiness} />
         </Panel>
 
