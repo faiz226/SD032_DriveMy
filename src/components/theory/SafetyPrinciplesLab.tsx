@@ -340,7 +340,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                   type="button"
                   onClick={() => setActiveLab(item.id)}
                   aria-pressed={isActive}
-                  className={`tap-sm inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                  className={`tap-sm inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-[color,background-color,border-color,transform] duration-200 active:scale-[0.98] motion-reduce:active:scale-100 cursor-pointer ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-background text-foreground border-border hover:border-foreground/40"
@@ -369,12 +369,12 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                     ? "Select a speed:"
                     : "Pilih kelajuan:"}
                 </span>
-                <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted/40">
+                <div className="inline-flex rounded-xl border border-border p-1 bg-muted/40">
                   <button
                     type="button"
                     onClick={() => setWetRoad(false)}
                     aria-pressed={!wetRoad}
-                    className={`px-3 py-1 rounded-md text-xs font-bold cursor-pointer ${
+                    className={`min-h-11 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                       !wetRoad
                         ? "bg-brand text-brand-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -386,7 +386,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                     type="button"
                     onClick={() => setWetRoad(true)}
                     aria-pressed={wetRoad}
-                    className={`px-3 py-1 rounded-md text-xs font-bold cursor-pointer ${
+                    className={`min-h-11 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                       wetRoad
                         ? "bg-info text-info-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -397,14 +397,14 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
                 {STOPPING_SPEEDS.map((spec, idx) => (
                   <button
                     key={spec.speedKmh}
                     type="button"
                     onClick={() => setSelectedSpeedIdx(idx)}
                     aria-pressed={selectedSpeedIdx === idx}
-                    className={`tile p-2.5 text-center cursor-pointer ${
+                    className={`tile min-h-[56px] px-1.5 py-2.5 text-center cursor-pointer ${
                       selectedSpeedIdx === idx ? "tile-selected" : ""
                     }`}
                   >
@@ -415,7 +415,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               </div>
 
               {/* Proportional Visual Stopping Bar */}
-              <div className="panel p-4 space-y-3">
+              <div className="rounded-2xl border border-border bg-muted/35 p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-foreground">
                     {lang === "en" ? "Handbook example: reaction distance + braking distance" : "Contoh buku panduan: jarak reaksi + jarak membrek"}
@@ -463,7 +463,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
             </div>
 
             {/* Right column: Time Rules & Night High-Beam Glare */}
-            <div className="lg:col-span-5 panel p-4 sm:p-5 space-y-4">
+            <div className="lg:col-span-5 rounded-2xl border border-border bg-muted/35 p-4 sm:p-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-muted/50 border border-border">
                   <span className="text-xs text-muted-foreground block">
@@ -525,7 +525,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               const opts = lang === "en" ? drill.optionsEn : drill.optionsMs;
 
               return (
-                <div key={drill.id} className="panel p-4 flex flex-col justify-between gap-3">
+                <div key={drill.id} className="rounded-2xl border border-border bg-muted/35 p-4 flex flex-col justify-between gap-3">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
                       <span className="pill pill-brand">
@@ -558,7 +558,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                               onScenarioSolved?.(drill.id);
                             }
                           }}
-                          className={`tile w-full p-2.5 text-left text-xs leading-relaxed cursor-pointer ${stateClass}`}
+                          className={`tile w-full min-h-11 px-3.5 py-2.5 text-left text-xs leading-relaxed cursor-pointer ${stateClass}`}
                         >
                           {opt}
                         </button>
@@ -593,7 +593,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
             className="pt-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
           >
             {/* Left: Tyre Wear Inspector */}
-            <div className="lg:col-span-7 panel p-4 space-y-3">
+            <div className="lg:col-span-7 rounded-2xl border border-border bg-muted/35 p-4 space-y-3">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div>
                   <h3 className="text-sm font-bold font-heading">
@@ -610,14 +610,14 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <span className="pill pill-info">{lang === "en" ? "Check pressure and tread" : "Periksa tekanan dan bunga tayar"}</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {TYRE_DIAGNOSTICS.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => setSelectedTyre(item.id)}
                     aria-pressed={selectedTyre === item.id}
-                    className={`tile p-2.5 text-left cursor-pointer ${
+                    className={`tile min-h-11 px-3 py-2.5 flex items-center text-left cursor-pointer ${
                       selectedTyre === item.id ? "tile-selected" : ""
                     }`}
                   >
@@ -638,7 +638,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 ))}
               </div>
 
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-2 text-xs">
+              <div className="p-3.5 rounded-xl bg-card border border-border space-y-2 text-xs">
                 <div className="font-bold text-sm text-foreground">
                   {lang === "en" ? activeTyreSpec.titleEn : activeTyreSpec.titleMs}
                 </div>
@@ -676,7 +676,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
             </div>
 
             {/* Right: RSM Ignition Switch Sequencer */}
-            <div className="lg:col-span-5 panel p-4 space-y-3">
+            <div className="lg:col-span-5 rounded-2xl border border-border bg-muted/35 p-4 space-y-3">
               <div>
                 <h3 className="text-sm font-bold font-heading">
                   {lang === "en"
@@ -697,7 +697,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                     type="button"
                     onClick={() => setIgnitionStep(pos)}
                     aria-pressed={ignitionStep === pos}
-                    className={`py-2.5 rounded-xl font-heading font-bold text-xs border cursor-pointer transition-colors ${
+                    className={`min-h-11 px-2 py-2.5 rounded-xl font-heading font-bold text-xs border cursor-pointer transition-colors active:scale-[0.98] motion-reduce:active:scale-100 ${
                       ignitionStep === pos
                         ? "bg-brand text-brand-foreground border-foreground"
                         : "bg-background text-foreground border-border"
@@ -708,7 +708,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 ))}
               </div>
 
-              <div className="p-3.5 rounded-xl bg-muted/50 border border-border space-y-1.5 text-xs leading-relaxed">
+              <div className="p-3.5 rounded-xl bg-card border border-border space-y-1.5 text-xs leading-relaxed">
                 <div className="font-bold text-foreground">
                   {lang === "en"
                     ? IGNITION_SPECS[ignitionStep].titleEn
@@ -721,7 +721,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-muted/30 border border-border text-xs text-muted-foreground">
+              <div className="p-3 rounded-xl bg-card/70 border border-border text-xs text-muted-foreground">
                 <span className="font-semibold text-foreground block mb-1">
                   {lang === "en" ? "Automatic-car pre-drive routine" : "Rutin sebelum memandu kereta automatik"}
                 </span>
@@ -769,7 +769,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                               if (idx === item.correctOptionIndex) onScenarioSolved?.(item.id);
                               setFlip(true);
                             }}
-                            className="tile w-full cursor-pointer p-2.5 text-left text-xs leading-relaxed"
+                            className="tile w-full min-h-11 cursor-pointer px-3.5 py-2.5 text-left text-xs leading-relaxed"
                           >
                             {opt}
                           </button>
@@ -778,7 +778,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       <button
                         type="button"
                         onClick={() => setFlip(true)}
-                        className="mt-auto flex items-center justify-center gap-1.5 border-t border-border pt-2.5 text-xs font-semibold text-primary"
+                        className="mt-auto -mx-4 -mb-4 min-h-11 px-4 flex items-center justify-center gap-1.5 border-t border-border text-xs font-semibold text-primary hover:bg-muted/40 transition-colors cursor-pointer"
                       >
                         <span>{lang === "en" ? "Show the answer" : "Tunjuk jawapan"}</span>
                         <Repeat size={13} aria-hidden="true" />
@@ -800,7 +800,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       <button
                         type="button"
                         onClick={() => setFlip(false)}
-                        className="mt-auto flex items-center justify-center gap-1.5 border-t border-border pt-2.5 text-xs font-semibold text-primary"
+                        className="mt-auto -mx-4 -mb-4 min-h-11 px-4 flex items-center justify-center gap-1.5 border-t border-border text-xs font-semibold text-primary hover:bg-muted/40 transition-colors cursor-pointer"
                       >
                         <Repeat size={13} aria-hidden="true" />
                         <span>{lang === "en" ? "Back to the question" : "Kembali ke soalan"}</span>

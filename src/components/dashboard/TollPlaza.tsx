@@ -88,14 +88,14 @@ function PhoneLanes({ lanes, firstLane }: { lanes: Lane[]; firstLane: number }) 
             <li key={lane.to + lane.title}>
               <Link
                 to={lane.to}
-                className="flex min-h-[3.5rem] items-center gap-3 rounded-xl bg-[#fbfcfd] px-3 py-2 text-[#0B1A2A] no-underline ring-1 ring-black/10 outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="flex min-h-[3.5rem] items-center gap-3 rounded-xl border border-border bg-card px-3 py-2.5 text-foreground no-underline outline-none transition-transform duration-150 active:scale-[0.99] motion-reduce:active:scale-100 focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <span aria-hidden="true" className="type-vms grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[#0b0f13] text-sm text-vms">{String(firstLane + index).padStart(2, "0")}</span>
                 <span className="min-w-0 flex-1">
                   <span className="line-clamp-2 block text-[0.9375rem] font-extrabold leading-tight">{lane.title}</span>
-                  <span className="line-clamp-2 block text-xs leading-snug tabular-nums text-[#455F77]">{lane.description}</span>
+                  <span className="line-clamp-2 block text-xs leading-snug tabular-nums text-muted-foreground">{lane.description}</span>
                 </span>
-                <Pill tone={chip.tone} className="shrink-0 !text-[#0B1A2A]">
+                <Pill tone={chip.tone} className="shrink-0">
                   {ChipIcon && <ChipIcon size={14} weight="bold" aria-hidden="true" />}{chip.label}
                 </Pill>
               </Link>
@@ -166,10 +166,10 @@ function TollLane({ lane, number, board, first }: { lane: Lane; number: number; 
 
       {/* The booth's notice board: what this lane is and where it stands. It
           fills the lane so every barrier sits at the same height. */}
-      <span className="relative z-10 mx-1 mt-1 flex flex-1 flex-col items-start rounded-xl bg-[#fbfcfd] p-3.5 text-[#0B1A2A] shadow-[0_10px_20px_-10px_rgb(0_0_0/0.8)] ring-1 ring-black/10 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-focus-visible:ring-2 group-focus-visible:ring-brand">
+      <span className="relative z-10 mx-1 mt-1 flex flex-1 flex-col items-start rounded-xl border border-border bg-card p-3.5 text-foreground shadow-[0_10px_20px_-10px_rgb(0_0_0/0.45)] transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-active:scale-[0.99] group-focus-visible:ring-2 group-focus-visible:ring-brand motion-reduce:transition-none">
         <span className="block text-[1.0625rem] font-extrabold leading-tight tracking-[-0.01em]">{lane.title}</span>
-        <span className="mb-3 mt-1 block text-sm leading-snug tabular-nums text-[#455F77]">{lane.description}</span>
-        <Pill tone={chip.tone} className="mt-auto !text-[#0B1A2A]">
+        <span className="mb-3 mt-1 block text-sm leading-snug tabular-nums text-muted-foreground">{lane.description}</span>
+        <Pill tone={chip.tone} className="mt-auto">
           {ChipIcon && <ChipIcon size={14} weight="bold" aria-hidden="true" />}{chip.label}
         </Pill>
       </span>
@@ -197,13 +197,7 @@ function ApproachRoad({ lanes }: { lanes: number }) {
   const near = (x: number) => W / 2 + (x - W / 2) * spread;
   return (
     <svg aria-hidden="true" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-14 w-full md:h-32">
-      <defs>
-        <linearGradient id="approach-road" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#2d3640" />
-          <stop offset="1" stopColor="#11171d" />
-        </linearGradient>
-      </defs>
-      <rect width={W} height={H} fill="url(#approach-road)" />
+      <rect width={W} height={H} fill="#1d252d" />
       <rect width={W} height="7" fill="#e8edf0" opacity="0.85" />
       {xs.map((x, i) => {
         const edge = i === 0 || i === lanes;
@@ -267,7 +261,7 @@ function LaneLight({ kind, number }: { kind: LearningState | "info"; number: num
       <span className="type-vms text-xs leading-none text-vms">{String(number).padStart(2, "0")}</span>
       <span className={cn(
         "grid h-4 w-4 place-items-center rounded-full",
-        amber ? "bg-vms shadow-[0_0_10px_2px_oklch(var(--vms)/0.8)]" : "bg-[#2bdc7a] shadow-[0_0_10px_2px_rgb(43_220_122/0.8)]",
+        amber ? "bg-vms ring-1 ring-vms/40" : "bg-[#2bdc7a] ring-1 ring-[#2bdc7a]/40",
       )}>
         {kind === "done" && <Check size={10} strokeWidth={4} className="text-[#06351c]" />}
       </span>
