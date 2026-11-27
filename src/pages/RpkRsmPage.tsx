@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ArrowRight, Check, CheckCircle, Info } from "@/components/ui/icons";
 import { RPK_TOPICS, type Topic } from "@/content/rpk-rsm";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -26,11 +27,15 @@ export function RpkRsmPage() {
   const save = useUpdateTheoryProgress();
   // The dev sign-in has no real session, so its ticks stay on this page.
   const [localDone, setLocalDone] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string | null>(null);
+  // A link from the Learn search can open a part and light a step: /rpk-rsm?topic=rpk-engine&step=2
+  const [params] = useSearchParams();
+  const linkedTopic = RPK_TOPICS.find(topic => topic.id === params.get("topic"))?.id ?? null;
+  const linkedStep = Number(params.get("step"));
+  const [selected, setSelected] = useState<string | null>(linkedTopic);
   const [ticked, setTicked] = useState<Record<string, number[]>>({});
   const panel = useRef<HTMLDivElement>(null);
   // A step lit from its picture (tapped, stays) or by pointer or focus (while it lasts). Each is tied to its part.
-  const [pinned, setPinned] = useState<{ id: string; step: number } | null>(null);
+  const [pinned, setPinned] = useState<{ id: string; step: number } | null>(linkedTopic && Number.isInteger(linkedStep) && linkedStep >= 1 ? { id: linkedTopic, step: linkedStep - 1 } : null);
   const [hovered, setHovered] = useState<{ id: string; step: number } | null>(null);
 
   if (progress.isError) return <div className="page-shell"><LoadError onRetry={() => { void progress.refetch(); }} /></div>;

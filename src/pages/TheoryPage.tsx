@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,6 +29,7 @@ import { SafetyPrinciplesLab } from "@/components/theory/SafetyPrinciplesLab";
 import { SignColourBoard } from "@/components/theory/SignColourBoard";
 import { SignMiniQuizzes } from "@/components/theory/SignMiniQuizzes";
 import { categoryProgress } from "@/lib/signQuiz";
+import { searchRpk } from "@/lib/rpkSearch";
 import { toast } from "sonner";
 
 const LEARNED_STORAGE_KEY = "drivemy_theory_learned_signs_v2";
@@ -171,6 +172,9 @@ export function TheoryPage() {
       );
   };
 
+  // Vehicle-check (RPK) steps that the search is after, so "brake fluid" finds its step.
+  const rpkHits = useMemo(() => searchRpk(search), [search]);
+
   // Filtered signs based on search, category pill, and favorites filter
   const filteredSigns = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -280,7 +284,50 @@ export function TheoryPage() {
       </div>
 
       <TabsContent value={activeTab} className="mt-6">
-        {search &&
+        {rpkHits.length > 0 && (
+          <section className="panel mb-6 space-y-3 p-4 sm:p-5" aria-label={lang === "en" ? "Vehicle check steps" : "Langkah pemeriksaan kenderaan"}>
+            <h3 className="text-base font-bold font-heading">
+              {lang === "en" ? "Vehicle check (RPK)" : "Pemeriksaan kenderaan (RPK)"}
+            </h3>
+            <ul className="space-y-2">
+              {rpkHits.map((hit) => (
+                <li key={`${hit.topicId}-${hit.step}`}>
+                  <Link
+                    to={`${ROUTES.RPK_RSM}?topic=${hit.topicId}&step=${hit.step + 1}`}
+                    className="tile block p-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-ink"
+                  >
+                    <span className="block text-xs font-semibold text-muted-foreground">
+                      {hit.routine.toUpperCase()} · {lang === "en" ? hit.title.en : hit.title.ms} ·{" "}
+                      {lang === "en" ? `step ${hit.step + 1}` : `langkah ${hit.step + 1}`}
+                    </span>
+                    <span className="line-clamp-2">{lang === "en" ? hit.text.en : hit.text.ms}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {!search && (
+          <Link
+            to={ROUTES.RPK_RSM}
+            className="panel mb-6 flex items-center justify-between gap-3 p-4 outline-none transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-brand-ink sm:p-5"
+          >
+            <span>
+              <span className="block text-base font-bold font-heading">
+                {lang === "en" ? "Vehicle check (RPK)" : "Pemeriksaan kenderaan (RPK)"}
+              </span>
+              <span className="block text-xs text-muted-foreground">
+                {lang === "en"
+                  ? "Tyres, lights, engine bay and boot: the checks before you drive."
+                  : "Tayar, lampu, ruang enjin dan but: pemeriksaan sebelum memandu."}
+              </span>
+            </span>
+            <ChevronRight size={18} aria-hidden="true" />
+          </Link>
+        )}
+
+        {search && rpkHits.length === 0 &&
           !(activeTab === "signs"
             ? filteredSigns.length
             : activeTab === "rules"
