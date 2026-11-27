@@ -101,11 +101,11 @@ export function ResetPasswordPage() {
         role="status"
         aria-live="polite"
       >
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-success/15 text-success">
           <CheckCircle className="h-6 w-6" weight="fill" aria-hidden />
         </div>
         <div className="space-y-2">
-          <h1 className="font-heading text-xl font-semibold">{t("auth.passwordUpdated")}</h1>
+          <h1 className="page-title">{t("auth.passwordUpdated")}</h1>
           <p className="text-sm text-muted-foreground">
             {t("auth.passwordUpdatedDesc")}
           </p>
@@ -117,16 +117,16 @@ export function ResetPasswordPage() {
   if (tokenError) {
     return (
       <div className="space-y-5 max-w-readable mx-auto w-full text-center" role="alert">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-destructive/10 text-destructive">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/15 text-destructive">
           <Warning className="h-6 w-6" weight="fill" aria-hidden />
         </div>
         <div className="space-y-2">
-          <h1 className="font-heading text-xl font-semibold">{t("auth.resetPassword")}</h1>
+          <h1 className="page-title">{t("auth.resetPassword")}</h1>
           <p className="text-sm text-muted-foreground">{tokenError}</p>
         </div>
         <Button
           variant="outline"
-          className="w-full h-11"
+          className="w-full min-h-11"
           onClick={() => navigate(ROUTES.AUTH, { replace: true })}
         >
           {t("common.back")}
@@ -138,7 +138,7 @@ export function ResetPasswordPage() {
   return (
     <div className="space-y-6 max-w-readable mx-auto w-full">
       <div className="text-center space-y-2">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+        <h1 className="page-title">
           {t("auth.resetPassword")}
         </h1>
         <p className="text-sm text-muted-foreground">{t("auth.resetPasswordDesc")}</p>
@@ -150,6 +150,7 @@ export function ResetPasswordPage() {
           type={showPassword ? "text" : "password"}
           autoComplete="new-password"
           required
+          className="pr-12"
           leftIcon={<Lock className="h-4 w-4" weight="regular" />}
           rightIcon={
             <button
@@ -157,7 +158,7 @@ export function ResetPasswordPage() {
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? t("a11y.hidePassword") : t("a11y.showPassword")}
               className={cn(
-                "pointer-events-auto touch-target rounded-md text-muted-foreground hover:text-foreground",
+                "pointer-events-auto -mr-3 inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground",
                 "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               )}
             >
@@ -174,6 +175,7 @@ export function ResetPasswordPage() {
           type={showConfirm ? "text" : "password"}
           autoComplete="new-password"
           required
+          className="pr-12"
           leftIcon={<Lock className="h-4 w-4" weight="regular" />}
           rightIcon={
             <button
@@ -181,7 +183,7 @@ export function ResetPasswordPage() {
               onClick={() => setShowConfirm((v) => !v)}
               aria-label={showConfirm ? t("a11y.hidePassword") : t("a11y.showPassword")}
               className={cn(
-                "pointer-events-auto touch-target rounded-md text-muted-foreground hover:text-foreground",
+                "pointer-events-auto -mr-3 inline-flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground",
                 "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               )}
             >
@@ -196,7 +198,9 @@ export function ResetPasswordPage() {
 
         <Button
           type="submit"
-          className="w-full h-11"
+          variant="brand"
+          size="lg"
+          className="w-full"
           loading={loading}
           loadingLabel={t("common.loading")}
         >

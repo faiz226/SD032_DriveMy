@@ -59,18 +59,18 @@ export function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="space-y-6 max-w-readable mx-auto w-full text-center" role="status" aria-live="polite">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-success/15 text-success">
           <CheckCircle className="h-6 w-6" weight="fill" aria-hidden />
         </div>
         <div className="space-y-2">
-          <h1 className="font-heading text-xl font-semibold tracking-tight">
+          <h1 className="page-title">
             {t("auth.resetPassword")}
           </h1>
           <p className="text-sm text-muted-foreground">
             {t("auth.verifyEmailDesc", { email: sentEmail })}
           </p>
         </div>
-        <Button asChild variant="outline" className="w-full h-11">
+        <Button asChild variant="outline" className="w-full min-h-11">
           <Link to={ROUTES.AUTH}>
             <ArrowLeft className="h-4 w-4" aria-hidden />
             {t("common.back")}
@@ -83,7 +83,7 @@ export function ForgotPasswordPage() {
   return (
     <div className="space-y-6 max-w-readable mx-auto w-full">
       <div className="text-center space-y-2">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+        <h1 className="page-title">
           {t("auth.forgotPassword")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -110,7 +110,9 @@ export function ForgotPasswordPage() {
 
         <Button
           type="submit"
-          className="w-full h-11"
+          variant="brand"
+          size="lg"
+          className="w-full"
           loading={loading}
           disabled={isCaptchaPending}
           loadingLabel={t("common.loading")}
@@ -123,8 +125,8 @@ export function ForgotPasswordPage() {
         <Link
           to={ROUTES.AUTH}
           className={cn(
-            "inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground",
-            "transition-colors rounded-sm min-h-[48px]",
+            "inline-flex items-center justify-center gap-1.5 px-3 text-sm font-medium text-muted-foreground hover:text-foreground",
+            "transition-colors rounded-lg min-h-11",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           )}
         >

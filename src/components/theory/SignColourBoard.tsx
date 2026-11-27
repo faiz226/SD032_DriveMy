@@ -70,7 +70,7 @@ function Swatch({ category }: { category: RoadSignCategory }) {
 export function SignColourBoard({ category, lang }: { category: RoadSignCategory; lang: Lang }) {
   const facts = FACTS[category];
   return (
-    <aside className="panel flex items-start gap-4 p-4" aria-label={lang === "en" ? "What the colour and shape mean" : "Maksud warna dan bentuk"}>
+    <aside className="panel flex items-start gap-4 p-4 sm:p-5" aria-label={lang === "en" ? "What the colour and shape mean" : "Maksud warna dan bentuk"}>
       <Swatch category={category} />
       <ul className="min-w-0 space-y-1.5 text-sm leading-snug">
         {facts.map((fact) => (

@@ -55,12 +55,30 @@ export function AvatarEditor({ displayName }: { displayName: string }) {
       </button>
       <div className="min-w-0 space-y-1">
         <p className="font-heading text-lg font-semibold truncate">{displayName || t("nav.profile")}</p>
-        <p className="text-xs text-muted-foreground font-tabular-nums">ID {user?.id.slice(0, 8) ?? "-"}</p>
-        {hasOwnAvatar(user) && (
-          <Button type="button" variant="ghost" size="sm" className="-ml-3.5 min-h-11" disabled={busy} onClick={() => void run(removeAvatar, "profile.avatar.removed")}>
-            {t("profile.avatar.remove")}
+        <div className="flex flex-wrap items-center gap-1 -ml-3">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="min-h-11 px-3 text-muted-foreground hover:text-foreground"
+            disabled={busy}
+            onClick={() => input.current?.click()}
+          >
+            {t("profile.avatar.change")}
           </Button>
-        )}
+          {hasOwnAvatar(user) && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="min-h-11 px-3 text-muted-foreground hover:text-destructive"
+              disabled={busy}
+              onClick={() => void run(removeAvatar, "profile.avatar.removed")}
+            >
+              {t("profile.avatar.remove")}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

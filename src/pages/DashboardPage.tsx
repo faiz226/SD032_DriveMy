@@ -37,7 +37,7 @@ export function DashboardPage() {
   if (queries.some(q => q.isError)) return <div className="app-container"><LoadError onRetry={() => { queries.forEach(q => { void q.refetch(); }); }} /></div>;
   if (queries.some(q => q.isPending)) {
     return (
-      <div className="app-container space-y-8 pt-14" aria-busy="true" aria-label={t("common.loading")}>
+      <div className="app-container space-y-8 pt-14" role="status" aria-busy="true" aria-label={t("common.loading")}>
         <Skeleton className="h-9 w-72" />
         <Skeleton className="h-[22rem] w-full rounded-3xl" />
         <Skeleton className="h-[140px] w-full rounded-3xl" />
@@ -75,7 +75,7 @@ function helloKey(hour: number) {
   return "dashboard.hello.night" as const;
 }
 
-const SECTION_TITLE = "mt-16 text-[1.75rem] font-black tracking-[-0.02em]";
+const SECTION_TITLE = "mt-14 text-xl font-black tracking-[-0.02em] sm:mt-16 sm:text-2xl";
 
 /** The dashboard itself, from data already loaded. Rendered alone in tests and previews. */
 export function DashboardView({ name, score, parts, model, activity }: DashboardViewProps) {
@@ -94,9 +94,9 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
   ];
 
   return (
-    <div className="app-container page-enter pb-16">
-      <p className="mt-6 text-[1.5rem] font-extrabold leading-tight tracking-[-0.01em] sm:mt-10 sm:text-[1.625rem]">
-        <span className="font-semibold text-muted-foreground">{t(helloKey(new Date().getHours()))}</span>, {name}.
+    <div className="app-container pb-16">
+      <p className="mt-4 text-sm font-semibold tracking-[-0.005em] text-muted-foreground sm:mt-6 sm:text-[0.9375rem]">
+        {t(helloKey(new Date().getHours()))}, <span className="font-extrabold text-foreground">{name}</span>
       </p>
 
       <GantrySign score={score} theory={parts.theory} practical={parts.practical} bestMock={bestMock?.score} mockTotal={bestMock?.total_questions} passMark={bestMock ? mockPassMark(bestMock.total_questions) : MOCK_PASS_MARK} />
@@ -124,7 +124,7 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
           : <p className="panel px-6 py-5 text-muted-foreground">{t("dashboard.noActivityDesc")}</p>}
       </section>
 
-      <p className="mt-8 rounded-2xl bg-info/20 px-5 py-4 text-[0.9375rem]">{t("dashboard.note")}</p>
+      <p className="mt-8 rounded-2xl border border-info/25 bg-info/15 px-5 py-4 text-[0.9375rem] leading-relaxed">{t("dashboard.note")}</p>
     </div>
   );
 }
@@ -136,6 +136,7 @@ function Scoreboard({ bestMock, headroom }: { bestMock: DashboardModel["bestMock
   const passMark = bestMock ? mockPassMark(total) : MOCK_PASS_MARK;
   const score = bestMock?.score ?? 0;
   const passed = headroom !== undefined && headroom >= 0;
+  const fillRatio = total > 0 ? Math.min(1, Math.max(0, score / total)) : 0;
   return (
     <section aria-labelledby="score-title">
       <h2 id="score-title" className={SECTION_TITLE}>{t("dashboard.score.title")}</h2>
@@ -144,14 +145,14 @@ function Scoreboard({ bestMock, headroom }: { bestMock: DashboardModel["bestMock
         <div className="grid justify-items-center gap-3 text-center">
           <div
             role="img"
-            className="grid aspect-square w-[min(100%,12rem)] place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_12px_30px_-10px_#000] sm:text-5xl"
+            className="grid aspect-square w-[min(100%,12rem)] place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_8px_20px_-10px_rgb(11_26_42/0.35)] sm:text-5xl"
             aria-label={bestMock ? t("dashboard.score.bestOf", { score, total }) : t("dashboard.score.none")}
           >
             {bestMock ? <NumberFlow value={score} /> : "–"}
           </div>
           <p className="max-w-[18ch] text-sm text-muted-foreground">{bestMock ? t("dashboard.score.best", { total }) : t("dashboard.score.none")}</p>
           {!bestMock && (
-            <Link to={ROUTES.MOCK_TEST} className="inline-flex min-h-11 items-center rounded-lg border-2 border-foreground px-4 text-sm font-extrabold no-underline transition-colors hover:bg-foreground/10">
+            <Link to={ROUTES.MOCK_TEST} className="inline-flex min-h-11 items-center rounded-lg border-2 border-foreground px-4 text-sm font-extrabold no-underline transition-colors hover:bg-foreground/10 active:scale-[0.98] motion-reduce:active:scale-100">
               {t("dashboard.score.take")}
             </Link>
           )}
@@ -166,7 +167,12 @@ function Scoreboard({ bestMock, headroom }: { bestMock: DashboardModel["bestMock
             </p>
             : <p className="text-muted-foreground">{t("dashboard.score.passNote", { pass: passMark, total })}</p>}
           <div className="relative h-4 rounded-full bg-muted" role="img" aria-label={t("dashboard.score.barLabel", { score, total, pass: passMark })}>
-            <span className={`absolute inset-y-0 left-0 rounded-full ${passed ? "bg-success" : "bg-brand"}`} style={{ width: `${(score / total) * 100}%` }} />
+            <span className="absolute inset-0 overflow-hidden rounded-full">
+              <span
+                className={`block h-full w-full origin-left rounded-full transition-transform duration-500 [transition-timing-function:var(--ease-out)] motion-reduce:transition-none ${passed ? "bg-success" : "bg-brand"}`}
+                style={{ transform: `scaleX(${fillRatio})` }}
+              />
+            </span>
             <span aria-hidden="true" className="absolute -inset-y-1.5 w-1 -translate-x-1/2 rounded-full bg-foreground" style={{ left: `${(passMark / total) * 100}%` }} />
           </div>
           <div aria-hidden="true" className="flex justify-between text-xs tabular-nums text-muted-foreground"><span>0</span><span>{total}</span></div>

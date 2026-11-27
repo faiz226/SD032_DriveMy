@@ -72,8 +72,8 @@ export function SettingsDialog({ settings }: { settings: SettingsProps }) {
   const open = useSettingsPanel((s) => s.open);
   return (
     <Dialog open={open} onOpenChange={(o) => (o ? useSettingsPanel.getState().show() : useSettingsPanel.getState().hide())}>
-      {/* above the simulator's own layer (z-70); its paused screen dims the drive behind */}
-      <DialogContent className="z-[90] max-h-[85dvh] overflow-y-auto" aria-describedby={undefined}>
+      {/* above the simulator's own layer (z-70); overlay sits at z-80 and dialog at z-90 */}
+      <DialogContent overlayClassName="z-[80]" className="z-[90] max-h-[85dvh] overflow-y-auto" aria-describedby={undefined}>
         <DialogTitle className="type-label-strong text-lg">{t('sim.settings.title')}</DialogTitle>
         <SimSettings settings={settings} />
       </DialogContent>
@@ -87,7 +87,7 @@ function Volume({ label, value, onChange }: { label: string; value: number; onCh
   return (
     <div className="grid grid-cols-[minmax(7rem,1fr)_2fr_3rem] items-center gap-3">
       <label htmlFor={id} className="type-label text-sm">{label}</label>
-      <input id={id} type="range" min={0} max={100} step={5} value={pct} onChange={(e) => onChange(Number(e.target.value) / 100)} className="w-full accent-brand" />
+      <input id={id} type="range" min={0} max={100} step={5} value={pct} onChange={(e) => onChange(Number(e.target.value) / 100)} className="min-h-11 w-full cursor-pointer accent-brand-ink dark:accent-brand" />
       <span className="type-label text-right text-sm tabular-nums">{pct}%</span>
     </div>
   );
@@ -129,7 +129,7 @@ function Keys() {
             <div key={a} className="flex items-center justify-between gap-3">
               <span className="type-label text-sm">{name}</span>
               <button type="button" aria-label={`${name}: ${keyLabel(keys[a])}`} aria-pressed={taking === a} onClick={() => setTaking(a)}
-                className={cn('tile tap-sm min-w-[6rem] px-2 py-1 text-sm', taking === a ? 'tile-selected' : 'tile-open')}>
+                className={cn('tile tap-sm min-h-11 min-w-[6rem] px-3 py-2 text-sm font-medium', taking === a ? 'tile-selected' : 'tile-open')}>
                 {taking === a ? t('sim.settings.pressKey') : keyLabel(keys[a])}
               </button>
             </div>
@@ -148,7 +148,7 @@ function Choice<T extends string>({ label, value, options, onChange }: { label: 
       <span className="type-label text-sm">{label}</span>
       {options.map(([v, text]) => (
         <button key={v} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(v)}
-          className={cn('tile tap-sm px-2 py-1 text-sm', value === v ? 'tile-selected' : 'tile-open')}>
+          className={cn('tile tap-sm min-h-11 px-3 py-2 text-sm font-medium', value === v ? 'tile-selected' : 'tile-open')}>
           {text}
         </button>
       ))}

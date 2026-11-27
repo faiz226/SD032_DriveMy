@@ -31,7 +31,7 @@ export function VerifyEmailPage() {
       // Turnstile tokens are single-use — without this the retry fails too.
       resetCaptcha();
       toast.error(
-        err instanceof Error ? err.message : "Failed to resend email. Please try again."
+        err instanceof Error && err.message ? err.message : t("auth.error.generic")
       );
     } finally {
       setResending(false);
@@ -40,12 +40,12 @@ export function VerifyEmailPage() {
 
   return (
     <div className="space-y-6 max-w-readable mx-auto w-full text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
         <Envelope className="h-6 w-6" weight="regular" aria-hidden />
       </div>
 
       <div className="space-y-2" role="status" aria-live="polite">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+        <h1 className="page-title">
           {t("auth.verifyEmail")}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -59,7 +59,7 @@ export function VerifyEmailPage() {
         <div className="space-y-3">
           {resent ? (
             <div
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-success/10 px-3 py-2 text-sm text-success border border-success/20 font-medium"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-success/15 px-3.5 py-2 text-sm text-success border border-success/25 font-medium"
               role="status"
             >
               <CheckCircle className="h-4 w-4" weight="fill" aria-hidden />
@@ -71,8 +71,9 @@ export function VerifyEmailPage() {
               {captcha}
               <Button
                 type="button"
-                variant="outline"
-                className="w-full h-11"
+                variant="brand"
+                size="lg"
+                className="w-full"
                 onClick={handleResend}
                 loading={resending}
                 disabled={isCaptchaPending}
@@ -85,7 +86,7 @@ export function VerifyEmailPage() {
         </div>
       )}
 
-      <Button asChild variant="ghost" className="w-full h-11 text-muted-foreground hover:text-foreground">
+      <Button asChild variant="ghost" className="w-full min-h-11 text-muted-foreground hover:text-foreground">
         <Link to={ROUTES.AUTH}>
           <ArrowLeft className="h-4 w-4" aria-hidden />
           {t("common.back")}

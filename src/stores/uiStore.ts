@@ -6,6 +6,13 @@ interface UIState {
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   /**
+   * Solid-surface fallback for Liquid Glass chrome (mirrors OS
+   * `prefers-reduced-transparency: reduce` as an explicit in-app setting).
+   */
+  reduceTransparency: boolean;
+  setReduceTransparency: (reduce: boolean) => void;
+  toggleReduceTransparency: () => void;
+  /**
    * True while a timed exam or quiz is actually in progress.
    *
    * A learner sitting a 45-minute KPP1 mock is doing a different job from a
@@ -25,15 +32,20 @@ export const useUIStore = create<UIState>()(
       sidebarCollapsed: false,
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      reduceTransparency: false,
+      setReduceTransparency: (reduceTransparency) => set({ reduceTransparency }),
+      toggleReduceTransparency: () => set((state) => ({ reduceTransparency: !state.reduceTransparency })),
       examMode: false,
       setExamMode: (active) => set({ examMode: active }),
     }),
     {
       name: "drivemy-ui",
-      // Only the sidebar preference survives a reload. examMode is ephemeral by
-      // design: if it were persisted, a crash or a force-quit during an exam
-      // would restore a learner into an app with no navigation and no way out.
-      partialize: (state) => ({ sidebarCollapsed: state.sidebarCollapsed }),
+      // Persist user display preferences only. examMode stays ephemeral so a
+      // crash mid-exam never traps a learner without navigation.
+      partialize: (state) => ({
+        sidebarCollapsed: state.sidebarCollapsed,
+        reduceTransparency: state.reduceTransparency,
+      }),
     }
   )
 );

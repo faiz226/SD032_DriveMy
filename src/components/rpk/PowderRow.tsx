@@ -35,13 +35,13 @@ const TILES: { letter: string; key: TranslationKey; icon: ReactNode }[] = [
 export function PowderRow() {
   const { t } = useLanguage();
   return (
-    <div className="mt-3">
-      <p className="text-sm font-semibold">{t("rpk.powderTitle")}</p>
-      <ul className="mt-2 grid grid-cols-3 gap-2">
+    <div className="mt-4 rounded-xl bg-muted/40 p-3">
+      <p className="text-xs font-semibold tracking-wide text-muted-foreground">{t("rpk.powderTitle")}</p>
+      <ul className="mt-2.5 grid grid-cols-3 gap-2">
         {TILES.map(({ letter, key, icon }) => (
-          <li key={letter} className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card px-1 py-2 text-center">
-            <svg viewBox="0 0 40 40" aria-hidden="true" className="h-9 w-9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
-            <span className="text-xs leading-tight">
+          <li key={letter} className="flex flex-col items-center gap-1 rounded-lg bg-background/60 px-1.5 py-2 text-center">
+            <svg viewBox="0 0 40 40" aria-hidden="true" className="h-8 w-8 opacity-90" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+            <span className="text-xs leading-tight text-muted-foreground">
               <span className="font-extrabold text-brand-ink">{letter}</span> {t(key)}
             </span>
           </li>

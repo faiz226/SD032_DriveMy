@@ -1,6 +1,6 @@
 import { useState, useId, isValidElement, cloneElement } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { MotionConfig } from "motion/react";
+import { MotionConfig, motion } from "motion/react";
 import {
   Gear,
   SignOut,
@@ -10,20 +10,31 @@ import {
   CaretRight,
   SquaresFour,
   Translate,
+  Sun,
+  Moon,
 } from "@/components/ui/icons";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { LanguageToggle } from "@/components/shared/LanguageToggle";
 import { OfflineBanner } from "@/components/shared/OfflineBanner";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { LiquidLensDefs } from "@/components/ui/liquid-lens";
+import { SwapIcon } from "@/components/ui/swap-icon";
 import { NAV_DESTINATIONS } from "@/app/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Drawer, DrawerPopup, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerPopup,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { useLanguage } from "@/hooks/useLanguage";
-import { VerticalDock, DockItem, DockIcon } from "@/components/ui/vertical-dock";
+import { useTheme } from "@/hooks/useTheme";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
+import { SPRING_SNAPPY } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations";
@@ -37,10 +48,10 @@ function withWeight(icon: React.ReactNode, weight: "regular" | "bold") {
 
 interface NavItem {
   labelKey: TranslationKey;
-  href:     string;
-  icon:     React.ReactNode;
-  end?:     boolean;
-  tabKey?:  TranslationKey;
+  href: string;
+  icon: React.ReactNode;
+  end?: boolean;
+  tabKey?: TranslationKey;
 }
 
 // Every destination in navigation.ts, in the order learners meet them.
@@ -50,7 +61,7 @@ const NAV_ITEMS: NavItem[] = NAV_DESTINATIONS.map(({ icon: Icon, ...item }) => (
 }));
 
 const UTILITY_ITEMS: NavItem[] = [
-  { labelKey: "nav.settings",   href: ROUTES.SETTINGS,     icon: <Gear weight="regular" className="h-5 w-5" /> },
+  { labelKey: "nav.settings", href: ROUTES.SETTINGS, icon: <Gear weight="regular" className="h-5 w-5" /> },
 ];
 
 // The phone bar holds four tabs and a "More" sheet; everything else in the menu lives in that sheet.
@@ -61,15 +72,47 @@ const MORE_ITEMS: NavItem[] = [
   ...UTILITY_ITEMS,
 ];
 
+// ─── Quick theme toggle ───────────────────────────────────────────────────────
+
+function ThemeToggleButton({ className }: { className?: string }) {
+  const { t } = useLanguage();
+  const { isDark, setTheme } = useTheme();
+  const nextLabel = t(isDark ? "settings.theme.light" : "settings.theme.dark");
+  const ariaLabel = `${t("settings.theme")}: ${nextLabel}`;
+
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={ariaLabel}
+      title={ariaLabel}
+      className={cn(
+        "glass-control glass-pill glass-ink",
+        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className
+      )}
+    >
+      <SwapIcon id={isDark ? "sun" : "moon"}>
+        {isDark ? (
+          <Sun className="h-5 w-5" aria-hidden />
+        ) : (
+          <Moon className="h-5 w-5" aria-hidden />
+        )}
+      </SwapIcon>
+    </button>
+  );
+}
 
 // ─── Sidebar nav link ─────────────────────────────────────────────────────────
 
 interface SideNavLinkProps {
   item: NavItem;
+  pillLayoutId: string;
   onClick?: () => void;
 }
 
-function SideNavLink({ item, onClick }: SideNavLinkProps) {
+function SideNavLink({ item, pillLayoutId, onClick }: SideNavLinkProps) {
   const { t } = useLanguage();
   const label = t(item.labelKey);
 
@@ -80,36 +123,29 @@ function SideNavLink({ item, onClick }: SideNavLinkProps) {
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          "group relative flex min-w-0 items-center gap-3 px-4 py-3 h-11 rounded-md",
-          "transition-colors duration-200 text-muted-foreground hover:text-foreground font-medium",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          isActive && "active text-foreground"
+          "glass-control relative flex min-w-0 items-center gap-3 px-3.5 h-11 rounded-xl no-underline",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          isActive ? "glass-ink font-semibold" : "glass-muted font-medium hover:text-foreground"
         )
       }
     >
       {({ isActive }) => (
         <>
-          <div
+          {isActive && (
+            <motion.span
+              layoutId={pillLayoutId}
+              transition={SPRING_SNAPPY}
+              aria-hidden="true"
+              className="glass-pill glass-pill-lens pointer-events-none absolute inset-0 rounded-xl"
+            />
+          )}
+          <span
             aria-hidden
-            className={cn(
-              "absolute inset-0 w-full h-full bg-accent rounded-md opacity-0 scale-[0.97]",
-              "transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ease-out-quart -z-10",
-              "group-hover:opacity-100 group-hover:scale-100",
-              isActive && "opacity-100 scale-100"
-            )}
-          />
-          <div
-            aria-hidden
-            className={cn(
-              "absolute left-0 w-[3px] h-5 bg-brand rounded-r opacity-0",
-              "transition-opacity duration-200",
-              isActive && "opacity-100"
-            )}
-          />
-          <span aria-hidden className="shrink-0">
+            className={cn("relative z-10 shrink-0", isActive && "glass-accent-icon")}
+          >
             {withWeight(item.icon, isActive ? "bold" : "regular")}
           </span>
-          <span className="min-w-0 text-sm tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
+          <span className="relative z-10 min-w-0 text-sm tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
             {label}
           </span>
           {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
@@ -118,7 +154,6 @@ function SideNavLink({ item, onClick }: SideNavLinkProps) {
     </NavLink>
   );
 }
-
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
@@ -131,13 +166,9 @@ interface SidebarProps {
 
 function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollapse }: SidebarProps) {
   const { t, language, setLanguage } = useLanguage();
+  const { isDark, setTheme } = useTheme();
   const { signOut, user } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
-
-
-  const isRouteActive = (href: string, exact?: boolean) => 
-    exact ? location.pathname === href : location.pathname.startsWith(href);
 
   const handleSignOut = async () => {
     await signOut();
@@ -145,8 +176,15 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
   };
 
   const handleLangToggle = () => {
-    setLanguage(language === 'en' ? 'ms' : 'en');
+    setLanguage(language === "en" ? "ms" : "en");
   };
+
+  const handleThemeToggle = () => {
+    setTheme(isDark ? "light" : "dark");
+  };
+
+  const themeTooltip = `${t("settings.theme")}: ${t(isDark ? "settings.theme.light" : "settings.theme.dark")}`;
+  const pillLayoutId = isMobile ? "mobile-drawer-active-pill" : "sidebar-active-pill";
 
   const displayName =
     (user?.user_metadata?.["full_name"] as string | undefined) ??
@@ -156,27 +194,36 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
   return (
     <div
       className={cn(
-        "flex h-full w-full flex-shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
-        "transition-[width] duration-300 ease-out-quart",
-        collapsed ? "w-[4.5rem]" : "w-64"
+        "flex h-full w-full flex-col overflow-hidden",
+        !isMobile && "glass-bar rounded-2xl"
       )}
     >
-      <div className={cn("flex h-16 items-center shrink-0 border-b border-sidebar-border", isMobile && "h-[calc(4rem_+_env(safe-area-inset-top))] pt-[env(safe-area-inset-top)]", collapsed ? "justify-center px-0" : "justify-between px-4")}>
+      <div
+        className={cn(
+          "flex shrink-0 border-b border-foreground/10 dark:border-white/10",
+          isMobile
+            ? "h-[calc(4rem_+_env(safe-area-inset-top))] items-center justify-between px-4 pt-[env(safe-area-inset-top)]"
+            : collapsed
+              ? "flex-col items-center gap-2 py-3 px-2"
+              : "h-16 items-center justify-between px-4"
+        )}
+      >
         {!collapsed ? (
-          <BrandMark className="select-none whitespace-nowrap text-sidebar-foreground" />
+          <BrandMark className="glass-ink select-none whitespace-nowrap" />
         ) : (
           <>
-            <BrandMark wordmark={false} className="text-sidebar-foreground" />
+            <BrandMark wordmark={false} className="glass-ink" />
             <span className="sr-only">DriveMy</span>
           </>
         )}
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-1">
           {!isMobile && onToggleCollapse && (
             <button
               type="button"
               onClick={onToggleCollapse}
               aria-label={collapsed ? t("a11y.expandSidebar") : t("a11y.collapseSidebar")}
-              className="touch-target rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-[color,background-color,transform] duration-300 ease-spring active:scale-95 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="glass-control glass-muted inline-flex h-11 w-11 items-center justify-center rounded-full hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {collapsed ? (
                 <CaretRight className="h-5 w-5" aria-hidden />
@@ -190,121 +237,181 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               type="button"
               onClick={onClose}
               aria-label={t("a11y.closeMenu")}
-              className="touch-target rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-[color,background-color,transform] duration-300 ease-spring active:scale-95 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="glass-control glass-pill glass-ink inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <X className="h-5 w-5" aria-hidden />
+              <X size={18} weight="bold" aria-hidden />
             </button>
           )}
         </div>
       </div>
 
       {collapsed && !isMobile ? (
-        <div className="flex-1 flex flex-col items-center justify-between py-6 min-h-fit overflow-x-hidden">
-          <VerticalDock distance={100} magnification={60} baseItemSize={44} panelWidth={72} className="w-full h-auto py-0 gap-2 overflow-x-hidden">
-            {NAV_ITEMS.map((item) => {
-              const isActive = isRouteActive(item.href, item.end);
-              return (
-                <DockItem
-                  key={item.href}
-                  onClick={() => navigate(item.href)}
-                  className={cn(
-                    isActive && "bg-accent/80 text-foreground ring-1 ring-border shadow-sm"
-                  )}
-                >
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex h-full w-full items-center justify-center outline-none">
-                          <DockIcon>{item.icon}</DockIcon>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" sideOffset={16}>
-                        {t(item.labelKey)}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </DockItem>
-              );
-            })}
-          </VerticalDock>
-          
-          <div className="w-8 h-[1px] bg-border my-2" />
-          
-          <VerticalDock distance={100} magnification={60} baseItemSize={44} panelWidth={72} className="w-full h-auto py-0 gap-2 overflow-visible">
-            {UTILITY_ITEMS.map((item) => {
-              const isActive = isRouteActive(item.href, item.end);
-              return (
-                <DockItem
-                  key={item.href}
-                  onClick={() => navigate(item.href)}
-                  className={cn(
-                    isActive && "bg-accent/80 text-foreground ring-1 ring-border shadow-sm"
-                  )}
-                >
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex h-full w-full items-center justify-center outline-none">
-                          <DockIcon>{item.icon}</DockIcon>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" sideOffset={16}>
-                        {t(item.labelKey)}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </DockItem>
-              );
-            })}
-            
-            <DockItem onClick={handleLangToggle}>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex h-full w-full items-center justify-center outline-none">
-                      <DockIcon>
-                        <Translate weight="regular" className="h-5 w-5" />
-                      </DockIcon>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={16}>
-                    {language === 'en' ? 'Bahasa Malaysia' : 'English'}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DockItem>
-            
-            <DockItem onClick={handleSignOut} className="hover:bg-destructive/20 hover:text-destructive text-destructive mt-2">
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex h-full w-full items-center justify-center outline-none">
-                      <DockIcon>
-                        <SignOut weight="regular" className="h-5 w-5" />
-                      </DockIcon>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={16}>
-                    {t("nav.signOut")}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DockItem>
-          </VerticalDock>
-        </div>
+        <TooltipProvider delayDuration={150}>
+          <div className="flex flex-1 flex-col items-center justify-between overflow-y-auto py-3 px-2">
+            <nav className="flex flex-col items-center gap-1" aria-label="Main navigation">
+              {NAV_ITEMS.map((item) => {
+                const label = t(item.labelKey);
+                return (
+                  <Tooltip key={item.href}>
+                    <TooltipTrigger asChild>
+                      <NavLink
+                        to={item.href}
+                        end={item.end}
+                        aria-label={label}
+                        className={({ isActive }) =>
+                          cn(
+                            "glass-control relative inline-flex h-11 w-11 items-center justify-center rounded-xl no-underline",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            isActive ? "glass-ink" : "glass-muted hover:text-foreground"
+                          )
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            {isActive && (
+                              <motion.span
+                                layoutId={pillLayoutId}
+                                transition={SPRING_SNAPPY}
+                                aria-hidden="true"
+                                className="glass-pill glass-pill-lens pointer-events-none absolute inset-0 rounded-xl"
+                              />
+                            )}
+                            <span
+                              aria-hidden
+                              className={cn("relative z-10", isActive && "glass-accent-icon")}
+                            >
+                              {withWeight(item.icon, isActive ? "bold" : "regular")}
+                            </span>
+                            {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
+                          </>
+                        )}
+                      </NavLink>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={12}>
+                      {label}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </nav>
+
+            <div className="my-2 h-px w-8 shrink-0 bg-foreground/10 dark:bg-white/10" aria-hidden />
+
+            <div className="flex flex-col items-center gap-1">
+              {UTILITY_ITEMS.map((item) => {
+                const label = t(item.labelKey);
+                return (
+                  <Tooltip key={item.href}>
+                    <TooltipTrigger asChild>
+                      <NavLink
+                        to={item.href}
+                        end={item.end}
+                        aria-label={label}
+                        className={({ isActive }) =>
+                          cn(
+                            "glass-control relative inline-flex h-11 w-11 items-center justify-center rounded-xl no-underline",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            isActive ? "glass-ink" : "glass-muted hover:text-foreground"
+                          )
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            {isActive && (
+                              <motion.span
+                                layoutId={pillLayoutId}
+                                transition={SPRING_SNAPPY}
+                                aria-hidden="true"
+                                className="glass-pill glass-pill-lens pointer-events-none absolute inset-0 rounded-xl"
+                              />
+                            )}
+                            <span
+                              aria-hidden
+                              className={cn("relative z-10", isActive && "glass-accent-icon")}
+                            >
+                              {withWeight(item.icon, isActive ? "bold" : "regular")}
+                            </span>
+                            {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
+                          </>
+                        )}
+                      </NavLink>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={12}>
+                      {label}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleThemeToggle}
+                    aria-label={themeTooltip}
+                    className="glass-control glass-muted inline-flex h-11 w-11 items-center justify-center rounded-xl hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <SwapIcon id={isDark ? "sun" : "moon"}>
+                      {isDark ? (
+                        <Sun className="h-5 w-5" aria-hidden />
+                      ) : (
+                        <Moon className="h-5 w-5" aria-hidden />
+                      )}
+                    </SwapIcon>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" sideOffset={12}>
+                  {themeTooltip}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleLangToggle}
+                    aria-label={t("a11y.toggleLanguage")}
+                    className="glass-control glass-muted inline-flex h-11 w-11 items-center justify-center rounded-xl hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Translate weight="regular" className="h-5 w-5" aria-hidden />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" sideOffset={12}>
+                  {language === "en" ? "Bahasa Malaysia" : "English"}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    aria-label={t("nav.signOut")}
+                    className="glass-control inline-flex h-11 w-11 items-center justify-center rounded-xl text-destructive hover:bg-destructive/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <SignOut weight="regular" className="h-5 w-5" aria-hidden />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" sideOffset={12}>
+                  {t("nav.signOut")}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+        </TooltipProvider>
       ) : (
         <>
-          <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1" aria-label="Main navigation">
+          <nav className="flex-1 overflow-y-auto py-3 px-2.5 space-y-1" aria-label="Main navigation">
             {NAV_ITEMS.map((item) => (
-              <SideNavLink key={item.href} item={item} onClick={onClose} />
+              <SideNavLink key={item.href} item={item} pillLayoutId={pillLayoutId} onClick={onClose} />
             ))}
           </nav>
 
-          <div className="mx-3 h-px bg-sidebar-border" aria-hidden />
+          <div className="mx-3 h-px bg-foreground/10 dark:bg-white/10" aria-hidden />
 
-          <div className="py-3 px-3 space-y-1">
+          <div className="py-2.5 px-2.5 space-y-1">
             {UTILITY_ITEMS.map((item) => (
-              <SideNavLink key={item.href} item={item} onClick={onClose} />
+              <SideNavLink key={item.href} item={item} pillLayoutId={pillLayoutId} onClick={onClose} />
             ))}
 
             <button
@@ -312,9 +419,9 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
               onClick={handleSignOut}
               aria-label={t("nav.signOut")}
               className={cn(
-                "flex items-center gap-3 rounded-md min-h-[48px] w-full px-4",
-                "text-sm font-medium text-muted-foreground",
-                "hover:bg-destructive/10 hover:text-destructive transition-colors duration-200",
+                "glass-control flex items-center gap-3 rounded-xl h-11 w-full px-3.5",
+                "text-sm font-medium glass-muted",
+                "hover:bg-destructive/12 hover:text-destructive",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               )}
             >
@@ -325,18 +432,20 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
             </button>
           </div>
 
-          <div className="flex items-center justify-between px-4 py-3 shrink-0 border-t border-sidebar-border">
+          <div className="flex flex-col gap-3 px-3.5 py-3 shrink-0 border-t border-foreground/10 dark:border-white/10">
+            <div className="flex items-center justify-between gap-2">
+              <LanguageToggle variant="pill" />
+              <ThemeToggleButton />
+            </div>
+
             <div className="flex items-center gap-2.5 min-w-0">
               <UserAvatar className="h-8 w-8 text-xs" />
               <div className="min-w-0">
-                <p className="text-xs font-medium text-sidebar-foreground truncate">{displayName}</p>
+                <p className="glass-ink text-xs font-semibold truncate">{displayName}</p>
                 {user?.email && (
-                  <p className="text-[11px] text-sidebar-foreground/70 truncate">{user.email}</p>
+                  <p className="glass-muted text-[11px] truncate">{user.email}</p>
                 )}
               </div>
-            </div>
-            <div className="flex items-center gap-1 shrink-0 ml-2">
-              <LanguageToggle variant="pill" />
             </div>
           </div>
         </>
@@ -355,28 +464,44 @@ function MobileBottomNav() {
 
   const tabClass = (active: boolean) =>
     cn(
-      "relative flex min-w-0 flex-col items-center justify-center gap-0.5",
-      "min-h-[48px] rounded-md px-1 text-[11px] font-medium leading-none transition-colors duration-150",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-      active ? "text-brand-ink" : "text-muted-foreground hover:text-foreground"
-    );
-  const pill = (active: boolean) =>
-    cn(
-      "flex h-8 w-14 items-center justify-center rounded-full transition-colors duration-200 ease-out-quart",
-      active ? "bg-brand/20 text-brand-ink" : "text-muted-foreground"
+      "relative flex min-w-0 flex-col items-center justify-center gap-0.5 no-underline",
+      "min-h-[50px] rounded-[22px] px-1 py-1.5 text-[11px] font-bold leading-none transition-colors duration-150",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      active ? "glass-ink" : "glass-muted hover:text-foreground"
     );
 
   return (
     <nav
-      className="grid md:hidden grid-cols-5 items-center glass border-t border-border shrink-0 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
+      className="glass-bar fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 grid md:hidden grid-cols-5 items-center rounded-[28px] p-1.5"
       aria-label="Mobile navigation"
     >
       {MOBILE_TABS.map((item) => (
-        <NavLink key={item.href} to={item.href} end={item.end} className={({ isActive }) => tabClass(isActive)}>
+        <NavLink
+          key={item.href}
+          to={item.href}
+          end={item.end}
+          className={({ isActive }) => tabClass(isActive)}
+        >
           {({ isActive }) => (
             <>
-              <span aria-hidden className={pill(isActive)}>{withWeight(item.icon, isActive ? "bold" : "regular")}</span>
-              <span className="max-w-full truncate">{t(item.tabKey!)}</span>
+              {isActive && (
+                <motion.span
+                  layoutId="mobile-tab-pill"
+                  transition={SPRING_SNAPPY}
+                  aria-hidden="true"
+                  className="glass-pill glass-pill-lens pointer-events-none absolute inset-0 rounded-[22px]"
+                />
+              )}
+              <span
+                aria-hidden
+                className={cn(
+                  "relative z-10 flex h-6 w-6 items-center justify-center",
+                  isActive ? "glass-accent-icon" : "glass-muted"
+                )}
+              >
+                {withWeight(item.icon, isActive ? "bold" : "regular")}
+              </span>
+              <span className="relative z-10 max-w-full truncate">{t(item.tabKey!)}</span>
               {isActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
             </>
           )}
@@ -391,16 +516,43 @@ function MobileBottomNav() {
           aria-expanded={moreOpen}
           className={tabClass(moreActive)}
         >
-          <span aria-hidden className={pill(moreActive)}>
+          {moreActive && (
+            <motion.span
+              layoutId="mobile-tab-pill"
+              transition={SPRING_SNAPPY}
+              aria-hidden="true"
+              className="glass-pill glass-pill-lens pointer-events-none absolute inset-0 rounded-[22px]"
+            />
+          )}
+          <span
+            aria-hidden
+            className={cn(
+              "relative z-10 flex h-6 w-6 items-center justify-center",
+              moreActive ? "glass-accent-icon" : "glass-muted"
+            )}
+          >
             <SquaresFour weight={moreActive ? "bold" : "regular"} className="h-5 w-5" />
           </span>
-          <span className="max-w-full truncate">{t("nav.more")}</span>
+          <span className="relative z-10 max-w-full truncate">{t("nav.more")}</span>
           {moreActive && <span className="sr-only">{t("a11y.currentPage")}</span>}
         </button>
+
         <DrawerPopup showBar>
-          <DrawerTitle className="sr-only">{t("nav.more")}</DrawerTitle>
+          <div className="flex items-center justify-between px-5 pt-3 pb-2">
+            <DrawerTitle>{t("nav.more")}</DrawerTitle>
+            <DrawerClose
+              aria-label={t("common.close")}
+              className={cn(
+                "glass-control glass-pill glass-ink",
+                "inline-flex h-11 w-11 items-center justify-center rounded-full",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              )}
+            >
+              <X size={18} weight="bold" aria-hidden />
+            </DrawerClose>
+          </div>
           <DrawerDescription className="sr-only">{t("nav.more")}</DrawerDescription>
-          <ul className="grid gap-1 px-3 pt-3">
+          <ul className="divide-y divide-foreground/10 dark:divide-white/10 px-4">
             {MORE_ITEMS.map((item) => (
               <li key={item.href}>
                 <NavLink
@@ -408,14 +560,29 @@ function MobileBottomNav() {
                   onClick={() => setMoreOpen(false)}
                   className={({ isActive }) =>
                     cn(
-                      "flex min-h-[48px] items-center gap-3 rounded-md px-3 text-sm font-medium no-underline",
+                      "glass-control glass-ink flex min-h-[52px] items-center gap-3.5 rounded-xl px-2 text-[15px] font-bold no-underline",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      isActive ? "bg-brand/15 text-brand-ink" : "text-foreground hover:bg-accent"
+                      isActive && "font-extrabold"
                     )
                   }
                 >
-                  <span aria-hidden className="shrink-0">{item.icon}</span>
-                  <span className="min-w-0 truncate">{t(item.labelKey)}</span>
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        aria-hidden
+                        className={cn("shrink-0", isActive ? "glass-accent-icon" : "glass-muted")}
+                      >
+                        {withWeight(item.icon, isActive ? "bold" : "regular")}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
+                      {isActive && (
+                        <>
+                          <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-brand" />
+                          <span className="sr-only">{t("a11y.currentPage")}</span>
+                        </>
+                      )}
+                    </>
+                  )}
                 </NavLink>
               </li>
             ))}
@@ -434,112 +601,125 @@ interface AppLayoutProps {
 
 /**
  * The app shell for every signed-in page. The menu lives on the left: from md
- * up it is a sidebar that folds into an icon dock, and on a phone the top bar
- * opens the same sidebar as a drawer from the left while a bottom bar keeps
- * the main destinations a thumb away. The simulator draws over all of it.
+ * up it is a floating Liquid Glass rail that folds into an icon rail, and on a
+ * phone a floating glass top bar opens the same menu as a glass sheet from the
+ * left while a floating glass tab bar keeps the main destinations a thumb away.
+ * The simulator draws over all of it.
  */
 export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProps) {
   const { t } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileMenuId = useId();
   const { sidebarCollapsed, toggleSidebar, examMode } = useUIStore();
+  const location = useLocation();
 
   // An exam in progress gets the screen to itself. The nav is removed rather
   // than hidden, so it is also out of the tab order and the accessibility tree
   // — a learner tabbing through a timed test cannot land on "Simulator".
   const showSidebar = showSidebarProp && !examMode;
   // The simulator draws full screen over the shell: keep the menu behind it out of the tab order and the reading order.
-  const behindSimulator = /^\/simulations\/[^/]+/.test(useLocation().pathname) ? true : undefined;
+  const behindSimulator = /^\/simulations\/[^/]+/.test(location.pathname) ? true : undefined;
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="flex h-[100dvh] w-full overflow-hidden">
-      <a
-        href="#main-content"
-        className={cn(
-          "sr-only focus:not-sr-only",
-          "fixed top-2 left-2 z-[60] rounded-md bg-primary px-4 py-2",
-          "text-primary-foreground text-sm font-medium shadow-lg",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        )}
-      >
-        {t("a11y.skipToContent")}
-      </a>
-
-      {showSidebar && (
-        <aside
+      <LiquidLensDefs />
+      <div className="flex h-[100dvh] w-full overflow-hidden">
+        <a
+          href="#main-content"
           className={cn(
-            "hidden md:flex flex-col flex-shrink-0 transition-[width] duration-300 ease-in-out z-50 overflow-visible",
-            sidebarCollapsed ? "w-[4.5rem]" : "w-64"
+            "sr-only focus:not-sr-only",
+            "fixed top-2 left-2 z-[60] rounded-md bg-primary px-4 py-2",
+            "text-primary-foreground text-sm font-medium shadow-lg",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           )}
-          aria-label="Main navigation"
-          inert={behindSimulator}
         >
-          <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
-        </aside>
-      )}
+          {t("a11y.skipToContent")}
+        </a>
 
-      {showSidebar && (
-        <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
-          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-40 bg-overlay/50 md:hidden" />
-            <Dialog.Content 
-              aria-describedby={undefined}
-              className="fixed inset-y-0 left-0 z-50 h-full w-64 flex-shrink-0 shadow-2xl md:hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full duration-500 [animation-timing-function:var(--ease-spring)]"
-            >
-              <Dialog.Title className="sr-only">{t("a11y.openMenu")}</Dialog.Title>
-              <Sidebar isMobile onClose={() => setMobileOpen(false)} />
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
-      )}
-
-      <div className="flex flex-1 flex-col overflow-hidden min-w-0 transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-300 ease-in-out relative">
         {showSidebar && (
-          <header
-            className="glass flex md:hidden h-[calc(3.5rem_+_env(safe-area-inset-top))] items-center justify-between px-4 pt-[env(safe-area-inset-top)] border-b border-border shrink-0"
-            role="banner"
+          <aside
+            className={cn(
+              "hidden md:flex flex-col flex-shrink-0 p-3 transition-[width] duration-300 ease-out-quart z-30 overflow-visible",
+              sidebarCollapsed ? "w-[5.75rem]" : "w-[17.5rem]"
+            )}
+            aria-label="Main navigation"
             inert={behindSimulator}
           >
-            <button
-              type="button"
-              onClick={() => setMobileOpen(true)}
-              aria-label={t("a11y.openMenu")}
-              aria-expanded={mobileOpen}
-              aria-controls={mobileMenuId}
-              className="touch-target rounded-lg text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <List className="h-5 w-5" aria-hidden />
-            </button>
-
-            <BrandMark className="select-none text-[0.85rem] [&_span]:text-[1.375rem]" />
-
-            <div className="flex items-center gap-1">
-              <LanguageToggle variant="pill" />
-              <NavLink to={ROUTES.SETTINGS} aria-label={t("nav.settings")} className="grid h-11 w-11 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                <UserAvatar className="h-8 w-8 text-xs" />
-              </NavLink>
-            </div>
-          </header>
+            <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
+          </aside>
         )}
 
-        <OfflineBanner />
+        {showSidebar && (
+          <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-overlay/50 md:hidden" />
+              <Dialog.Content
+                id={mobileMenuId}
+                aria-describedby={undefined}
+                className="glass-sheet fixed inset-y-0 left-0 z-50 h-full w-72 max-w-[85vw] flex-shrink-0 rounded-r-3xl overflow-hidden md:hidden outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full duration-500 [animation-timing-function:var(--ease-spring)]"
+              >
+                <Dialog.Title className="sr-only">{t("a11y.openMenu")}</Dialog.Title>
+                <Sidebar isMobile onClose={() => setMobileOpen(false)} />
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+        )}
 
-        <main
-          id="main-content"
-          className="flex-1 overflow-y-auto canvas-subtle"
-          tabIndex={-1}
-        >
-          <div className="page-enter min-h-full">
-            <ErrorBoundary>
-              <Outlet />
-            </ErrorBoundary>
-          </div>
-        </main>
+        <div className="flex flex-1 flex-col overflow-hidden min-w-0 relative">
+          {showSidebar && (
+            <header
+              className="glass-bar fixed inset-x-3 top-[max(0.75rem,env(safe-area-inset-top))] z-30 flex md:hidden h-14 items-center justify-between gap-2 rounded-2xl px-1.5"
+              role="banner"
+              inert={behindSimulator}
+            >
+              <div className="flex min-w-0 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(true)}
+                  aria-label={t("a11y.openMenu")}
+                  aria-expanded={mobileOpen}
+                  aria-controls={mobileMenuId}
+                  className="glass-control glass-ink inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <List className="h-5 w-5" aria-hidden />
+                </button>
 
-        {showSidebar && <div inert={behindSimulator}><MobileBottomNav /></div>}
+                <BrandMark className="glass-ink select-none truncate [&_i]:h-5 [&_i]:w-2 [&_span]:text-[1.125rem] sm:[&_i]:h-6 sm:[&_i]:w-2.5 sm:[&_span]:text-[1.3rem]" />
+              </div>
+
+              <div className="flex shrink-0 items-center gap-1">
+                <ThemeToggleButton />
+                <LanguageToggle variant="pill" />
+                <NavLink
+                  to={ROUTES.SETTINGS}
+                  aria-label={t("nav.settings")}
+                  className="hidden min-[390px]:grid h-11 w-11 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <UserAvatar className="h-8 w-8 text-xs" />
+                </NavLink>
+              </div>
+            </header>
+          )}
+
+          <main
+            id="main-content"
+            className={cn(
+              "flex-1 overflow-y-auto canvas-subtle",
+              showSidebar && "pt-[calc(4.75rem+env(safe-area-inset-top))] md:pt-0 pb-28 md:pb-0"
+            )}
+            tabIndex={-1}
+          >
+            <OfflineBanner />
+            <div key={location.pathname} className="page-enter min-h-full">
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            </div>
+          </main>
+
+          {showSidebar && <div inert={behindSimulator}><MobileBottomNav /></div>}
+        </div>
       </div>
-    </div>
     </MotionConfig>
   );
 }

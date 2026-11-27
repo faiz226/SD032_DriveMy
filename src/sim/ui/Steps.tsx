@@ -15,7 +15,7 @@ export function useStepLines(id: StationId): string[] {
 
 export function Steps({ id, className }: { id: StationId; className?: string }) {
   return (
-    <ol className={cn('list-decimal space-y-0.5 pl-5', className)}>
+    <ol className={cn('list-decimal space-y-1 pl-5 leading-relaxed', className)}>
       {useStepLines(id).map((line) => <li key={line}>{line}</li>)}
     </ol>
   );

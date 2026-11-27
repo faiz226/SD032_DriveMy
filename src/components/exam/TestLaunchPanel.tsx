@@ -70,22 +70,30 @@ export function nextMockSet(last: Map<number, MockTestResult>) {
   return MOCK_NUMBERS.reduce((a, b) => (at(b.num) < at(a.num) ? b : a)).num;
 }
 
+function readInitialTrack(): LicenseTrack {
+  try {
+    return localStorage.getItem(TRACK_STORAGE_KEY) === "D" ? "D" : "DA";
+  } catch {
+    return "DA";
+  }
+}
+
 export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
   const { language } = useLanguage();
-  const [track, setTrack] = useState<LicenseTrack>(() => {
-    try {
-      return localStorage.getItem(TRACK_STORAGE_KEY) === "D" ? "D" : "DA";
-    } catch {
-      return "DA";
-    }
-  });
-  const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  const [initialTrack] = useState<LicenseTrack>(readInitialTrack);
+  const [track, setTrack] = useState<LicenseTrack>(initialTrack);
+  // Pre-select Part A + Set 1 in quiz mode so the primary Start button is
+  // immediately active without forcing two extra clicks (Hick's Law).
+  const [selectedPart, setSelectedPart] = useState<string | null>(mode === "quiz" ? "A" : null);
   const [selectedPracticeNum, setSelectedPracticeNum] = useState<number>(1);
   const [selectedMockNum, setSelectedMockNum] = useState<number | null>(null);
 
   const { register, handleSubmit, watch, setValue } = useForm<LaunchForm>({
     resolver: zodResolver(launchSchema),
-    defaultValues: { setId: undefined, rulesAccepted: false },
+    defaultValues: {
+      setId: mode === "quiz" ? buildQuizSetId("A", 1, initialTrack) : undefined,
+      rulesAccepted: false,
+    },
   });
 
   const selectedSet = watch("setId");
@@ -175,14 +183,14 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
           <h1 className="page-title">
             {mode === "quiz" ? t("launch.quizMaster") : t("launch.mockExam")}
           </h1>
-          <p className="mt-3 text-pretty text-base leading-relaxed text-muted-foreground">
+          <p className="page-lead mt-2.5 text-pretty">
             {mode === "quiz" ? t("launch.quizMasterDesc") : t("launch.mockInfo")}
           </p>
         </header>
 
         {/* Transmission Class Selector (Class DA Automatic vs Class D Manual) */}
         <fieldset className="min-w-0">
-          <legend className="mb-3 text-sm font-semibold">
+          <legend className="mb-3 font-heading text-base font-bold tracking-tight text-foreground">
             {t("launch.licenseTrack")}
           </legend>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -198,7 +206,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                   onClick={() => handleTrackChange(item.id)}
                   aria-pressed={isSelected}
                   className={cn(
-                    "tile flex w-full min-w-0 items-center gap-3 p-4 text-left",
+                    "tile flex min-h-[4.5rem] w-full min-w-0 items-center gap-3 p-4 text-left",
                     isSelected ? "tile-selected" : "tile-open"
                   )}
                 >
@@ -229,7 +237,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
         {mode === "quiz" ? (
           <>
             <fieldset className="min-w-0">
-              <legend className="mb-3 text-sm font-semibold">
+              <legend className="mb-3 font-heading text-base font-bold tracking-tight text-foreground">
                 {t("launch.selectSection")}
               </legend>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -242,7 +250,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                       onClick={() => handleSelectPart(sec.id)}
                       aria-pressed={isSelected}
                       className={cn(
-                        "tile flex w-full min-w-0 items-center gap-3 p-4 text-left sm:flex-col sm:items-start",
+                        "tile flex min-h-[4.5rem] w-full min-w-0 items-center gap-3 p-4 text-left sm:flex-col sm:items-start",
                         isSelected ? "tile-selected" : "tile-open"
                       )}
                     >
@@ -270,10 +278,10 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
             </fieldset>
 
             <fieldset className="min-w-0">
-              <legend className="mb-3 text-sm font-semibold">
+              <legend className="mb-3 font-heading text-base font-bold tracking-tight text-foreground">
                 {t("launch.selectPracticeSet")}
               </legend>
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              <div className="grid grid-cols-3 gap-2.5">
                 {[1, 2, 3].map((num) => {
                   const isSelected = Boolean(selectedPart) && selectedPracticeNum === num;
                   return (
@@ -283,14 +291,14 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                       onClick={() => handleSelectPracticeNum(num)}
                       aria-pressed={isSelected}
                       className={cn(
-                        "tile flex items-center gap-2.5 p-3 text-left",
+                        "tile flex min-h-[4.5rem] flex-col items-start gap-2 p-3 text-left sm:flex-row sm:items-center sm:gap-2.5",
                         isSelected ? "tile-selected" : "tile-open"
                       )}
                     >
                       <span
                         aria-hidden
                         className={cn(
-                          "type-figure grid h-8 w-8 shrink-0 place-items-center rounded-[4px] text-sm transition-colors duration-150",
+                          "type-figure grid h-9 w-9 shrink-0 place-items-center rounded-lg text-sm transition-colors duration-150",
                           isSelected ? "bg-brand text-brand-foreground" : "bg-muted text-muted-foreground"
                         )}
                       >
@@ -300,7 +308,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                         <span className="block text-sm font-semibold leading-tight">
                           {t("launch.practiceSetNum", { num })}
                         </span>
-                        <span className="block text-xs text-muted-foreground">
+                        <span className="mt-0.5 block text-xs leading-tight text-muted-foreground">
                           {t("launch.practiceSetQuestions", { count: activePartConfig.count })}
                         </span>
                       </span>
@@ -313,7 +321,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
           </>
         ) : (
           <fieldset className="min-w-0">
-            <legend className="mb-3 text-sm font-semibold">
+            <legend className="mb-3 font-heading text-base font-bold tracking-tight text-foreground">
               {t("launch.chooseMock")}
             </legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -327,7 +335,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
                     onClick={() => handleSelectMockNum(sec.num)}
                     aria-pressed={isSelected}
                     className={cn(
-                      "tile flex w-full min-w-0 items-center gap-3 p-4 text-left sm:flex-col sm:items-start",
+                      "tile flex min-h-[4.5rem] w-full min-w-0 items-center gap-3 p-4 text-left sm:flex-col sm:items-start",
                       isSelected ? "tile-selected" : "tile-open"
                     )}
                   >
@@ -366,14 +374,14 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
         {/* The rules gate the button, so they come before it. */}
         {mode === "mock" && (
           <section className="panel p-5">
-            <h2 className="text-base font-semibold">{t("launch.examRules")}</h2>
+            <h2 className="font-heading text-base font-bold tracking-tight text-foreground">{t("launch.examRules")}</h2>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li className="flex gap-2.5">
                 <CheckCircle size={18} weight="duotone" className="mt-px shrink-0 text-brand-ink" aria-hidden />
                 <span>{t("launch.rule3")}</span>
               </li>
             </ul>
-            <div className="mt-4 flex items-center gap-3 border-t border-border pt-2">
+            <div className="mt-4 flex min-h-11 items-center gap-3 border-t border-border pt-2">
               <Checkbox
                 id="rulesAccepted"
                 checked={rulesAccepted}
@@ -397,9 +405,13 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
               states the unmet condition a learner needs to see. */}
           <Button
             type="submit"
+            variant="brand"
             size="lg"
             disabled={isSubmitDisabled}
-            className={cn("w-full", isSubmitDisabled && "bg-muted text-muted-foreground shadow-none disabled:opacity-100")}
+            className={cn(
+              "min-h-11 w-full",
+              isSubmitDisabled && "bg-muted text-muted-foreground shadow-none hover:bg-muted disabled:opacity-100"
+            )}
           >
             {mode === "quiz" ? <Lightning className="!size-5" weight="fill" aria-hidden /> : <Play className="!size-5" weight="fill" aria-hidden />}
             <span className="truncate">{buttonLabel}</span>
@@ -409,7 +421,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
               type="button"
               variant="outline"
               size="lg"
-              className="mt-3 w-full"
+              className="mt-3 min-h-11 w-full"
               onClick={() => {
                 clearProgress(PROGRESS_SCOPES.mock(selectedSet!), userId!);
                 onStart({ language, setId: selectedSet });

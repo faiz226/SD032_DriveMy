@@ -48,9 +48,9 @@ export function AuthPage() {
 
   return (
     <div className="space-y-6 max-w-readable mx-auto w-full">
-      <div className="text-center space-y-1">
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
-          {t("app.name")}
+      <div className="text-center space-y-1.5">
+        <h1 className="page-title">
+          {t("auth.signIn")}
         </h1>
         <p className="text-sm text-muted-foreground">{t("app.tagline")}</p>
       </div>
@@ -58,14 +58,17 @@ export function AuthPage() {
       <div className="space-y-3">
         <Button
           type="button"
-          variant="outline"
-          className="w-full h-11"
+          variant="brand"
+          size="lg"
+          className="w-full"
           onClick={handleGoogle}
           loading={isGooglePending}
           loadingLabel={t("common.loading")}
           aria-label={t("auth.signInWithGoogle")}
         >
-          <GoogleLogo className="h-4 w-4" />
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-white shadow-xs" aria-hidden="true">
+            <GoogleLogo className="h-3.5 w-3.5" />
+          </span>
           {t("auth.signInWithGoogle")}
         </Button>
         <p className="text-center text-sm text-muted-foreground">{t("auth.googleOnly")}</p>
@@ -77,7 +80,7 @@ export function AuthPage() {
         <Button
           type="button"
           variant="ghost"
-          className="w-full"
+          className="w-full min-h-11"
           onClick={() => {
             setDevBypass(true);
             navigate(from, { replace: true });

@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Warning } from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
 import { QUIZ_QUESTION_COUNT, QUERY_KEYS } from "@/lib/constants";
@@ -124,21 +125,40 @@ export function QuizPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-lg mx-auto py-12" aria-busy="true" aria-label={t("common.loading")}>
-        <div className="card-premium p-6 sm:p-8 space-y-8 animate-pulse">
-          <div className="flex flex-col items-center space-y-4">
-            <Skeleton className="h-12 w-12 rounded-lg" />
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-72" />
+      <div
+        className="page-shell max-w-7xl w-full mx-auto"
+        aria-busy="true"
+        aria-label={t("common.loading")}
+      >
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+          <div className="space-y-2.5">
+            <Skeleton className="h-9 w-52 rounded-xl" />
+            <Skeleton className="h-5 w-72 rounded-lg" />
           </div>
           <div className="space-y-3">
-            <Skeleton className="h-4 w-32" />
-            <div className="grid grid-cols-2 gap-3">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-5 w-44 rounded-lg" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Skeleton className="h-[4.75rem] w-full rounded-2xl" />
+              <Skeleton className="h-[4.75rem] w-full rounded-2xl" />
             </div>
           </div>
-          <Skeleton className="h-12 w-full" />
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-32 rounded-lg" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <Skeleton className="h-24 w-full rounded-2xl sm:h-32" />
+              <Skeleton className="h-24 w-full rounded-2xl sm:h-32" />
+              <Skeleton className="h-24 w-full rounded-2xl sm:h-32" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-48 rounded-lg" />
+            <div className="grid grid-cols-3 gap-2.5">
+              <Skeleton className="h-[4.5rem] w-full rounded-2xl" />
+              <Skeleton className="h-[4.5rem] w-full rounded-2xl" />
+              <Skeleton className="h-[4.5rem] w-full rounded-2xl" />
+            </div>
+          </div>
+          <Skeleton className="h-[52px] w-full rounded-xl" />
         </div>
       </div>
     );
@@ -164,18 +184,15 @@ export function QuizPage() {
       )}
 
       {phase === "testing" && activeQuestions.length === 0 && (
-        <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4 bg-card rounded-2xl border shadow-sm p-8 mt-8">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+        <div className="panel mx-auto mt-8 flex min-h-[360px] max-w-xl flex-col items-center justify-center space-y-4 p-8 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Warning className="h-8 w-8 text-muted-foreground" aria-hidden />
           </div>
-          <h2 className="text-xl font-bold font-heading">{t("quiz.noQuestionsTitle")}</h2>
-          <p className="text-muted-foreground max-w-md">{t("quiz.noQuestions")}</p>
-          <button 
-            onClick={() => setPhase("launch")}
-            className="px-6 py-2 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors mt-4"
-          >
+          <h2 className="font-heading text-xl font-bold">{t("quiz.noQuestionsTitle")}</h2>
+          <p className="max-w-md text-muted-foreground">{t("quiz.noQuestions")}</p>
+          <Button variant="brand" onClick={() => setPhase("launch")} className="mt-2 min-h-11">
             {t("common.back")}
-          </button>
+          </Button>
         </div>
       )}
 

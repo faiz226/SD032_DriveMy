@@ -80,6 +80,8 @@ jobs:
     # still isolate users correctly.
     needs: [build-and-test, rls-tests]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    # The Production environment needs the owner's approval before migrations reach the live database.
+    environment: Production
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

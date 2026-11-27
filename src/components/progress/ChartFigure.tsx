@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CaretDown } from "@/components/ui/icons";
 import { StaticChartPreviewProvider } from "@/components/charts/static-chart-preview-context";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -37,8 +38,15 @@ export function ChartFigure({ label, table, note, className, children }: ChartFi
         <div aria-hidden="true">{children}</div>
       </StaticChartPreviewProvider>
       {note && <figcaption className="mt-3 text-sm text-muted-foreground">{note}</figcaption>}
-      <details className="mt-3 text-sm">
-        <summary className="inline-flex min-h-12 cursor-pointer items-center rounded-md font-semibold underline-offset-4 transition-opacity hover:underline active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t("progress.chart.showNumbers")}</summary>
+      <details className="group mt-3 text-sm">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-md font-semibold underline-offset-4 transition-opacity hover:underline active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          {t("progress.chart.showNumbers")}
+          <CaretDown
+            size={16}
+            aria-hidden="true"
+            className="shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
+          />
+        </summary>
         <table className="mt-2 w-full text-left">
           <caption className="sr-only">{label}</caption>
           <thead className="text-xs text-muted-foreground">

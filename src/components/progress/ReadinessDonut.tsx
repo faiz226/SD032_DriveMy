@@ -47,7 +47,7 @@ export function ReadinessDonut({ theoryPct, quizPct, mockPct, simPct, composite 
           <ul className="mx-auto grid max-w-xs gap-y-2">
             {PARTS.map(part => (
               <li key={part.key} className="flex items-center gap-2">
-                <span aria-hidden="true" className="h-3 w-3 shrink-0" style={{ background: part.color }} />
+                <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full" style={{ background: part.color }} />
                 <span className="min-w-0 flex-1 text-foreground">{t(part.labelKey)}</span>
                 <span className="type-figure whitespace-nowrap">{ofMax(contributions[part.key], READINESS_WEIGHTS[part.key])}</span>
               </li>

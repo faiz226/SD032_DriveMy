@@ -19,10 +19,10 @@ export function FlipCard({ flipped, front, back, className = "" }: FlipCardProps
           flipped ? "rotate-y-180" : ""
         }`}
       >
-        <div inert={flipped} aria-hidden={flipped} className="panel backface-hidden col-start-1 row-start-1 flex flex-col gap-3 p-4">
+        <div inert={flipped} aria-hidden={flipped} className="rounded-2xl border border-border bg-card text-card-foreground backface-hidden col-start-1 row-start-1 flex flex-col gap-3 p-4 overflow-hidden">
           {front}
         </div>
-        <div inert={!flipped} aria-hidden={!flipped} className="panel backface-hidden rotate-y-180 col-start-1 row-start-1 flex flex-col gap-3 p-4">
+        <div inert={!flipped} aria-hidden={!flipped} className="rounded-2xl border border-border bg-card text-card-foreground backface-hidden rotate-y-180 col-start-1 row-start-1 flex flex-col gap-3 p-4 overflow-hidden">
           {back}
         </div>
       </div>

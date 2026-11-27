@@ -1,5 +1,5 @@
 import {
-  GridFour,
+  House,
   BookOpen,
   Wrench,
   Book,
@@ -24,7 +24,7 @@ export interface NavDestination {
 
 /** Every place the main menu can take a learner, in the order the sidebar lists them. */
 export const NAV_DESTINATIONS: NavDestination[] = [
-  { labelKey: "nav.dashboard",  href: ROUTES.DASHBOARD,    icon: GridFour,      tabKey: "nav.tab.home", end: true },
+  { labelKey: "nav.dashboard",  href: ROUTES.DASHBOARD,    icon: House,         tabKey: "nav.tab.home", end: true },
   { labelKey: "nav.learn",      href: ROUTES.THEORY,       icon: BookOpen,      tabKey: "nav.tab.learn" },
   { labelKey: "nav.rpkRsm",     href: ROUTES.RPK_RSM,      icon: Wrench },
   { labelKey: "nav.quiz",       href: ROUTES.QUIZ,         icon: Book,          tabKey: "nav.tab.quiz" },
