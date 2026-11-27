@@ -170,7 +170,7 @@ describe('hill start', () => {
 
   it('fails a stop short of the band', () => {
     const d = drill('hill-start');
-    d.follow(HILL_STOP_S() - 0.5, 8);
+    d.follow(HILL_STOP_S() - 2.0, 8);   // the band is 1.6 m long: 2.0 short of its middle is short of it
     d.stop(3, true);
     d.follow(CREST() + 5, 8);
     expect(status(d, 'hill-start')).toBe('failed');

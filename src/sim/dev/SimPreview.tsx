@@ -15,7 +15,9 @@ import { useSearchParams } from 'react-router-dom';
 import type { StationId, Vec2 } from '../contracts';
 import { circuit } from '../data';
 import { rad } from '../geom';
-import { useDriver, useKeyboardControls, useTouchUi } from '../input';
+import { spawnLookYaw } from '../guidance';
+import { useDriver, useHead, useKeyboardControls, useTouchUi } from '../input';
+import { getWorld } from '../world/build';
 import { type CarApi, SwiftCar } from '../physics/SwiftCar';
 import { TIERS } from '../quality';
 import { TouchControls } from '../ui/TouchControls';
@@ -51,6 +53,14 @@ export function SimPreview() {
   const touch = useTouchUi() || params.get('touch') === 'on';
   useKeyboardControls();
   useEffect(() => { useDriver.getState().set({ handbrake: circuit.spawn.handbrake, paused: false }); }, []);
+  // ?bare=1: the yard as it was before the guidance (no boards, chevrons or barriers, head straight), for comparing
+  const bare = params.get('bare') === '1';
+  useEffect(() => {
+    const g = getWorld(circuit).group.getObjectByName('guidance');
+    if (g) g.visible = !bare;
+    useHead.getState().set({ yaw: bare ? 0 : spawnLookYaw(circuit, start), pitch: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bare]);
   const [x0, y0, x1, y1] = circuit.site.bounds;
   const centre: [number, number, number] = [(x0 + x1) / 2, 0, -(y0 + y1) / 2];
 

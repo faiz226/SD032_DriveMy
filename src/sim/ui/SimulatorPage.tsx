@@ -2,6 +2,7 @@
 // one station at a time, restarted at will and never saved; free drive (the owner, 20 Oct) is the yard for fun,
 // among the traffic, which the rules never see: nothing marked, nothing saved. Picking or restarting a station
 // moves the car; nothing reloads. The verdict comes from the rules session alone: no button can pass a run.
+import { spawnLookYaw } from '../guidance';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { useQueryClient } from '@tanstack/react-query';
@@ -198,6 +199,10 @@ function SimulatorScene() {
     auto.current = autopilotOn && m !== 'free' ? new Autopilot(autopilotMode === 'faults', getTraffic) : null;
     const pose = m === 'free' ? spawnPose() : useRun.getState().begin(m, d);
     car.current?.teleport(pose.at, pose.heading);
+    // head turned towards a first move that is out of view at the start (a turn), settling back after a moment
+    const look = spawnLookYaw(circuit, pose);
+    useHead.getState().set({ yaw: look, pitch: 0 });
+    if (look) window.setTimeout(() => { if (useHead.getState().yaw === look) useHead.getState().set({ yaw: 0, pitch: 0 }); }, 3500);
     useDriver.getState().set({
       throttle: 0, brake: 0, wheel: 0, gear: 'D', handbrake: m === 'assessment' && circuit.spawn.handbrake, paused: false, indicator: 0,
       ...(m !== 'free' && { rainbow: false }),   // the marked modes drive the plain red Swift
