@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useMockStats } from "@/hooks/useProgressStats";
 import { useAuthStore } from "@/stores/authStore";
-import { loadProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
+import { clearProgress, loadProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
 import { MOCK_TIME_LIMIT } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations";
 import type { LicenseTrack, MockTestResult } from "@/types/database";
@@ -147,21 +147,24 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
 
   const isSubmitDisabled = mode === "quiz" ? !selectedSet : (!selectedSet || !rulesAccepted);
 
+  // An unfinished mock for the picked set: say where it was left, and offer to continue it (the clock is still running) or start over.
+  const userId = useAuthStore((s) => s.user?.id);
+  const saved = mode === "mock" && selectedSet && userId ? loadProgress<{ answers?: Record<string, number>; currentIndex?: number }>(PROGRESS_SCOPES.mock(selectedSet), userId) : null;
+  const minutesLeft = saved ? Math.max(0, Math.ceil((MOCK_TIME_LIMIT - (Date.now() - saved.startedAt) / 1000) / 60)) : 0;
+  const resumeAt = (saved?.data.currentIndex ?? Object.keys(saved?.data.answers ?? {}).length) + 1;
+
   let buttonLabel = t("launch.btnMasterRoad");
   if (mode === "mock") {
     if (!selectedSet) {
       buttonLabel = t("launch.btnSelectMock");
     } else if (!rulesAccepted) {
       buttonLabel = t("launch.btnAcceptRules");
+    } else if (saved) {
+      buttonLabel = t("launch.btnContinueMock", { n: resumeAt });
     } else {
       buttonLabel = t("launch.btnStartMock");
     }
   }
-
-  // An unfinished mock for the picked set: say so before Start, since starting resumes it with the clock still running.
-  const userId = useAuthStore((s) => s.user?.id);
-  const saved = mode === "mock" && selectedSet && userId ? loadProgress<{ answers?: Record<string, number> }>(PROGRESS_SCOPES.mock(selectedSet), userId) : null;
-  const minutesLeft = saved ? Math.max(0, Math.ceil((MOCK_TIME_LIMIT - (Date.now() - saved.startedAt) / 1000) / 60)) : 0;
 
   const activePartConfig = KPP_SECTIONS.find((s) => s.id === (selectedPart || "A")) ?? KPP_SECTIONS[0];
 
@@ -387,7 +390,7 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
         <div>
           {saved && (
             <p role="status" className="mb-3 rounded-xl border border-brand-ink/25 bg-brand/15 p-3 text-sm font-medium">
-              {t("launch.resumeNotice", { answered: Object.keys(saved.data.answers ?? {}).length, minutes: minutesLeft })}
+              {t("launch.resumeNotice", { n: resumeAt, minutes: minutesLeft })}
             </p>
           )}
           {/* A disabled start keeps a readable label (5.2:1), because the label
@@ -401,6 +404,20 @@ export function TestLaunchPanel({ mode, t, onStart }: TestLaunchPanelProps) {
             {mode === "quiz" ? <Lightning className="!size-5" weight="fill" aria-hidden /> : <Play className="!size-5" weight="fill" aria-hidden />}
             <span className="truncate">{buttonLabel}</span>
           </Button>
+          {saved && !isSubmitDisabled && (
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="mt-3 w-full"
+              onClick={() => {
+                clearProgress(PROGRESS_SCOPES.mock(selectedSet!), userId!);
+                onStart({ language, setId: selectedSet });
+              }}
+            >
+              {t("launch.btnNewMock")}
+            </Button>
+          )}
 
         </div>
       </form>

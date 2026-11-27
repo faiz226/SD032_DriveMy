@@ -232,7 +232,9 @@ export const ms: Record<TranslationKey, string> = {
   "launch.mock6": "Set Percubaan 6",
   "launch.mockDesc": "70 soalan · 75 min",
   "launch.mockNotTried": "Belum dicuba",
-  "launch.resumeNotice": "Anda ada percubaan yang belum selesai: {{answered}} dijawab, {{minutes}} min berbaki. Tekan mula untuk menyambungnya.",
+  "launch.resumeNotice": "Anda berhenti pada soalan {{n}}, dengan baki {{minutes}} min. Sambung ujian ini, atau mulakan yang baharu.",
+  "launch.btnContinueMock": "Sambung dari soalan {{n}}",
+  "launch.btnNewMock": "Mulakan ujian baharu",
   "launch.mockLast": "Terakhir: {{score}}/{{total}}",
   "exam.sourceCitation": "Rujukan buku teks",
 

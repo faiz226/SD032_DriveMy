@@ -231,7 +231,9 @@ export const en = {
   "launch.mock6": "Mock Set 6",
   "launch.mockDesc": "70 questions · 75 min",
   "launch.mockNotTried": "Not tried yet",
-  "launch.resumeNotice": "You have an attempt in progress: {{answered}} answered, {{minutes}} min left. Start to continue it.",
+  "launch.resumeNotice": "You left this test at question {{n}}, with {{minutes}} min left. Continue it, or start a new one.",
+  "launch.btnContinueMock": "Continue from question {{n}}",
+  "launch.btnNewMock": "Start a new test",
   "launch.mockLast": "Last: {{score}}/{{total}}",
   "exam.sourceCitation": "Textbook reference",
 
