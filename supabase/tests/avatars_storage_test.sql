@@ -1,8 +1,8 @@
--- Profile pictures: the `avatars` bucket is public to read, and a learner can write only inside
+-- Profile pictures: the `avatars` bucket serves its files by URL, nobody can LIST it but the owner of a folder, and a learner can write only inside
 -- their own `<user id>/` folder. Alice can add and replace her own picture; she cannot touch
 -- Bob's, or write to the bucket root. Delete is limited to the learner's own folder.
 begin;
-select plan(12);
+select plan(14);
 
 insert into auth.users (id, email, aud, role)
 values
@@ -22,11 +22,11 @@ select is(
   'the avatars bucket accepts image types only'
 );
 
--- ─── Anyone can read ─────────────────────────────────────────────────────────
+-- ─── Nobody can list the bucket ──────────────────────────────────────────────────
 set local role anon;
 select is(
-  (select count(*) from storage.objects where bucket_id = 'avatars')::bigint, 1::bigint,
-  'a signed-out visitor can read a picture'
+  (select count(*) from storage.objects where bucket_id = 'avatars')::bigint, 0::bigint,
+  'a signed-out visitor cannot list the pictures (SEC-F1)'
 );
 select throws_ok(
   $$ insert into storage.objects (bucket_id, name) values ('avatars', '77777777-7777-4777-8777-777777777701/avatar.webp') $$,
@@ -75,6 +75,16 @@ select ok(
   (select qual from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'avatars_owner_delete')
     like '%avatars%foldername(name))[1]%auth.uid()%',
   'a learner can delete only inside their own folder'
+);
+
+select is(
+  (select count(*) from storage.objects where bucket_id = 'avatars')::bigint, 1::bigint,
+  'Alice sees only her own picture, not Bob''s (SEC-F1)'
+);
+select is(
+  (select cmd from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'avatars_public_read'),
+  null,
+  'there is no public read rule on the avatars bucket any more (SEC-F1)'
 );
 
 select * from finish();
