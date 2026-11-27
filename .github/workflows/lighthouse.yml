@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main, master]
 
+# Read-only token by default: a job that needs more asks for it itself.
+permissions:
+  contents: read
+
 jobs:
   lighthouse:
     runs-on: ubuntu-latest

@@ -30,9 +30,9 @@ import { SignColourBoard } from "@/components/theory/SignColourBoard";
 import { SignMiniQuizzes } from "@/components/theory/SignMiniQuizzes";
 import { categoryProgress } from "@/lib/signQuiz";
 import { searchRpk } from "@/lib/rpkSearch";
+import { learnedKeyFor, readLearned } from "@/lib/learnedSigns";
 import { toast } from "sonner";
 
-const LEARNED_STORAGE_KEY = "drivemy_theory_learned_signs_v2";
 
 type BoardKind = "all" | RoadSignCategory;
 
@@ -99,22 +99,13 @@ export function TheoryPage() {
 
   // Card flip and learned states
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
-  const learnedKey = user ? `${LEARNED_STORAGE_KEY}:${user.id}` : LEARNED_STORAGE_KEY;
-  const readLearned = (key: string): Record<string, boolean> => {
-    try {
-      // A user's own record first; the older shared one seeds a first visit so nobody loses what they had.
-      const saved = localStorage.getItem(key) ?? localStorage.getItem(LEARNED_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  };
-  const [learned, setLearned] = useState<Record<string, boolean>>(() => readLearned(learnedKey));
+  const learnedKey = learnedKeyFor(user?.id);
+  const [learned, setLearned] = useState<Record<string, boolean>>(() => readLearned(user?.id));
   const [loadedKey, setLoadedKey] = useState(learnedKey);
   if (loadedKey !== learnedKey) {
     // Signed in or switched user: show that user's record.
     setLoadedKey(learnedKey);
-    setLearned(readLearned(learnedKey));
+    setLearned(readLearned(user?.id));
   }
 
   // Sync learned state to localStorage

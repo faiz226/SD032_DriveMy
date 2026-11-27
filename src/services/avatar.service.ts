@@ -21,6 +21,16 @@ export async function uploadAvatar(userId: string, file: Blob): Promise<User> {
   return data.user;
 }
 
+/**
+ * Delete the picture file only (no profile change). Used when an account is deleted: the bucket is public, so a file
+ * left behind would stay reachable by its address after the learner asked for their data to go. Storage rows cannot be
+ * removed from SQL, so the learner's own session does it before the account goes.
+ */
+export async function deleteAvatarFile(userId: string): Promise<void> {
+  const { error } = await supabase.storage.from(BUCKET).remove([pathFor(userId)]);
+  if (error) throw error;
+}
+
 /** Remove the learner's own picture; the app falls back to their provider's picture, then to their initials. */
 export async function removeAvatar(userId: string): Promise<User> {
   const { error } = await supabase.storage.from(BUCKET).remove([pathFor(userId)]);
