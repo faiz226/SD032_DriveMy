@@ -8,23 +8,66 @@ import { BARRIERS, planChevrons, planGantries, type CueKind } from '../guidance'
 import type { BoxCollider } from './build';
 
 type RGB = [number, number, number];
-const YELLOW: RGB = [1, 0.8, 0.05];
 const BLACK: RGB = [0.04, 0.04, 0.04];
 const RED: RGB = [0.95, 0.12, 0.1];
 const AMBER: RGB = [1, 0.55, 0.08];
 const WHITE: RGB = [0.97, 0.97, 0.94];
 
-/** A board is built in its own frame (u across to the viewer's right, v up, n towards the viewer) then set in the yard. */
+/**
+ * The signs themselves are the official Malaysia files (docs/sign-sources.md), laid on a plane as a texture: nothing
+ * of a sign is drawn here. T17a and T17b are the chevron alignment signs (right and left), RM1c the ahead arrow.
+ */
+export const SIGN_FILES = {
+  right: { url: '/signs/263bc825012bcc83.svg', aspect: 450 / 600 },   // Malaysia_road_sign_T17a
+  left: { url: '/signs/ae147611d2116fed.svg', aspect: 450 / 600 },    // Malaysia_road_sign_T17b
+  ahead: { url: '/signs/2a61a654c2768ee6.svg', aspect: 1 },           // Malaysia_road_sign_RM1c
+} as const;
+
+/** The three sign files side by side in one texture (one draw call): each slot is 512 px, a sign fills its height. */
+const SLOT = 512;
+const SLOTS: CueKind[] = ['left', 'right', 'ahead'];
+const slotRect = (kind: CueKind): [number, number] => {
+  const w = SLOT * SIGN_FILES[kind].aspect;
+  const x0 = SLOTS.indexOf(kind) * SLOT + (SLOT - w) / 2;
+  return [x0 / (SLOT * SLOTS.length), (x0 + w) / (SLOT * SLOTS.length)];
+};
+
+function signAtlas(): THREE.CanvasTexture | null {
+  if (typeof document === 'undefined') return null;   // tests have no document; the planes stay plain
+  const canvas = document.createElement('canvas');
+  canvas.width = SLOT * SLOTS.length;
+  canvas.height = SLOT;
+  const ctx = canvas.getContext('2d');
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  if (!ctx) return texture;
+  for (const kind of SLOTS) {
+    const image = new Image();
+    image.onload = () => {
+      const [u0, u1] = slotRect(kind);
+      ctx.drawImage(image, u0 * canvas.width, 0, (u1 - u0) * canvas.width, SLOT);
+      texture.needsUpdate = true;
+    };
+    image.src = SIGN_FILES[kind].url;
+  }
+  return texture;
+}
+
+/** Merged triangles with vertex colours and UVs (UVs only matter to the sign planes). */
 class Mesher {
   pos: number[] = [];
   col: number[] = [];
-  quad(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3, colour: RGB) {
-    for (const p of [a, b, c, a, c, d]) { this.pos.push(p.x, p.y, p.z); this.col.push(...colour); }
+  uv: number[] = [];
+  quad(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3, colour: RGB, [u0, u1] = [0, 1]) {
+    const corners = [[u0, 0], [u1, 0], [u1, 1], [u0, 0], [u1, 1], [u0, 1]];
+    [a, b, c, a, c, d].forEach((p, i) => { this.pos.push(p.x, p.y, p.z); this.col.push(...colour); this.uv.push(...corners[i]); });
   }
   geometry() {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.pos, 3));
     g.setAttribute('color', new THREE.Float32BufferAttribute(this.col, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
     return g;
   }
 }
@@ -37,41 +80,19 @@ function plane(origin: Vec2, right: Vec2, lift = 0, push: Vec2 = [0, 0]) {
   return (u: number, v: number) => to3(origin[0] + right[0] * u + push[0], origin[1] + right[1] * u + push[1], v + lift);
 }
 
-const chevronShapes = (kind: 'left' | 'right', w: number, h: number): [number, number][][] => {
-  const s = kind === 'right' ? 1 : -1;
-  const tip = 0.3 * w, back = -0.22 * w, arm = 0.3 * h, t = 0.17 * w;
-  const q = (u: number, v: number): [number, number] => [s * u, v];
-  return [
-    [q(back, arm), q(back + t, arm), q(tip, 0), q(tip - t, 0)],
-    [q(tip - t, 0), q(tip, 0), q(back + t, -arm), q(back, -arm)],
-  ];
-};
-
 /** The viewer's right, for a board whose face points along `face` (towards the viewer, who looks along the opposite way). */
 export const rightOf = (face: number): Vec2 => {
   const [nx, ny] = dir(face);
   return [-ny, nx];
 };
 
-function board(m: Mesher, origin: Vec2, face: number, w: number, h: number, bottom: number, kind: CueKind) {
-  const [nx, ny] = dir(face);                 // towards the viewer
-  const right = rightOf(face);
-  const front = plane(origin, right, bottom, [nx * 0.02, ny * 0.02]);
-  const rim = 0.05;
-  const rect = (u0: number, u1: number, v0: number, v1: number, colour: RGB, p = front) => m.quad(p(u0, v0), p(u1, v0), p(u1, v1), p(u0, v1), colour);
-  rect(-w / 2, w / 2, 0, h, BLACK, plane(origin, right, bottom, [nx * 0.01, ny * 0.01]));
-  rect(-w / 2 + rim, w / 2 - rim, rim, h - rim, YELLOW);
-  const centre = h / 2;
-  if (kind === 'ahead') {
-    const stem = 0.07 * w, head = 0.2 * w;
-    rect(-stem, stem, 0.18 * h, centre + 0.06 * h, BLACK);
-    m.quad(front(-head, centre + 0.06 * h), front(head, centre + 0.06 * h), front(0, 0.86 * h), front(0, 0.86 * h), BLACK);
-    return;
-  }
-  for (const shape of chevronShapes(kind, w, h)) {
-    const [a, b, c, d] = shape.map(([u, v]) => front(u, centre + v));
-    m.quad(a, b, c, d, BLACK);
-  }
+/** A sign plane, `w` wide by `w / aspect` high, its bottom edge `bottom` m up, facing along `face`. */
+function board(m: Mesher, origin: Vec2, face: number, w: number, bottom: number, kind: CueKind) {
+  const [nx, ny] = dir(face);
+  const front = plane(origin, rightOf(face), bottom, [nx * 0.02, ny * 0.02]);
+  const h = w / SIGN_FILES[kind].aspect;
+  m.quad(front(-w / 2, 0), front(w / 2, 0), front(w / 2, h), front(-w / 2, h), WHITE, slotRect(kind));
+  return h;
 }
 
 function post(m: Mesher, at: Vec2, height: number, colour: RGB, half = 0.04) {
@@ -83,10 +104,10 @@ function post(m: Mesher, at: Vec2, height: number, colour: RGB, half = 0.04) {
 export interface Guidance { group: THREE.Group; boxes: BoxCollider[] }
 
 export function buildGuidance(c: CircuitData): Guidance {
-  const boards = new Mesher();
-  const barrierMesh = new Mesher();
+  const signs = new Mesher();
   const glow = new Mesher();
   const boxes: BoxCollider[] = [];
+  const barrierMesh = new Mesher();   // the barriers and the sign posts: plain colours, one draw call
 
   // the lit board over the road ahead of each start, on two posts beside it
   for (const g of planGantries(c)) {
@@ -94,14 +115,14 @@ export function buildGuidance(c: CircuitData): Guidance {
     const face = g.heading + Math.PI;                       // towards the driver coming on
     const left: Vec2 = [-ty, tx];
     const half = g.width / 2 + 0.5;
-    for (const side of [-1, 1]) post(boards, [g.at[0] + left[0] * half * side, g.at[1] + left[1] * half * side], 3.7, BLACK);
-    board(boards, g.at, face, Math.min(2.6, g.width * 0.6), 1.3, 2.4, g.kind);
+    for (const side of [-1, 1]) post(barrierMesh, [g.at[0] + left[0] * half * side, g.at[1] + left[1] * half * side], 4.2, BLACK);
+    board(signs, g.at, face, 1.5, 2.3, g.kind);
   }
 
   // a chevron board on a post at each bend
   for (const ch of planChevrons(c)) {
-    post(boards, ch.at, 1.5, BLACK);
-    board(boards, ch.at, ch.face, 0.95, 0.95, 1.0, ch.kind);
+    post(barrierMesh, ch.at, 1.2, BLACK);
+    board(signs, ch.at, ch.face, 0.8, 0.9, ch.kind);
   }
 
   // closed-road barriers: a low strip (amber and white), X markers across it, a glow on the road, a collider behind
@@ -153,7 +174,7 @@ export function buildGuidance(c: CircuitData): Guidance {
     mesh.matrixAutoUpdate = false;
     group.add(mesh);
   };
-  add('cue-boards', boards, unlit());
+  add('signs', signs, unlit({ map: signAtlas(), vertexColors: false, transparent: true, alphaTest: 0.1 }));
   add('barriers', barrierMesh, unlit());
   add('barrier-glow', glow, unlit({ transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 }));
   return { group, boxes };

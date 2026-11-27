@@ -73,7 +73,7 @@ describe('closed-road barriers', () => {
     const world = getWorld(circuit);
     expect(world.colliders.boxes.filter((b) => b.name.startsWith('barrier:'))).toHaveLength(BARRIERS.length);
     const meshes = world.group.getObjectByName('guidance')!.children;
-    expect(meshes.map((m) => m.name).sort()).toEqual(['barrier-glow', 'barriers', 'cue-boards']);
+    expect(meshes.map((m) => m.name).sort()).toEqual(['barrier-glow', 'barriers', 'signs']);
   });
 });
 
