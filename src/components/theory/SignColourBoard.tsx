@@ -34,7 +34,7 @@ const FACTS: Record<RoadSignCategory, Fact[]> = {
   ],
   temporary: [
     { en: "Work zone signs are orange and black: a diamond on a rectangular board.", ms: "Papan tanda zon kerja berwarna jingga dan hitam: berlian pada papan segi empat tepat.", source: "Wikipedia" },
-    { en: "Fun fact: the same pictures come with a distance, like “200 m” on the works-ahead and flagman signs.", ms: "Fakta menarik: gambar yang sama datang dengan jarak, seperti “200 m” pada tanda kerja di hadapan dan pengawal bendera.", source: "Wikipedia", fun: true },
+    { en: "Fun fact: the work zone set has a sign for each lane that can be closed: left, middle or right.", ms: "Fakta menarik: set zon kerja ada papan tanda untuk setiap lorong yang boleh ditutup: kiri, tengah atau kanan.", source: "Wikipedia", fun: true },
   ],
 };
 

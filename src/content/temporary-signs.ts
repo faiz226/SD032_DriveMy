@@ -2,7 +2,7 @@ import type { RoadSignItem } from "./theory";
 
 // Temporary (work zone) signs. The meanings are the captions in the Construction signs gallery of
 // https://en.wikipedia.org/wiki/Road_signs_in_Malaysia (orange and black, a diamond on a rectangular board).
-// The pictures are drawn for this app by scripts/draw-temporary-signs.py, not copied from any file.
+// The pictures are the official Malaysia files from Wikimedia Commons (docs/sign-sources.md), fetched by scripts/fetch-commons-sign.py; none is drawn here.
 export const temporarySigns: RoadSignItem[] = [
   {
     "id": "temp-roadworks",
@@ -15,8 +15,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Kerja jalan",
     "action": "Roadworks ahead. Slow down and watch for workers.",
     "actionMs": "Kerja jalan di hadapan. Perlahankan kenderaan dan awasi pekerja.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/b42139afd837ef25.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T1.svg",
+    "img": "/signs/71beb8e5a87a2aa7.svg"
   },
   {
     "id": "temp-caution",
@@ -29,8 +29,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Awas (zon kerja)",
     "action": "Take care and be ready for a hazard in the work zone.",
     "actionMs": "Berhati-hati dan bersedia menghadapi bahaya di zon kerja.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/f492a45dd81174e3.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T4.svg",
+    "img": "/signs/6fc63c1e870607ac.svg"
   },
   {
     "id": "temp-lane-closed-left",
@@ -43,8 +43,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Lorong kiri ditutup di hadapan",
     "action": "Check your mirror, signal and move into the open lane in good time.",
     "actionMs": "Periksa cermin, beri isyarat dan masuk ke lorong yang dibuka lebih awal.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/2e4ff80d4f321707.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T5a.svg",
+    "img": "/signs/be77d4a232ff2b48.svg"
   },
   {
     "id": "temp-lane-closed-middle",
@@ -57,8 +57,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Lorong tengah ditutup di hadapan",
     "action": "Choose the open lane early and keep a safe gap.",
     "actionMs": "Pilih lorong yang dibuka lebih awal dan kekalkan jarak selamat.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/690237ee07171ace.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T5b.svg",
+    "img": "/signs/bacc83fab22b2d26.svg"
   },
   {
     "id": "temp-lane-closed-right",
@@ -71,8 +71,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Lorong kanan ditutup di hadapan",
     "action": "Check your mirror, signal and move left in good time.",
     "actionMs": "Periksa cermin, beri isyarat dan beralih ke kiri lebih awal.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/1068e9c0d065f016.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T5c.svg",
+    "img": "/signs/b42191bcf7373a1a.svg"
   },
   {
     "id": "temp-curve-right",
@@ -85,8 +85,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Selekoh ke kanan (zon kerja)",
     "action": "Slow down before the curve and keep to your lane.",
     "actionMs": "Perlahankan kenderaan sebelum selekoh dan kekal di lorong anda.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/88118fbd10ff99bc.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T13a.svg",
+    "img": "/signs/44eeb48527d2e750.svg"
   },
   {
     "id": "temp-curve-left",
@@ -99,8 +99,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Selekoh ke kiri (zon kerja)",
     "action": "Slow down before the curve and keep to your lane.",
     "actionMs": "Perlahankan kenderaan sebelum selekoh dan kekal di lorong anda.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/7bf42d1406f5e378.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T13b.svg",
+    "img": "/signs/6ed148a89f7d2c34.svg"
   },
   {
     "id": "temp-narrows-left",
@@ -113,8 +113,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Jalan menyempit di sebelah kiri",
     "action": "Slow down and give way to traffic already in the narrow part where needed.",
     "actionMs": "Perlahankan kenderaan dan beri laluan kepada trafik di bahagian sempit jika perlu.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/649c72f2e8303c67.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T14a.svg",
+    "img": "/signs/496d431b873e8fec.svg"
   },
   {
     "id": "temp-narrows-right",
@@ -127,8 +127,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Jalan menyempit di sebelah kanan",
     "action": "Slow down and give way to traffic already in the narrow part where needed.",
     "actionMs": "Perlahankan kenderaan dan beri laluan kepada trafik di bahagian sempit jika perlu.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/937d34aee6c09619.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T14b.svg",
+    "img": "/signs/578a2bc8d437876c.svg"
   },
   {
     "id": "temp-chevron-left",
@@ -141,8 +141,8 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Chevron: laluan beralih ke kiri",
     "action": "Slow down and follow the chevrons to the left.",
     "actionMs": "Perlahankan kenderaan dan ikut chevron ke kiri.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/b9688cf3675a4402.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T17b.svg",
+    "img": "/signs/ae147611d2116fed.svg"
   },
   {
     "id": "temp-diverge",
@@ -155,105 +155,21 @@ export const temporarySigns: RoadSignItem[] = [
     "meaningMs": "Jalan bercabang",
     "action": "Choose your lane early and follow the signs for your direction.",
     "actionMs": "Pilih lorong lebih awal dan ikut papan tanda arah anda.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/b4ef5c653b3178ac.svg"
+    "source": "Wikimedia Commons, Malaysia_road_sign_T15.svg",
+    "img": "/signs/59a64fa7b5bc7a1f.svg"
   },
   {
-    "id": "temp-works-200m",
+    "id": "temp-other-dangers",
     "type": "temporary",
-    "name": "Construction works ahead in 200 m",
-    "nameMs": "Kerja pembinaan 200 m di hadapan",
-    "desc": "Construction works ahead in 200 m. Start slowing down now and be ready to change lane.",
-    "descMs": "Kerja pembinaan 200 m di hadapan. Mula perlahankan kenderaan sekarang dan bersedia menukar lorong.",
-    "meaning": "Construction works ahead in 200 m",
-    "meaningMs": "Kerja pembinaan 200 m di hadapan",
-    "action": "Start slowing down now and be ready to change lane.",
-    "actionMs": "Mula perlahankan kenderaan sekarang dan bersedia menukar lorong.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/fadd8799d73948f2.svg"
-  },
-  {
-    "id": "temp-flagman-200m",
-    "type": "temporary",
-    "name": "Flagman ahead in 200 m",
-    "nameMs": "Pengawal bendera 200 m di hadapan",
-    "desc": "Flagman ahead in 200 m. Slow down and obey the flagman's signals.",
-    "descMs": "Pengawal bendera 200 m di hadapan. Perlahankan kenderaan dan patuhi isyarat pengawal bendera.",
-    "meaning": "Flagman ahead in 200 m",
-    "meaningMs": "Pengawal bendera 200 m di hadapan",
-    "action": "Slow down and obey the flagman's signals.",
-    "actionMs": "Perlahankan kenderaan dan patuhi isyarat pengawal bendera.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/77afd7acd0ca2609.svg"
-  },
-  {
-    "id": "temp-detour",
-    "type": "temporary",
-    "name": "Detour",
-    "nameMs": "Lencongan",
-    "desc": "Detour. Follow the arrow and the detour route.",
-    "descMs": "Lencongan. Ikut anak panah dan laluan lencongan.",
-    "meaning": "Detour",
-    "meaningMs": "Lencongan",
-    "action": "Follow the arrow and the detour route.",
-    "actionMs": "Ikut anak panah dan laluan lencongan.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/b208cd7babea458a.svg"
-  },
-  {
-    "id": "temp-one-lane",
-    "type": "temporary",
-    "name": "One-lane road ahead",
-    "nameMs": "Jalan satu lorong di hadapan",
-    "desc": "One-lane road ahead. Slow down, keep to the lane and watch for oncoming traffic.",
-    "descMs": "Jalan satu lorong di hadapan. Perlahankan kenderaan, kekal di lorong dan awasi trafik dari arah bertentangan.",
-    "meaning": "One-lane road ahead",
-    "meaningMs": "Jalan satu lorong di hadapan",
-    "action": "Slow down, keep to the lane and watch for oncoming traffic.",
-    "actionMs": "Perlahankan kenderaan, kekal di lorong dan awasi trafik dari arah bertentangan.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/b463d9db72161ce9.svg"
-  },
-  {
-    "id": "temp-speed-50",
-    "type": "temporary",
-    "name": "Temporary speed limit 50 km/h",
-    "nameMs": "Had laju sementara 50 km/j",
-    "desc": "Temporary speed limit 50 km/h. Do not drive faster than 50 km/h while the sign applies.",
-    "descMs": "Had laju sementara 50 km/j. Jangan memandu lebih laju daripada 50 km/j selagi papan tanda ini berkuat kuasa.",
-    "meaning": "Temporary speed limit 50 km/h",
-    "meaningMs": "Had laju sementara 50 km/j",
-    "action": "Do not drive faster than 50 km/h while the sign applies.",
-    "actionMs": "Jangan memandu lebih laju daripada 50 km/j selagi papan tanda ini berkuat kuasa.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/a227840ecbc8e72b.svg"
-  },
-  {
-    "id": "temp-heavy-vehicles",
-    "type": "temporary",
-    "name": "Heavy vehicles entering and leaving the work zone",
-    "nameMs": "Kenderaan berat keluar masuk zon kerja",
-    "desc": "Heavy vehicles entering and leaving the work zone. Slow down and watch for lorries crossing the road.",
-    "descMs": "Kenderaan berat keluar masuk zon kerja. Perlahankan kenderaan dan awasi lori yang melintas jalan.",
-    "meaning": "Heavy vehicles entering and leaving the work zone",
-    "meaningMs": "Kenderaan berat keluar masuk zon kerja",
-    "action": "Slow down and watch for lorries crossing the road.",
-    "actionMs": "Perlahankan kenderaan dan awasi lori yang melintas jalan.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/9dd2a1e869c3a6ea.svg"
-  },
-  {
-    "id": "temp-end-works",
-    "type": "temporary",
-    "name": "End of construction",
-    "nameMs": "Pembinaan tamat",
-    "desc": "End of construction. The work zone ends here. Normal rules apply again.",
-    "descMs": "Pembinaan tamat. Zon kerja tamat di sini. Peraturan biasa berkuat kuasa semula.",
-    "meaning": "End of construction",
-    "meaningMs": "Pembinaan tamat",
-    "action": "The work zone ends here. Normal rules apply again.",
-    "actionMs": "Zon kerja tamat di sini. Peraturan biasa berkuat kuasa semula.",
-    "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/7803413d6ef60b47.svg"
+    "name": "Other dangers nearby",
+    "nameMs": "Bahaya lain berdekatan",
+    "desc": "Other dangers nearby. Take care in the work zone and be ready to slow down.",
+    "descMs": "Bahaya lain berdekatan. Berhati-hati di zon kerja dan bersedia memperlahankan kenderaan.",
+    "meaning": "Other dangers nearby",
+    "meaningMs": "Bahaya lain berdekatan",
+    "action": "Take care in the work zone and be ready to slow down.",
+    "actionMs": "Berhati-hati di zon kerja dan bersedia memperlahankan kenderaan.",
+    "source": "Wikimedia Commons, Malaysia_road_sign_T12.svg",
+    "img": "/signs/d75d7a2b3ace4d1d.svg"
   }
 ];
