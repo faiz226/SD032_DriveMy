@@ -36,34 +36,34 @@ export function ConsentBanner() {
       role="dialog"
       aria-modal="false"
       aria-label={t("consent.title")}
-      className="fixed inset-x-0 bottom-0 z-[100] border-t border-border bg-card p-4"
+      className="glass-sheet fixed inset-x-3 bottom-3 z-[100] rounded-2xl p-4 sm:inset-x-auto sm:right-4 sm:bottom-4 sm:max-w-lg"
     >
-      <div className="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3">
         <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">{t("consent.title")}</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="glass-ink font-heading text-sm font-extrabold">{t("consent.title")}</p>
+          <p className="glass-muted text-sm leading-relaxed">
             {t("consent.body")}{" "}
             <Link
               to={ROUTES.PRIVACY}
-              className="text-primary underline underline-offset-4 hover:no-underline"
+              className="glass-ink font-semibold underline underline-offset-4 hover:no-underline"
             >
               {t("settings.privacyPolicy")}
             </Link>
           </p>
         </div>
 
-        <div className="flex shrink-0 gap-2">
+        <div className="flex items-center gap-2">
           <Button
             type="button"
             variant="outline"
-            className="min-h-[44px] flex-1 sm:flex-none"
+            className="min-h-[44px] flex-1"
             onClick={() => decide("denied")}
           >
             {t("consent.decline")}
           </Button>
           <Button
             type="button"
-            className="min-h-[44px] flex-1 sm:flex-none"
+            className="min-h-[44px] flex-1"
             onClick={() => decide("granted")}
           >
             {t("consent.accept")}
