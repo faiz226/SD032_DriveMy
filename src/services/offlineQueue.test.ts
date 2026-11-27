@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isTransientError, newQueuedItem, normaliseQueue, isValidUUID, generateUUID } from "./offlineQueue";
+import { isRowLimitError, isTransientError, newQueuedItem, normaliseQueue, isValidUUID, generateUUID } from "./offlineQueue";
 
 /**
  * The classification here decides whether a learner's result is retried or
@@ -121,5 +121,14 @@ describe("normaliseQueue", () => {
     expect(normaliseQueue(undefined)).toEqual([]);
     expect(normaliseQueue(null)).toEqual([]);
     expect(normaliseQueue("nonsense")).toEqual([]);
+  });
+});
+
+describe("row limits (audit F4)", () => {
+  it("treats the database's row-limit refusal as permanent, never queued for retry", () => {
+    expect(isTransientError({ code: "54000", message: "Row limit reached for quiz_results" }, 400)).toBe(false);
+    expect(isRowLimitError({ code: "54000" })).toBe(true);
+    expect(isRowLimitError({ code: "42501" })).toBe(false);
+    expect(isRowLimitError(null)).toBe(false);
   });
 });

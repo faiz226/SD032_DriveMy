@@ -249,6 +249,7 @@ export const ms: Record<TranslationKey, string> = {
   "exam.timeUp":                   "Masa tamat",
   "exam.autoSubmitted":            "Ujian anda telah dihantar secara automatik.",
   "exam.saved":                    "Keputusan disimpan",
+  "exam.limitReached":             "Anda telah menyimpan banyak keputusan hari ini. Sila cuba lagi esok.",
   "exam.grading":                  "Menyemak jawapan anda…",
   "exam.resumed":                  "Disambung dari tempat anda berhenti.",
   "color.resumed":                 "Ujian warna disambung dari tempat anda berhenti.",
