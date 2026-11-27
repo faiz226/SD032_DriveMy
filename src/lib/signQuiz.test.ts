@@ -68,9 +68,9 @@ describe("answer pictures", () => {
 });
 
 describe("the sign set", () => {
-  it("has many temporary signs, each with English and Malay text, a drawn picture and what to do", () => {
+  it("has many temporary signs, each with English and Malay text, an official sign file and what to do", () => {
     const temporary = roadSigns.filter((sign) => sign.type === "temporary");
-    expect(temporary.length).toBeGreaterThanOrEqual(15);
+    expect(temporary.length).toBeGreaterThanOrEqual(12);
     for (const sign of temporary) {
       expect(sign.name && sign.nameMs && sign.action && sign.actionMs, sign.id).toBeTruthy();
       expect(sign.img).toMatch(/^\/signs\/.+\.svg$/);

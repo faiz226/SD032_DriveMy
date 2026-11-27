@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850.52802mm" height="850.52802mm" viewBox="0 0 850.52802 850.52802" version="1.1">
+  <defs />
+  <g transform="translate(0,553.52797)">
+    <rect style="fill:#f5911e;fill-opacity:1;stroke:none;stroke-width:0.340808" width="600" height="600" x="91.403503" y="-89.989288" transform="rotate(-45)" />
+    <rect style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.329448" width="580" height="580" x="101.40351" y="-79.989288" transform="rotate(-45)" />
+    <rect style="fill:#f5911e;fill-opacity:1;stroke:none;stroke-width:0.312408" width="550" height="550" x="116.40351" y="-64.989288" transform="rotate(-45)" />
+    <path style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.129576" d="m 260.264,-218.26404 -30,15 45,-75 45,75 -30,-15 V 21.735984 h -30 z" />
+    <path style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.129576" d="m 560.264,-218.26404 -29.99999,15 44.99999,-75 45.00001,75 -30.00002,-15 V 21.735984 H 560.264 Z" />
+    <rect style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.163123" width="30.000002" height="230" x="410.26401" y="-208.26401" />
+    <rect style="fill:#c8141e;fill-opacity:1;stroke:none;stroke-width:0.163869" width="90" height="30.000002" x="380.26401" y="-233.26401" />
+  </g>
+</svg>
