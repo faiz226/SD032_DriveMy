@@ -4,6 +4,7 @@
  * Use with react-hook-form's register() or Controller.
  */
 import { useId } from "react";
+import { Warning } from "@/components/ui/icons";
 import { Label } from "./label";
 import { Input, type InputProps } from "./input";
 import { cn } from "@/lib/utils";
@@ -63,9 +64,9 @@ export function FormField({
           id={errorId}
           role="alert"
           aria-live="polite"
-          className="text-xs text-destructive flex items-center gap-1"
+          className="text-xs text-destructive flex items-center gap-1.5"
         >
-          <span aria-hidden>⚠</span>
+          <Warning size={14} weight="bold" className="shrink-0" aria-hidden="true" />
           {error}
         </p>
       )}

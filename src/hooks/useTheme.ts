@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useThemeStore } from "@/stores/themeStore";
+import { useUIStore } from "@/stores/uiStore";
 
 export function useTheme() {
   const { theme, setTheme } = useThemeStore();
+  const reduceTransparency = useUIStore((s) => s.reduceTransparency);
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === "undefined") return true;
     if (theme === "system") return window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -37,6 +39,15 @@ export function useTheme() {
       return () => mediaQuery.removeEventListener("change", listener);
     }
   }, [theme]);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (reduceTransparency) {
+      root.dataset.reduceTransparency = "true";
+    } else {
+      delete root.dataset.reduceTransparency;
+    }
+  }, [reduceTransparency]);
 
   return { theme, setTheme, isDark };
 }

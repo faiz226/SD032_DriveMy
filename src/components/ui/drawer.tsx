@@ -3,7 +3,7 @@ import { Drawer as Vaul } from "vaul";
 import { cn } from "@/lib/utils";
 
 const Drawer = ({
-  shouldScaleBackground = true,
+  shouldScaleBackground = false,
   ...props
 }: React.ComponentProps<typeof Vaul.Root>) => (
   <Vaul.Root shouldScaleBackground={shouldScaleBackground} {...props} />
@@ -21,7 +21,7 @@ const DrawerPopup = React.forwardRef<
     <Vaul.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-3xl border bg-card",
+        "glass-sheet fixed inset-x-3 bottom-3 z-50 mt-24 flex h-auto max-h-[85dvh] flex-col rounded-3xl outline-none",
         className
       )}
       // Open on the first control, so the first Tab stays inside the sheet.
@@ -32,9 +32,12 @@ const DrawerPopup = React.forwardRef<
       {...props}
     >
       {showBar && (
-        <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/25" />
+        <div
+          aria-hidden="true"
+          className="mx-auto mt-3 h-1.5 w-11 shrink-0 rounded-full bg-foreground/25 dark:bg-white/30"
+        />
       )}
-      <div className="pb-8">{children}</div>
+      <div className="overflow-y-auto pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>
     </Vaul.Content>
   </Vaul.Portal>
 ));
@@ -45,7 +48,7 @@ const DrawerHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("grid gap-1.5 p-4 text-center", className)}
+    className={cn("grid gap-1.5 p-4 text-left", className)}
     {...props}
   />
 );
@@ -82,7 +85,7 @@ const DrawerTitle = React.forwardRef<
   <Vaul.Title
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
+      "glass-ink font-heading text-lg font-extrabold leading-none tracking-tight",
       className
     )}
     {...props}
@@ -96,7 +99,7 @@ const DrawerDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Vaul.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("glass-muted text-sm", className)}
     {...props}
   />
 ));
