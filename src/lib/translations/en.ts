@@ -248,6 +248,7 @@ export const en = {
   "exam.timeUp":                   "Time's up!",
   "exam.autoSubmitted":            "Your test was auto-submitted.",
   "exam.saved":                    "Result saved!",
+  "exam.limitReached":             "You have saved a lot of results today. Please try again tomorrow.",
   "exam.grading":                  "Marking your answers…",
   "exam.resumed":                  "Welcome back. We picked up where you left off.",
   "color.resumed":                 "Welcome back. Your colour vision test continues from where you left off.",

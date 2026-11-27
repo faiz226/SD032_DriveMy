@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { OFFLINE_QUEUED_ID } from "@/services/results.service";
+import { isRowLimitError } from "@/services/offlineQueue";
 import { invalidateLearnerData } from "@/lib/queryKeys";
 import { useLanguageStore } from "@/stores/languageStore";
 import type { TranslationKey } from "@/lib/translations/en";
@@ -35,7 +36,10 @@ export function useSaveResultMutation<TArgs, TResult>(
     },
     onError: (error) => {
       console.error("[results] save failed", error);
-      toast.error(useLanguageStore.getState().t(errorKey));
+      const t = useLanguageStore.getState().t;
+      // A daily or lifetime row limit is not a fault: say so calmly, not "something went wrong".
+      if (isRowLimitError(error)) toast(t("exam.limitReached"));
+      else toast.error(t(errorKey));
     },
   });
 }
