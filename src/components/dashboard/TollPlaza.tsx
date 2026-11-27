@@ -219,20 +219,30 @@ function ApproachRoad({ lanes }: { lanes: number }) {
           />
         );
       })}
-      {xs.slice(0, -1).map((x, i) => {
-        const cx = (far(x) + far(xs[i + 1])) / 2;
-        return (
-          <path
-            key={cx}
-            d={`M${cx - 26} 112 L${cx - 26} 84 L${cx - 52} 84 L${cx} 44 L${cx + 52} 84 L${cx + 26} 84 L${cx + 26} 112 Z`}
-            fill="#e8edf0"
-            opacity="0.5"
-            className="max-md:hidden"
-          />
-        );
-      })}
+      {xs.slice(0, -1).map((x, i) => (
+        <path key={x} d={laneArrow(far(x), far(xs[i + 1]), near(x), near(xs[i + 1]), H)} fill="#e8edf0" opacity="0.6" className="max-md:hidden" />
+      ))}
     </svg>
   );
+}
+
+/**
+ * A forward arrow painted flat on a lane, drawn in the road's perspective. Its tail is nearer the viewer than its tip,
+ * and the lane narrows with distance, so the arrow narrows too and is squashed along the road. Corners go through
+ * the lane's own edges (far and near x of each edge), which is why it stays inside the lane at any spread.
+ */
+function laneArrow(farL: number, farR: number, nearL: number, nearR: number, H: number) {
+  const tTail = 0.86;
+  const tTip = 0.3;
+  // (across the lane from -1 to 1, along the arrow from tail 0 to tip 1)
+  const shape: [number, number][] = [[-0.16, 0], [-0.16, 0.5], [-0.46, 0.5], [0, 1], [0.46, 0.5], [0.16, 0.5], [0.16, 0]];
+  return shape.map(([u, w], k) => {
+    const t = tTail + (tTip - tTail) * w;
+    const left = farL + (nearL - farL) * t;
+    const right = farR + (nearR - farR) * t;
+    const x = (left + right) / 2 + (u * 0.6 * (right - left)) / 2;
+    return `${k ? "L" : "M"}${x.toFixed(1)} ${(7 + t * (H - 7)).toFixed(1)}`;
+  }).join("") + "Z";
 }
 
 /** The red "cars only" class sign at the top of each lane frame. */
