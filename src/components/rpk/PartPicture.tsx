@@ -31,7 +31,7 @@ export function PartPicture({ topicId, label, stepCount, active, stepName, onSel
   return (
     <figure className="relative mx-auto my-5 w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-background">
       {usePhoto ? (
-        <img src={photo.src} alt={label} className="block h-auto w-full" onError={() => setPhotoFailed(true)} />
+        <img src={photo.src} srcSet={photo.srcSet} sizes="(min-width: 640px) 576px, 100vw" alt={label} className="block h-auto w-full" onError={() => setPhotoFailed(true)} />
       ) : (
         <PartArt topicId={topicId} label={label} />
       )}
