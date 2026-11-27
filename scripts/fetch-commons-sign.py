@@ -7,6 +7,8 @@ import hashlib
 import json
 import re
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -16,7 +18,17 @@ UA = {"User-Agent": "DriveMy-sign-import/1.0 (educational project)"}
 
 
 def get(url: str) -> bytes:
-    return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40).read()
+    """One polite request at a time; Wikimedia answers 429 when asked too fast, so wait and try again."""
+    for attempt in range(8):
+        try:
+            data = urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40).read()
+            time.sleep(2)
+            return data
+        except urllib.error.HTTPError as err:
+            if err.code != 429:
+                raise
+            time.sleep(15 * (attempt + 1))
+    raise SystemExit("Wikimedia kept answering 429")
 
 
 def sanitize(raw: bytes) -> str:
@@ -53,7 +65,7 @@ def main(names):
         info = page["imageinfo"][0]
         meta = info["extmetadata"]
         licence = meta.get("LicenseShortName", {}).get("value", "")
-        if licence.lower() != "public domain":
+        if licence.lower() not in ("public domain", "cc0"):   # CC0 is a public-domain dedication
             print("NOT PUBLIC DOMAIN, skipped:", name, licence)
             continue
         data = sanitize(get(info["url"].split("?")[0])).encode("utf-8")
@@ -62,7 +74,7 @@ def main(names):
         open(f"public/signs/{file}", "wb").write(data)
         credit = re.sub("<[^>]+>", "", meta.get("Artist", {}).get("value", "Public Works Department Malaysia"))
         page_url = "https://commons.wikimedia.org/wiki/File:" + name
-        rows.append(f"| `{file}` | [Source]({page_url}) | [Public domain]({page_url}#Licensing) | {credit} | Commons download; SVG drawing retained and metadata stripped |")
+        rows.append(f"| `{file}` | [Source]({page_url}) | [{licence}]({page_url}#Licensing) | {credit} | Commons download; SVG drawing retained and metadata stripped |")
         print(name, "->", file)
     if rows:
         doc = open("docs/sign-sources.md", encoding="utf-8", newline="").read()
