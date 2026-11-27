@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { AXIA_SIDE } from "./axiaSide";
 
 type Lang = "en" | "bm";
 
-/** A flat side-view hatchback, drawn by hand (not traced from a photo). Faces right. 120 x 48. */
+/** The Axia's flat side view, traced from the owner's photo (see axiaSide.ts). Faces right. */
 function CarSide() {
   return (
     <g>
-      <path d="M4 36 L4 28 Q4 23 10 22 L28 20 Q37 8 52 7 L74 7 Q88 8 96 20 L110 23 Q117 25 117 31 L117 36 Z" fill="currentColor" />
-      <path d="M34 20 Q41 11 51 10.5 L60 10.5 L60 20 Z M64 10.5 L74 10.5 Q82 11 89 20 L64 20 Z" className="fill-background" opacity="0.85" />
-      <circle cx="28" cy="36" r="8.5" className="fill-foreground" />
-      <circle cx="92" cy="36" r="8.5" className="fill-foreground" />
-      <circle cx="28" cy="36" r="3.5" className="fill-background" />
-      <circle cx="92" cy="36" r="3.5" className="fill-background" />
+      <path d={AXIA_SIDE.body} fill="currentColor" />
+      {AXIA_SIDE.windows.map((d) => <path key={d} d={d} className="fill-background" opacity="0.85" />)}
+      {AXIA_SIDE.wheels.map(([cx, cy, r]) => (
+        <g key={cx}>
+          <circle cx={cx} cy={cy} r={r} className="fill-foreground" />
+          <circle cx={cx} cy={cy} r={r * 0.45} className="fill-background" />
+        </g>
+      ))}
     </g>
   );
 }
@@ -68,7 +71,7 @@ export function StoppingScene({ lang, speedKmh, thinkingMeters, brakingMeters, w
           animate={{ x: playing ? [x0, xThink, xStop] : reduce ? xStop : x0 }}
           transition={playing ? { duration: total, times: [0, tThink / total, 1], ease: ["linear", "easeOut"] } : { duration: 0 }}
         >
-          <g transform={`translate(0 36) scale(${CAR_W / 120})`}>
+          <g transform={`translate(0 ${86 - AXIA_SIDE.wheels[0][1] * (CAR_W / 120) - AXIA_SIDE.wheels[0][2] * (CAR_W / 120)}) scale(${CAR_W / 120})`}>
             <CarSide />
           </g>
         </motion.g>

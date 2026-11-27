@@ -25,7 +25,7 @@ export function PartPicture({ topicId, label, stepCount, active, stepName, onSel
   const [photoFailed, setPhotoFailed] = useState(false);
   const usePhoto = !!photo && !photoFailed;
   // Percentages of the picture: the photo's own, or the drawing's 400 x 300 positions.
-  const spots: [number, number][] = usePhoto
+  const spots: ([number, number] | null)[] = usePhoto
     ? photo.spots.slice(0, stepCount)
     : (HOTSPOTS[topicId]?.slice(0, stepCount) ?? []).map(([x, y]) => [(x / 400) * 100, (y / 300) * 100]);
   return (
@@ -35,7 +35,9 @@ export function PartPicture({ topicId, label, stepCount, active, stepName, onSel
       ) : (
         <PartArt topicId={topicId} label={label} />
       )}
-      {spots.map(([x, y], index) => {
+      {spots.map((spot, index) => {
+        if (!spot) return null;
+        const [x, y] = spot;
         const on = active === index;
         return (
           <button
