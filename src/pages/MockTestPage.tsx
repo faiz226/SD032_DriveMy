@@ -56,7 +56,7 @@ export function MockTestPage() {
         if (data[0].set_id === "mock-1") toast.info(t("mock.legacyFormat"));
         setPhase("testing");
       } else {
-        toast.error("No questions found for this set.");
+        toast.error(t("quiz.noQuestions"));
       }
     } catch {
       toast.error(t("common.error"));
@@ -134,29 +134,32 @@ export function MockTestPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-lg mx-auto py-12" aria-busy="true" aria-label={t("common.loading")}>
-        <div className="card-premium p-6 sm:p-8 space-y-8 animate-pulse">
-          <div className="flex flex-col items-center space-y-4">
-            <Skeleton className="h-12 w-12 rounded-lg" />
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-72" />
+      <div
+        className="page-shell max-w-5xl"
+        aria-busy="true"
+        aria-label={t("common.loading")}
+      >
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+          <div className="space-y-2.5">
+            <Skeleton className="h-9 w-56 rounded-xl" />
+            <Skeleton className="h-5 w-full max-w-lg rounded-lg" />
           </div>
           <div className="space-y-3">
-            <Skeleton className="h-4 w-32" />
-            <div className="grid grid-cols-2 gap-3">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-5 w-44 rounded-lg" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Skeleton className="h-[4.75rem] w-full rounded-2xl" />
+              <Skeleton className="h-[4.75rem] w-full rounded-2xl" />
             </div>
           </div>
           <div className="space-y-3">
-            <Skeleton className="h-4 w-32" />
-            <div className="grid grid-cols-3 gap-3">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-5 w-48 rounded-lg" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Skeleton className="h-28 w-full rounded-2xl sm:h-36" />
+              <Skeleton className="h-28 w-full rounded-2xl sm:h-36" />
             </div>
           </div>
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-36 w-full rounded-2xl" />
+          <Skeleton className="h-[52px] w-full rounded-xl" />
         </div>
       </div>
     );
@@ -200,22 +203,33 @@ export function MockTestPage() {
       {/* Without this, a failed or emptied question fetch left the user staring
           at a blank page with no explanation and no way forward. */}
       {phase === "testing" && questions.length === 0 && (
-        <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4 bg-card rounded-2xl border shadow-sm p-8 mt-8">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+        <div className="panel mx-auto mt-8 flex min-h-[360px] max-w-xl flex-col items-center justify-center space-y-4 p-8 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Warning className="h-8 w-8 text-muted-foreground" aria-hidden />
           </div>
-          <p className="text-muted-foreground max-w-sm">{t("quiz.noQuestions")}</p>
-          <Button onClick={handleRetry}>{t("common.back")}</Button>
+          <h2 className="font-heading text-xl font-bold">{t("quiz.noQuestionsTitle")}</h2>
+          <p className="max-w-sm text-muted-foreground">{t("quiz.noQuestions")}</p>
+          <Button variant="brand" onClick={handleRetry} className="mt-2 min-h-11">
+            {t("common.back")}
+          </Button>
         </div>
       )}
 
       {phase === "results" && result && submissionStatus && (
-        <div className="panel p-6 space-y-4" role="status">
-          <p>{t(submissionStatus === "queued" ? "exam.queuedUngraded" : "exam.saveFailedUngraded")}</p>
-          {submissionStatus === "failed" && (
-            <Button onClick={() => handleComplete(result)}>{t("exam.retrySave")}</Button>
-          )}
-          <Button variant="outline" onClick={handleRetry}>{t("common.back")}</Button>
+        <div className="panel mx-auto max-w-xl space-y-4 p-6 sm:p-7" role="status">
+          <p className="text-base leading-relaxed">
+            {t(submissionStatus === "queued" ? "exam.queuedUngraded" : "exam.saveFailedUngraded")}
+          </p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {submissionStatus === "failed" && (
+              <Button variant="brand" className="min-h-11" onClick={() => handleComplete(result)}>
+                {t("exam.retrySave")}
+              </Button>
+            )}
+            <Button variant="outline" className="min-h-11" onClick={handleRetry}>
+              {t("common.back")}
+            </Button>
+          </div>
         </div>
       )}
       {phase === "results" && result && !submissionStatus && (

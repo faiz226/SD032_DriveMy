@@ -4,7 +4,6 @@ import { SpeechControl } from "@/components/shared/SpeechControl";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { XCircle, CheckCircle, CaretDown, ArrowCounterClockwise, Download, House, FunnelSimple, Clock } from "@/components/ui/icons";
-import { SwapIcon } from "@/components/ui/swap-icon";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -19,6 +18,41 @@ import { ROUTES } from "@/lib/constants";
 
 import type { ExamResult } from "./ExamShell";
 import type { TranslationKey } from "@/lib/translations";
+
+const CATEGORY_TRANSLATION_KEYS: Record<string, TranslationKey> = {
+  "road-signs": "progress.category.road-signs",
+  road_signs: "progress.category.road-signs",
+  signs: "progress.category.road-signs",
+  "traffic-rules": "progress.category.traffic-rules",
+  traffic_rules: "progress.category.traffic-rules",
+  rules: "progress.category.traffic-rules",
+  "safety-principles": "progress.category.safety-principles",
+  safety_principles: "progress.category.safety-principles",
+  safety: "progress.category.safety-principles",
+  part_a: "launch.sectionA",
+  "part-a": "launch.sectionA",
+  a: "launch.sectionA",
+  part_b: "launch.sectionB",
+  "part-b": "launch.sectionB",
+  b: "launch.sectionB",
+  part_c: "launch.sectionC",
+  "part-c": "launch.sectionC",
+  c: "launch.sectionC",
+  warning: "signs.categories.warning",
+  prohibitory: "signs.categories.prohibitory",
+  mandatory: "signs.categories.mandatory",
+  information: "signs.categories.information",
+  temporary: "signs.categories.temporary",
+};
+
+function formatCategoryLabel(
+  category: string,
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string
+): string {
+  const key = CATEGORY_TRANSLATION_KEYS[category.trim().toLowerCase()];
+  if (key) return t(key);
+  return category.replace(/[-_]+/g, " ");
+}
 
 interface TestResultsViewProps {
   result: ExamResult;
@@ -108,7 +142,9 @@ export function TestResultsView({
       try {
         await navigator.share({
           files: [new File([blob], filename, { type: "application/pdf" })],
-          title: `DriveMy ${mode === "mock" ? "Mock Test" : "Quiz"} Result`,
+          title: t("exam.shareTitle", {
+            mode: t(mode === "mock" ? "exam.shareMode.mock" : "exam.shareMode.quiz"),
+          }),
         });
         return;
       } catch {
@@ -127,8 +163,11 @@ export function TestResultsView({
         <div className="p-6 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("results.score")}</p>
-              <p className="type-display mt-2 text-[2.25rem] sm:text-[4.25rem]">
+              <h1 className="page-title">
+                {t(mode === "mock" ? "mock.title" : "results.title")}
+              </h1>
+              <p className="mt-2 text-sm font-medium text-muted-foreground">{t("results.score")}</p>
+              <p className="type-display mt-1.5 text-[2.5rem] sm:text-[4.25rem]">
                 {result.score.toLocaleString(language === "ms" ? "ms-MY" : "en-MY")}
                 <span className="text-[0.45em] font-semibold text-muted-foreground"> / {result.total}</span>
               </p>
@@ -136,7 +175,7 @@ export function TestResultsView({
             {/* A practice quiz is not a pass or a fail: only the mock mirrors the exam's mark. */}
             {mode === "mock" && (
               <span className={cn("pill px-3.5 py-1.5 text-sm", passed ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground")}>
-                <SwapIcon id={passed ? "pass" : "fail"}>{passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}</SwapIcon>
+                {passed ? <CheckCircle className="h-4 w-4" weight="fill" aria-hidden /> : <XCircle className="h-4 w-4" weight="fill" aria-hidden />}
                 {passed ? t("results.passed") : t("results.failed")}
               </span>
             )}
@@ -165,24 +204,24 @@ export function TestResultsView({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 border-t border-border bg-muted/40 px-6 py-4 sm:px-8">
+        <div className="flex flex-wrap items-center gap-2.5 border-t border-border bg-muted/40 px-6 py-4 sm:px-8">
           {retryWrong && (
-            <Button onClick={() => retryWrong(wrongIds)}>
+            <Button className="min-h-11" onClick={() => retryWrong(wrongIds)}>
               <ArrowCounterClockwise aria-hidden />
               {t("exam.retryWrong")}
             </Button>
           )}
-          <Button variant={retryWrong ? "outline" : "default"} onClick={onRetry}>
+          <Button variant={retryWrong ? "outline" : "default"} className="min-h-11" onClick={onRetry}>
             <ArrowCounterClockwise aria-hidden />
             {t("results.tryAgain")}
           </Button>
           {mode === "mock" && reviewAvailable && (
-            <Button variant="outline" onClick={handlePDF}>
+            <Button variant="outline" className="min-h-11" onClick={handlePDF}>
               <Download aria-hidden />
               {t("exam.pdfExport")}
             </Button>
           )}
-          <Button variant="ghost" onClick={() => navigate(ROUTES.DASHBOARD)}>
+          <Button variant="ghost" className="min-h-11" onClick={() => navigate(ROUTES.DASHBOARD)}>
             <House aria-hidden />
             {t("results.backToDashboard")}
           </Button>
@@ -194,7 +233,7 @@ export function TestResultsView({
       {/* Category breakdown: cobalt below the pass line, green at or above it.
           The hairline marks the line itself. */}
       <div className="panel space-y-5 p-6 sm:p-7">
-        <h3 className="text-base font-semibold">{t("results.categoryBreakdown")}</h3>
+        <h2 className="font-heading text-lg font-bold tracking-tight">{t("results.categoryBreakdown")}</h2>
         <div className="space-y-4">
           {categories.map((cat) => {
             const { correct, total } = categoryBreakdown[cat];
@@ -202,13 +241,16 @@ export function TestResultsView({
             return (
               <div key={cat} className="space-y-2">
                 <div className="flex justify-between gap-3 text-sm">
-                  <span className="font-medium capitalize">{cat.replace(/-/g, " ")}</span>
+                  <span className="font-medium">{formatCategoryLabel(cat, t)}</span>
                   <span className="font-tabular-nums text-muted-foreground">{correct}/{total} ({pct}%)</span>
                 </div>
                 <div className="relative h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className={cn("h-full rounded-full transition-[width] duration-700 ease-out", pct >= (100 * passMark) / result.total ? "bg-success" : "bg-brand")}
-                    style={{ width: `${pct}%` }}
+                    className={cn(
+                      "h-full w-full origin-left rounded-full transition-transform duration-700 ease-out motion-reduce:transition-none",
+                      pct >= (100 * passMark) / result.total ? "bg-success" : "bg-brand"
+                    )}
+                    style={{ transform: `scaleX(${Math.max(0, Math.min(1, pct / 100))})` }}
                   />
                   <span aria-hidden className="absolute inset-y-0 w-px bg-foreground/40" style={{ left: `${(100 * passMark) / result.total}%` }} />
                 </div>
@@ -221,15 +263,15 @@ export function TestResultsView({
       {/* Question review */}
       <div className="panel space-y-5 p-6 sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-base font-semibold">{t("results.reviewAnswers")}</h3>
+          <h2 className="font-heading text-lg font-bold tracking-tight">{t("results.reviewAnswers")}</h2>
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex min-h-11 items-center gap-2.5">
               <Checkbox
                 id="show-wrong-only"
                 checked={showWrongOnly}
                 onCheckedChange={(checked) => setShowWrongOnly(!!checked)}
               />
-              <label htmlFor="show-wrong-only" className="cursor-pointer text-sm font-medium leading-none">
+              <label htmlFor="show-wrong-only" className="flex min-h-11 cursor-pointer select-none items-center text-sm font-medium leading-none">
                 {t("exam.showWrongOnly")}
               </label>
             </div>
@@ -238,14 +280,14 @@ export function TestResultsView({
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 {/* Radix does not expose the trigger's visible value as its
                     accessible name, so it carries its own label. */}
-                <SelectTrigger aria-label={t("exam.filterByCategory")} className="h-10 w-[170px] text-sm">
+                <SelectTrigger aria-label={t("exam.filterByCategory")} className="h-11 min-h-11 w-[190px] text-sm">
                   <SelectValue placeholder={t("exam.allCategories")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t("exam.allCategories")}</SelectItem>
                   {categories.map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize">
-                      {c.replace(/-/g, " ")}
+                    <SelectItem key={c} value={c}>
+                      {formatCategoryLabel(c, t)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -259,7 +301,7 @@ export function TestResultsView({
             {showWrongOnly ? t("results.allCorrect") : t("results.noFilterMatch")}
           </p>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {filteredQuestions.map((q) => {
               const userAnswer = result.answers[q.id];
               const isCorrect = userAnswer === q.correct_index;
@@ -268,6 +310,7 @@ export function TestResultsView({
               const qText = language === "en" ? q.question_en : q.question_ms;
               const explanation = language === "en" ? q.explanation_en : q.explanation_ms;
               const originalIndex = result.questions.findIndex(orig => orig.id === q.id);
+              const qPrefix = language === "ms" ? `S${originalIndex + 1}` : `Q${originalIndex + 1}`;
 
               return (
                 <div key={q.id} className="overflow-hidden rounded-xl border border-border bg-card">
@@ -275,7 +318,7 @@ export function TestResultsView({
                     type="button"
                     onClick={() => toggleExpanded(q.id)}
                     aria-expanded={isExpanded}
-                    className="flex w-full items-center justify-between gap-3 p-3.5 text-left text-sm transition-colors hover:bg-accent"
+                    className="flex min-h-11 w-full items-center justify-between gap-3 p-3.5 text-left text-sm transition-colors hover:bg-accent"
                   >
                     <div className="flex min-w-0 items-center gap-2.5">
                       {isCorrect ? (
@@ -283,16 +326,16 @@ export function TestResultsView({
                       ) : (
                         <XCircle className="h-5 w-5 shrink-0 text-destructive" weight="fill" aria-hidden />
                       )}
-                      <span className="truncate font-medium">Q{originalIndex + 1}: {qText}</span>
+                      <span className="truncate font-medium">{qPrefix}: {qText}</span>
                     </div>
                     <CaretDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200", isExpanded && "rotate-180")} aria-hidden />
                   </button>
 
                   {isExpanded && (
                     <div className="space-y-3 border-t border-border p-4">
-                      <p className="text-sm">{qText}</p>
+                      <p className="text-sm leading-relaxed">{qText}</p>
                       {q.image_url && (
-                        <div className="panel overflow-hidden">
+                        <div className="overflow-hidden rounded-lg border border-border bg-muted/30">
                           <img src={q.image_url} alt="" className="mx-auto max-h-40 w-auto object-contain p-3" />
                         </div>
                       )}
@@ -314,7 +357,7 @@ export function TestResultsView({
                         ))}
                       </div>
                       {explanation && (
-                        <div className="rounded-xl border border-brand-ink/20 bg-brand/15 p-3 text-sm">
+                        <div className="rounded-lg border border-brand-ink/20 bg-brand/15 p-3 text-sm">
                           <span className="font-semibold text-brand-ink">{t("quiz.explanation")}:</span> {explanation}
                           <SpeechControl kind="explanation" text={explanation} />
                           {q.source_url && <p className="mt-2 text-muted-foreground">{t("exam.sourceCitation")}: {q.source_url}</p>}
