@@ -14,7 +14,7 @@ export function RoadTip({ className }: { className?: string }) {
       <button
         type="button"
         onClick={() => setIndex(i => i + 1)}
-        className="min-h-11 justify-self-start rounded-lg border-2 border-white px-3.5 text-sm font-extrabold transition-colors hover:bg-white/10"
+        className="inline-flex min-h-11 items-center justify-self-start rounded-lg border-2 border-white px-3.5 text-sm font-extrabold transition-[background-color,transform] duration-150 ease-spring hover:bg-white/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#6A4220]"
       >
         {t("dashboard.tip.next")}
       </button>

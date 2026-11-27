@@ -26,6 +26,7 @@ const KEJARA_ACTIONS = [
 interface RuleScenario {
   id: string;
   badge: string;
+  badgeMs: string;
   refEn: string;
   refMs: string;
   promptEn: string;
@@ -42,6 +43,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-lmm-age",
     badge: "LMM Age & Class",
+    badgeMs: "Umur & Kelas LMM",
     refEn: "Minimum licence age",
     refMs: "Had Umur Minimum Lesen",
     promptEn: "A 17-year-old learner wants to apply for a driving licence. Which combination is legally permitted under APJ 1987?",
@@ -65,6 +67,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-licence-expiry",
     badge: "PDL to CDL",
+    badgeMs: "PDL ke CDL",
     refEn: "Competent licence application period",
     refMs: "Tempoh Permohonan Lesen Kompeten",
     promptEn: "Your probationary licence has expired. How long from expiry does the handbook allow to apply for a competent licence?",
@@ -80,6 +83,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-yellow-box",
     badge: "Yellow Box Junction",
+    badgeMs: "Petak Kuning",
     refEn: "Yellow box junction",
     refMs: "Petak Kuning Bersilang",
     promptEn: "Your traffic light turns green at a yellow criss-cross box junction, but traffic ahead in your exit lane is stationary. What is the legal action?",
@@ -103,6 +107,7 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-centre-line",
     badge: "Road Markings",
+    badgeMs: "Garisan Jalan",
     refEn: "Road centre line",
     refMs: "Garisan Tengah Jalan",
     promptEn: "The centre of a two-way road has a continuous white line on your side paired with a broken white line on the opposite side. Can you overtake?",
@@ -192,7 +197,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                   type="button"
                   onClick={() => setActiveLab(item.id)}
                   aria-pressed={isActive}
-                  className={`tap-sm inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                  className={`tap-sm inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-[color,background-color,border-color,transform] duration-200 active:scale-[0.98] motion-reduce:active:scale-100 cursor-pointer ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-background text-foreground border-border hover:border-foreground/40"
@@ -220,7 +225,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
 
         {/* LAB 2: SISTEM KEJARA & APJ 1987 COMPOUND CALCULATOR */}
         {activeLab === "kejara" && (
-          <div className="panel space-y-4 p-4 sm:p-5">
+          <div className="mt-4 rounded-2xl border border-border bg-muted/35 space-y-4 p-4 sm:p-5">
             <h3 className="font-heading text-base font-bold">
               {lang === "en" ? "KEJARA for competent licence holders" : "KEJARA bagi pemegang lesen kompeten"}
             </h3>
@@ -250,7 +255,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
 
         {/* KPP Automatic, viewer pages 210–211, 215, 232–233. KPP Manual, viewer pages 213 and 215–216. */}
         {activeLab === "transmission" && (
-          <div className="panel space-y-4 p-4 sm:p-5">
+          <div className="mt-4 rounded-2xl border border-border bg-muted/35 space-y-4 p-4 sm:p-5">
             <div className="flex flex-wrap gap-2">
               {(["DA", "D"] as const).map((track) => (
                 <Button
@@ -297,10 +302,10 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
               const options = lang === "en" ? scen.optionsEn : scen.optionsMs;
 
               return (
-                <div key={scen.id} className="panel p-4 flex flex-col justify-between gap-3">
+                <div key={scen.id} className="rounded-2xl border border-border bg-muted/35 p-4 flex flex-col justify-between gap-3">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="pill pill-info">{scen.badge}</span>
+                      <span className="pill pill-info">{lang === "en" ? scen.badge : scen.badgeMs}</span>
                       <span className="text-[0.8125rem] text-muted-foreground">{lang === "en" ? scen.refEn : scen.refMs}</span>
                     </div>
                     <p className="text-sm font-semibold text-foreground leading-snug">
@@ -329,7 +334,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                               onScenarioSolved?.(scen.id);
                             }
                           }}
-                          className={`tile w-full p-2.5 text-left text-xs leading-relaxed cursor-pointer ${stateClass}`}
+                          className={`tile w-full min-h-11 px-3.5 py-2.5 text-left text-xs leading-relaxed cursor-pointer ${stateClass}`}
                         >
                           {opt}
                         </button>

@@ -64,7 +64,7 @@ function CategoryTile({ kind, selected, onSelect, title, count }: { kind: BoardK
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`relative flex min-h-[4.75rem] flex-col justify-between gap-2 overflow-hidden rounded-xl p-3 text-left outline-none transition-shadow focus-visible:ring-4 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-background ${BOARDS[kind]} ${selected ? "ring-4 ring-brand-ink ring-offset-2 ring-offset-background" : ""}`}
+      className={`relative flex min-h-[4.75rem] flex-col justify-between gap-2 overflow-hidden rounded-xl p-3 text-left outline-none transition-[box-shadow,transform] duration-200 active:scale-[0.98] motion-reduce:active:scale-100 focus-visible:ring-4 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-background ${BOARDS[kind]} ${selected ? "ring-4 ring-brand-ink ring-offset-2 ring-offset-background" : ""}`}
     >
       {selected && (
         <span aria-hidden="true" className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-brand text-brand-foreground ring-2 ring-[#111]">
@@ -215,8 +215,8 @@ export function TheoryPage() {
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-6xl mx-auto pb-24 px-4 sm:px-6 lg:px-8">
-      {/* Sticky Header with Search and Navigation */}
-      <div className="sticky top-0 z-20 bg-background border-b border-border -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+      {/* Search and Navigation: solid panel on mobile (keeps <=2 glass layers on phones), sticky floating Liquid Glass bar on md+ */}
+      <div className="panel mt-3 rounded-2xl px-4 py-3.5 md:sticky md:top-3 md:z-20 md:mt-4 md:glass-bar md:px-5 md:py-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="page-title">
             {lang === "en" ? "KPP01 theory" : "Teori KPP01"}
@@ -235,7 +235,7 @@ export function TheoryPage() {
                     ? "Search signs, rules, or safety…"
                     : "Cari tanda, undang-undang, keselamatan…"
                 }
-                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-muted/40 text-base focus:outline-hidden focus:ring-2 focus:ring-primary focus:bg-background transition-colors"
+                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-card text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
                 aria-label={
                   lang === "en"
                     ? "Search learning topics"
@@ -248,7 +248,7 @@ export function TheoryPage() {
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-0 top-0 grid h-11 w-11 place-items-center rounded-xl text-muted-foreground hover:text-foreground cursor-pointer"
+                  className="absolute right-0 top-0 grid h-11 w-11 place-items-center rounded-xl text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
                   aria-label={lang === "en" ? "Clear search" : "Kosongkan carian"}
                 >
                   <X size={14} aria-hidden="true" />
@@ -277,9 +277,9 @@ export function TheoryPage() {
       <TabsContent value={activeTab} className="mt-6">
         {rpkHits.length > 0 && (
           <section className="panel mb-6 space-y-3 p-4 sm:p-5" aria-label={lang === "en" ? "Vehicle check steps" : "Langkah pemeriksaan kenderaan"}>
-            <h3 className="text-base font-bold font-heading">
+            <h2 className="text-base font-bold font-heading">
               {lang === "en" ? "Vehicle check (RPK)" : "Pemeriksaan kenderaan (RPK)"}
-            </h3>
+            </h2>
             <ul className="space-y-2">
               {rpkHits.map((hit) => (
                 <li key={`${hit.topicId}-${hit.step}`}>
@@ -338,7 +338,7 @@ export function TheoryPage() {
                   ? "No topics match your search query."
                   : "Tiada topik sepadan dengan carian anda."}
               </p>
-              <Button variant="outline" size="sm" onClick={() => setSearch("")}>
+              <Button variant="outline" size="sm" className="min-h-11" onClick={() => setSearch("")}>
                 {lang === "en" ? "Clear search" : "Kosongkan carian"}
               </Button>
             </div>
@@ -453,7 +453,7 @@ export function TheoryPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedCategory("all")}
-                      className="text-xs font-semibold text-primary hover:underline cursor-pointer"
+                      className="tap-sm inline-flex items-center justify-center rounded-lg px-3 text-xs font-semibold text-primary hover:bg-muted/60 hover:underline transition-colors cursor-pointer"
                     >
                       {lang === "en" ? "Show all" : "Papar semua"}
                     </button>
@@ -481,7 +481,7 @@ export function TheoryPage() {
                           // Anywhere on the card flips it; the star and the footer button keep their own jobs.
                           if (!(event.target as HTMLElement).closest("button")) flipCard(event.currentTarget, sign.id, false);
                         }}
-                        className="relative h-[290px] perspective-1000 cursor-pointer group"
+                        className="cv-auto relative h-[290px] perspective-1000 cursor-pointer group"
                       >
                         <div
                           className={`w-full h-full transition-transform [transition-duration:var(--motion-slow)] [transition-timing-function:var(--ease-spring)] motion-reduce:transition-none transform-style-3d ${
@@ -492,17 +492,17 @@ export function TheoryPage() {
                           <Card
                             inert={isFlipped}
                             aria-hidden={isFlipped}
-                            className="rounded-xl border-border/60 text-card-foreground absolute inset-0 backface-hidden flex flex-col items-center justify-between bg-card border hover:border-primary/50 transition-colors shadow-xs overflow-hidden"
+                            className="rounded-2xl border-border/70 text-card-foreground absolute inset-0 backface-hidden flex flex-col items-center justify-between bg-card border hover:border-primary/50 transition-colors shadow-xs overflow-hidden"
                           >
                             {/* Star favorite toggle */}
                             <button
                               type="button"
                               onClick={(e) => toggleLearned(e, sign.id)}
-                              className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-background/90 flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
+                              className="absolute top-1.5 right-1.5 z-10 h-11 w-11 rounded-full bg-background/90 flex items-center justify-center hover:bg-muted transition-colors active:scale-95 motion-reduce:active:scale-100 cursor-pointer"
                               aria-label={learnedLabel(isLearned)}
                             >
                               <Star
-                                size={15}
+                                size={16}
                                 className={`transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200 ${
                                   isLearned
                                     ? "fill-brand text-brand-foreground scale-110"
@@ -527,7 +527,7 @@ export function TheoryPage() {
                               type="button"
                               data-flip
                               onClick={(event) => flipCard(event.currentTarget, sign.id, true)}
-                              className="w-full p-2.5 border-t border-border bg-background/95 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary group-hover:bg-primary/5 transition-colors cursor-pointer"
+                              className="w-full min-h-11 px-3 py-2.5 border-t border-border bg-background/95 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary group-hover:bg-primary/5 transition-colors cursor-pointer"
                             >
                               <span>{lang === "en" ? "Tap to reveal" : "Ketik untuk jawapan"}</span>
                               <Repeat size={13} aria-hidden="true" />
@@ -538,9 +538,9 @@ export function TheoryPage() {
                           <Card
                             inert={!isFlipped}
                             aria-hidden={!isFlipped}
-                            className="rounded-xl border border-border/60 absolute inset-0 backface-hidden rotate-y-180 flex flex-col justify-between bg-card p-4 shadow-sm text-card-foreground overflow-hidden"
+                            className="rounded-2xl border border-border/70 absolute inset-0 backface-hidden rotate-y-180 flex flex-col justify-between bg-card px-4 pt-3 pb-0 shadow-sm text-card-foreground overflow-hidden"
                           >
-                            <div className="space-y-2">
+                            <div className="space-y-1.5 min-h-0">
                               <div className="flex items-center justify-between gap-1">
                                 <Badge variant="outline" className="text-[0.8125rem] font-semibold">
                                   {sign.type}
@@ -548,11 +548,11 @@ export function TheoryPage() {
                                 <button
                                   type="button"
                                   onClick={(e) => toggleLearned(e, sign.id)}
-                                  className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors cursor-pointer"
+                                  className="-mr-2 -my-1.5 h-11 w-11 shrink-0 flex items-center justify-center rounded-full hover:bg-muted transition-colors active:scale-95 motion-reduce:active:scale-100 cursor-pointer"
                                   aria-label={learnedLabel(isLearned)}
                                 >
                                   <Star
-                                    size={14}
+                                    size={15}
                                     className={
                                       isLearned
                                         ? "fill-brand text-brand-foreground"
@@ -567,7 +567,7 @@ export function TheoryPage() {
                                 {lang === "en" ? sign.name : sign.nameMs}
                               </h4>
 
-                              <div className="text-xs text-muted-foreground space-y-1.5 overflow-y-auto max-h-[125px] pr-1 leading-relaxed">
+                              <div className="text-xs text-muted-foreground space-y-1.5 overflow-y-auto max-h-[120px] pr-1 leading-relaxed">
                                 <div>
                                   <span className="font-semibold text-foreground">
                                     {lang === "en" ? "Meaning: " : "Maksud: "}
@@ -583,14 +583,14 @@ export function TheoryPage() {
                               </div>
                             </div>
 
-                            <div className="pt-2 border-t border-border flex justify-end">
+                            <div className="-mx-4 mt-auto border-t border-border">
                               <button
                                 type="button"
                                 data-flip
                                 onClick={(event) => flipCard(event.currentTarget, sign.id, true)}
-                                className="flex min-h-6 min-w-6 items-center gap-1 text-[0.8125rem] font-semibold text-primary hover:underline cursor-pointer"
+                                className="w-full min-h-11 px-4 flex items-center justify-end gap-1.5 text-[0.8125rem] font-semibold text-primary hover:bg-primary/5 hover:underline transition-colors cursor-pointer"
                               >
-                                <Repeat size={12} aria-hidden="true" />
+                                <Repeat size={13} aria-hidden="true" />
                                 {lang === "en" ? "Flip back" : "Pusing semula"}
                               </button>
                             </div>

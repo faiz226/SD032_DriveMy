@@ -13,16 +13,24 @@ const DOUBLE_TAP_MS = 300;
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 const capture = (e: PointerEvent<HTMLElement>) => e.currentTarget.setPointerCapture?.(e.pointerId);
 
-// Jalan: controls are road, not signage, so asphalt and paint only (awas, berhenti and lulus mean progress,
-// fail and pass); plate corners, except the round steering pad.
-const IDLE = 'oklch(var(--road) / 0.5)';
-const LIT = 'oklch(var(--paint) / 0.92)';
+// Compact asphalt Liquid Glass pads (.glass-hud) at screen edges only, honoring prefers-reduced-transparency / data-reduce-transparency.
+const LIT = 'oklch(var(--paint) / 0.94)';
 const pad: CSSProperties = {
   position: 'absolute', pointerEvents: 'auto', touchAction: 'none', userSelect: 'none',
-  background: IDLE, border: '1px solid oklch(var(--paint) / 0.6)', color: 'oklch(var(--paint))', borderRadius: 'var(--radius)',
+  borderRadius: 'var(--radius)',
   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15,
 };
-const lit = (on: boolean): CSSProperties => (on ? { background: LIT, color: 'oklch(var(--road))' } : {});
+const lit = (on: boolean): CSSProperties => (
+  on
+    ? {
+        backgroundColor: LIT,
+        backgroundImage: 'none',
+        color: 'oklch(var(--road))',
+        borderColor: 'rgb(255 255 255 / 0.85)',
+        boxShadow: 'inset 0 1px 0 rgb(255 255 255 / 0.9), 0 6px 18px -6px rgb(0 0 0 / 0.5)',
+      }
+    : {}
+);
 
 export function TouchControls() {
   const { t } = useLanguage();
@@ -68,6 +76,7 @@ export function TouchControls() {
         aria-valuemin={-1}
         aria-valuemax={1}
         aria-valuenow={Math.round(wheel * 100) / 100}
+        className="glass-hud"
         style={{ ...pad, left: 16, bottom: 16, width: 140, height: 140, borderRadius: 9999 }}
         onPointerDown={steerDown}
         onPointerMove={steerMove}
@@ -86,18 +95,18 @@ export function TouchControls() {
       <Pedal kind="throttle" label={t('sim.touch.throttle')} text={t('sim.touch.throttleShort')} style={{ right: 16, width: 64, height: 140 }} />
 
       <div style={{ position: 'absolute', left: '50%', bottom: 16, transform: 'translateX(-50%)', display: 'flex', gap: 4 }}>
-        <button type="button" className="tap" aria-label={t('sim.hud.signalLeft')} aria-pressed={indicator === 1} style={button(indicator === 1)} onClick={() => d().toggleIndicator(1)}>
+        <button type="button" className="glass-hud tap" aria-label={t('sim.hud.signalLeft')} aria-pressed={indicator === 1} style={button(indicator === 1)} onClick={() => d().toggleIndicator(1)}>
           <ArrowFatLeft size={22} />
         </button>
-        <button type="button" className="type-label-strong tap" aria-label={t('sim.touch.gear')} style={button(gear === 'R')} onClick={() => d().toggleGear()}>{gear}</button>
-        <button type="button" className="type-label-strong tap" aria-label={t('sim.touch.handbrake')} aria-pressed={handbrake} style={button(handbrake)} onClick={() => d().toggleHandbrake()}>(P)</button>
-        <button type="button" className="tap" aria-label={t('sim.touch.pause')} aria-pressed={paused} style={button(paused)} onClick={() => d().set({ paused: !paused })}>
+        <button type="button" className="glass-hud type-label-strong tap" aria-label={t('sim.touch.gear')} style={button(gear === 'R')} onClick={() => d().toggleGear()}>{gear}</button>
+        <button type="button" className="glass-hud type-label-strong tap" aria-label={t('sim.touch.handbrake')} aria-pressed={handbrake} style={button(handbrake)} onClick={() => d().toggleHandbrake()}>(P)</button>
+        <button type="button" className="glass-hud tap" aria-label={t('sim.touch.pause')} aria-pressed={paused} style={button(paused)} onClick={() => d().set({ paused: !paused })}>
           <SwapIcon id={paused ? "play" : "pause"}>{paused ? <Play size={22} weight="fill" /> : <Pause size={22} />}</SwapIcon>
         </button>
-        <button type="button" className="tap" aria-label={t('sim.touch.topDown')} aria-pressed={topDown} style={button(topDown)} onClick={() => d().set({ topDown: !topDown })}>
+        <button type="button" className="glass-hud tap" aria-label={t('sim.touch.topDown')} aria-pressed={topDown} style={button(topDown)} onClick={() => d().set({ topDown: !topDown })}>
           <MapTrifold size={22} />
         </button>
-        <button type="button" className="tap" aria-label={t('sim.hud.signalRight')} aria-pressed={indicator === -1} style={button(indicator === -1)} onClick={() => d().toggleIndicator(-1)}>
+        <button type="button" className="glass-hud tap" aria-label={t('sim.hud.signalRight')} aria-pressed={indicator === -1} style={button(indicator === -1)} onClick={() => d().toggleIndicator(-1)}>
           <ArrowFatRight size={22} />
         </button>
       </div>
@@ -124,7 +133,7 @@ function Pedal({ kind, label, text, style }: { kind: 'throttle' | 'brake'; label
     <div
       role="button"
       aria-label={label}
-      className="type-label-strong"
+      className="glass-hud type-label-strong"
       style={{ ...pad, bottom: 16, ...style, ...lit(value > 0) }}
       onPointerDown={down}
       onPointerMove={move}

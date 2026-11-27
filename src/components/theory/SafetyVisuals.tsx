@@ -52,8 +52,8 @@ export function StoppingScene({ lang, speedKmh, thinkingMeters, brakingMeters, w
       : `Kereta pada ${speedKmh} km/j di jalan ${wet ? "basah" : "kering"}: jarak berfikir ${thinkingMeters} meter, jarak membrek ${brakingMeters} meter, ${thinkingMeters + brakingMeters} meter untuk berhenti.`;
   const playing = run > 0 && !reduce;
   return (
-    <div className="space-y-2">
-      <svg viewBox="0 0 640 120" role="img" aria-label={label} className="w-full overflow-hidden rounded-lg border border-border bg-muted/30">
+    <div className="space-y-2.5">
+      <svg viewBox="0 0 640 120" role="img" aria-label={label} className="w-full overflow-hidden rounded-xl border border-border bg-muted/30">
         <rect x="0" y="62" width="640" height="46" className={wet ? "fill-info/30" : "fill-muted"} />
         <path d="M0 85 H640" className="stroke-background" strokeWidth="2" strokeDasharray="14 12" />
         {wet &&
@@ -80,7 +80,7 @@ export function StoppingScene({ lang, speedKmh, thinkingMeters, brakingMeters, w
         <button
           type="button"
           onClick={() => setRun((n) => n + 1)}
-          className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted"
+          className="tap-sm inline-flex items-center justify-center rounded-xl border border-border bg-background px-4 py-2 text-xs font-bold text-foreground transition-colors hover:bg-muted active:scale-[0.98] motion-reduce:active:scale-100 cursor-pointer"
         >
           {run === 0 ? (lang === "en" ? "Play" : "Main") : lang === "en" ? "Play again" : "Main semula"}
         </button>
@@ -133,7 +133,7 @@ export function HazardVisual({ id, lang }: { id: string; lang: Lang }) {
   const labels = lang === "en" ? copy.en : copy.ms;
   return (
     <figure className="space-y-1.5">
-      <svg viewBox="0 0 260 100" role="img" aria-label={lang === "en" ? copy.altEn : copy.altMs} className="w-full overflow-hidden rounded-lg border border-border bg-muted/30">
+      <svg viewBox="0 0 260 100" role="img" aria-label={lang === "en" ? copy.altEn : copy.altMs} className="w-full overflow-hidden rounded-xl border border-border bg-muted/30">
         {id === "drill-cito" && (
           <g>
             <rect y="12" width="260" height="76" className="fill-muted" />
@@ -142,7 +142,7 @@ export function HazardVisual({ id, lang }: { id: string; lang: Lang }) {
             <TopCar x={30} y={60} />
             <path d="M64 68 C100 68 104 30 150 30 H200" fill="none" className="stroke-brand" strokeWidth="2.5" strokeDasharray="6 5" />
             <path d="M200 30 l-7 -5 v10z" className="fill-brand" />
-            <circle cx="33" cy="60" r="3" className="fill-warning motion-safe:animate-pulse" />
+            <circle cx="33" cy="60" r="3" className="fill-warning" />
             <path d="M44 60 L30 34 L62 38 Z" className="fill-info/25 stroke-info" strokeDasharray="3 3" />
             {CITO_BADGES.map(([cx, cy], i) => (
               <g key={i}>
@@ -169,8 +169,8 @@ export function HazardVisual({ id, lang }: { id: string; lang: Lang }) {
             <rect y="62" width="260" height="14" className="fill-muted-foreground/25" />
             <path d="M0 40 H260" className="stroke-background" strokeWidth="2" strokeDasharray="12 10" />
             <TopCar x={168} y={66} className="text-muted-foreground" />
-            <circle cx="170" cy="68" r="2.8" className="fill-warning motion-safe:animate-pulse" />
-            <circle cx="170" cy="80" r="2.8" className="fill-warning motion-safe:animate-pulse" />
+            <circle cx="170" cy="68" r="2.8" className="fill-warning" />
+            <circle cx="170" cy="80" r="2.8" className="fill-warning" />
             <path d="M40 70 L52 70 L46 59 Z" className="fill-destructive" />
             <path d="M46 88 H168" className="stroke-foreground" strokeWidth="1.5" />
             <path d="M46 84 v8 M168 84 v8" className="stroke-foreground" strokeWidth="1.5" />

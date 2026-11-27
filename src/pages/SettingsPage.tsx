@@ -13,7 +13,7 @@ export function SettingsPage() {
         <p className="page-lead">{t("settings.preferences")}</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-6 items-start [&_section>h2]:text-lg [&_section>h2]:font-bold [&_section>h2]:tracking-tight [&_section>h2]:text-foreground">
         {/* Left Column: Settings & Preferences */}
         <div className="space-y-6">
           <DisplayNotificationsSection />

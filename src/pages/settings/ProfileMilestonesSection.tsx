@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { format } from "date-fns";
 import { Envelope, Calendar } from "@/components/ui/icons";
 import { useAuthStore } from "@/stores/authStore";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -12,17 +11,26 @@ import {
   useBestColorVisionScore,
 } from "@/hooks/useProgressStats";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, TOTAL_SIMULATION_MANEUVERS } from "@/lib/constants";
 import type { TranslationKey } from "@/lib/translations/en";
 import { AvatarEditor } from "./AvatarEditor";
 import { MilestoneRow, SettingsPanel, type MilestoneState } from "./SettingsPrimitives";
 
+const PASS_PERCENT = Math.round((MOCK_PASS_MARK / MOCK_TOTAL_QUESTIONS) * 100);
+
 export function ProfileMilestonesSection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuthStore();
 
   // --- Profile Data Fetching ---
   const displayName = (user?.user_metadata?.["full_name"] as string | undefined) ?? user?.email?.split("@")[0] ?? "";
-  const memberSince = user?.created_at ? format(new Date(user.created_at), "d MMM yyyy") : "-";
+  const memberSince = user?.created_at
+    ? new Intl.DateTimeFormat(language === "ms" ? "ms-MY" : "en-MY", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(new Date(user.created_at))
+    : "-";
 
   const { data: theory, isPending: theoryPending } = useTheoryProgressStats();
   const { data: readiness, isPending: readinessPending } = useOverallReadiness();
@@ -33,7 +41,7 @@ export function ProfileMilestonesSection() {
 
   const quizBest = quizStats?.best ?? 0;
   const mockBest = mockStats?.best ?? 0;
-  const simsDone = simStats?.completed ?? 0;
+  const simsDone = simStats?.cleared ?? 0;
 
   const statusLabel = (state: MilestoneState): string => {
     const key: Record<MilestoneState, TranslationKey> = {
@@ -46,9 +54,9 @@ export function ProfileMilestonesSection() {
 
   const theoryPct = theory?.percentage ?? 0;
   const theoryState: MilestoneState = theoryPct >= 100 ? "complete" : theoryPct > 0 ? "inProgress" : "notStarted";
-  const quizState: MilestoneState = quizBest >= 70 ? "complete" : quizBest > 0 ? "inProgress" : "notStarted";
-  const mockState: MilestoneState = mockBest >= 70 ? "complete" : mockBest > 0 ? "inProgress" : "notStarted";
-  const simState: MilestoneState = simsDone >= 8 ? "complete" : simsDone > 0 ? "inProgress" : "notStarted";
+  const quizState: MilestoneState = quizBest >= PASS_PERCENT ? "complete" : quizBest > 0 ? "inProgress" : "notStarted";
+  const mockState: MilestoneState = mockBest >= PASS_PERCENT ? "complete" : mockBest > 0 ? "inProgress" : "notStarted";
+  const simState: MilestoneState = simsDone >= TOTAL_SIMULATION_MANEUVERS ? "complete" : simsDone > 0 ? "inProgress" : "notStarted";
   const colorState: MilestoneState = colorBest !== null && colorBest !== undefined ? (colorBest >= 100 ? "complete" : "inProgress") : "notStarted";
 
   const readinessLabel = useMemo(() => {
@@ -139,7 +147,7 @@ export function ProfileMilestonesSection() {
               />
               <MilestoneRow
                 module={t("profile.milestone.simulator")}
-                result={`${simsDone}/8`}
+                result={`${simsDone}/${TOTAL_SIMULATION_MANEUVERS}`}
                 state={simState}
                 stateLabel={statusLabel(simState)}
               />

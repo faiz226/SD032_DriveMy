@@ -21,8 +21,12 @@ export function StartOverDialog({ open, onOpenChange, onConfirm, timed }: StartO
           <DialogDescription>{t(timed ? "exam.startOverDescTimed" : "exam.startOverDesc")}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>{t("exam.keepGoing")}</Button>
-          <Button variant="destructive" onClick={onConfirm}>{t("exam.startOverAction")}</Button>
+          <Button variant="outline" className="min-h-11 w-full sm:w-auto" onClick={() => onOpenChange(false)}>
+            {t("exam.keepGoing")}
+          </Button>
+          <Button variant="destructive" className="min-h-11 w-full sm:w-auto" onClick={onConfirm}>
+            {t("exam.startOverAction")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

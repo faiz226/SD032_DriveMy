@@ -55,12 +55,35 @@
     --info: 0.4978 0.1676 256.6;                  /* #0A5FBF, JKR information blue */
     --info-foreground: 1.0 0.0 0;
 
-    --border: 0.8952 0.0182 245.4;              /* #D3DEE8 */
-    --input: 0.6313 0.038 248.4;               /* #788CA0, 3.5:1 on white */
-    --border-a: 1;
-    --input-a: 1;
+    --border: 0.2135 0.038 251.4;               /* ink-alpha border harmonizes over cards and skyline */
+    --input: 0.2135 0.038 251.4;
+    --border-a: 0.14;
+    --input-a: 0.34;
     --ring: var(--foreground);
     --overlay: 0.1419 0.0263 251.3;
+
+    /* Liquid Glass tokens (navigation & control chrome only — content stays solid).
+       Verified contrast (contrast-matrix-v2.txt):
+       - Light bar (0.58): ink >= 6.04:1 over #000 (9.79:1 over green gantry), muted >= 4.53:1
+       - Light sheet (0.66): ink >= 7.73:1 over #000, muted >= 5.79:1 */
+    --glass-bg: 0.99 0.004 244;
+    --glass-alpha: 0.58;
+    --glass-sheet-alpha: 0.66;
+    --glass-pill-bg: 0.99 0.004 244;
+    --glass-pill-alpha: 0.58;
+    --glass-border: rgb(255 255 255 / 0.78);
+    --glass-hairline: rgb(11 26 42 / 0.11);
+    --glass-specular-top: rgb(255 255 255 / 0.96);
+    --glass-specular-sheen: rgb(255 255 255 / 0.34);
+    --glass-specular-bottom: rgb(11 26 42 / 0.1);
+    --glass-shadow: 0 12px 32px -12px rgb(11 26 42 / 0.22), 0 2px 6px rgb(11 26 42 / 0.08);
+    --glass-sheet-shadow: 0 28px 64px -16px rgb(11 26 42 / 0.32), 0 4px 12px rgb(11 26 42 / 0.1);
+    --glass-blur: 24px;
+    --glass-sat: 210%;
+    --glass-ink: 0.18 0.035 252;
+    --glass-muted: 0.29 0.042 250;
+    --glass-accent-icon: 0.5365 0.1111 80;
+    --glass-control-hover: rgb(11 26 42 / 0.07);
 
     /* Objects that look the same by day and night. */
     --sign: 0.5102 0.1235 154.8;                  /* expressway green #0A7A45 */
@@ -148,6 +171,28 @@
     --input-a: 0.38;
     --overlay: 0.1023 0.0244 242.2;
 
+    /* Dark Liquid Glass tokens (verified contrast-matrix-v2.txt):
+       - Dark bar (0.60): ink >= 5.53:1 over #fff (13.93:1 over green gantry), muted >= 4.51:1
+       - Dark sheet (0.68): ink >= 7.52:1 over #fff, muted >= 6.13:1 */
+    --glass-bg: 0.11 0.036 264;
+    --glass-alpha: 0.60;
+    --glass-sheet-alpha: 0.68;
+    --glass-pill-bg: 0.99 0.004 244;
+    --glass-pill-alpha: 0.15;
+    --glass-border: rgb(255 255 255 / 0.24);
+    --glass-hairline: rgb(255 255 255 / 0.10);
+    --glass-specular-top: rgb(255 255 255 / 0.42);
+    --glass-specular-sheen: rgb(255 255 255 / 0.10);
+    --glass-specular-bottom: rgb(0 0 0 / 0.48);
+    --glass-shadow: 0 18px 42px -14px rgb(0 0 0 / 0.72), 0 2px 8px rgb(0 0 0 / 0.34);
+    --glass-sheet-shadow: 0 32px 72px -18px rgb(0 0 0 / 0.84), 0 4px 16px rgb(0 0 0 / 0.45);
+    --glass-blur: 24px;
+    --glass-sat: 205%;
+    --glass-ink: 0.99 0.004 242;
+    --glass-muted: 0.93 0.012 242;
+    --glass-accent-icon: 0.85 0.165 85;
+    --glass-control-hover: rgb(255 255 255 / 0.11);
+
     --sky: oklch(var(--background));
 
     --shadow-xs: none;
@@ -173,11 +218,11 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
-    overflow-x: hidden;
+    overflow-x: clip;
     color: oklch(var(--foreground));
     background-color: oklch(var(--background));
     font-family: theme("fontFamily.sans");
@@ -186,6 +231,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not(:disabled),
+  summary {
+    cursor: pointer;
   }
 
   /* The sky sits still while the road scrolls under it: stars and a green
@@ -387,17 +439,145 @@
       0 30px 40px -20px rgb(0 0 0 / 0.8);
   }
 
-  /* Frosted chrome for the header, tab bar and exam rails. */
-  .glass {
-    background-color: oklch(var(--background) / 0.66);
-    -webkit-backdrop-filter: saturate(160%) blur(18px);
-    backdrop-filter: saturate(160%) blur(18px);
+  /* Liquid Glass chrome family: floating navigation, sheets, dialogs, segmented pills, and compact HUD plates.
+     Content surfaces (.panel, .tile, .hero-panel) remain solid and high-contrast. */
+  .glass,
+  .glass-bar {
+    position: relative;
+    background-color: oklch(var(--glass-bg) / var(--glass-alpha));
+    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 45%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1.5px 0 var(--glass-specular-top),
+      inset 0 -1px 0 var(--glass-specular-bottom),
+      0 0 0 0.5px var(--glass-hairline),
+      var(--glass-shadow);
+    color: oklch(var(--glass-ink));
   }
+
+  .glass-sheet {
+    position: relative;
+    background-color: oklch(var(--glass-bg) / var(--glass-sheet-alpha));
+    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 32%);
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(var(--glass-sat));
+    backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(var(--glass-sat));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1.5px 0 var(--glass-specular-top),
+      inset 0 -1px 0 var(--glass-specular-bottom),
+      0 0 0 0.5px var(--glass-hairline),
+      var(--glass-sheet-shadow);
+    color: oklch(var(--glass-ink));
+  }
+
+  .glass-pill {
+    background-color: oklch(var(--glass-pill-bg) / var(--glass-pill-alpha));
+    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 60%);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1.5px 0 var(--glass-specular-top),
+      inset 0 -1px 0 var(--glass-specular-bottom),
+      0 2px 8px -2px rgb(0 0 0 / 0.12);
+  }
+
+  /* Compact Liquid Glass plate for simulator edge HUD controls only (never over 3D canvas center). */
+  .glass-hud {
+    background-color: oklch(var(--road) / 0.66);
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, transparent 50%);
+    -webkit-backdrop-filter: blur(16px) saturate(175%);
+    backdrop-filter: blur(16px) saturate(175%);
+    border: 1px solid rgb(255 255 255 / 0.24);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.34),
+      inset 0 -1px 0 rgb(0 0 0 / 0.45),
+      0 10px 26px -10px rgb(0 0 0 / 0.65);
+    color: oklch(var(--paint));
+  }
+
+  /* Mobile GPU budget: keep glass unmistakably frosted while avoiding heavy 24px blur + SVG lens per scroll frame. */
+  @media (max-width: 767px) {
+    :root,
+    .dark {
+      --glass-blur: 16px;
+    }
+  }
+
+  /* Optional Chromium-only SVG lens refraction strictly on small decorative pill backdrops on desktop (never text or phone scroll). */
+  @media (min-width: 768px) {
+    @supports (backdrop-filter: url(#liquid-glass-lens)) {
+      .glass-pill-lens {
+        backdrop-filter: blur(8px) saturate(180%) url(#liquid-glass-lens);
+      }
+    }
+  }
+
+  .glass-ink { color: oklch(var(--glass-ink)); }
+  .glass-muted { color: oklch(var(--glass-muted)); }
+  .glass-accent-icon { color: oklch(var(--glass-accent-icon)); }
+
+  .glass-control {
+    cursor: pointer;
+    transition:
+      background-color 180ms var(--ease-spring),
+      color 180ms var(--ease-spring),
+      border-color 180ms var(--ease-spring),
+      transform 180ms var(--ease-spring);
+  }
+  @media (hover: hover) {
+    .glass-control:hover { background-color: var(--glass-control-hover); }
+  }
+  .glass-control:active { transform: scale(0.98); }
+
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass { background-color: oklch(var(--background)); }
+    .glass,
+    .glass-bar,
+    .glass-sheet {
+      background-color: oklch(var(--card));
+      background-image: none;
+    }
+    .glass-hud {
+      background-color: oklch(var(--road) / 0.92);
+      background-image: none;
+    }
+    .glass-pill-lens { backdrop-filter: none; }
   }
-  @media (prefers-reduced-transparency: reduce) {
-    .glass { background-color: oklch(var(--background)); -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    .glass,
+    .glass-bar,
+    .glass-sheet {
+      background-color: oklch(var(--card));
+      background-image: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    .glass-hud {
+      background-color: oklch(var(--road) / 0.94);
+      background-image: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    .glass-pill-lens { backdrop-filter: none; }
+  }
+
+  html[data-reduce-transparency="true"] .glass,
+  html[data-reduce-transparency="true"] .glass-bar,
+  html[data-reduce-transparency="true"] .glass-sheet {
+    background-color: oklch(var(--card));
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  html[data-reduce-transparency="true"] .glass-hud {
+    background-color: oklch(var(--road) / 0.94);
+    background-image: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  html[data-reduce-transparency="true"] .glass-pill-lens {
+    backdrop-filter: none;
   }
 
   /* The VMS board: amber dot matrix behind a dark frame. */
@@ -489,8 +669,9 @@
   .badge-destructive { @apply bg-destructive/20 text-foreground border-destructive/30; }
 
   .transition-base { transition: color var(--motion) var(--ease-out), background-color var(--motion) var(--ease-out), border-color var(--motion) var(--ease-out), box-shadow var(--motion) var(--ease-out), opacity var(--motion) var(--ease-out), transform var(--motion) var(--ease-out); }
-  .transition-slow { transition: all var(--motion-slow) var(--ease-out); }
+  .transition-slow { transition: color var(--motion-slow) var(--ease-out), background-color var(--motion-slow) var(--ease-out), border-color var(--motion-slow) var(--ease-out), box-shadow var(--motion-slow) var(--ease-out), opacity var(--motion-slow) var(--ease-out), transform var(--motion-slow) var(--ease-out); }
   .ease-out-quart  { transition-timing-function: var(--ease-out); }
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: auto 290px; }
 
   /* The traced Myvi on the readiness road. Engine idle: a small, fast shake
      of the whole car. Launch: it pitches nose-up around the rear tyre's
@@ -589,8 +770,8 @@
   .page-header { @apply max-w-readable space-y-2; }
   .page-title {
     @apply text-foreground;
-    font-size: clamp(1.5rem, 1.25rem + 1.2vw, 2.25rem);
-    font-weight: 700;
+    font-size: clamp(1.625rem, 1.3rem + 1vw, 2.25rem);
+    font-weight: 800;
     letter-spacing: -0.015em;
     line-height: 1.12;
   }

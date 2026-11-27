@@ -121,7 +121,7 @@ export function SignMiniQuizzes({ lang, learnt, onChange }: SignMiniQuizzesProps
               {" "}
               {en ? sign.action : sign.actionMs}
             </p>
-            <Button size="sm" onClick={next}>
+            <Button size="sm" className="min-h-11" onClick={next}>
               {round.index + 1 >= round.ids.length ? (en ? "Finish" : "Selesai") : en ? "Next" : "Seterusnya"}
             </Button>
           </div>
@@ -153,7 +153,7 @@ export function SignMiniQuizzes({ lang, learnt, onChange }: SignMiniQuizzesProps
           const progress = categoryProgress(idsOf(category.id), learnt);
           const percent = progress.total ? (progress.learnt / progress.total) * 100 : 0;
           return (
-            <li key={category.id} className="space-y-2 rounded-xl border border-border p-3">
+            <li key={category.id} className="space-y-2.5 rounded-2xl border border-border bg-muted/35 p-3.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-bold text-foreground">{en ? category.labelEn : category.labelMs}</span>
                 <span className="type-figure text-sm tabular-nums">
@@ -161,15 +161,18 @@ export function SignMiniQuizzes({ lang, learnt, onChange }: SignMiniQuizzesProps
                 </span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted" role="img" aria-label={en ? `${progress.learnt} of ${progress.total} learnt` : `${progress.learnt} daripada ${progress.total} dipelajari`}>
-                <div className="h-full bg-success" style={{ width: `${percent}%` }} />
+                <div
+                  className="h-full w-full origin-left bg-success transition-transform duration-300 motion-reduce:transition-none"
+                  style={{ transform: `scaleX(${Math.min(1, Math.max(0, percent / 100))})` }}
+                />
               </div>
               {progress.done ? (
-                <p className="flex items-center gap-1 text-xs font-bold text-success">
-                  <Check size={13} aria-hidden="true" />
+                <p className="flex min-h-11 items-center gap-1.5 text-xs font-bold text-success">
+                  <Check size={14} aria-hidden="true" />
                   {en ? "Learnt" : "Dipelajari"}
                 </p>
               ) : (
-                <Button size="sm" variant="outline" onClick={() => start(category.id)}>
+                <Button size="sm" variant="outline" className="min-h-11" onClick={() => start(category.id)}>
                   {en ? `Start a round (${roundSize(progress.left)})` : `Mula pusingan (${roundSize(progress.left)})`}
                 </Button>
               )}

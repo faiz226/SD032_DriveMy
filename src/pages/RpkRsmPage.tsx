@@ -8,6 +8,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Panel, Divider } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LoadError } from "@/components/shared/LoadError";
 import { PartPicture } from "@/components/rpk/PartPicture";
 import { PowderRow } from "@/components/rpk/PowderRow";
@@ -76,13 +77,37 @@ export function RpkRsmPage() {
   };
 
   return (
-    <div className="page-shell page-enter">
+    <div className="page-shell">
       <header className="page-header">
         <h1 className="page-title">RPK / RSM</h1>
         <p className="page-lead">{t("rpk.lead")}</p>
       </header>
 
-      {progress.isPending && !isDevBypass ? <p role="status">{t("common.loading")}</p> : (
+      {progress.isPending && !isDevBypass ? (
+        <div role="status" aria-busy="true" aria-label={t("common.loading")} className="space-y-6">
+          <div className="flex max-w-md items-center gap-4">
+            <Skeleton className="h-2.5 flex-1 rounded-full" />
+            <Skeleton className="h-4 w-28 shrink-0" />
+          </div>
+          <div className="grid gap-[var(--panel-gap)] xl:grid-cols-[minmax(15rem,1fr)_2fr]">
+            <div className="space-y-4">
+              <Skeleton className="h-5 w-40" />
+              <div className="grid grid-cols-2 gap-2 xl:grid-cols-1">
+                <Skeleton className="h-14 rounded-xl" />
+                <Skeleton className="h-14 rounded-xl" />
+                <Skeleton className="h-14 rounded-xl" />
+              </div>
+              <Skeleton className="h-5 w-40 pt-2" />
+              <div className="grid grid-cols-2 gap-2 xl:grid-cols-1">
+                <Skeleton className="h-14 rounded-xl" />
+                <Skeleton className="h-14 rounded-xl" />
+                <Skeleton className="h-14 rounded-xl" />
+              </div>
+            </div>
+            <Skeleton className="h-[34rem] rounded-[var(--radius-panel)]" />
+          </div>
+        </div>
+      ) : (
         <>
           <div className="flex max-w-md items-center gap-4">
             <Progress value={(doneCount / RPK_TOPICS.length) * 100} aria-label={t("rpk.topicsCompleted", { done: doneCount, total: RPK_TOPICS.length })} />
@@ -93,7 +118,7 @@ export function RpkRsmPage() {
             <nav aria-label={t("rpk.topicsNav")} className="space-y-6">
               {GROUPS.map(group => (
                 <section key={group.routine} aria-labelledby={`rpk-${group.routine}`}>
-                  <h2 id={`rpk-${group.routine}`} className="text-lg">{t(group.titleKey)}</h2>
+                  <h2 id={`rpk-${group.routine}`} className="text-base sm:text-lg">{t(group.titleKey)}</h2>
                   <ul className="mt-3 grid grid-cols-2 gap-2 xl:grid-cols-1">
                     {RPK_TOPICS.filter(topic => topic.routine === group.routine).map(topic => {
                       const isCurrent = current.id === topic.id;
@@ -120,7 +145,7 @@ export function RpkRsmPage() {
 
             <div ref={panel} className="scroll-mt-4">
               <Panel className="p-5 sm:p-8">
-                <h2 className="text-[1.75rem]">{current.title[language]}</h2>
+                <h2 className="text-xl sm:text-2xl">{current.title[language]}</h2>
                 {current.intro && <p className="mt-3 max-w-readable">{current.intro[language]}</p>}
 
                 <PartPicture

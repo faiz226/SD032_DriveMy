@@ -142,7 +142,7 @@ export function RoundaboutVisual({ lang, solved, onSolved }: RoundaboutVisualPro
       <div className="relative mx-auto w-full max-w-[300px] sm:max-w-[460px]">
         <svg
           viewBox="0 0 220 210"
-          className="h-auto w-full rounded-xl border border-border bg-muted/40"
+          className="h-auto w-full rounded-2xl border border-border bg-muted/40"
           role="group"
           aria-label={en ? "Roundabout. Tap an exit." : "Bulatan. Ketik satu susur keluar."}
         >
@@ -215,7 +215,7 @@ export function RoundaboutVisual({ lang, solved, onSolved }: RoundaboutVisualPro
         {verdict && (
           <div
             role="status"
-            className={`absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-lg border p-2 text-xs font-bold ${
+            className={`absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-xl border p-2.5 text-xs font-bold ${
               verdict.ok ? "border-success/60 bg-success/90 text-success-foreground" : "border-destructive/60 bg-destructive/90 text-destructive-foreground"
             }`}
           >
@@ -238,7 +238,7 @@ export function RoundaboutVisual({ lang, solved, onSolved }: RoundaboutVisualPro
                   setChecked(false);
                   start();
                 }}
-                className={`tile cursor-pointer p-2.5 text-left text-sm font-bold ${lane === item.id ? "tile-selected" : ""}`}
+                className={`tile min-h-11 cursor-pointer px-3.5 py-2.5 text-left text-sm font-bold ${lane === item.id ? "tile-selected" : ""}`}
               >
                 {en ? item.en : item.ms}
               </button>
@@ -255,7 +255,7 @@ export function RoundaboutVisual({ lang, solved, onSolved }: RoundaboutVisualPro
                   setChecked(false);
                   if (lane) start();
                 }}
-                className={`tile cursor-pointer p-2.5 text-left text-sm font-bold ${signal === item.id ? "tile-selected" : ""}`}
+                className={`tile min-h-11 cursor-pointer px-3.5 py-2.5 text-left text-sm font-bold ${signal === item.id ? "tile-selected" : ""}`}
               >
                 {en ? item.en : item.ms}
               </button>

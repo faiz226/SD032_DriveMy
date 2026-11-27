@@ -76,14 +76,14 @@ export function VerdictView({ verdict, chase = false, save, onRetry, onPractise,
           )}
         </section>
 
-        <footer className="flex flex-wrap gap-3">
-          <Button onClick={onRetry}>{t('sim.verdict.retry')}</Button>
+        <footer className="glass-bar sticky bottom-2 z-10 mt-6 flex flex-wrap items-center gap-2.5 rounded-2xl p-3">
+          <Button variant="brand" onClick={onRetry}>{t('sim.verdict.retry')}</Button>
           {practise && (
             <Button variant="outline" onClick={() => onPractise(practise)}>
               {t('sim.verdict.practise', { station: stationName(t, practise) })}
             </Button>
           )}
-          <Button variant="ghost" onClick={onExit}>{t('sim.hud.exit')}</Button>
+          <Button variant="ghost" className="glass-ink hover:bg-[var(--glass-control-hover)]" onClick={onExit}>{t('sim.hud.exit')}</Button>
         </footer>
       </Panel>
     </div>
@@ -103,7 +103,7 @@ function FaultItem({ n, fault, t }: { n: number; fault: Fault; t: T }) {
       )}
       <p>{t(fault.fixKey as TranslationKey)}</p>
       <details>
-        <summary className="type-label cursor-pointer">{t('sim.verdict.why')}</summary>
+        <summary className="type-label min-h-11 inline-flex cursor-pointer items-center rounded-lg px-1 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t('sim.verdict.why')}</summary>
         <p className="type-label mt-1">{fault.basis}</p>
       </details>
     </li>
