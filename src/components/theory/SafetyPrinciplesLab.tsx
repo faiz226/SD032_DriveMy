@@ -259,32 +259,32 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
     { titleEn: string; titleMs: string; descEn: string; descMs: string }
   > = {
     LOCK: {
-      titleEn: "1. LOCK · Steering locked & key insertion/removal",
-      titleMs: "1. LOCK · Stereng dikunci & kunci dimasukkan/dicabut",
+      titleEn: "1. LOCK: Steering locked & key insertion/removal",
+      titleMs: "1. LOCK: Stereng dikunci & kunci dimasukkan/dicabut",
       descEn:
         "The engine is off and the steering is locked. Insert or remove the key in this position.",
       descMs:
         "Enjin dimatikan dan stereng dikunci. Masukkan atau keluarkan kunci pada kedudukan ini.",
     },
     ACC: {
-      titleEn: "2. ACC · Accessories powered (Engine off)",
-      titleMs: "2. ACC · Aksesori berfungsi (Enjin mati)",
+      titleEn: "2. ACC: Accessories powered (Engine off)",
+      titleMs: "2. ACC: Aksesori berfungsi (Enjin mati)",
       descEn:
         "Use accessories other than air conditioning with the engine off.",
       descMs:
         "Gunakan aksesori selain penyaman udara semasa enjin dimatikan.",
     },
     ON: {
-      titleEn: "3. ON · Check the instrument panel",
-      titleMs: "3. ON · Semak panel instrumen",
+      titleEn: "3. ON: Check the instrument panel",
+      titleMs: "3. ON: Semak panel instrumen",
       descEn:
         "Pause at ON to check that the indicators work. The key returns to ON when released from START.",
       descMs:
         "Berhenti seketika pada ON untuk menyemak penunjuk. Kunci kembali ke ON apabila dilepaskan dari START.",
     },
     START: {
-      titleEn: "4. START · Crank starter motor for 1 to 4 seconds max",
-      titleMs: "4. START · Hidupkan motor penghidup selama 1 hingga 4 saat sahaja",
+      titleEn: "4. START: Crank starter motor for 1 to 4 seconds max",
+      titleMs: "4. START: Hidupkan motor penghidup selama 1 hingga 4 saat sahaja",
       descEn:
         "Hold at START for 1-4 seconds and release immediately once the engine fires. If it does not start, release the key and wait briefly before trying again.",
       descMs:
@@ -598,8 +598,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <div>
                   <h3 className="text-sm font-bold font-heading">
                     {lang === "en"
-                      ? "RPK · Tyre wear and pressure checks"
-                      : "RPK · Pemeriksaan kehausan dan tekanan tayar"}
+                      ? "RPK: Tyre wear and pressure checks"
+                      : "RPK: Pemeriksaan kehausan dan tekanan tayar"}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {lang === "en"
@@ -680,8 +680,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               <div>
                 <h3 className="text-sm font-bold font-heading">
                   {lang === "en"
-                    ? "RSM · Ignition switch"
-                    : "RSM · Suis pencucuhan"}
+                    ? "RSM: Ignition switch"
+                    : "RSM: Suis pencucuhan"}
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   {lang === "en"

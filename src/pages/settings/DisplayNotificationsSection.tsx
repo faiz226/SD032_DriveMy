@@ -64,16 +64,19 @@ export function DisplayNotificationsSection() {
 
       <div className="h-px bg-border/50 my-1" aria-hidden="true" />
 
-      <SettingsRow
-        label={reduceTransparencyLabel}
-        description={reduceTransparencyDesc}
-      >
-        <Switch
-          checked={reduceTransparency}
-          onCheckedChange={setReduceTransparency}
-          aria-label={reduceTransparencyLabel}
-        />
-      </SettingsRow>
+      <div className="flex items-center justify-between gap-4 py-1">
+        <div className="min-w-0 space-y-0.5">
+          <p className="text-sm font-medium text-foreground">{reduceTransparencyLabel}</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">{reduceTransparencyDesc}</p>
+        </div>
+        <div className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-end">
+          <Switch
+            checked={reduceTransparency}
+            onCheckedChange={setReduceTransparency}
+            aria-label={reduceTransparencyLabel}
+          />
+        </div>
+      </div>
     </SettingsPanel>
   );
 }

@@ -37,7 +37,7 @@ export function DashboardPage() {
   if (queries.some(q => q.isError)) return <div className="app-container"><LoadError onRetry={() => { queries.forEach(q => { void q.refetch(); }); }} /></div>;
   if (queries.some(q => q.isPending)) {
     return (
-      <div className="app-container space-y-8 pt-14" aria-busy="true" aria-label={t("common.loading")}>
+      <div className="app-container space-y-8 pt-14" role="status" aria-busy="true" aria-label={t("common.loading")}>
         <Skeleton className="h-9 w-72" />
         <Skeleton className="h-[22rem] w-full rounded-3xl" />
         <Skeleton className="h-[140px] w-full rounded-3xl" />

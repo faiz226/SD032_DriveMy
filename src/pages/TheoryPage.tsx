@@ -215,8 +215,8 @@ export function TheoryPage() {
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="max-w-6xl mx-auto pb-24 px-4 sm:px-6 lg:px-8">
-      {/* Sticky Floating Liquid Glass Header with Search and Navigation */}
-      <div className="sticky top-2 sm:top-3 z-20 mt-3 sm:mt-4 glass-bar rounded-2xl px-4 py-3.5 sm:px-5 sm:py-4">
+      {/* Search and Navigation: solid panel on mobile (keeps <=2 glass layers on phones), sticky floating Liquid Glass bar on md+ */}
+      <div className="panel mt-3 rounded-2xl px-4 py-3.5 md:sticky md:top-3 md:z-20 md:mt-4 md:glass-bar md:px-5 md:py-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h1 className="page-title">
             {lang === "en" ? "KPP01 theory" : "Teori KPP01"}
@@ -235,7 +235,7 @@ export function TheoryPage() {
                     ? "Search signs, rules, or safety…"
                     : "Cari tanda, undang-undang, keselamatan…"
                 }
-                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-background/75 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:bg-background transition-colors"
+                className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-card text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
                 aria-label={
                   lang === "en"
                     ? "Search learning topics"

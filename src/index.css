@@ -496,10 +496,20 @@
     color: oklch(var(--paint));
   }
 
-  /* Optional Chromium-only SVG lens refraction strictly on small decorative pill backdrops (never text). */
-  @supports (backdrop-filter: url(#liquid-glass-lens)) {
-    .glass-pill-lens {
-      backdrop-filter: blur(8px) saturate(180%) url(#liquid-glass-lens);
+  /* Mobile GPU budget: keep glass unmistakably frosted while avoiding heavy 24px blur + SVG lens per scroll frame. */
+  @media (max-width: 767px) {
+    :root,
+    .dark {
+      --glass-blur: 16px;
+    }
+  }
+
+  /* Optional Chromium-only SVG lens refraction strictly on small decorative pill backdrops on desktop (never text or phone scroll). */
+  @media (min-width: 768px) {
+    @supports (backdrop-filter: url(#liquid-glass-lens)) {
+      .glass-pill-lens {
+        backdrop-filter: blur(8px) saturate(180%) url(#liquid-glass-lens);
+      }
     }
   }
 
