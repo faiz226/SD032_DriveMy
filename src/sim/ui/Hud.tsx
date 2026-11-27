@@ -28,8 +28,14 @@ const EGG_S = 4.5;
 const NOTICE_S = 4.5;
 const INTERIOR_MIRROR_H = 60;
 
-// the HUD's own surface: asphalt with paint, the on-road palette
-export const HUD_PLATE = 'rounded-[var(--radius)] border border-[oklch(var(--paint)/0.25)] bg-[oklch(var(--road)/0.72)] text-[oklch(var(--paint))]';
+// Compact Liquid Glass plate for simulator edge HUD controls only (zero blur over the 3D canvas center).
+export const HUD_PLATE = 'glass-hud rounded-[var(--radius)]';
+
+// High-contrast secondary / ghost button styles over dark asphalt glass in both light and dark themes.
+const HUD_ACTION_SECONDARY =
+  'border border-white/30 bg-white/10 text-white shadow-none hover:border-white/45 hover:bg-white/20 hover:text-white focus-visible:ring-white focus-visible:ring-offset-[oklch(var(--road))]';
+const HUD_ACTION_GHOST =
+  'bg-transparent text-white/85 shadow-none hover:bg-white/15 hover:text-white focus-visible:ring-white focus-visible:ring-offset-[oklch(var(--road))]';
 
 const sizeNow = () => `${window.innerWidth}x${window.innerHeight}`;
 const onResize = (cb: () => void) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); };
@@ -86,36 +92,44 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
         </div>
       )}
 
-      <div className="absolute right-3 top-3 flex w-[min(40vw,300px)] flex-col items-end gap-2">
-        <div className="pointer-events-auto flex flex-wrap justify-end gap-2">
-          {free && (
-            <>
-              <HudButton label={t('sim.hud.toStart')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>
-              <HudButton label={t('sim.hud.modes')} onClick={onStations}><ListBullets size={20} /></HudButton>
-            </>
-          )}
-          {!free && mode === 'practice' && (
-            <>
-              <HudButton label={t('sim.hud.restartDrill')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>
-              <HudButton label={t('sim.hud.drills')} onClick={onStations}><ListBullets size={20} /></HudButton>
-            </>
-          )}
-          {!free && mode === 'assessment' && <HudButton label={t('sim.hud.restartTest')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>}
-          <HudButton label={t('sim.hud.chase')} pressed={chase} onClick={() => useDriver.getState().set({ chase: !chase })}><VideoCamera size={20} /></HudButton>
-          {!touch && (
-            <>
-              <HudButton label={t('sim.touch.topDown')} pressed={topDown} onClick={() => useDriver.getState().set({ topDown: !topDown })}><MapTrifold size={20} /></HudButton>
-              <HudButton label={paused ? t('sim.hud.resume') : t('sim.touch.pause')} pressed={paused} onClick={() => useDriver.getState().set({ paused: !paused })}>
-                <SwapIcon id={paused ? "play" : "pause"}>{paused ? <Play size={20} weight="fill" /> : <Pause size={20} />}</SwapIcon>
-              </HudButton>
-            </>
-          )}
-          <HudButton label={t('sim.settings.title')} onClick={() => useSettingsPanel.getState().show()}><Gear size={20} /></HudButton>
-          <HudButton label={t('sim.hud.lights')} pressed={headlights} onClick={() => useDriver.getState().set({ headlights: !headlights })}><Headlights size={20} /></HudButton>
-          <HudButton label={t('sim.hud.exit')} onClick={onExit}><SignOut size={20} /></HudButton>
+      <div className="absolute right-3 top-3 flex w-[min(46vw,340px)] flex-col items-end gap-2">
+        <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-1.5">
+          <div className="glass-hud flex items-center gap-1 rounded-2xl p-1">
+            {free && (
+              <>
+                <HudButton label={t('sim.hud.toStart')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>
+                <HudButton label={t('sim.hud.modes')} onClick={onStations}><ListBullets size={20} /></HudButton>
+              </>
+            )}
+            {!free && mode === 'practice' && (
+              <>
+                <HudButton label={t('sim.hud.restartDrill')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>
+                <HudButton label={t('sim.hud.drills')} onClick={onStations}><ListBullets size={20} /></HudButton>
+              </>
+            )}
+            {!free && mode === 'assessment' && (
+              <HudButton label={t('sim.hud.restartTest')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>
+            )}
+          </div>
+          <div className="glass-hud flex items-center gap-1 rounded-2xl p-1">
+            <HudButton label={t('sim.hud.chase')} pressed={chase} onClick={() => useDriver.getState().set({ chase: !chase })}><VideoCamera size={20} /></HudButton>
+            {!touch && (
+              <>
+                <HudButton label={t('sim.touch.topDown')} pressed={topDown} onClick={() => useDriver.getState().set({ topDown: !topDown })}><MapTrifold size={20} /></HudButton>
+                <HudButton label={paused ? t('sim.hud.resume') : t('sim.touch.pause')} pressed={paused} onClick={() => useDriver.getState().set({ paused: !paused })}>
+                  <SwapIcon id={paused ? "play" : "pause"}>{paused ? <Play size={20} weight="fill" /> : <Pause size={20} />}</SwapIcon>
+                </HudButton>
+              </>
+            )}
+            <HudButton label={t('sim.hud.lights')} pressed={headlights} onClick={() => useDriver.getState().set({ headlights: !headlights })}><Headlights size={20} /></HudButton>
+          </div>
+          <div className="glass-hud flex items-center gap-1 rounded-2xl p-1">
+            <HudButton label={t('sim.settings.title')} onClick={() => useSettingsPanel.getState().show()}><Gear size={20} /></HudButton>
+            <HudButton label={t('sim.hud.exit')} onClick={onExit}><SignOut size={20} /></HudButton>
+          </div>
         </div>
         {topDown && (
-          <div className="pointer-events-auto flex gap-2">
+          <div className="pointer-events-auto glass-hud flex items-center gap-1 rounded-2xl p-1">
             <HudButton label={t('sim.hud.zoomOut')} onClick={() => useDriver.getState().zoomBy(1 / ZOOM_STEP)}><MagnifyingGlassMinus size={20} /></HudButton>
             <HudButton label={t('sim.hud.zoomIn')} onClick={() => useDriver.getState().zoomBy(ZOOM_STEP)}><MagnifyingGlassPlus size={20} /></HudButton>
           </div>
@@ -147,11 +161,29 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
       {done && <DrillDone station={done} onRestart={onRestart} onNext={onNext} onStations={onStations} />}
       <SettingsDialog settings={settings} />
       {paused && (
-        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[oklch(var(--road)/0.45)]">
-          <div className={cn(HUD_PLATE, 'max-w-sm space-y-3 p-4 text-center')} role="status">
-            <p className="type-label-strong text-lg">{t('sim.hud.paused')}</p>
-            <p className="type-label">{t('sim.hud.pausedHint', names)}</p>
-            <Button onClick={() => useDriver.getState().set({ paused: false })}>{t('sim.hud.resume')}</Button>
+        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-[oklch(var(--road)/0.5)] p-4">
+          <div className={cn(HUD_PLATE, 'w-full max-w-sm space-y-4 rounded-3xl p-6 text-center')} role="status">
+            <div className="space-y-1.5">
+              <p className="font-heading text-xl font-extrabold text-white">{t('sim.hud.paused')}</p>
+              <p className="type-label text-sm text-white/80">{t('sim.hud.pausedHint', names)}</p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button variant="brand" className="w-full" onClick={() => useDriver.getState().set({ paused: false })}>
+                {t('sim.hud.resume')}
+              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className={HUD_ACTION_SECONDARY}
+                  onClick={() => { useDriver.getState().set({ paused: false }); onRestart(); }}
+                >
+                  {free ? t('sim.hud.toStart') : mode === 'practice' ? t('sim.hud.restartDrill') : t('sim.hud.restartTest')}
+                </Button>
+                <Button variant="ghost" className={HUD_ACTION_GHOST} onClick={onExit}>
+                  {t('sim.hud.exit')}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -167,7 +199,13 @@ function HudButton({ label, pressed, onClick, children }: { label: string; press
       title={label}
       aria-pressed={pressed}
       onClick={onClick}
-      className={cn(HUD_PLATE, 'tap-sm flex items-center justify-center', pressed && 'bg-[oklch(var(--paint)/0.92)] text-[oklch(var(--road))]')}
+      className={cn(
+        'tap-sm flex items-center justify-center rounded-xl text-[oklch(var(--paint))] transition-[background-color,color,transform] duration-150 ease-spring active:scale-[0.96]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1 focus-visible:ring-offset-[oklch(var(--road))]',
+        pressed
+          ? 'bg-[oklch(var(--paint)/0.94)] text-[oklch(var(--road))] shadow-[inset_0_1px_0_rgb(255_255_255/0.8)]'
+          : 'hover:bg-white/15',
+      )}
     >
       {children}
     </button>
@@ -341,11 +379,15 @@ function Guide({ id }: { id: StationId }) {
   }, [id, lines.length, speed, gear, handbrake, wheel, detail, progress]);
   return (
     <div className="pointer-events-none absolute inset-x-0 top-[34%] flex justify-center px-4">
-      <div className={cn(HUD_PLATE, 'pointer-events-auto w-[min(92vw,26rem)] space-y-2 px-4 py-3 text-center')} role="status" aria-live="polite">
-        <p className="type-label text-xs opacity-80">{t('sim.guide.step', { n: done + 1, total: lines.length })}</p>
-        <p className="type-label-strong text-lg leading-snug">{lines[done]}</p>
+      <div className={cn(HUD_PLATE, 'pointer-events-auto w-[min(92vw,26rem)] space-y-2.5 rounded-2xl px-4 py-3.5 text-center')} role="status" aria-live="polite">
+        <p className="type-label text-xs uppercase tracking-wide text-white/75">{t('sim.guide.step', { n: done + 1, total: lines.length })}</p>
+        <p className="type-label-strong text-lg leading-snug text-white">{lines[done]}</p>
         {done < lines.length - 1 && (
-          <button type="button" onClick={() => setDone((n) => Math.min(lines.length - 1, n + 1))} className="tap-sm rounded-lg border border-[oklch(var(--paint)/0.6)] px-3 text-sm font-semibold">
+          <button
+            type="button"
+            onClick={() => setDone((n) => Math.min(lines.length - 1, n + 1))}
+            className="min-h-11 inline-flex items-center justify-center rounded-full border border-white/40 bg-white/15 px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 ease-spring hover:bg-white/25 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1 focus-visible:ring-offset-[oklch(var(--road))]"
+          >
             {t('sim.guide.next')}
           </button>
         )}
@@ -362,17 +404,26 @@ export function DrillDone({ station, onRestart, onNext, onStations }: { station:
   const cleared = station.status === 'cleared';
   const reason = voidKey ? `sim.fault.${voidKey}` : cleared ? undefined : fault?.reasonKey;
   const fix = voidKey ? `sim.fix.${voidKey}` : cleared ? undefined : fault?.fixKey;
-  const edge = voidKey ? 'border-l-[oklch(var(--warning))]' : cleared ? 'border-l-[oklch(var(--success))]' : 'border-l-[oklch(var(--destructive))]';
+  const statusTone = voidKey
+    ? 'border-amber-300/45 bg-amber-400/20 text-amber-100'
+    : cleared
+      ? 'border-emerald-400/45 bg-emerald-500/20 text-emerald-100'
+      : 'border-rose-400/45 bg-rose-500/20 text-rose-100';
   return (
-    <div className="pointer-events-auto absolute inset-x-0 top-1/3 mx-auto w-[min(92vw,380px)]">
-      <div className={cn(HUD_PLATE, 'space-y-3 border-l-4 p-4', edge)} role="status">
-        <p className="type-label-strong text-lg">{stationName(t, station.id)}: {t(voidKey ? 'sim.hud.voided' : cleared ? 'sim.hud.cleared' : 'sim.hud.failed')}</p>
-        {reason && <p className="type-label">{t(reason as TranslationKey)}</p>}
-        {fix && <p className="type-label">{t(fix as TranslationKey)}</p>}
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={onRestart}>{t('sim.hud.restartDrill')}</Button>
-          <Button variant="outline" onClick={onNext}>{t('sim.hud.nextStation')}</Button>
-          <Button variant="outline" onClick={onStations}>{t('sim.hud.drills')}</Button>
+    <div className="pointer-events-auto absolute inset-x-0 top-1/3 mx-auto w-[min(92vw,400px)] px-3">
+      <div className={cn(HUD_PLATE, 'space-y-3.5 rounded-3xl p-5')} role="status">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-heading text-lg font-extrabold text-white">{stationName(t, station.id)}</p>
+          <span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize', statusTone)}>
+            {t(voidKey ? 'sim.hud.voided' : cleared ? 'sim.hud.cleared' : 'sim.hud.failed')}
+          </span>
+        </div>
+        {reason && <p className="type-label text-sm leading-relaxed text-white/95">{t(reason as TranslationKey)}</p>}
+        {fix && <p className="type-label text-sm leading-relaxed text-white/80">{t(fix as TranslationKey)}</p>}
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Button variant="brand" onClick={onRestart}>{t('sim.hud.restartDrill')}</Button>
+          <Button variant="outline" className={HUD_ACTION_SECONDARY} onClick={onNext}>{t('sim.hud.nextStation')}</Button>
+          <Button variant="outline" className={HUD_ACTION_SECONDARY} onClick={onStations}>{t('sim.hud.drills')}</Button>
         </div>
       </div>
     </div>
