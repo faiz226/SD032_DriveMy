@@ -44,6 +44,17 @@ describe('the run', () => {
     expect(elapsed).toBeGreaterThan(60);
   }, 30_000);   // a whole circuit at the physics step: under 1 s, but 9 s was seen on a busy machine
 
+  it('a restart mid-assessment throws away the run: a fresh id, no demerits, no toasts, no chase mark, the car back at the spawn', () => {
+    const pose = useRun.getState().begin('assessment');
+    const before = useRun.getState().runId;
+    useRun.setState({ chaseUsed: true, toasts: [{ id: 1, fault: { kind: 'kerb', station: 'hill-start', points: 2, at: pose.at, t: 3, reasonKey: 'sim.fault.kerb', fixKey: 'sim.fix.kerb', basis: '' } }] });
+    const again = useRun.getState().restart();
+    expect(again.at).toEqual(circuit.spawn.at);
+    expect(useRun.getState()).toMatchObject({ mode: 'assessment', chaseUsed: false, toasts: [], elapsed: 0 });
+    expect(useRun.getState().runId).not.toBe(before);
+    expect(useRun.getState().state).toMatchObject({ demerits: 0, verdict: null });
+  });
+
   it('practice: the car goes to the station\'s start, the top-down view works there too, and a restart is a fresh run', () => {
     const pose = useRun.getState().begin('practice', 'side-parking');
     expect(pose.at).toEqual(station('side-parking').start.at);

@@ -60,6 +60,9 @@ export const HEAD = { yaw: 1.92, pitchUp: 0.35, pitchDown: -0.8 };
 // Q: over the left shoulder, into the blind spot. E: down out of the driver's window (the only side where
 // any road near the car can be seen), to where the hill's yellow band meets the kerb, beside the door mirror.
 const GLANCE = { left: { yaw: 1.75, pitch: -0.1 }, right: { yaw: -0.9, pitch: -0.45 } };
+// In the view from behind the car (V) the keys swap: the camera swings round to the side the key names, so Q shows
+// the car's left side and E its right. The camera orbits the other way to the head, hence the swapped sign.
+const ORBIT_YAW = 1.3;
 
 /**
  * Where the driver's head points, for blind spots and lines the bonnet hides. A glance key or a drag sets it;
@@ -116,7 +119,13 @@ export const useTouchPref = create<{ pref: TouchPref; setPref(p: TouchPref): voi
 }));
 
 const COARSE = '(pointer: coarse)';
-const touchDevice = () => typeof window !== 'undefined' && !!window.matchMedia?.(COARSE).matches && navigator.maxTouchPoints > 0;
+/**
+ * iPadOS Safari calls itself a Mac. It is told apart by its touch points: a real Mac has none. An iPad with a keyboard
+ * or trackpad attached reports a fine pointer as its main one, so the coarse-pointer test alone would take it for a desktop.
+ */
+export const isIPad = (nav: { userAgent: string; platform?: string; maxTouchPoints?: number } = navigator) =>
+  /iPad/.test(nav.userAgent) || (/Mac/.test(nav.platform ?? nav.userAgent) && (nav.maxTouchPoints ?? 0) > 1);
+const touchDevice = () => typeof window !== 'undefined' && navigator.maxTouchPoints > 0 && (isIPad() || !!window.matchMedia?.(COARSE).matches);
 const watchPointer = (changed: () => void) => {
   const mq = window.matchMedia?.(COARSE);
   mq?.addEventListener('change', changed);
@@ -262,7 +271,8 @@ export function useKeyboardControls(enabled = true) {
       // the look keys, or the steering keys with Shift (they steer all the same): over the left shoulder, down out of the window
       const shift = held.has('ShiftLeft') || held.has('ShiftRight');
       const glance = (on('lookLeft') || (shift && left) ? 1 : 0) - (on('lookRight') || (shift && right) ? 1 : 0);
-      if (glance !== 0) useHead.getState().set(glance > 0 ? GLANCE.left : GLANCE.right);
+      const view = useDriver.getState();
+      if (glance !== 0) useHead.getState().set(view.chase && !view.topDown ? { yaw: glance > 0 ? -ORBIT_YAW : ORBIT_YAW, pitch: 0 } : glance > 0 ? GLANCE.left : GLANCE.right);
       else if (glancing) useHead.getState().set({ yaw: 0, pitch: 0 });
       glancing = glance !== 0;
     };

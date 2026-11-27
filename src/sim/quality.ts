@@ -2,6 +2,7 @@
 // (Xs class) and desktops. Detected once, overridable in the simulator's settings, and only ever applied
 // before a run starts: quality never changes in the middle of a station.
 import { create } from 'zustand';
+import { isIPad } from './input';
 import type { MirrorId } from './physics/mirrors';
 
 export type Tier = 'low' | 'medium';
@@ -25,9 +26,9 @@ export const TIERS: Record<Tier, TierSpec> = {
   medium: { tier: 'medium', shadows: true, clearcoat: true, renderScale: [0.85, 1], maxDpr: 2, fpsBounds: [45, 70], mirrors: { perFrame: 3, budget: 512 * 256, ids: ['left', 'interior', 'right'] } },
 };
 
-/** Android, or a device reporting 4 GB of memory or less, gets Low; iPhones and desktops get Medium. */
-export function detectTier(nav: { userAgent: string; deviceMemory?: number } = navigator as Navigator & { deviceMemory?: number }): Tier {
-  if (/Android/i.test(nav.userAgent)) return 'low';
+/** Android, an iPad (a tablet's screen with a phone's cooling), or a device reporting 4 GB of memory or less, gets Low; iPhones and desktops get Medium. */
+export function detectTier(nav: { userAgent: string; platform?: string; maxTouchPoints?: number; deviceMemory?: number } = navigator as Navigator & { deviceMemory?: number }): Tier {
+  if (/Android/i.test(nav.userAgent) || isIPad(nav)) return 'low';
   if (typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4) return 'low';
   return 'medium';
 }

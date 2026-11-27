@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { DEFAULT_KEYS, useDriver, useGearPref, useHead, useKeyboardControls, useKeys } from './input';
+import { DEFAULT_KEYS, isIPad, useDriver, useGearPref, useHead, useKeyboardControls, useKeys } from './input';
 
 const press = (code: string, init: KeyboardEventInit = {}) => act(() => { window.dispatchEvent(new KeyboardEvent('keydown', { code, ...init })); });
 const release = (code: string) => act(() => { window.dispatchEvent(new KeyboardEvent('keyup', { code })); });
@@ -264,5 +264,43 @@ describe("the learner's own keys (Settings)", () => {
     expect(useKeys.getState().keys.horn).toBe('KeyH');
     act(() => useKeys.getState().reset());
     expect(useKeys.getState().keys).toEqual(DEFAULT_KEYS);
+  });
+});
+
+describe('looking round: Q and E', () => {
+  it("from the driver's seat, Q looks over the left shoulder and E down out of the window, as they always did", () => {
+    useDriver.setState({ chase: false, topDown: false });
+    renderHook(() => useKeyboardControls());
+    press('KeyQ');
+    expect(head().yaw).toBeGreaterThan(1);
+    release('KeyQ');
+    press('KeyE');
+    expect(head().yaw).toBeLessThan(0);
+    release('KeyE');
+  });
+
+  it("from behind the car (V) the two swap: Q swings the camera to the car's left, E to its right", () => {
+    useDriver.setState({ chase: true, topDown: false });
+    renderHook(() => useKeyboardControls());
+    press('KeyQ');
+    const q = head().yaw;
+    release('KeyQ');
+    press('KeyE');
+    const e = head().yaw;
+    release('KeyE');
+    expect(q).toBeLessThan(0);   // the orbit runs against the head's turn, so the camera goes to the left side
+    expect(e).toBeGreaterThan(0);
+    expect(Math.abs(q)).toBeCloseTo(Math.abs(e));
+    useDriver.setState({ chase: false });
+  });
+});
+
+describe('telling an iPad from a Mac', () => {
+  it('iPadOS Safari reports a Mac with touch points; a real Mac has none', () => {
+    const mac = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15';
+    expect(isIPad({ userAgent: mac, platform: 'MacIntel', maxTouchPoints: 5 })).toBe(true);
+    expect(isIPad({ userAgent: mac, platform: 'MacIntel', maxTouchPoints: 0 })).toBe(false);
+    expect(isIPad({ userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)', maxTouchPoints: 5 })).toBe(true);
+    expect(isIPad({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/141', platform: 'Win32', maxTouchPoints: 10 })).toBe(false);
   });
 });
