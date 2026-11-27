@@ -2,7 +2,7 @@ import type { RoadSignItem } from "./theory";
 
 // Temporary (work zone) signs. The meanings are the captions in the Construction signs gallery of
 // https://en.wikipedia.org/wiki/Road_signs_in_Malaysia (orange and black, a diamond on a rectangular board).
-// The pictures are drawn for this app (public/signs/temp-*.svg), not copied from any file.
+// The pictures are drawn for this app by scripts/draw-temporary-signs.py, not copied from any file.
 export const temporarySigns: RoadSignItem[] = [
   {
     "id": "temp-roadworks",
@@ -16,7 +16,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Roadworks ahead. Slow down and watch for workers.",
     "actionMs": "Kerja jalan di hadapan. Perlahankan kenderaan dan awasi pekerja.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-roadworks.svg"
+    "img": "/signs/b42139afd837ef25.svg"
   },
   {
     "id": "temp-caution",
@@ -30,7 +30,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Take care and be ready for a hazard in the work zone.",
     "actionMs": "Berhati-hati dan bersedia menghadapi bahaya di zon kerja.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-caution.svg"
+    "img": "/signs/f492a45dd81174e3.svg"
   },
   {
     "id": "temp-lane-closed-left",
@@ -44,7 +44,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Check your mirror, signal and move into the open lane in good time.",
     "actionMs": "Periksa cermin, beri isyarat dan masuk ke lorong yang dibuka lebih awal.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-lane-closed-left.svg"
+    "img": "/signs/2e4ff80d4f321707.svg"
   },
   {
     "id": "temp-lane-closed-middle",
@@ -58,7 +58,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Choose the open lane early and keep a safe gap.",
     "actionMs": "Pilih lorong yang dibuka lebih awal dan kekalkan jarak selamat.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-lane-closed-middle.svg"
+    "img": "/signs/690237ee07171ace.svg"
   },
   {
     "id": "temp-lane-closed-right",
@@ -72,7 +72,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Check your mirror, signal and move left in good time.",
     "actionMs": "Periksa cermin, beri isyarat dan beralih ke kiri lebih awal.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-lane-closed-right.svg"
+    "img": "/signs/1068e9c0d065f016.svg"
   },
   {
     "id": "temp-curve-right",
@@ -86,7 +86,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down before the curve and keep to your lane.",
     "actionMs": "Perlahankan kenderaan sebelum selekoh dan kekal di lorong anda.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-curve-right.svg"
+    "img": "/signs/88118fbd10ff99bc.svg"
   },
   {
     "id": "temp-curve-left",
@@ -100,7 +100,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down before the curve and keep to your lane.",
     "actionMs": "Perlahankan kenderaan sebelum selekoh dan kekal di lorong anda.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-curve-left.svg"
+    "img": "/signs/7bf42d1406f5e378.svg"
   },
   {
     "id": "temp-narrows-left",
@@ -114,7 +114,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down and give way to traffic already in the narrow part where needed.",
     "actionMs": "Perlahankan kenderaan dan beri laluan kepada trafik di bahagian sempit jika perlu.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-narrows-left.svg"
+    "img": "/signs/649c72f2e8303c67.svg"
   },
   {
     "id": "temp-narrows-right",
@@ -128,7 +128,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down and give way to traffic already in the narrow part where needed.",
     "actionMs": "Perlahankan kenderaan dan beri laluan kepada trafik di bahagian sempit jika perlu.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-narrows-right.svg"
+    "img": "/signs/937d34aee6c09619.svg"
   },
   {
     "id": "temp-chevron-left",
@@ -142,7 +142,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down and follow the chevrons to the left.",
     "actionMs": "Perlahankan kenderaan dan ikut chevron ke kiri.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-chevron-left.svg"
+    "img": "/signs/b9688cf3675a4402.svg"
   },
   {
     "id": "temp-diverge",
@@ -156,7 +156,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Choose your lane early and follow the signs for your direction.",
     "actionMs": "Pilih lorong lebih awal dan ikut papan tanda arah anda.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-diverge.svg"
+    "img": "/signs/b4ef5c653b3178ac.svg"
   },
   {
     "id": "temp-works-200m",
@@ -170,7 +170,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Start slowing down now and be ready to change lane.",
     "actionMs": "Mula perlahankan kenderaan sekarang dan bersedia menukar lorong.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-works-200m.svg"
+    "img": "/signs/fadd8799d73948f2.svg"
   },
   {
     "id": "temp-flagman-200m",
@@ -184,7 +184,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down and obey the flagman's signals.",
     "actionMs": "Perlahankan kenderaan dan patuhi isyarat pengawal bendera.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-flagman-200m.svg"
+    "img": "/signs/77afd7acd0ca2609.svg"
   },
   {
     "id": "temp-detour",
@@ -198,7 +198,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Follow the arrow and the detour route.",
     "actionMs": "Ikut anak panah dan laluan lencongan.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-detour.svg"
+    "img": "/signs/b208cd7babea458a.svg"
   },
   {
     "id": "temp-one-lane",
@@ -212,7 +212,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down, keep to the lane and watch for oncoming traffic.",
     "actionMs": "Perlahankan kenderaan, kekal di lorong dan awasi trafik dari arah bertentangan.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-one-lane.svg"
+    "img": "/signs/b463d9db72161ce9.svg"
   },
   {
     "id": "temp-speed-50",
@@ -226,7 +226,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Do not drive faster than 50 km/h while the sign applies.",
     "actionMs": "Jangan memandu lebih laju daripada 50 km/j selagi papan tanda ini berkuat kuasa.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-speed-50.svg"
+    "img": "/signs/a227840ecbc8e72b.svg"
   },
   {
     "id": "temp-heavy-vehicles",
@@ -240,7 +240,7 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "Slow down and watch for lorries crossing the road.",
     "actionMs": "Perlahankan kenderaan dan awasi lori yang melintas jalan.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-heavy-vehicles.svg"
+    "img": "/signs/9dd2a1e869c3a6ea.svg"
   },
   {
     "id": "temp-end-works",
@@ -254,6 +254,6 @@ export const temporarySigns: RoadSignItem[] = [
     "action": "The work zone ends here. Normal rules apply again.",
     "actionMs": "Zon kerja tamat di sini. Peraturan biasa berkuat kuasa semula.",
     "source": "Wikipedia, Road signs in Malaysia (Construction signs)",
-    "img": "/signs/temp-end-works.svg"
+    "img": "/signs/7803413d6ef60b47.svg"
   }
 ];
