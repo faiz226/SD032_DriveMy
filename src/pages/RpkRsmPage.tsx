@@ -89,12 +89,12 @@ export function RpkRsmPage() {
             <p className="type-figure shrink-0 text-sm">{t("rpk.topicsCompleted", { done: doneCount, total: RPK_TOPICS.length })}</p>
           </div>
 
-          <div className="grid gap-[var(--panel-gap)] md:grid-cols-[minmax(15rem,1fr)_2fr]">
+          <div className="grid gap-[var(--panel-gap)] xl:grid-cols-[minmax(15rem,1fr)_2fr]">
             <nav aria-label={t("rpk.topicsNav")} className="space-y-6">
               {GROUPS.map(group => (
                 <section key={group.routine} aria-labelledby={`rpk-${group.routine}`}>
                   <h2 id={`rpk-${group.routine}`} className="text-lg">{t(group.titleKey)}</h2>
-                  <ul className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-1">
+                  <ul className="mt-3 grid grid-cols-2 gap-2 xl:grid-cols-1">
                     {RPK_TOPICS.filter(topic => topic.routine === group.routine).map(topic => {
                       const isCurrent = current.id === topic.id;
                       const topicDone = done.has(topic.id);

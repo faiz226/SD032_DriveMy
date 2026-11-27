@@ -63,6 +63,20 @@ const GIVE_WAY_SIGN = { back: 2.75, long: 3.75, wide: 1.25, rim: 0.15, base: 0.6
 const OUTLINE_M = 0.2;         // Fig 14: the border round a chevron area
 const CHEVRON = { width: 0.3, gap: 0.6, line: 0.2, apart: 0.125 };        // Fig 14: 45 degree stripes; the double line on from the tip
 const ARROW = { long: 3.0, head: 1.125, headWide: 0.825, shaft: 0.185, turnR: 0.8, turnHead: 0.6, turnHeadWide: 0.75 };   // Fig 19, urban
+// Road lettering: capitals stretched along the lane (a driver sees them foreshortened), one after another, the first
+// letter furthest on. Each glyph is strokes on a 0..1 grid (u across to the driver's right, v up the road).
+const LETTER = { long: 1.5, wide: 0.9, gap: 0.6, stroke: 0.15 };
+const GLYPHS: Record<string, [number, number][][]> = {
+  A: [[[0, 0], [0.5, 1], [1, 0]], [[0.2, 0.4], [0.8, 0.4]]],
+  W: [[[0, 1], [0.25, 0], [0.5, 0.6], [0.75, 0], [1, 1]]],
+  S: [[[1, 0.85], [0.8, 1], [0.2, 1], [0, 0.85], [0, 0.65], [0.2, 0.5], [0.8, 0.5], [1, 0.35], [1, 0.15], [0.8, 0], [0.2, 0], [0, 0.15]]],
+  P: [[[0, 0], [0, 1], [0.8, 1], [1, 0.85], [1, 0.65], [0.8, 0.5], [0, 0.5]]],
+  E: [[[1, 1], [0, 1], [0, 0], [1, 0]], [[0, 0.5], [0.7, 0.5]]],
+  R: [[[0, 0], [0, 1], [0.8, 1], [1, 0.85], [1, 0.65], [0.8, 0.5], [0, 0.5]], [[0.5, 0.5], [1, 0]]],
+  L: [[[0, 1], [0, 0], [1, 0]]],
+  H: [[[0, 0], [0, 1]], [[1, 0], [1, 1]], [[0, 0.5], [1, 0.5]]],
+  N: [[[0, 0], [0, 1], [1, 0], [1, 1]]],
+};
 const YELLOW_BOX = { border: 0.2, line: 0.15, every: 3.05 };              // 4.3.7, Fig 24
 const MARKER = { radius: 0.05, height: 1.6, band: 0.2, plate: 0.36 };   // the poles where a station's queue stops
 // a signal: its post, the housing's underside, size (deep, high, wide) and lamp spacing; the housing stands this far
@@ -367,6 +381,19 @@ export function buildWorld(c: CircuitData): WorldBuild {
   for (const arrow of marks?.arrows ?? []) {
     const pt = place(arrow.at, rad(arrow.heading_deg));
     const A = ARROW;
+    if (arrow.kind === 'U') {   // a U-turn arrow: up the lane, a half circle to the right (traffic keeps left), back the other way
+      const bend = 0.2;
+      fill([pt([-A.long / 2, -A.shaft / 2]), pt([bend, -A.shaft / 2]), pt([bend, A.shaft / 2]), pt([-A.long / 2, A.shaft / 2])], WHITE);
+      const arc: Vec2[] = [];
+      for (let i = 0; i <= 12; i++) {
+        const u = (i / 12) * Math.PI;
+        arc.push(pt([bend + A.turnR * Math.sin(u), -A.turnR * (1 - Math.cos(u))]));
+      }
+      polyline(arc, A.shaft);
+      const ey = -2 * A.turnR;
+      fill([pt([bend, ey - A.turnHeadWide / 2]), pt([bend, ey + A.turnHeadWide / 2]), pt([bend - A.turnHead, ey])], WHITE);
+      continue;
+    }
     const base = -A.long / 2;
     const straight = arrow.kind.includes('S');
     const turns = [...arrow.kind].filter((m) => m === 'L' || m === 'R');
@@ -385,6 +412,22 @@ export function buildWorld(c: CircuitData): WorldBuild {
       const ex = bendAt + A.turnR;
       fill([pt([ex - A.turnHeadWide / 2, sd * A.turnR]), pt([ex + A.turnHeadWide / 2, sd * A.turnR]), pt([ex, sd * (A.turnR + A.turnHead)])], WHITE);
     }
+  }
+
+  // road lettering (AWAS, PERLAHAN) where the circuit has a danger or slow zone
+  for (const word of marks?.lettering ?? []) {
+    const pt = place(word.at, rad(word.heading_deg));
+    const L = LETTER;
+    const total = word.text.length * L.long + (word.text.length - 1) * L.gap;
+    [...word.text].forEach((ch, i) => {
+      const x0 = total / 2 - i * (L.long + L.gap) - L.long;   // the letter's near edge; the first letter lies furthest on
+      for (const stroke of GLYPHS[ch] ?? []) {
+        for (let k = 1; k < stroke.length; k++) {
+          const at = ([u, v]: [number, number]): Vec2 => pt([x0 + v * L.long, (0.5 - u) * L.wide]);
+          strip(at(stroke[k - 1]), at(stroke[k]), L.stroke, WHITE);
+        }
+      }
+    });
   }
 
   // chevron areas (Fig 14): a 200 mm border, 300 mm stripes 600 mm apart at 45 degrees whose points face the oncoming

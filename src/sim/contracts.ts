@@ -78,7 +78,10 @@ export interface CircuitData {
     edge_lines?: Vec2[][]; stop_lines?: Vec2[][]; give_way?: Vec2[][];
     /** A give-way triangle before each give-way line: its line's middle and the way the drivers it faces travel. */
     triangles?: { at: Vec2; heading_deg: number }[];
+    /** kind: the movements, of 'L', 'S', 'R', or 'U' for a U-turn arrow. */
     arrows?: { at: Vec2; heading_deg: number; kind: string; junction: string }[];
+    /** Road lettering (AWAS, PERLAHAN): letters one after another along the lane, read by the driver coming on; `at` is the word's middle. */
+    lettering?: { at: Vec2; heading_deg: number; text: string; note?: string }[];
     chevrons?: { polygon: Polygon; heading_deg: number; note?: string }[];
     zebras?: Zebra[];
     bays?: NonNullable<StationGeometry['bay']>[];

@@ -48,7 +48,7 @@ export function PartPicture({ topicId, label, stepCount, active, stepName, onSel
             onPointerEnter={() => onHover(index)}
             onPointerLeave={() => onHover(null)}
             style={{ left: `${x}%`, top: `${y}%` }}
-            className="group absolute grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="group absolute grid h-7 w-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span
               aria-hidden="true"
