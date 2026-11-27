@@ -147,7 +147,8 @@ interface HazardDrill {
   id: string;
   titleEn: string;
   titleMs: string;
-  ref: string;
+  refEn: string;
+  refMs: string;
   scenarioEn: string;
   scenarioMs: string;
   optionsEn: string[];
@@ -163,13 +164,14 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-cito",
     titleEn: "C.I.T.O. lane-change & overtaking sequence",
     titleMs: "Urutan menukar lorong & memotong C.I.T.O.",
-    ref: "C.I.T.O.",
+    refEn: "C.I.T.O.",
+    refMs: "C.I.T.O.",
     scenarioEn: "You want to move into the right lane to overtake a slower lorry. What is the exact C.I.T.O. order?",
     scenarioMs: "Anda ingin bergerak ke lorong kanan untuk memotong lori yang perlahan. Apakah urutan C.I.T.O. yang betul?",
     optionsEn: [
-      "1. Cermin (Mirrors) -> 2. Isyarat (Signal) -> 3. Titik Buta (Head-check blind spot) -> 4. Olah Gerak (Maneuver)",
-      "1. Olah Gerak (Turn wheel) -> 2. Isyarat (Signal) -> 3. Cermin (Mirrors) -> 4. Titik Buta (Blind spot)",
-      "1. Isyarat (Signal) -> 2. Olah Gerak (Turn wheel immediately) without checking mirrors or blind spot",
+      "1. Mirrors -> 2. Signal -> 3. Blind spot (head-check over the shoulder) -> 4. Manoeuvre (move the wheel)",
+      "1. Manoeuvre (turn the wheel) -> 2. Signal -> 3. Mirrors -> 4. Blind spot",
+      "1. Signal -> 2. Manoeuvre straight away, without checking the mirrors or blind spot",
     ],
     optionsMs: [
       "1. Cermin -> 2. Isyarat -> 3. Titik Buta (Toleh ke arah bahu) -> 4. Olah Gerak (Gerakkan stereng)",
@@ -186,7 +188,8 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-under-oversteer",
     titleEn: "Speed on wet bends",
     titleMs: "Kelajuan di selekoh basah",
-    ref: "Kawalan Selekoh",
+    refEn: "Bend control",
+    refMs: "Kawalan Selekoh",
     scenarioEn: "You are approaching a bend on a wet road. When should you slow down?",
     scenarioMs: "Anda menghampiri selekoh di jalan basah. Bilakah anda patut memperlahankan kenderaan?",
     optionsEn: ["Before entering the bend", "At the centre of the bend", "After leaving the bend"],
@@ -199,7 +202,8 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-breakdown",
     titleEn: "Expressway breakdown",
     titleMs: "Kerosakan di lebuh raya",
-    ref: "Kecemasan Lebuh Raya",
+    refEn: "Highway emergency",
+    refMs: "Kecemasan Lebuh Raya",
     scenarioEn: "Your vehicle breaks down on the expressway shoulder at night. Where should you place the warning triangle?",
     scenarioMs: "Kenderaan anda rosak di lorong kecemasan lebuh raya pada waktu malam. Di manakah tanda amaran patut diletakkan?",
     optionsEn: [
@@ -443,13 +447,13 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <div className="grid grid-cols-3 gap-2 text-xs pt-1">
                   <div className="p-2.5 rounded-lg bg-brand/15 border border-brand/40">
                     <span className="text-muted-foreground block">
-                      {lang === "en" ? "Thinking (Jarak berfikir)" : "Jarak berfikir"}
+                      {lang === "en" ? "Thinking" : "Jarak berfikir"}
                     </span>
                     <span className="type-figure text-base">{speedSpec.thinkingMeters} m</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/30">
                     <span className="text-muted-foreground block">
-                      {lang === "en" ? "Braking (Jarak membrek)" : "Jarak membrek"}
+                      {lang === "en" ? "Braking" : "Jarak membrek"}
                     </span>
                     <span className="type-figure text-base">{brakingMeters} m</span>
                   </div>
@@ -535,7 +539,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                         {lang === "en" ? drill.titleEn : drill.titleMs}
                       </span>
                     </div>
-                    <div className="text-[0.8125rem] text-muted-foreground">{drill.ref}</div>
+                    <div className="text-[0.8125rem] text-muted-foreground">{lang === "en" ? drill.refEn : drill.refMs}</div>
                     <p className="text-sm font-semibold text-foreground leading-snug pt-1">
                       {lang === "en" ? drill.scenarioEn : drill.scenarioMs}
                     </p>

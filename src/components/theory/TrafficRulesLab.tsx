@@ -108,7 +108,8 @@ const KEJARA_ACTIONS = [
 interface RuleScenario {
   id: string;
   badge: string;
-  ref: string;
+  refEn: string;
+  refMs: string;
   promptEn: string;
   promptMs: string;
   optionsEn: string[];
@@ -123,7 +124,8 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-lmm-age",
     badge: "LMM Age & Class",
-    ref: "Had Umur Minimum Lesen",
+    refEn: "Minimum licence age",
+    refMs: "Had Umur Minimum Lesen",
     promptEn: "A 17-year-old learner wants to apply for a driving licence. Which combination is legally permitted under APJ 1987?",
     promptMs: "Seorang calon berumur 17 tahun ingin memohon lesen memandu. Kombinasi manakah yang dibenarkan di bawah APJ 1987?",
     optionsEn: [
@@ -145,7 +147,8 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-licence-expiry",
     badge: "PDL to CDL",
-    ref: "Tempoh Permohonan Lesen Kompeten",
+    refEn: "Competent licence application period",
+    refMs: "Tempoh Permohonan Lesen Kompeten",
     promptEn: "Your probationary licence has expired. How long from expiry does the handbook allow to apply for a competent licence?",
     promptMs: "Lesen memandu percubaan anda telah tamat tempoh. Berapa lamakah tempoh selepas tamat yang dibenarkan oleh buku panduan untuk memohon lesen kompeten?",
     optionsEn: ["Up to one year", "Up to six months", "Up to two years"],
@@ -159,7 +162,8 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-yellow-box",
     badge: "Yellow Box Junction",
-    ref: "Petak Kuning Bersilang",
+    refEn: "Yellow box junction",
+    refMs: "Petak Kuning Bersilang",
     promptEn: "Your traffic light turns green at a yellow criss-cross box junction, but traffic ahead in your exit lane is stationary. What is the legal action?",
     promptMs: "Lampu isyarat anda bertukar hijau di petak kuning bersilang, tetapi trafik di lorong keluar anda sedang berhenti. Apakah tindakan yang sah?",
     optionsEn: [
@@ -181,7 +185,8 @@ const RULE_SCENARIOS: RuleScenario[] = [
   {
     id: "scen-centre-line",
     badge: "Road Markings",
-    ref: "Garisan Tengah Jalan",
+    refEn: "Road centre line",
+    refMs: "Garisan Tengah Jalan",
     promptEn: "The centre of a two-way road has a continuous white line on your side paired with a broken white line on the opposite side. Can you overtake?",
     promptMs: "Bahagian tengah jalan dua hala mempunyai garisan putih bersambung di sebelah lorong anda dan garisan putih putus-putus di sebelah bertentangan. Bolehkah anda memotong?",
     optionsEn: [
@@ -652,7 +657,7 @@ export function TrafficRulesLab({ lang, onScenarioSolved }: TrafficRulesLabProps
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <span className="pill pill-info">{scen.badge}</span>
-                      <span className="text-[0.8125rem] text-muted-foreground">{scen.ref}</span>
+                      <span className="text-[0.8125rem] text-muted-foreground">{lang === "en" ? scen.refEn : scen.refMs}</span>
                     </div>
                     <p className="text-sm font-semibold text-foreground leading-snug">
                       {lang === "en" ? scen.promptEn : scen.promptMs}
