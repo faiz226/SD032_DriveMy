@@ -70,10 +70,13 @@ DECLARE
   v_count bigint;
 BEGIN
   -- Saving a module that is already there is an update, not a new row.
-  IF TG_TABLE_NAME = 'theory_progress' AND EXISTS (
-    SELECT 1 FROM public.theory_progress t WHERE t.user_id = NEW.user_id AND t.module_id = NEW.module_id
-  ) THEN
-    RETURN NEW;
+  -- Nested, because PL/pgSQL does not short-circuit AND: NEW.module_id must not be read on other tables.
+  IF TG_TABLE_NAME = 'theory_progress' THEN
+    IF EXISTS (
+      SELECT 1 FROM public.theory_progress t WHERE t.user_id = NEW.user_id AND t.module_id = NEW.module_id
+    ) THEN
+      RETURN NEW;
+    END IF;
   END IF;
 
   EXECUTE format('SELECT count(*) FROM %I.%I WHERE user_id = $1', TG_TABLE_SCHEMA, TG_TABLE_NAME)
