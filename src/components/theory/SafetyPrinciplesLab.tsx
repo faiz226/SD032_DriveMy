@@ -3,10 +3,13 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   Gauge,
   Headlights,
+  ArrowsClockwise as Repeat,
   ShieldWarning,
   Users,
   Wrench,
 } from "@/components/ui/icons";
+import { FlipCard } from "./FlipCard";
+import { HazardVisual, StoppingScene } from "./SafetyVisuals";
 
 interface SafetyPrinciplesLabProps {
   lang: "en" | "bm";
@@ -24,9 +27,6 @@ const STOPPING_SPEEDS = [
   { speedKmh: 90, thinkingMeters: 25, brakingMeters: 68 },
   { speedKmh: 100, thinkingMeters: 28, brakingMeters: 84 },
 ];
-const MAX_STOPPING_METERS = Math.max(
-  ...STOPPING_SPEEDS.map(({ thinkingMeters, brakingMeters }) => thinkingMeters + brakingMeters),
-);
 
 interface TyreDiagnostic {
   id: "normal" | "over" | "under";
@@ -241,9 +241,10 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
   // Lab 4: CRS & Headrest
   const [crsAnswers, setCrsAnswers] = useState<Record<string, number>>({});
+  const [crsFlipped, setCrsFlipped] = useState<Record<string, boolean>>({});
 
   const speedSpec = STOPPING_SPEEDS[selectedSpeedIdx];
-  const { brakingMeters } = speedSpec;
+  const brakingMeters = speedSpec.brakingMeters * (wetRoad ? 2 : 1); // wet: about twice as long, like the 2 s to 4 s following rule
   const totalStoppingMeters = speedSpec.thinkingMeters + brakingMeters;
   const followingRuleSeconds = wetRoad ? 4 : 2;
   const metersPerSecond = speedSpec.speedKmh / 3.6;
@@ -423,26 +424,18 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
                 <p className="text-xs text-muted-foreground">
                   {lang === "en"
-                    ? "Wet roads need more stopping distance. The road setting changes the following-gap estimate."
-                    : "Jarak berhenti lebih jauh di jalan basah. Tetapan jalan mengubah anggaran jarak mengekori."}
+                    ? "Wet roads need more stopping distance: braking takes about twice as far, and the following gap doubles."
+                    : "Jalan basah memerlukan jarak berhenti lebih jauh: jarak membrek kira-kira dua kali ganda dan jarak mengekori digandakan."}
                 </p>
 
-                <div aria-hidden="true" className="w-full h-8 rounded-xl bg-muted overflow-hidden flex border border-border">
-                  <div
-                    className="h-full bg-brand transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
-                    style={{
-                      width: `${(speedSpec.thinkingMeters / MAX_STOPPING_METERS) * 100}%`,
-                    }}
-                    title={lang === "en" ? "Thinking distance" : "Jarak berfikir"}
-                  />
-                  <div
-                    className="h-full bg-destructive transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
-                    style={{
-                      width: `${(brakingMeters / MAX_STOPPING_METERS) * 100}%`,
-                    }}
-                    title={lang === "en" ? "Braking distance" : "Jarak membrek"}
-                  />
-                </div>
+                <StoppingScene
+                  key={`${speedSpec.speedKmh}-${wetRoad}`}
+                  lang={lang}
+                  speedKmh={speedSpec.speedKmh}
+                  thinkingMeters={speedSpec.thinkingMeters}
+                  brakingMeters={brakingMeters}
+                  wet={wetRoad}
+                />
 
                 <div className="grid grid-cols-3 gap-2 text-xs pt-1">
                   <div className="p-2.5 rounded-lg bg-brand/15 border border-brand/40">
@@ -544,6 +537,8 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                       {lang === "en" ? drill.scenarioEn : drill.scenarioMs}
                     </p>
                   </div>
+
+                  <HazardVisual id={drill.id} lang={lang} />
 
                   <div className="space-y-1.5">
                     {opts.map((opt, idx) => {
@@ -751,59 +746,68 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               const answered = picked !== undefined;
               const isRight = picked === item.correctOptionIndex;
               const opts = lang === "en" ? item.optionsEn : item.optionsMs;
+              const flipped = !!crsFlipped[item.id];
+              const setFlip = (value: boolean) => setCrsFlipped((prev) => ({ ...prev, [item.id]: value }));
 
               return (
-                <div key={item.id} className="panel p-4 flex flex-col justify-between gap-3">
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="pill pill-info">
-                        {lang === "en" ? item.profileEn : item.profileMs}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {lang === "en" ? item.specsEn : item.specsMs}
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    {opts.map((opt, idx) => {
-                      const selected = picked === idx;
-                      let stateClass = "";
-                      if (answered) {
-                        if (idx === item.correctOptionIndex) stateClass = "tile-done";
-                        else if (selected) stateClass = "tile-fail";
-                      }
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            setCrsAnswers((prev) => ({ ...prev, [item.id]: idx }));
-                            if (idx === item.correctOptionIndex) {
-                              onScenarioSolved?.(item.id);
-                            }
-                          }}
-                          className={`tile w-full p-2.5 text-left text-xs leading-relaxed cursor-pointer ${stateClass}`}
-                        >
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {answered && (
-                    <div
-                      role="status"
-                      className={`p-3 rounded-lg text-xs leading-relaxed border ${
-                        isRight
-                          ? "bg-success/10 border-success/30 text-foreground"
-                          : "bg-warning/10 border-warning/30 text-foreground"
-                      }`}
-                    >
-                      {lang === "en" ? item.ruleEn : item.ruleMs}
-                    </div>
-                  )}
-                </div>
+                <FlipCard
+                  key={item.id}
+                  flipped={flipped}
+                  front={
+                    <>
+                      <div>
+                        <span className="pill pill-info">{lang === "en" ? item.profileEn : item.profileMs}</span>
+                        <p className="mt-1 text-xs text-muted-foreground">{lang === "en" ? item.specsEn : item.specsMs}</p>
+                      </div>
+                      <div className="space-y-1.5">
+                        {opts.map((opt, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              setCrsAnswers((prev) => ({ ...prev, [item.id]: idx }));
+                              if (idx === item.correctOptionIndex) onScenarioSolved?.(item.id);
+                              setFlip(true);
+                            }}
+                            className="tile w-full cursor-pointer p-2.5 text-left text-xs leading-relaxed"
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFlip(true)}
+                        className="mt-auto flex items-center justify-center gap-1.5 border-t border-border pt-2.5 text-xs font-semibold text-primary"
+                      >
+                        <span>{lang === "en" ? "Show the answer" : "Tunjuk jawapan"}</span>
+                        <Repeat size={13} aria-hidden="true" />
+                      </button>
+                    </>
+                  }
+                  back={
+                    <>
+                      <div className="space-y-1.5">
+                        <span className="pill pill-info">{lang === "en" ? item.profileEn : item.profileMs}</span>
+                        {answered && (
+                          <p className={`text-xs font-bold ${isRight ? "text-success" : "text-warning"}`} role="status">
+                            {isRight ? (lang === "en" ? "Correct" : "Betul") : lang === "en" ? "Not quite" : "Belum tepat"}
+                          </p>
+                        )}
+                        <p className="text-sm font-semibold text-foreground">{opts[item.correctOptionIndex]}</p>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{lang === "en" ? item.ruleEn : item.ruleMs}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFlip(false)}
+                        className="mt-auto flex items-center justify-center gap-1.5 border-t border-border pt-2.5 text-xs font-semibold text-primary"
+                      >
+                        <Repeat size={13} aria-hidden="true" />
+                        <span>{lang === "en" ? "Back to the question" : "Kembali ke soalan"}</span>
+                      </button>
+                    </>
+                  }
+                />
               );
             })}
           </motion.div>
