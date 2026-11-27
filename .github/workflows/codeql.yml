@@ -33,7 +33,42 @@ jobs:
           languages: javascript-typescript
           queries: security-and-quality
 
+      # The repository is private and GitHub code scanning (where results are
+      # normally uploaded) needs a paid plan there, so the results are kept in
+      # the run instead: the job fails on any high or critical security finding,
+      # lists every other finding in the log, and keeps the SARIF as an artifact.
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:javascript-typescript
+          upload: never
+          output: sarif-results
+
+      - name: Keep the results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif
+          path: sarif-results
+          if-no-files-found: ignore
+
+      - name: Fail on high or critical findings
+        run: |
+          shopt -s nullglob
+          files=(sarif-results/*.sarif)
+          if [ ${#files[@]} -eq 0 ]; then echo "No SARIF produced"; exit 1; fi
+          jq -r '
+            .runs[] as $run
+            | ([$run.tool.driver.rules[]?, ($run.tool.extensions[]?.rules[]?)]
+               | map({key: .id, value: (.properties["security-severity"] // "0")}) | from_entries) as $sev
+            | $run.results[]?
+            | [($sev[.ruleId] // "0"), .ruleId,
+               "\(.locations[0].physicalLocation.artifactLocation.uri):\(.locations[0].physicalLocation.region.startLine)",
+               (.message.text | split("\n")[0])]
+            | @tsv
+          ' "${files[@]}" | sort -rn > findings.tsv
+          echo "CodeQL findings: $(wc -l < findings.tsv)"
+          cat findings.tsv
+          high=$(awk -F'\t' '$1+0 >= 7.0' findings.tsv | wc -l)
+          echo "High or critical: $high"
+          [ "$high" -eq 0 ]
