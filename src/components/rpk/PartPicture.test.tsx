@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { RPK_TOPICS } from "@/content/rpk-rsm";
 import { HOTSPOTS } from "./PartArt";
 import { PartPicture } from "./PartPicture";
+import { PART_PHOTOS } from "./photos";
 
 describe("part pictures", () => {
   it("has exactly one hotspot position for every step, in both languages", () => {
@@ -21,7 +22,7 @@ describe("part pictures", () => {
     const onSelect = vi.fn();
     const onHover = vi.fn();
     render(<PartPicture topicId={topic.id} label="Car" stepCount={topic.steps.en.length} active={1} stepName={i => `Step ${i + 1}`} onSelect={onSelect} onHover={onHover} />);
-    expect(screen.getAllByRole("button")).toHaveLength(7);
+    expect(screen.getAllByRole("button")).toHaveLength(PART_PHOTOS[topic.id]?.spots.filter(Boolean).length ?? 7);
     expect(screen.getByRole("button", { name: "Step 2" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Step 3" }));
     expect(onSelect).toHaveBeenCalledWith(2);
