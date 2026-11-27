@@ -38,7 +38,7 @@ export function TollPlaza({ name, lanes, firstLane }: { name: string; lanes: Lan
     <div className="relative overflow-hidden rounded-3xl ring-1 ring-border">
       <PlazaRoof name={name} />
       {wide ? (
-        <div className="relative grid grid-cols-3 bg-[#222c35]">
+        <div className="relative grid grid-cols-3 bg-[#1F1E1B]">
           {lanes.map((lane, index) => (
             <TollLane key={lane.to + lane.title} lane={lane} number={firstLane + index} board={BOARDS[index % BOARDS.length]} first={index === 0} />
           ))}
@@ -68,7 +68,7 @@ function laneChip(kind: LearningState | "info", t: ReturnType<typeof useLanguage
 function PhoneLanes({ lanes, firstLane }: { lanes: Lane[]; firstLane: number }) {
   const { t } = useLanguage();
   return (
-    <div className="bg-[#222c35] pb-3">
+    <div className="bg-[#1F1E1B] pb-3">
       <div aria-hidden="true" className="grid grid-cols-3 gap-2 px-3 pt-4">
         {lanes.map((lane, index) => (
           <span key={lane.to + lane.title} className="relative block">
@@ -117,18 +117,18 @@ function PlazaRoof({ name }: { name: string }) {
         <div className="absolute inset-x-0 bottom-0 h-9 md:h-14 bg-[repeating-linear-gradient(180deg,#2f9461_0_9px,#1f6e46_9px_11px),repeating-linear-gradient(90deg,transparent_0_26px,rgb(0_0_0/0.12)_26px_28px)] [background-blend-mode:multiply] [clip-path:polygon(0_100%,4%_0,96%_0,100%_100%)]" />
         {/* The gable: white pediment, upturned eaves, a fan window. */}
         <svg viewBox="0 0 320 120" className="absolute bottom-0 left-1/2 h-[3.75rem] w-auto -translate-x-1/2 md:h-[5.5rem]" aria-hidden="true">
-          <path d="M0 120 Q58 116 86 84 L160 6 L234 84 Q262 116 320 120 Z" fill="#f2f5f7" />
-          <path d="M62 112 Q92 104 108 80 L160 26 L212 80 Q228 104 258 112 Z" fill="#26343f" />
-          <path d="M112 104 A48 48 0 0 1 208 104 Z" fill="#f2f5f7" opacity="0.92" />
+          <path d="M0 120 Q58 116 86 84 L160 6 L234 84 Q262 116 320 120 Z" fill="#f2f1ee" />
+          <path d="M62 112 Q92 104 108 80 L160 26 L212 80 Q228 104 258 112 Z" fill="#262522" />
+          <path d="M112 104 A48 48 0 0 1 208 104 Z" fill="#f2f1ee" opacity="0.92" />
           {[-70, -50, -30, -10, 10, 30, 50, 70].map(angle => (
-            <line key={angle} x1="160" y1="104" x2={160 + 46 * Math.sin((angle * Math.PI) / 180)} y2={104 - 46 * Math.cos((angle * Math.PI) / 180)} stroke="#26343f" strokeWidth="2" />
+            <line key={angle} x1="160" y1="104" x2={160 + 46 * Math.sin((angle * Math.PI) / 180)} y2={104 - 46 * Math.cos((angle * Math.PI) / 180)} stroke="#262522" strokeWidth="2" />
           ))}
         </svg>
       </div>
       {/* Fascia: a white trim, then the dark band with the plaza's name, which
           sits centred. */}
-      <div aria-hidden="true" className="h-1.5 bg-[#e8edf0] md:h-2" />
-      <div className="flex h-9 items-center justify-center bg-[#1d2a34] px-4 text-white md:h-11">
+      <div aria-hidden="true" className="h-1.5 bg-[#e8e7e2] md:h-2" />
+      <div className="flex h-9 items-center justify-center bg-[#181715] px-4 text-white md:h-11">
         <span className="flex items-baseline gap-2">
           <span className="text-sm font-semibold text-white/70">{t("dashboard.lanes.plaza")}</span>
           <span className="text-lg font-black tracking-[-0.01em]">{name}</span>
@@ -197,8 +197,8 @@ function ApproachRoad({ lanes }: { lanes: number }) {
   const near = (x: number) => W / 2 + (x - W / 2) * spread;
   return (
     <svg aria-hidden="true" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-14 w-full md:h-32">
-      <rect width={W} height={H} fill="#1d252d" />
-      <rect width={W} height="7" fill="#e8edf0" opacity="0.85" />
+      <rect width={W} height={H} fill="#181715" />
+      <rect width={W} height="7" fill="#e8e7e2" opacity="0.85" />
       {xs.map((x, i) => {
         const edge = i === 0 || i === lanes;
         return (

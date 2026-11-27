@@ -146,12 +146,12 @@ export function RoundaboutVisual({ lang, solved, onSolved }: RoundaboutVisualPro
           role="group"
           aria-label={en ? "Roundabout. Tap an exit." : "Bulatan. Ketik satu susur keluar."}
         >
-          <path d="M 110 8 V 202 M 12 108 H 208" stroke="#334155" strokeWidth="64" />
-          <circle cx={CENTRE.x} cy={CENTRE.y} r="56" fill="#334155" />
-          <path d="M 110 8 V 62 M 110 154 V 202 M 12 108 H 64 M 156 108 H 208" stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="5 4" />
-          <circle cx={CENTRE.x} cy={CENTRE.y} r="40" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="5 4" />
-          <circle cx={CENTRE.x} cy={CENTRE.y} r="22" fill="#15803d" stroke="#f8fafc" strokeWidth="2.5" />
-          <text x="110" y="199" textAnchor="middle" fill="#f8fafc" fontSize="8" fontWeight="700">
+          <path d="M 110 8 V 202 M 12 108 H 208" stroke="#2B2A27" strokeWidth="64" />
+          <circle cx={CENTRE.x} cy={CENTRE.y} r="56" fill="#2B2A27" />
+          <path d="M 110 8 V 62 M 110 154 V 202 M 12 108 H 64 M 156 108 H 208" stroke="#e8e7e2" strokeWidth="1.5" strokeDasharray="5 4" />
+          <circle cx={CENTRE.x} cy={CENTRE.y} r="40" fill="none" stroke="#e8e7e2" strokeWidth="1.5" strokeDasharray="5 4" />
+          <circle cx={CENTRE.x} cy={CENTRE.y} r="22" fill="#15803d" stroke="#f6f6f3" strokeWidth="2.5" />
+          <text x="110" y="199" textAnchor="middle" fill="#f6f6f3" fontSize="8" fontWeight="700">
             {en ? "YOU" : "ANDA"}
           </text>
           <defs>

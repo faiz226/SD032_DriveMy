@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="201" height="201" viewBox="0 0 201 201">
+  <defs />
+  <g transform="translate(-2.974702,-5.5)">
+    <g transform="translate(291.10843,-7.1759033)">
+      <rect style="font-style:normal;font-variant:normal;font-weight:400;font-size:14.6875px;line-height:125%;font-family:'DIN145_14H_08 0.87000000000000000';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;opacity:1;fill:#f9fbf8;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" width="200" height="200" x="-287.63373" y="13.175903" />
+      <rect y="19.117508" x="-281.69214" height="188.11679" width="188.11679" style="font-style:normal;font-variant:normal;font-weight:400;font-size:14.6875px;line-height:125%;font-family:'DIN145_14H_08 0.87000000000000000';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;opacity:1;fill:#7b2705;fill-opacity:1;stroke:none;stroke-width:5.05975;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
+    </g>
+    <path style="opacity:1;fill:#ffffff;fill-rule:evenodd" d="M 59.858474,54.624021 V 64.799803 H 147.22176 V 54.624021 Z M 79.489334,68.274412 69.575271,103.1084 H 31.315506 v 10.42578 h 35.292968 l -12.476562,43.8418 H 67.52449 l 12.476562,-43.8418 h 46.210938 l 12.47656,43.8418 h 13.39258 l -12.47656,-43.8418 h 36.0293 V 103.1084 h -38.9961 l -9.91406,-34.833988 h -13.39258 l 9.91406,34.833988 H 82.967849 L 92.881912,68.274412 Z M 31.315506,91.108397 v 8.191406 h 28.318359 v -8.191406 z m 116.000004,0 v 8.191406 h 28.31836 v -8.191406 z" />
+  </g>
+</svg>

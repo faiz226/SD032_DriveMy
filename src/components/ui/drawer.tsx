@@ -4,9 +4,10 @@ import { cn } from "@/lib/utils";
 
 const Drawer = ({
   shouldScaleBackground = false,
+  repositionInputs = false,
   ...props
 }: React.ComponentProps<typeof Vaul.Root>) => (
-  <Vaul.Root shouldScaleBackground={shouldScaleBackground} {...props} />
+  <Vaul.Root shouldScaleBackground={shouldScaleBackground} repositionInputs={repositionInputs} {...props} />
 );
 Drawer.displayName = "Drawer";
 
@@ -21,13 +22,16 @@ const DrawerPopup = React.forwardRef<
     <Vaul.Content
       ref={ref}
       className={cn(
-        "glass-sheet fixed inset-x-3 bottom-3 z-50 mt-24 flex h-auto max-h-[85dvh] flex-col rounded-3xl outline-none",
+        "glass-sheet fixed inset-x-3 bottom-3 z-50 mt-24 flex h-auto max-h-[85dvh] flex-col rounded-3xl outline-none will-change-transform [contain:layout_style]",
         className
       )}
-      // Open on the first control, so the first Tab stays inside the sheet.
+      // Open on the first control without forcing synchronous layout on mount frame.
       onOpenAutoFocus={(e) => {
         e.preventDefault();
-        (e.currentTarget as HTMLElement).querySelector<HTMLElement>("input, button, [href]")?.focus();
+        const node = e.currentTarget as HTMLElement;
+        requestAnimationFrame(() => {
+          node.querySelector<HTMLElement>("input, button, [href]")?.focus({ preventScroll: true });
+        });
       }}
       {...props}
     >

@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Shell
@@ -27,7 +27,6 @@ const LazySimulationsPage = lazy(() => import("@/pages/SimulationsPage").then(m 
 // The simulator: its car and textures start downloading the moment the route opens, alongside its code.
 const LazySimulation3DView = lazy(() => { preloadSimAssets(currentTier()); return import("@/pages/Simulation3DView").then(m => ({ default: m.Simulation3DView })); });
 const LazyProgressPage    = lazy(() => import("@/pages/ProgressPage").then(m => ({ default: m.ProgressPage })));
-const LazySafetyPage      = lazy(() => import("@/pages/SafetyPage").then(m => ({ default: m.SafetyPage })));
 const LazySettingsPage    = lazy(() => import("@/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 const LazyNotFoundPage    = lazy(() => import("@/pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const LazyPrivacyPolicyPage = lazy(() => import("@/pages/PrivacyPolicyPage").then(m => ({ default: m.PrivacyPolicyPage })));
@@ -129,7 +128,7 @@ function App() {
                     <Route path={ROUTES.MOCK_TEST}            element={routed(<LazyMockTestPage />)} />
                     <Route path={ROUTES.COLOR_VISION} element={routed(<LazyColorVisionPage />)} />
                     <Route path={ROUTES.PROGRESS}             element={routed(<LazyProgressPage />)} />
-                    <Route path={ROUTES.SAFETY}               element={routed(<LazySafetyPage />)} />
+                    <Route path={ROUTES.SAFETY}               element={<Navigate to={`${ROUTES.THEORY}?tab=safety`} replace />} />
                     <Route path={ROUTES.SETTINGS}             element={routed(<LazySettingsPage />)} />
                     {/* The simulator draws full screen over the shell. */}
                     <Route path={ROUTES.SIMULATIONS}          element={routed(<LazySimulationsPage />)} />

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,6 +28,7 @@ import { TrafficRulesLab } from "@/components/theory/TrafficRulesLab";
 import { SafetyPrinciplesLab } from "@/components/theory/SafetyPrinciplesLab";
 import { SignColourBoard } from "@/components/theory/SignColourBoard";
 import { SignMiniQuizzes } from "@/components/theory/SignMiniQuizzes";
+import { SafetyPage } from "@/pages/SafetyPage";
 import { categoryProgress } from "@/lib/signQuiz";
 import { searchRpk } from "@/lib/rpkSearch";
 import { learnedKeyFor, readLearned } from "@/lib/learnedSigns";
@@ -53,7 +54,7 @@ const BOARDS: Record<BoardKind, string> = {
   // Temporary: orange, black text.
   temporary: "bg-[#F28C28] text-[#111] border-4 border-[#111]",
   // All signs: a calm dark board with the five colours as a strip.
-  all: "bg-[#2B3239] text-white border-4 border-[#2B3239]",
+  all: "bg-[#262522] text-white border-4 border-[#262522]",
 };
 
 const STRIP = ["#F6C21A", "#FFFFFF", "#0A5FBF", "#0A5FBF", "#F28C28"];
@@ -84,6 +85,7 @@ function CategoryTile({ kind, selected, onSelect, title, count }: { kind: BoardK
 
 export function TheoryPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { language } = useLanguage();
   const lang = language === "en" ? "en" : "bm";
   const { user } = useAuthStore();
@@ -91,8 +93,16 @@ export function TheoryPage() {
   const progress = useTheoryProgressRows(user?.id ?? "");
   const reduceMotion = useReducedMotion();
 
-  // Navigation & filter states
-  const [activeTab, setActiveTab] = useState<string>("signs");
+  // Navigation & filter states — honour ?tab=safety (used by /safety redirect)
+  const rawTab = searchParams.get("tab");
+  const initialTab = rawTab === "rules" || rawTab === "safety" ? rawTab : "signs";
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
+  useEffect(() => {
+    const next = searchParams.get("tab");
+    if (next === "signs" || next === "rules" || next === "safety") {
+      setActiveTab(next);
+    }
+  }, [searchParams]);
   const [search, setSearch] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<RoadSignCategory | "all">("all");
   const [showOnlyLearned, setShowOnlyLearned] = useState<boolean>(false);
@@ -132,6 +142,7 @@ export function TheoryPage() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    setSearchParams(tab === "signs" ? {} : { tab }, { replace: true });
     completion.reset();
   };
 
@@ -268,7 +279,7 @@ export function TheoryPage() {
               {lang === "en" ? "Traffic Rules" : "Undang-undang"}
             </TabsTrigger>
             <TabsTrigger value="safety" className="min-h-11 px-3">
-              {lang === "en" ? "Safety" : "Keselamatan"}
+              {lang === "en" ? "Hazards and safety" : "Bahaya dan keselamatan"}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -694,7 +705,7 @@ export function TheoryPage() {
           </motion.div>
         )}
 
-        {/* TAB 3: SAFETY PRINCIPLES */}
+        {/* TAB 3: HAZARDS AND SAFETY */}
         {activeTab === "safety" && (
           <motion.div
             initial={reduceMotion ? false : { opacity: 0, y: 8 }}
@@ -702,8 +713,11 @@ export function TheoryPage() {
             transition={{ duration: 0.18 }}
             className="space-y-8"
           >
-            {/* Interactive Safety Lab First */}
+            {/* Interactive Safety Lab First (stopping-distance scene, hazard pictures, flip cards) */}
             <SafetyPrinciplesLab lang={lang} />
+
+            {/* KPP Road Emergency Drill (moved from /safety) */}
+            <SafetyPage embedded />
 
             {/* Comprehensive Safety Principles Reference */}
             <div className="space-y-4 pt-2">

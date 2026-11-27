@@ -22,76 +22,71 @@
 
 /* --- Tokens ------------------------------------------------------------------ */
 @layer base {
-  /* Day: the same road at sunrise. */
+  /* Day: Option A ("Tarmac & Cat's-Eye") — Sunlit concrete & white cards. */
   :root {
-    --background: 0.9511 0.0127 244.3;          /* #E8F0F7 */
-    --foreground: 0.2135 0.038 251.4;             /* #0B1A2A */
-    --card: 1.0 0.0 0;
-    --card-foreground: 0.2135 0.038 251.4;
+    --background: 0.958 0.004 90;               /* #F2F1EE */
+    --foreground: 0.165 0.004 90;               /* #10100E */
+    --card: 1.0 0.0 0;                          /* #FFFFFF */
+    --card-foreground: 0.165 0.004 90;
     --popover: 1.0 0.0 0;
-    --popover-foreground: 0.2135 0.038 251.4;
-    --muted: 0.9238 0.0156 248.0;               /* #DEE7F0 */
-    --muted-foreground: 0.4746 0.0499 246.9;      /* #455F77, 6.6:1 on white */
-    --accent: 0.9359 0.0156 248.0;
-    --accent-foreground: 0.2135 0.038 251.4;
+    --popover-foreground: 0.165 0.004 90;
+    --muted: 0.928 0.005 90;                    /* #E8E7E2 */
+    --muted-foreground: 0.445 0.006 90;         /* #555450, 7.5:1 on white */
+    --accent: 0.928 0.005 90;
+    --accent-foreground: 0.165 0.004 90;
 
-    --primary: 0.2135 0.038 251.4;
+    --primary: 0.165 0.004 90;
     --primary-foreground: 1.0 0.0 0;
-    --secondary: 0.9238 0.0156 248.0;
-    --secondary-foreground: 0.2135 0.038 251.4;
+    --secondary: 0.928 0.005 90;
+    --secondary-foreground: 0.165 0.004 90;
 
-    /* Road yellow: the car, the lit cat's eyes, progress fills. Dark text on
-       it. As text or an edge on a pale surface it needs the deeper brand-ink. */
-    --brand: 0.8114 0.1656 85.0;                 /* #F2B705 */
-    --brand-foreground: 0.1776 0.0 0;
-    --brand-ink: 0.5365 0.1111 80.0;             /* #8F6500, 5.2:1 on white */
+    /* Signal amber (cat's-eye): the single accent. Dark ink on it; deeper brand-ink on pale surfaces. */
+    --brand: 0.815 0.162 84;                    /* #F3B81D */
+    --brand-foreground: 0.145 0.003 90;         /* #0B0A09 */
+    --brand-ink: 0.495 0.120 80;                /* #805B00, 6.2:1 on white */
 
-    --success: 0.4905 0.1139 156.0;               /* #0F7344 */
+    --success: 0.4905 0.1139 156.0;             /* #0F7344 */
     --success-foreground: 1.0 0.0 0;
     --warning: 0.5241 0.1193 63.2;
     --warning-foreground: 1.0 0.0 0;
     --destructive: 0.535 0.1921 22.7;           /* #C42634 */
     --destructive-foreground: 1.0 0.0 0;
-    --info: 0.4978 0.1676 256.6;                  /* #0A5FBF, JKR information blue */
+    --info: 0.4978 0.1676 256.6;                /* #0A5FBF, JKR information blue */
     --info-foreground: 1.0 0.0 0;
 
-    --border: 0.2135 0.038 251.4;               /* ink-alpha border harmonizes over cards and skyline */
-    --input: 0.2135 0.038 251.4;
-    --border-a: 0.14;
+    --border: 0.165 0.004 90;                   /* warm charcoal alpha border */
+    --input: 0.165 0.004 90;
+    --border-a: 0.13;
     --input-a: 0.34;
     --ring: var(--foreground);
-    --overlay: 0.1419 0.0263 251.3;
+    --overlay: 0.125 0.003 90;
 
     /* Liquid Glass tokens (navigation & control chrome only — content stays solid).
-       Verified contrast (contrast-matrix-v2.txt):
-       - Light bar (0.58): ink >= 6.04:1 over #000 (9.79:1 over green gantry), muted >= 4.53:1
-       - Light sheet (0.66): ink >= 7.73:1 over #000, muted >= 5.79:1 */
-    --glass-bg: 0.99 0.004 244;
-    --glass-alpha: 0.58;
-    --glass-sheet-alpha: 0.66;
-    --glass-pill-bg: 0.99 0.004 244;
-    --glass-pill-alpha: 0.58;
+       Option A Light verified contrast: ink >= 6.72:1 over #000 (8.00:1 over green gantry), muted >= 5.10:1. */
+    --glass-bg: 0.992 0.003 90;
+    --glass-alpha: 0.60;
+    --glass-sheet-alpha: 0.68;
+    --glass-pill-bg: 0.995 0.002 90;
+    --glass-pill-alpha: 0.72;
     --glass-border: rgb(255 255 255 / 0.78);
-    --glass-hairline: rgb(11 26 42 / 0.11);
-    --glass-specular-top: rgb(255 255 255 / 0.96);
-    --glass-specular-sheen: rgb(255 255 255 / 0.34);
-    --glass-specular-bottom: rgb(11 26 42 / 0.1);
-    --glass-shadow: 0 12px 32px -12px rgb(11 26 42 / 0.22), 0 2px 6px rgb(11 26 42 / 0.08);
-    --glass-sheet-shadow: 0 28px 64px -16px rgb(11 26 42 / 0.32), 0 4px 12px rgb(11 26 42 / 0.1);
-    --glass-blur: 24px;
-    --glass-sat: 210%;
-    --glass-ink: 0.18 0.035 252;
-    --glass-muted: 0.29 0.042 250;
-    --glass-accent-icon: 0.5365 0.1111 80;
-    --glass-control-hover: rgb(11 26 42 / 0.07);
+    --glass-specular-top: rgb(255 255 255 / 0.92);
+    --glass-specular-sheen: rgb(255 255 255 / 0.28);
+    --glass-shadow: 0 10px 28px -10px rgb(16 16 14 / 0.18), 0 1px 4px rgb(16 16 14 / 0.08);
+    --glass-sheet-shadow: 0 24px 56px -14px rgb(16 16 14 / 0.28), 0 4px 12px rgb(16 16 14 / 0.10);
+    --glass-blur: 20px;
+    --glass-sat: 195%;
+    --glass-ink: 0.155 0.004 90;
+    --glass-muted: 0.275 0.005 90;
+    --glass-accent-icon: 0.495 0.120 80;
+    --glass-control-hover: rgb(16 16 14 / 0.07);
 
     /* Objects that look the same by day and night. */
-    --sign: 0.5102 0.1235 154.8;                  /* expressway green #0A7A45 */
+    --sign: 0.5102 0.1235 154.8;                /* expressway green #0A7A45 */
     --sign-deep: 0.456 0.108 155.8;
-    --road: 0.1646 0.0284 249.9;                    /* #050F1A */
-    --paint: 0.9703 0.007 88.6;               /* road-marking white */
-    --plate-red: 0.5304 0.2074 22.3;             /* L-plate red #C8102E */
-    --vms: 0.8124 0.1704 76.4;                   /* VMS amber */
+    --road: 0.175 0.004 90;                     /* neutral tarmac obsidian */
+    --paint: 0.9703 0.007 88.6;                 /* road-marking white */
+    --plate-red: 0.5304 0.2074 22.3;            /* L-plate red #C8102E */
+    --vms: 0.815 0.162 84;                      /* VMS amber */
 
     /* The page behind everything: one flat colour. Depth comes from the surface steps and the borders. */
     --sky: oklch(var(--background));
@@ -114,11 +109,11 @@
     --radius-panel: calc(1.25rem * var(--g2)); /* cards */
     --radius-hero: calc(1.5rem * var(--g2));   /* the gantry sign, the road */
 
-    --shadow-xs: 0 1px 2px rgb(11 26 42 / 0.06);
-    --shadow-sm: 0 1px 2px rgb(11 26 42 / 0.05), 0 4px 12px -4px rgb(11 26 42 / 0.1);
-    --shadow-md: 0 2px 4px rgb(11 26 42 / 0.05), 0 18px 30px -14px rgb(11 26 42 / 0.28);
-    --shadow-lg: 0 4px 8px rgb(11 26 42 / 0.06), 0 30px 40px -20px rgb(11 26 42 / 0.4);
-    --shadow-xl: 0 32px 64px -20px rgb(11 26 42 / 0.45);
+    --shadow-xs: 0 1px 2px rgb(16 16 14 / 0.06);
+    --shadow-sm: 0 1px 2px rgb(16 16 14 / 0.05), 0 4px 12px -4px rgb(16 16 14 / 0.10);
+    --shadow-md: 0 2px 4px rgb(16 16 14 / 0.05), 0 18px 30px -14px rgb(16 16 14 / 0.24);
+    --shadow-lg: 0 4px 8px rgb(16 16 14 / 0.06), 0 30px 40px -20px rgb(16 16 14 / 0.34);
+    --shadow-xl: 0 32px 64px -20px rgb(16 16 14 / 0.40);
 
     --layout-width: 70rem;              /* 1120px, the prototype's measure */
     --layout-gutter: 1rem;
@@ -136,62 +131,60 @@
     color-scheme: light;
   }
 
-  /* Night: the signature. */
+  /* Night: Option A ("Tarmac & Cat's-Eye") — Neutral graphite obsidian, zero blue cast. */
   .dark {
-    --background: 0.2007 0.0576 266.5;               /* #0A1430, midnight blue */
-    --foreground: 0.9765 0.0076 241.7;          /* #F3F8FC */
-    --card: 0.2454 0.0475 248.4;                   /* #0C2236 */
-    --card-foreground: 0.9765 0.0076 241.7;
-    --popover: 0.2778 0.0549 248.8;
-    --popover-foreground: 0.9765 0.0076 241.7;
-    --muted: 0.3046 0.0567 247.8;
-    --muted-foreground: 0.7636 0.0387 240.8;    /* #9DB6C9, 8.4:1 on a card */
-    --accent: 0.3245 0.0617 248.8;
-    --accent-foreground: 0.9765 0.0076 241.7;
+    --background: 0.145 0.003 90;               /* #0B0A09 */
+    --foreground: 0.972 0.003 90;               /* #F6F6F3 */
+    --card: 0.195 0.004 90;                     /* #161513 */
+    --card-foreground: 0.972 0.003 90;
+    --popover: 0.245 0.004 90;                  /* #22211E */
+    --popover-foreground: 0.972 0.003 90;
+    --muted: 0.245 0.004 90;                    /* #22211E */
+    --muted-foreground: 0.735 0.005 90;         /* #A9A8A3, 7.5:1 on card */
+    --accent: 0.245 0.004 90;
+    --accent-foreground: 0.972 0.003 90;
 
-    --primary: 0.9765 0.0076 241.7;
-    --primary-foreground: 0.1956 0.0418 249.7;
-    --secondary: 0.3245 0.0617 248.8;
-    --secondary-foreground: 0.9765 0.0076 241.7;
+    --primary: 0.972 0.003 90;
+    --primary-foreground: 0.145 0.003 90;
+    --secondary: 0.245 0.004 90;
+    --secondary-foreground: 0.972 0.003 90;
 
-    --brand-ink: 0.8114 0.1656 85.0;             /* road yellow reads as text at night */
+    --brand-ink: 0.815 0.162 84;                /* Signal amber reads as text at night */
 
     --success: 0.7794 0.1655 157.3;
-    --success-foreground: 0.1956 0.0418 249.7;
+    --success-foreground: 0.145 0.003 90;
     --warning: 0.8246 0.1358 76.7;
-    --warning-foreground: 0.1956 0.0418 249.7;
+    --warning-foreground: 0.145 0.003 90;
     --destructive: 0.7116 0.1812 22.8;
-    --destructive-foreground: 0.1956 0.0418 249.7;
+    --destructive-foreground: 0.145 0.003 90;
     --info: 0.7334 0.1391 257.2;
-    --info-foreground: 0.1956 0.0418 249.7;
+    --info-foreground: 0.145 0.003 90;
 
-    --border: 1 0 0;                  /* white at low alpha: a line that reads on the midnight sky, a card and the skyline */
-    --input: 1 0 0;                   /* white at 38%: 3:1 or better against a card */
+    --border: 1 0 0;                            /* crisp hairline white at low alpha */
+    --input: 1 0 0;
     --border-a: 0.12;
-    --input-a: 0.38;
-    --overlay: 0.1023 0.0244 242.2;
+    --input-a: 0.34;
+    --overlay: 0.10 0.002 90;
 
-    /* Dark Liquid Glass tokens (verified contrast-matrix-v2.txt):
-       - Dark bar (0.60): ink >= 5.53:1 over #fff (13.93:1 over green gantry), muted >= 4.51:1
-       - Dark sheet (0.68): ink >= 7.52:1 over #fff, muted >= 6.13:1 */
-    --glass-bg: 0.11 0.036 264;
-    --glass-alpha: 0.60;
-    --glass-sheet-alpha: 0.68;
-    --glass-pill-bg: 0.99 0.004 244;
-    --glass-pill-alpha: 0.15;
-    --glass-border: rgb(255 255 255 / 0.24);
-    --glass-hairline: rgb(255 255 255 / 0.10);
-    --glass-specular-top: rgb(255 255 255 / 0.42);
-    --glass-specular-sheen: rgb(255 255 255 / 0.10);
-    --glass-specular-bottom: rgb(0 0 0 / 0.48);
-    --glass-shadow: 0 18px 42px -14px rgb(0 0 0 / 0.72), 0 2px 8px rgb(0 0 0 / 0.34);
-    --glass-sheet-shadow: 0 32px 72px -18px rgb(0 0 0 / 0.84), 0 4px 16px rgb(0 0 0 / 0.45);
-    --glass-blur: 24px;
-    --glass-sat: 205%;
-    --glass-ink: 0.99 0.004 242;
-    --glass-muted: 0.93 0.012 242;
-    --glass-accent-icon: 0.85 0.165 85;
-    --glass-control-hover: rgb(255 255 255 / 0.11);
+    /* Dark Liquid Glass tokens (Option A verified contrast):
+       - Dark bar (0.62): ink >= 5.51:1 over #fff (11.48:1 over green gantry), muted >= 4.75:1
+       - Dark sheet (0.70): ink >= 7.12:1 over #fff, muted >= 6.14:1 */
+    --glass-bg: 0.135 0.003 90;
+    --glass-alpha: 0.62;
+    --glass-sheet-alpha: 0.70;
+    --glass-pill-bg: 1 0 0;
+    --glass-pill-alpha: 0.14;
+    --glass-border: rgb(255 255 255 / 0.18);
+    --glass-specular-top: rgb(255 255 255 / 0.28);
+    --glass-specular-sheen: rgb(255 255 255 / 0.06);
+    --glass-shadow: 0 16px 38px -12px rgb(0 0 0 / 0.72), 0 2px 6px rgb(0 0 0 / 0.34);
+    --glass-sheet-shadow: 0 28px 64px -16px rgb(0 0 0 / 0.82), 0 4px 14px rgb(0 0 0 / 0.44);
+    --glass-blur: 20px;
+    --glass-sat: 190%;
+    --glass-ink: 0.985 0.002 90;
+    --glass-muted: 0.935 0.004 90;
+    --glass-accent-icon: 0.815 0.162 84;
+    --glass-control-hover: rgb(255 255 255 / 0.10);
 
     --sky: oklch(var(--background));
 
@@ -440,19 +433,18 @@
   }
 
   /* Liquid Glass chrome family: floating navigation, sheets, dialogs, segmented pills, and compact HUD plates.
-     Content surfaces (.panel, .tile, .hero-panel) remain solid and high-contrast. */
+     Single-plate rim (1px outer border + subtle top specular catch-light, no dark bottom inset or second hairline)
+     so floating bars read as one clean sheet of glass without double-plate edges. */
   .glass,
   .glass-bar {
     position: relative;
     background-color: oklch(var(--glass-bg) / var(--glass-alpha));
-    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 45%);
+    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 40%);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     border: 1px solid var(--glass-border);
     box-shadow:
-      inset 0 1.5px 0 var(--glass-specular-top),
-      inset 0 -1px 0 var(--glass-specular-bottom),
-      0 0 0 0.5px var(--glass-hairline),
+      inset 0 1px 0 var(--glass-specular-top),
       var(--glass-shadow);
     color: oklch(var(--glass-ink));
   }
@@ -460,56 +452,43 @@
   .glass-sheet {
     position: relative;
     background-color: oklch(var(--glass-bg) / var(--glass-sheet-alpha));
-    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 32%);
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(var(--glass-sat));
-    backdrop-filter: blur(calc(var(--glass-blur) + 6px)) saturate(var(--glass-sat));
+    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 28%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     border: 1px solid var(--glass-border);
     box-shadow:
-      inset 0 1.5px 0 var(--glass-specular-top),
-      inset 0 -1px 0 var(--glass-specular-bottom),
-      0 0 0 0.5px var(--glass-hairline),
+      inset 0 1px 0 var(--glass-specular-top),
       var(--glass-sheet-shadow);
     color: oklch(var(--glass-ink));
   }
 
   .glass-pill {
     background-color: oklch(var(--glass-pill-bg) / var(--glass-pill-alpha));
-    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 60%);
+    background-image: linear-gradient(180deg, var(--glass-specular-sheen) 0%, transparent 55%);
     border: 1px solid var(--glass-border);
     box-shadow:
-      inset 0 1.5px 0 var(--glass-specular-top),
-      inset 0 -1px 0 var(--glass-specular-bottom),
-      0 2px 8px -2px rgb(0 0 0 / 0.12);
+      inset 0 1px 0 var(--glass-specular-top),
+      0 2px 6px -2px rgb(0 0 0 / 0.12);
   }
 
   /* Compact Liquid Glass plate for simulator edge HUD controls only (never over 3D canvas center). */
   .glass-hud {
     background-color: oklch(var(--road) / 0.66);
-    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, transparent 50%);
-    -webkit-backdrop-filter: blur(16px) saturate(175%);
-    backdrop-filter: blur(16px) saturate(175%);
-    border: 1px solid rgb(255 255 255 / 0.24);
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.10) 0%, transparent 45%);
+    -webkit-backdrop-filter: blur(14px) saturate(175%);
+    backdrop-filter: blur(14px) saturate(175%);
+    border: 1px solid rgb(255 255 255 / 0.20);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.34),
-      inset 0 -1px 0 rgb(0 0 0 / 0.45),
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
       0 10px 26px -10px rgb(0 0 0 / 0.65);
     color: oklch(var(--paint));
   }
 
-  /* Mobile GPU budget: keep glass unmistakably frosted while avoiding heavy 24px blur + SVG lens per scroll frame. */
+  /* Mobile GPU budget: crisp frosted glass at 12px blur keeps sheets and tab bars at 60 fps under 4x CPU throttle. */
   @media (max-width: 767px) {
     :root,
     .dark {
-      --glass-blur: 16px;
-    }
-  }
-
-  /* Optional Chromium-only SVG lens refraction strictly on small decorative pill backdrops on desktop (never text or phone scroll). */
-  @media (min-width: 768px) {
-    @supports (backdrop-filter: url(#liquid-glass-lens)) {
-      .glass-pill-lens {
-        backdrop-filter: blur(8px) saturate(180%) url(#liquid-glass-lens);
-      }
+      --glass-blur: 12px;
     }
   }
 

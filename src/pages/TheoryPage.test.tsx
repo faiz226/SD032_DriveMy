@@ -4,7 +4,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { TheoryPage } from "./TheoryPage";
 
 const { mutate, reset } = vi.hoisted(() => ({ mutate: vi.fn(), reset: vi.fn() }));
-vi.mock("@/hooks/useLanguage", () => ({ useLanguage: () => ({ language: "en" }) }));
+vi.mock("@/hooks/useLanguage", () => ({ useLanguage: () => ({ language: "en", t: (key: string) => key }) }));
 vi.mock("@/stores/authStore", () => ({ useAuthStore: () => ({ user: { id: "learner" } }) }));
 vi.mock("@/hooks/useProgress", () => ({
   useTheoryProgressRows: () => ({ data: [], isPending: false, isError: false }),
@@ -22,4 +22,11 @@ it("saves theory completion only after the learner explicitly confirms it", () =
   expect(mutate).toHaveBeenCalledWith(expect.objectContaining({
     user_id: "learner", module_id: "theory-rules", completed: true,
   }));
+});
+
+it("opens the Hazards and safety tab when reached via ?tab=safety", () => {
+  render(<MemoryRouter initialEntries={["/theory?tab=safety"]}><TheoryPage /></MemoryRouter>);
+  const safetyTab = screen.getByRole("tab", { name: "Hazards and safety" });
+  expect(safetyTab.getAttribute("aria-selected")).toBe("true");
+  expect(screen.getByText(/Part C defensive driving/i)).toBeTruthy();
 });

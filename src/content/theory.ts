@@ -1,5 +1,6 @@
 // Official JPJ KPP01 Curriculum Learning Content (General, Class DA, Class D)
 import { temporarySigns } from "./temporary-signs";
+import { wikipediaSigns } from "./wikipedia-signs";
 
 export type RoadSignCategory =
   | "warning"
@@ -837,6 +838,7 @@ export const roadSigns: RoadSignItem[] = [
     "img": "/signs/263bc825012bcc83.svg"
   },
   ...temporarySigns,
+  ...wikipediaSigns,
 ];
 
 export const trafficRules: TheoryTopicItem[] = [

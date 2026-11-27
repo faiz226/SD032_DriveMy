@@ -34,7 +34,7 @@ function Steps({ emergency }: { emergency: Emergency }) {
   );
 }
 
-export function SafetyPage() {
+export function SafetyPage({ embedded = false }: { embedded?: boolean }) {
   const { t, language } = useLanguage();
   const [orders, setOrders] = useState(shuffledOrders);
   const [index, setIndex] = useState(0);
@@ -56,22 +56,30 @@ export function SafetyPage() {
     setIndex(0);
   };
 
-  const header = (
+  const header = embedded ? (
+    <header className="space-y-1">
+      <h3 className="text-lg font-bold font-heading">{t("safety.title")}</h3>
+      <p className="text-xs text-muted-foreground">{t("safety.lead")}</p>
+    </header>
+  ) : (
     <header className="page-header">
       <h1 className="page-title">{t("safety.title")}</h1>
       <p className="page-lead">{t("safety.lead")}</p>
     </header>
   );
 
+  const wrapperClass = embedded ? "space-y-4" : "page-shell";
+  const cardWidthClass = embedded ? "w-full" : "mx-auto w-full max-w-3xl";
+
   if (finished) {
     const missed = EMERGENCIES.filter((_, i) => picks[i] !== 0);
     const score = EMERGENCIES.length - missed.length;
     return (
-      <div className="page-shell">
+      <div className={wrapperClass}>
         {header}
         <Panel
           role="region"
-          className={cn("mx-auto w-full max-w-3xl p-5 sm:p-8", missed.length === 0 && "border-success/55")}
+          className={cn(cardWidthClass, "p-5 sm:p-8", missed.length === 0 && "border-success/55")}
           aria-labelledby="safety-score"
         >
           <h2 id="safety-score" className="text-xl sm:text-2xl">{t("safety.result.title", { score, total: EMERGENCIES.length })}</h2>
@@ -83,7 +91,7 @@ export function SafetyPage() {
         </Panel>
 
         {missed.length > 0 && (
-          <section aria-labelledby="safety-review" className="mx-auto w-full max-w-3xl space-y-4">
+          <section aria-labelledby="safety-review" className={cn(cardWidthClass, "space-y-4")}>
             <h2 id="safety-review" className="text-xl sm:text-2xl">{t("safety.result.review")}</h2>
             {missed.map(item => (
               <Panel key={item.id} className="space-y-4 p-5 sm:p-6">
@@ -103,9 +111,9 @@ export function SafetyPage() {
   const last = index === EMERGENCIES.length - 1;
 
   return (
-    <div className="page-shell">
+    <div className={wrapperClass}>
       {header}
-      <Panel className="mx-auto w-full max-w-3xl p-5 sm:p-8">
+      <Panel className={cn(cardWidthClass, "p-5 sm:p-8")}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="type-figure text-sm" aria-live="polite">{t("safety.progress", { current: index + 1, total: EMERGENCIES.length })}</p>
           {(index > 0 || answered) && (

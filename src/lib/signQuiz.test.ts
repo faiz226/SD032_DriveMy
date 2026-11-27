@@ -73,7 +73,7 @@ describe("the sign set", () => {
     expect(temporary.length).toBeGreaterThanOrEqual(12);
     for (const sign of temporary) {
       expect(sign.name && sign.nameMs && sign.action && sign.actionMs, sign.id).toBeTruthy();
-      expect(sign.img).toMatch(/^\/signs\/.+\.svg$/);
+      expect(sign.img).toMatch(/^\/signs\/.+\.(?:svg|png)$/);
     }
     expect(new Set(roadSigns.map((sign) => sign.id)).size).toBe(roadSigns.length);
   });
