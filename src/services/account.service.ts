@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { clearUserResultsQueue, markUserDeleted } from "./results.service";
 import { useAuthStore } from "@/stores/authStore";
 import { clearProgress, PROGRESS_SCOPES } from "@/lib/testProgress";
+import { deleteAvatarFile } from "./avatar.service";
 
 /**
  * PDPA 2010 / GDPR data-subject rights: export (access & portability) and
@@ -110,6 +111,14 @@ export async function deleteAccount(): Promise<void> {
 
   if (!userId) {
     throw new Error("Cannot delete account: unable to establish authenticated user identity for local cleanup.");
+  }
+
+  // The profile picture lives in a public bucket that the database cannot clear: remove it while the session can.
+  // A failure here must not block the deletion the learner asked for; it is logged for follow-up.
+  try {
+    await deleteAvatarFile(userId);
+  } catch (avatarErr) {
+    console.warn("[account] could not remove the profile picture before deleting the account", avatarErr);
   }
 
   const { error } = await supabase.rpc("delete_user");
