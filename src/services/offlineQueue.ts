@@ -30,6 +30,11 @@ export interface QueuedItem<T> {
   lastError?: string;
 }
 
+/** The database refused a write because the learner hit a row limit (SQLSTATE 54000). */
+export function isRowLimitError(err: unknown): boolean {
+  return (err as { code?: string } | null)?.code === "54000";
+}
+
 export function isValidUUID(id: unknown): boolean {
   if (typeof id !== "string") return false;
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
@@ -57,8 +62,9 @@ export function isTransientError(err: unknown, statusSibling?: number): boolean 
   // 1. Explicit database error codes (Postgres / PostgREST) are always permanent
   const code = (err as { code?: string } | null)?.code;
   if (typeof code === "string") {
-    // 42xxx = RLS/insufficient privilege, 23xxx = integrity constraint, 22xxx = syntax/type error
-    if (/^(42|23|22)/.test(code)) return false;
+    // 42xxx = RLS/insufficient privilege, 23xxx = integrity constraint, 22xxx = syntax/type error,
+    // 54000 = a per-learner row limit (retrying cannot help)
+    if (/^(42|23|22|54)/.test(code)) return false;
     // supabase-js network-layer codes
     if (code === "ECONNRESET" || code === "ETIMEDOUT" || code === "ENOTFOUND" || code === "FETCH_ERROR") return true;
   }
