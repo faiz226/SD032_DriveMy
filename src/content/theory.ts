@@ -1,4 +1,5 @@
 // Official JPJ KPP01 Curriculum Learning Content (General, Class DA, Class D)
+import { temporarySigns } from "./temporary-signs";
 
 export type RoadSignCategory =
   | "warning"
@@ -834,7 +835,8 @@ export const roadSigns: RoadSignItem[] = [
     "actionMs": "Perlahankan kenderaan dan ikut perubahan arah laluan.",
     "source": "KPP General PDF page 76",
     "img": "/signs/263bc825012bcc83.svg"
-  }
+  },
+  ...temporarySigns,
 ];
 
 export const trafficRules: TheoryTopicItem[] = [
