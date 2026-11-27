@@ -1,0 +1,137 @@
+{
+ "note": "Closed-road barriers (see scripts/plan-barriers.mjs). Each is a strip across a road, a--b in metres, with an invisible collider behind it.",
+ "barriers": [
+  {
+   "a": [
+    40.35,
+    33.15
+   ],
+   "b": [
+    43.99,
+    33.15
+   ],
+   "note": "closed side lane at x 42.0"
+  },
+  {
+   "a": [
+    52.33,
+    33.15
+   ],
+   "b": [
+    55.6,
+    33.15
+   ],
+   "note": "closed side lane at x 54.0"
+  },
+  {
+   "a": [
+    58.5,
+    18.1
+   ],
+   "b": [
+    62.35,
+    18.1
+   ],
+   "note": "closed side lane at x 60.4"
+  },
+  {
+   "a": [
+    86.55,
+    33.15
+   ],
+   "b": [
+    89.9,
+    33.15
+   ],
+   "note": "closed side lane at x 88.2"
+  },
+  {
+   "a": [
+    109.2,
+    18.1
+   ],
+   "b": [
+    112.25,
+    18.1
+   ],
+   "note": "closed side lane at x 110.7"
+  },
+  {
+   "a": [
+    49.05,
+    47.85
+   ],
+   "b": [
+    52.33,
+    47.85
+   ],
+   "note": "closed side lane at x 50.7"
+  },
+  {
+   "a": [
+    59.45,
+    47.85
+   ],
+   "b": [
+    62.53,
+    47.85
+   ],
+   "note": "closed side lane at x 61.1"
+  },
+  {
+   "a": [
+    70.82,
+    47.85
+   ],
+   "b": [
+    74,
+    47.85
+   ],
+   "note": "closed side lane at x 72.7"
+  },
+  {
+   "a": [
+    112.25,
+    10
+   ],
+   "b": [
+    115.3,
+    10
+   ],
+   "note": "closed side lane at x 113.8"
+  },
+  {
+   "a": [
+    62.12,
+    10
+   ],
+   "b": [
+    65.75,
+    10
+   ],
+   "note": "closed side lane at x 63.9"
+  },
+  {
+   "a": [
+    28.5,
+    56
+   ],
+   "b": [
+    28.5,
+    66
+   ],
+   "note": "behind the spawn: no driving back out of the course"
+  },
+  {
+   "a": [
+    9.6,
+    54.5
+   ],
+   "b": [
+    16.6,
+    54.5
+   ],
+   "note": "past the exit road: the course ends here"
+  }
+ ]
+}

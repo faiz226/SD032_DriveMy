@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { CircuitData, Polygon, Slope, StationGeometry, Vec2 } from '../contracts';
 import { dir, rad, slopeHeight, slopeLocal } from '../geom';
+import { buildGuidance } from './cues';
 
 /** three.js position of a circuit point: X = x, Y = z (up), Z = -y. */
 export const toThree = (x: number, y: number, z = 0) => new THREE.Vector3(x, z, -y);
@@ -689,6 +690,11 @@ export function buildWorld(c: CircuitData): WorldBuild {
   c.props.booths.forEach((b, i) => marker(`booth:${i}`, toThree(b.centre[0], b.centre[1], 0)));
   marker('office', toThree(c.props.office.centre[0], c.props.office.centre[1], 0));
   marker('spawn', at(c.spawn.at));
+
+  // ---------------------------------------------------------------- guidance: the lit boards, chevrons and closed-road barriers
+  const guidance = buildGuidance(c);
+  group.add(guidance.group);
+  boxes.push(...guidance.boxes);
 
   // ---------------------------------------------------------------- colliders
   const kerbCollider = new Mesher();
