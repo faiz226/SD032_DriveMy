@@ -1,11 +1,13 @@
 import { act, fireEvent, render, screen, cleanup, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { SpeechControl } from "./SpeechControl";
+import * as service from "@/services/speech.service";
 
 vi.mock("@/hooks/useLanguage", async () => {
   const { translate } = await vi.importActual<typeof import("@/lib/translations")>("@/lib/translations");
   return { useLanguage: () => ({ language: "en", t: (key: Parameters<typeof translate>[0]) => translate(key, "en") }) };
 });
+vi.mock("@/services/speech.service", async (importActual) => ({ ...(await importActual<typeof import("@/services/speech.service")>()), speechAvailable: vi.fn(() => Promise.resolve(true)) }));
 vi.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: async () => ({ data: { session: { access_token: "test" } } }) } } }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
@@ -75,4 +77,23 @@ it("ignores old playback callbacks after a new question starts", async () => {
   act(() => { oldEnd?.(); oldError?.(); });
   expect(screen.getByRole("button", { name: "Stop audio" })).toBeEnabled();
   expect(recordings[1].pause).not.toHaveBeenCalled();
+});
+
+it("leaves the Listen button out when the server has no narration set up, and keeps it when it has", async () => {
+  vi.mocked(service.speechAvailable).mockResolvedValueOnce(false);
+  const off = render(<SpeechControl text="A question"/>);
+  await waitFor(() => expect(screen.queryByRole("button", { name: "Listen" })).not.toBeInTheDocument());
+  off.unmount();
+  render(<SpeechControl text="A question"/>);
+  expect(await screen.findByRole("button", { name: "Listen" })).toBeEnabled();
+});
+
+it("asks the server once whether narration exists, and treats anything but a plain yes as no", async () => {
+  const fresh = await vi.importActual<typeof import("@/services/speech.service")>("@/services/speech.service");
+  const fetcher = vi.fn(async () => new Response(JSON.stringify({ available: false }), { headers: { "Content-Type": "application/json" } }));
+  vi.stubGlobal("fetch", fetcher);
+  expect(await fresh.speechAvailable()).toBe(false);
+  expect(await fresh.speechAvailable()).toBe(false);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  expect(fresh.speechKnown()).toBe(false);
 });

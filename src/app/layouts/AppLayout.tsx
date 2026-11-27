@@ -161,7 +161,7 @@ function Sidebar({ onClose, isMobile = false, collapsed = false, onToggleCollaps
         collapsed ? "w-[4.5rem]" : "w-64"
       )}
     >
-      <div className={cn("flex h-16 items-center shrink-0 border-b border-sidebar-border", collapsed ? "justify-center px-0" : "justify-between px-4")}>
+      <div className={cn("flex h-16 items-center shrink-0 border-b border-sidebar-border", isMobile && "h-[calc(4rem_+_env(safe-area-inset-top))] pt-[env(safe-area-inset-top)]", collapsed ? "justify-center px-0" : "justify-between px-4")}>
         {!collapsed ? (
           <BrandMark className="select-none whitespace-nowrap text-sidebar-foreground" />
         ) : (
@@ -497,7 +497,7 @@ export function AppLayout({ showSidebar: showSidebarProp = true }: AppLayoutProp
       <div className="flex flex-1 flex-col overflow-hidden min-w-0 transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-300 ease-in-out relative">
         {showSidebar && (
           <header
-            className="glass flex md:hidden h-14 items-center justify-between px-4 border-b border-border shrink-0"
+            className="glass flex md:hidden h-[calc(3.5rem_+_env(safe-area-inset-top))] items-center justify-between px-4 pt-[env(safe-area-inset-top)] border-b border-border shrink-0"
             role="banner"
             inert={behindSimulator}
           >

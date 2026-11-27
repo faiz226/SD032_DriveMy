@@ -6,12 +6,17 @@ import { cn } from '@/lib/utils';
 import type { StationId } from '../contracts';
 import { useKeyNames } from '../input';
 
-export function Steps({ id, className }: { id: StationId; className?: string }) {
+/** A station's steps, one string each, in the learner's language and with the learner's own key names. */
+export function useStepLines(id: StationId): string[] {
   const { t } = useLanguage();
   const names = useKeyNames();
+  return t(`sim.steps.${id}` as TranslationKey, names).split('\n');
+}
+
+export function Steps({ id, className }: { id: StationId; className?: string }) {
   return (
     <ol className={cn('list-decimal space-y-0.5 pl-5', className)}>
-      {t(`sim.steps.${id}` as TranslationKey, names).split('\n').map((line) => <li key={line}>{line}</li>)}
+      {useStepLines(id).map((line) => <li key={line}>{line}</li>)}
     </ol>
   );
 }

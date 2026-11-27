@@ -2,7 +2,7 @@
 // side edges a little above the middle) and clear of the touch controls along the bottom.
 import { ArrowCounterClockwise, ArrowFatLeft, ArrowFatRight, Gear, Headlights, ListBullets, MagnifyingGlassMinus, MagnifyingGlassPlus, MapTrifold, Pause, Play, SignOut, VideoCamera } from '@/components/ui/icons';
 import { SwapIcon } from "@/components/ui/swap-icon";
-import { type ReactNode, useEffect, useState, useSyncExternalStore } from 'react';
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { Figure } from '@/components/ui/surface';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -18,7 +18,8 @@ import { useRun } from './run';
 import { type SettingsProps, SettingsDialog } from './Settings';
 import { faultSound, tickSound } from './sound';
 import { stationName } from './Verdict';
-import { Steps } from './Steps';
+import { advance } from './guide';
+import { useStepLines } from './Steps';
 import { routeAt, wayTurnDeg } from './way';
 
 const TIP_S = 6;          // rules.json modes: tips show for 6 s when a station arms
@@ -58,6 +59,7 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
   const names = useKeyNames();
   const mode = useRun((s) => s.mode);
   const state = useRun((s) => s.state);
+  const runId = useRun((s) => s.runId);
   const now = useRun((s) => s.t);
   const paused = useDriver((s) => s.paused);
   const topDown = useDriver((s) => s.topDown);
@@ -76,12 +78,6 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
     <div className="pointer-events-none absolute inset-0 select-none">
       <div className="absolute left-3 top-3 w-[min(40vw,300px)] space-y-2">
         {station && <StationPanel station={station} now={now} tips={mode !== 'practice'} />}
-        {station && mode === 'practice' && (
-          <details open={!touch} className={cn(HUD_PLATE, 'pointer-events-auto px-3 py-2')}>
-            <summary className="type-label-strong cursor-pointer">{t('sim.hud.steps')}</summary>
-            <Steps id={station.id} className="type-label mt-1 text-sm" />
-          </details>
-        )}
       </div>
 
       {station?.status === 'waiting' && !voided && (
@@ -104,6 +100,7 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
               <HudButton label={t('sim.hud.drills')} onClick={onStations}><ListBullets size={20} /></HudButton>
             </>
           )}
+          {!free && mode === 'assessment' && <HudButton label={t('sim.hud.restartTest')} onClick={onRestart}><ArrowCounterClockwise size={20} /></HudButton>}
           <HudButton label={t('sim.hud.chase')} pressed={chase} onClick={() => useDriver.getState().set({ chase: !chase })}><VideoCamera size={20} /></HudButton>
           {!touch && (
             <>
@@ -144,6 +141,8 @@ export function Hud({ touch, free = false, onRestart, onNext, onStations, onExit
       </div>
 
       <Readouts bottom={touch ? 72 : 12} />
+
+      {station && mode === 'practice' && !done && <Guide key={`${runId}-${station.id}`} id={station.id} />}
 
       {done && <DrillDone station={done} onRestart={onRestart} onNext={onNext} onStations={onStations} />}
       <SettingsDialog settings={settings} />
@@ -313,6 +312,44 @@ function WayArrow({ id, progress }: { id: StationId; progress: number }) {
     <div className={cn(HUD_PLATE, 'flex items-center gap-2 px-3 py-1.5')} role="img" aria-label={`${t('sim.hud.next')}: ${stationName(t, id)}, ${metres} m`}>
       <ArrowFatRight size={28} weight="fill" aria-hidden style={{ transform: `rotate(${wayTurnDeg(pose, routeAt(progress + LOOK_M))}deg)` }} />
       <span className="type-label-strong whitespace-nowrap tabular-nums" aria-hidden>{metres} m</span>
+    </div>
+  );
+}
+
+/**
+ * Practice: the station's steps, one at a time, in the middle of the screen, moving on as the learner does each one
+ * (guide.ts reads the car and the rules). "Next step" is always there, so a step the car cannot see never holds anyone.
+ */
+function Guide({ id }: { id: StationId }) {
+  const { t } = useLanguage();
+  const lines = useStepLines(id);
+  const [done, setDone] = useState(0);
+  const moved = useRef(false);
+  const speed = useDriver((s) => s.speedKmh);
+  const gear = useDriver((s) => s.gear);
+  const handbrake = useDriver((s) => s.handbrake);
+  const wheel = useDriver((s) => s.wheel);
+  const detail = useRun((s) => s.state.stations.find((st) => st.id === id)?.detail);
+  const progress = useRun((s) => s.state.progress ?? 0);
+  useEffect(() => {
+    if (Math.abs(speed) >= 1.5) moved.current = true;
+    const geo = circuit.stations.find((g) => g.id === id)!;
+    const d = detail ?? {};
+    const gates = Number(d.gates);
+    const along = gates > 0 ? Number(d.gate ?? 0) / gates : (progress - geo.s_from) / Math.max(1, geo.s_to - geo.s_from);
+    setDone((n) => advance(id, lines.length, n, { speed, gear, handbrake, wheel, moved: moved.current, detail: d, along: Math.min(1, Math.max(0, along)) }));
+  }, [id, lines.length, speed, gear, handbrake, wheel, detail, progress]);
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-[34%] flex justify-center px-4">
+      <div className={cn(HUD_PLATE, 'pointer-events-auto w-[min(92vw,26rem)] space-y-2 px-4 py-3 text-center')} role="status" aria-live="polite">
+        <p className="type-label text-xs opacity-80">{t('sim.guide.step', { n: done + 1, total: lines.length })}</p>
+        <p className="type-label-strong text-lg leading-snug">{lines[done]}</p>
+        {done < lines.length - 1 && (
+          <button type="button" onClick={() => setDone((n) => Math.min(lines.length - 1, n + 1))} className="tap-sm rounded-lg border border-[oklch(var(--paint)/0.6)] px-3 text-sm font-semibold">
+            {t('sim.guide.next')}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

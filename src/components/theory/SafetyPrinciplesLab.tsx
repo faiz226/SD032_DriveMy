@@ -3,10 +3,13 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   Gauge,
   Headlights,
+  ArrowsClockwise as Repeat,
   ShieldWarning,
   Users,
   Wrench,
 } from "@/components/ui/icons";
+import { FlipCard } from "./FlipCard";
+import { HazardVisual, StoppingScene } from "./SafetyVisuals";
 
 interface SafetyPrinciplesLabProps {
   lang: "en" | "bm";
@@ -24,9 +27,6 @@ const STOPPING_SPEEDS = [
   { speedKmh: 90, thinkingMeters: 25, brakingMeters: 68 },
   { speedKmh: 100, thinkingMeters: 28, brakingMeters: 84 },
 ];
-const MAX_STOPPING_METERS = Math.max(
-  ...STOPPING_SPEEDS.map(({ thinkingMeters, brakingMeters }) => thinkingMeters + brakingMeters),
-);
 
 interface TyreDiagnostic {
   id: "normal" | "over" | "under";
@@ -147,7 +147,8 @@ interface HazardDrill {
   id: string;
   titleEn: string;
   titleMs: string;
-  ref: string;
+  refEn: string;
+  refMs: string;
   scenarioEn: string;
   scenarioMs: string;
   optionsEn: string[];
@@ -163,13 +164,14 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-cito",
     titleEn: "C.I.T.O. lane-change & overtaking sequence",
     titleMs: "Urutan menukar lorong & memotong C.I.T.O.",
-    ref: "C.I.T.O.",
+    refEn: "C.I.T.O.",
+    refMs: "C.I.T.O.",
     scenarioEn: "You want to move into the right lane to overtake a slower lorry. What is the exact C.I.T.O. order?",
     scenarioMs: "Anda ingin bergerak ke lorong kanan untuk memotong lori yang perlahan. Apakah urutan C.I.T.O. yang betul?",
     optionsEn: [
-      "1. Cermin (Mirrors) -> 2. Isyarat (Signal) -> 3. Titik Buta (Head-check blind spot) -> 4. Olah Gerak (Maneuver)",
-      "1. Olah Gerak (Turn wheel) -> 2. Isyarat (Signal) -> 3. Cermin (Mirrors) -> 4. Titik Buta (Blind spot)",
-      "1. Isyarat (Signal) -> 2. Olah Gerak (Turn wheel immediately) without checking mirrors or blind spot",
+      "1. Mirrors -> 2. Signal -> 3. Blind spot (head-check over the shoulder) -> 4. Manoeuvre (move the wheel)",
+      "1. Manoeuvre (turn the wheel) -> 2. Signal -> 3. Mirrors -> 4. Blind spot",
+      "1. Signal -> 2. Manoeuvre straight away, without checking the mirrors or blind spot",
     ],
     optionsMs: [
       "1. Cermin -> 2. Isyarat -> 3. Titik Buta (Toleh ke arah bahu) -> 4. Olah Gerak (Gerakkan stereng)",
@@ -186,7 +188,8 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-under-oversteer",
     titleEn: "Speed on wet bends",
     titleMs: "Kelajuan di selekoh basah",
-    ref: "Kawalan Selekoh",
+    refEn: "Bend control",
+    refMs: "Kawalan Selekoh",
     scenarioEn: "You are approaching a bend on a wet road. When should you slow down?",
     scenarioMs: "Anda menghampiri selekoh di jalan basah. Bilakah anda patut memperlahankan kenderaan?",
     optionsEn: ["Before entering the bend", "At the centre of the bend", "After leaving the bend"],
@@ -199,7 +202,8 @@ const HAZARD_DRILLS: HazardDrill[] = [
     id: "drill-breakdown",
     titleEn: "Expressway breakdown",
     titleMs: "Kerosakan di lebuh raya",
-    ref: "Kecemasan Lebuh Raya",
+    refEn: "Highway emergency",
+    refMs: "Kecemasan Lebuh Raya",
     scenarioEn: "Your vehicle breaks down on the expressway shoulder at night. Where should you place the warning triangle?",
     scenarioMs: "Kenderaan anda rosak di lorong kecemasan lebuh raya pada waktu malam. Di manakah tanda amaran patut diletakkan?",
     optionsEn: [
@@ -237,9 +241,10 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
   // Lab 4: CRS & Headrest
   const [crsAnswers, setCrsAnswers] = useState<Record<string, number>>({});
+  const [crsFlipped, setCrsFlipped] = useState<Record<string, boolean>>({});
 
   const speedSpec = STOPPING_SPEEDS[selectedSpeedIdx];
-  const { brakingMeters } = speedSpec;
+  const brakingMeters = speedSpec.brakingMeters * (wetRoad ? 2 : 1); // wet: about twice as long, like the 2 s to 4 s following rule
   const totalStoppingMeters = speedSpec.thinkingMeters + brakingMeters;
   const followingRuleSeconds = wetRoad ? 4 : 2;
   const metersPerSecond = speedSpec.speedKmh / 3.6;
@@ -419,37 +424,29 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
 
                 <p className="text-xs text-muted-foreground">
                   {lang === "en"
-                    ? "Wet roads need more stopping distance. The road setting changes the following-gap estimate."
-                    : "Jarak berhenti lebih jauh di jalan basah. Tetapan jalan mengubah anggaran jarak mengekori."}
+                    ? "Wet roads need more stopping distance: braking takes about twice as far, and the following gap doubles."
+                    : "Jalan basah memerlukan jarak berhenti lebih jauh: jarak membrek kira-kira dua kali ganda dan jarak mengekori digandakan."}
                 </p>
 
-                <div aria-hidden="true" className="w-full h-8 rounded-xl bg-muted overflow-hidden flex border border-border">
-                  <div
-                    className="h-full bg-brand transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
-                    style={{
-                      width: `${(speedSpec.thinkingMeters / MAX_STOPPING_METERS) * 100}%`,
-                    }}
-                    title={lang === "en" ? "Thinking distance" : "Jarak berfikir"}
-                  />
-                  <div
-                    className="h-full bg-destructive transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-200"
-                    style={{
-                      width: `${(brakingMeters / MAX_STOPPING_METERS) * 100}%`,
-                    }}
-                    title={lang === "en" ? "Braking distance" : "Jarak membrek"}
-                  />
-                </div>
+                <StoppingScene
+                  key={`${speedSpec.speedKmh}-${wetRoad}`}
+                  lang={lang}
+                  speedKmh={speedSpec.speedKmh}
+                  thinkingMeters={speedSpec.thinkingMeters}
+                  brakingMeters={brakingMeters}
+                  wet={wetRoad}
+                />
 
                 <div className="grid grid-cols-3 gap-2 text-xs pt-1">
                   <div className="p-2.5 rounded-lg bg-brand/15 border border-brand/40">
                     <span className="text-muted-foreground block">
-                      {lang === "en" ? "Thinking (Jarak berfikir)" : "Jarak berfikir"}
+                      {lang === "en" ? "Thinking" : "Jarak berfikir"}
                     </span>
                     <span className="type-figure text-base">{speedSpec.thinkingMeters} m</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/30">
                     <span className="text-muted-foreground block">
-                      {lang === "en" ? "Braking (Jarak membrek)" : "Jarak membrek"}
+                      {lang === "en" ? "Braking" : "Jarak membrek"}
                     </span>
                     <span className="type-figure text-base">{brakingMeters} m</span>
                   </div>
@@ -535,11 +532,13 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                         {lang === "en" ? drill.titleEn : drill.titleMs}
                       </span>
                     </div>
-                    <div className="text-[0.8125rem] text-muted-foreground">{drill.ref}</div>
+                    <div className="text-[0.8125rem] text-muted-foreground">{lang === "en" ? drill.refEn : drill.refMs}</div>
                     <p className="text-sm font-semibold text-foreground leading-snug pt-1">
                       {lang === "en" ? drill.scenarioEn : drill.scenarioMs}
                     </p>
                   </div>
+
+                  <HazardVisual id={drill.id} lang={lang} />
 
                   <div className="space-y-1.5">
                     {opts.map((opt, idx) => {
@@ -747,59 +746,68 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
               const answered = picked !== undefined;
               const isRight = picked === item.correctOptionIndex;
               const opts = lang === "en" ? item.optionsEn : item.optionsMs;
+              const flipped = !!crsFlipped[item.id];
+              const setFlip = (value: boolean) => setCrsFlipped((prev) => ({ ...prev, [item.id]: value }));
 
               return (
-                <div key={item.id} className="panel p-4 flex flex-col justify-between gap-3">
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="pill pill-info">
-                        {lang === "en" ? item.profileEn : item.profileMs}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {lang === "en" ? item.specsEn : item.specsMs}
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    {opts.map((opt, idx) => {
-                      const selected = picked === idx;
-                      let stateClass = "";
-                      if (answered) {
-                        if (idx === item.correctOptionIndex) stateClass = "tile-done";
-                        else if (selected) stateClass = "tile-fail";
-                      }
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            setCrsAnswers((prev) => ({ ...prev, [item.id]: idx }));
-                            if (idx === item.correctOptionIndex) {
-                              onScenarioSolved?.(item.id);
-                            }
-                          }}
-                          className={`tile w-full p-2.5 text-left text-xs leading-relaxed cursor-pointer ${stateClass}`}
-                        >
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {answered && (
-                    <div
-                      role="status"
-                      className={`p-3 rounded-lg text-xs leading-relaxed border ${
-                        isRight
-                          ? "bg-success/10 border-success/30 text-foreground"
-                          : "bg-warning/10 border-warning/30 text-foreground"
-                      }`}
-                    >
-                      {lang === "en" ? item.ruleEn : item.ruleMs}
-                    </div>
-                  )}
-                </div>
+                <FlipCard
+                  key={item.id}
+                  flipped={flipped}
+                  front={
+                    <>
+                      <div>
+                        <span className="pill pill-info">{lang === "en" ? item.profileEn : item.profileMs}</span>
+                        <p className="mt-1 text-xs text-muted-foreground">{lang === "en" ? item.specsEn : item.specsMs}</p>
+                      </div>
+                      <div className="space-y-1.5">
+                        {opts.map((opt, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              setCrsAnswers((prev) => ({ ...prev, [item.id]: idx }));
+                              if (idx === item.correctOptionIndex) onScenarioSolved?.(item.id);
+                              setFlip(true);
+                            }}
+                            className="tile w-full cursor-pointer p-2.5 text-left text-xs leading-relaxed"
+                          >
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFlip(true)}
+                        className="mt-auto flex items-center justify-center gap-1.5 border-t border-border pt-2.5 text-xs font-semibold text-primary"
+                      >
+                        <span>{lang === "en" ? "Show the answer" : "Tunjuk jawapan"}</span>
+                        <Repeat size={13} aria-hidden="true" />
+                      </button>
+                    </>
+                  }
+                  back={
+                    <>
+                      <div className="space-y-1.5">
+                        <span className="pill pill-info">{lang === "en" ? item.profileEn : item.profileMs}</span>
+                        {answered && (
+                          <p className={`text-xs font-bold ${isRight ? "text-success" : "text-warning"}`} role="status">
+                            {isRight ? (lang === "en" ? "Correct" : "Betul") : lang === "en" ? "Not quite" : "Belum tepat"}
+                          </p>
+                        )}
+                        <p className="text-sm font-semibold text-foreground">{opts[item.correctOptionIndex]}</p>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{lang === "en" ? item.ruleEn : item.ruleMs}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFlip(false)}
+                        className="mt-auto flex items-center justify-center gap-1.5 border-t border-border pt-2.5 text-xs font-semibold text-primary"
+                      >
+                        <Repeat size={13} aria-hidden="true" />
+                        <span>{lang === "en" ? "Back to the question" : "Kembali ke soalan"}</span>
+                      </button>
+                    </>
+                  }
+                />
               );
             })}
           </motion.div>

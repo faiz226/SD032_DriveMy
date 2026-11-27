@@ -32,16 +32,31 @@ describe("DashboardView", () => {
     expect(screen.getAllByRole("link", { name: /Continue/ }).some(link => link.getAttribute("href") === "/rpk-rsm")).toBe(true);
   });
 
-  it("offers all six modules as toll lanes, with the KPP 01 lane pointing at the 50-question mock", () => {
+  it("offers the three theory modules as toll lanes, with the KPP 01 lane pointing at the mock", () => {
     view();
     const lanes = within(screen.getByRole("region", { name: "Pick a lane" }));
-    expect(lanes.getAllByRole("link")).toHaveLength(6);
+    expect(lanes.getAllByRole("link")).toHaveLength(3);
     expect(lanes.getByRole("link", { name: /KPP 01 mock test/ })).toHaveAttribute("href", "/mock-test");
   });
 
-  it("states a mock below the pass mark as a shortfall, in words", () => {
+  it("states a mock below the pass mark as a shortfall, in words, with the pass mark as the target", () => {
     view();
-    expect(screen.getByText("Short of the pass mark")).toBeInTheDocument();
+    expect(screen.getByText("2 short of the pass mark")).toBeInTheDocument();
+    expect(screen.getByText("Pass mark 42")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Your best 40 of 50; pass mark 42" })).toBeInTheDocument();
+  });
+
+  it("before any mock, shows a dash, the pass mark as a note, and a way to take one", () => {
+    const empty = dashboardModel({ mock: { count: 0, history: [] }, theory: undefined });
+    render(<MemoryRouter><DashboardView name="Nur" score={0} parts={{ theory: 0, practical: 0 }} model={empty} activity={[]} /></MemoryRouter>);
+    expect(screen.getByText("Pass mark: 56 of 70")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Take a mock test" })).toHaveAttribute("href", "/mock-test");
+    expect(screen.queryByText("56", { exact: true })).not.toBeInTheDocument();
+  });
+
+  it("keeps the road tip off the dashboard", () => {
+    view();
+    expect(screen.queryByText("Road tip")).not.toBeInTheDocument();
   });
 
   it("has no axe violations that jsdom can detect", async () => {
@@ -51,13 +66,13 @@ describe("DashboardView", () => {
 });
 
 describe("DashboardView on a phone", () => {
-  it("still offers all six lanes, as one set of links", () => {
+  it("still offers all three lanes, as one set of links", () => {
     const original = window.matchMedia;
     window.matchMedia = ((query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false, onchange: null })) as typeof window.matchMedia;
     try {
       view();
       const lanes = within(screen.getByRole("region", { name: "Pick a lane" }));
-      expect(lanes.getAllByRole("link")).toHaveLength(6);
+      expect(lanes.getAllByRole("link")).toHaveLength(3);
       expect(lanes.getByRole("link", { name: /KPP 01 mock test/ })).toBeInTheDocument();
     } finally {
       window.matchMedia = original;

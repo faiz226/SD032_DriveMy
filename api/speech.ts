@@ -10,15 +10,18 @@ export async function handleSpeech(req: IncomingMessage & { body?: unknown }, re
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify({ error: code }));
   };
-  if (req.method !== "POST") { res.setHeader("Allow", "POST"); return fail(405, "method"); }
-  const authorization = req.headers.authorization;
-  if (!authorization?.startsWith("Bearer ")) return fail(401, "sign_in");
   const key = env.FISH_AUDIO_API_KEY;
   const voice = env.FISH_AUDIO_VOICE_ID;
   const model = env.FISH_AUDIO_MODEL || "s2.1-pro-free";
   const url = env.VITE_SUPABASE_URL;
   const anon = env.VITE_SUPABASE_ANON_KEY;
-  if (!key || !voice || !url || !anon || !["s1", "s2-pro", "s2.1-pro", "s2.1-pro-free", "drama-3"].includes(model)) return fail(503, "unavailable");
+  const configured = Boolean(key && voice && url && anon && ["s1", "s2-pro", "s2.1-pro", "s2.1-pro-free", "drama-3"].includes(model));
+  // Whether narration is set up at all, so the app can leave out a Listen button that could never work. No secret leaves here.
+  if (req.method === "GET") { res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify({ available: configured })); return; }
+  if (req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return fail(405, "method"); }
+  const authorization = req.headers.authorization;
+  if (!authorization?.startsWith("Bearer ")) return fail(401, "sign_in");
+  if (!configured) return fail(503, "unavailable");
   try {
     let body = req.body;
     if (body === undefined) {

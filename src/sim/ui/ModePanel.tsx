@@ -2,6 +2,7 @@
 // never saved) or free drive (anywhere in the yard, for fun: nothing marked or saved). The world is already
 // loading behind it, once, for all three.
 import { Button } from '@/components/ui/button';
+import { RoadTip } from '@/components/shared/RoadTip';
 import { Panel } from '@/components/ui/surface';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
@@ -54,6 +55,7 @@ export function ModePanel({ mode, drill, ready, onMode, onDrill, onStart, onExpl
           </div>
         )}
         <p className="type-label text-sm">{t('sim.label')}</p>
+        <RoadTip className="p-4" />
         <div className="flex flex-wrap gap-3">
           <Button disabled={!ready} onClick={onStart}>
             {mode === 'assessment' ? t('sim.mode.startAssessment') : mode === 'free' ? t('sim.mode.startFree') : t('sim.mode.startPractice', { station: stationName(t, drill) })}

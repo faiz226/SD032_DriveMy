@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SpeakerHigh, Stop, Pause, Play } from "@/components/ui/icons";
 import { SwapIcon } from "@/components/ui/swap-icon";
-import { requestSpeech, SpeechUnavailableError } from "@/services/speech.service";
+import { requestSpeech, speechAvailable, speechKnown, SpeechUnavailableError } from "@/services/speech.service";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +10,12 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
   const [state, setState] = useState<"idle" | "loading" | "playing" | "paused" | "error" | "limit">("idle");
   const active = useRef<{ controller: AbortController; audio?: HTMLAudioElement; url?: string } | null>(null);
   const cached = useRef<Blob | null>(null);
+  const [available, setAvailable] = useState(speechKnown());
+  useEffect(() => {
+    let live = true;
+    void speechAvailable().then((ok) => { if (live) setAvailable(ok); });
+    return () => { live = false; };
+  }, []);
   function stop() {
     active.current?.controller.abort();
     if (active.current?.audio) {
@@ -49,6 +55,8 @@ export function SpeechControl({ text, kind = "question" }: { text: string; kind?
     }
   }
   const running = state === "playing" || state === "paused" || state === "loading";
+  // Hidden only once the server has said it has no voice: until it answers, and if it cannot be asked, the button shows.
+  if (available === false) return null;
   return <div className="my-3">
     <Button type="button" variant="outline" onClick={() => { if (running) stop(); else void play(); }} aria-pressed={running}>
       <SwapIcon id={running ? "stop" : "speak"}>{running ? <Stop aria-hidden="true"/> : <SpeakerHigh aria-hidden="true"/>}</SwapIcon>

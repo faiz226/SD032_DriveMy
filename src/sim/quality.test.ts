@@ -11,6 +11,13 @@ describe('quality tiers', () => {
     expect(detectTier({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/141 Safari/537.36', deviceMemory: 4 })).toBe('low');
   });
 
+  it('an iPad gets Low, even though iPadOS Safari calls itself a Mac; a real Mac gets Medium', () => {
+    const mac = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15';
+    expect(detectTier({ userAgent: mac, platform: 'MacIntel', maxTouchPoints: 5 })).toBe('low');   // iPadOS in desktop mode
+    expect(detectTier({ userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) Safari/604.1', platform: 'iPad', maxTouchPoints: 5 })).toBe('low');
+    expect(detectTier({ userAgent: mac, platform: 'MacIntel', maxTouchPoints: 0 })).toBe('medium');
+  });
+
   it('the tiers differ as WP5 sets them', () => {
     expect(TIERS.low).toMatchObject({ shadows: false, clearcoat: false, renderScale: [0.7, 0.85] });
     expect(TIERS.medium).toMatchObject({ shadows: true, clearcoat: true, renderScale: [0.85, 1] });

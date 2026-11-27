@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import NumberFlow from "@number-flow/react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuthStore } from "@/stores/authStore";
@@ -11,7 +11,7 @@ import { VmsBoard } from "@/components/dashboard/VmsBoard";
 import { TollPlaza, type Lane } from "@/components/dashboard/TollPlaza";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadError } from "@/components/shared/LoadError";
-import { MOCK_PASS_MARK, ROUTES, mockPassMark } from "@/lib/constants";
+import { MOCK_PASS_MARK, MOCK_TOTAL_QUESTIONS, ROUTES, mockPassMark } from "@/lib/constants";
 import { dashboardModel, type DashboardModel, type NextStep as NextStepKey } from "@/lib/dashboard/model";
 import { readinessContributions } from "@/lib/readiness";
 import { learnerKeys } from "@/lib/queryKeys";
@@ -92,11 +92,6 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
     { sign: "RPK / RSM", title: "RPK / RSM", description: t("rpk.topicsCompleted", { done: rpkDone, total: rpkTotal }), to: ROUTES.RPK_RSM, state: bays.rpk },
     { sign: "R&R", title: t("dashboard.bay.rules.title"), description: t("dashboard.bay.rules.desc"), to: ROUTES.THEORY, state: bays.rules, info: true },
   ];
-  const practicalLanes: Lane[] = [
-    { sign: t("dashboard.lane.hill"), title: t("dashboard.bay.hill.title"), description: t("dashboard.bay.hill.desc"), to: `${ROUTES.SIMULATIONS}/hill-start`, state: "open" },
-    { sign: t("dashboard.lane.circuit"), title: t("dashboard.bay.circuit.title"), description: t("dashboard.bay.circuit.desc"), to: ROUTES.SIMULATIONS, state: "open" },
-    { sign: t("dashboard.lane.parking"), title: t("dashboard.bay.parallel.title"), description: t("dashboard.bay.parallel.desc"), to: `${ROUTES.SIMULATIONS}/parallel-parking`, state: "open" },
-  ];
 
   return (
     <div className="app-container page-enter pb-16">
@@ -117,30 +112,10 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
 
       <section aria-labelledby="lanes-title">
         <h2 id="lanes-title" className={`${SECTION_TITLE} mb-6`}>{t("dashboard.lanes.title")}</h2>
-        <div className="space-y-8">
-          <TollPlaza name={t("dashboard.lanes.theory")} lanes={theoryLanes} firstLane={1} />
-          <TollPlaza name={t("dashboard.lanes.practical")} lanes={practicalLanes} firstLane={4} />
-        </div>
+        <TollPlaza name={t("dashboard.lanes.theory")} lanes={theoryLanes} firstLane={1} />
       </section>
 
-      <section aria-labelledby="score-title">
-        <h2 id="score-title" className={SECTION_TITLE}>{t("dashboard.score.title")}</h2>
-        <p className="mb-6 mt-1 text-muted-foreground">{t("dashboard.score.lead")}</p>
-        <div className="grid items-center gap-6 md:grid-cols-2 lg:grid-cols-[auto_1.2fr_1fr]">
-          <dl>
-            <RoundSign large value={bestMock?.score} caption={bestMock ? t("dashboard.score.best", { total: bestMock.total_questions }) : t("dashboard.score.none")} />
-          </dl>
-          <dl className="panel divide-y divide-border px-5">
-            <Fact value={MOCK_PASS_MARK} caption={t("dashboard.score.passMark")} />
-            <Fact
-              value={headroom}
-              signed
-              caption={headroom === undefined ? t("dashboard.score.none") : t(headroom < 0 ? "dashboard.score.short" : "dashboard.score.above")}
-            />
-          </dl>
-          <RoadTip />
-        </div>
-      </section>
+      <Scoreboard bestMock={bestMock} headroom={headroom} />
 
       <section aria-labelledby="log-title">
         <h2 id="log-title" className={`${SECTION_TITLE} mb-6`}>{t("dashboard.log.title")}</h2>
@@ -154,47 +129,50 @@ export function DashboardView({ name, score, parts, model, activity }: Dashboard
   );
 }
 
-/** A stat on a round sign: white disc, dark ring, like a speed-limit plate. */
-function RoundSign({ value, caption, signed, large }: { value: number | undefined; caption: string; signed?: boolean; large?: boolean }) {
-  return (
-    <div className="grid justify-items-center gap-3 text-center">
-      <dt className="order-2 max-w-[18ch] text-sm text-muted-foreground">{caption}</dt>
-      <dd className={`order-1 grid aspect-square ${large ? "w-[min(100%,12rem)]" : "w-[min(100%,10rem)]"} place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_12px_30px_-10px_#000] sm:text-5xl`}>
-        {value === undefined ? "-" : <NumberFlow value={value} format={{ signDisplay: signed ? "exceptZero" : "auto" }} />}
-      </dd>
-    </div>
-  );
-}
-
-/** A plain figure beside its caption, for the facts that are not the headline. */
-function Fact({ value, caption, signed }: { value: number | undefined; caption: string; signed?: boolean }) {
-  return (
-    <div className="flex items-baseline justify-between gap-4 py-4">
-      <dt className="text-sm text-muted-foreground">{caption}</dt>
-      <dd className="text-3xl font-black tabular-nums">
-        {value === undefined ? "-" : <NumberFlow value={value} format={{ signDisplay: signed ? "exceptZero" : "auto" }} />}
-      </dd>
-    </div>
-  );
-}
-
-/** The brown tourist-sign tip card, with a button for another tip. */
-function RoadTip() {
+/** The learner's own best mock on a round sign, and the pass mark as a target on a bar beside it. */
+function Scoreboard({ bestMock, headroom }: { bestMock: DashboardModel["bestMock"]; headroom: number | undefined }) {
   const { t } = useLanguage();
-  const tips = [t("dashboard.tip.1"), t("dashboard.tip.2"), t("dashboard.tip.3")];
-  const [index, setIndex] = useState(0);
+  const total = bestMock?.total_questions ?? MOCK_TOTAL_QUESTIONS;
+  const passMark = bestMock ? mockPassMark(total) : MOCK_PASS_MARK;
+  const score = bestMock?.score ?? 0;
+  const passed = headroom !== undefined && headroom >= 0;
   return (
-    <div className="grid min-h-[11.25rem] content-center gap-2.5 rounded-xl bg-[#6A4220] p-[1.375rem] text-white shadow-[inset_0_0_0_3px_#6A4220,inset_0_0_0_5px_#fff] md:col-span-2 lg:col-span-1">
-      <p className="text-lg font-extrabold">{t("dashboard.tip.title")}</p>
-      <p aria-live="polite">{tips[index % tips.length]}</p>
-      <button
-        type="button"
-        onClick={() => setIndex(i => i + 1)}
-        className="min-h-11 justify-self-start rounded-lg border-2 border-white px-3.5 text-sm font-extrabold transition-colors hover:bg-white/10"
-      >
-        {t("dashboard.tip.next")}
-      </button>
-    </div>
+    <section aria-labelledby="score-title">
+      <h2 id="score-title" className={SECTION_TITLE}>{t("dashboard.score.title")}</h2>
+      <p className="mb-6 mt-1 text-muted-foreground">{t("dashboard.score.lead")}</p>
+      <div className="grid items-center gap-6 md:grid-cols-[auto_1fr]">
+        <div className="grid justify-items-center gap-3 text-center">
+          <div
+            role="img"
+            className="grid aspect-square w-[min(100%,12rem)] place-items-center rounded-full border-[14px] border-[#15181d] bg-white text-[2.75rem] font-black tabular-nums tracking-[-0.04em] text-[#111] shadow-[0_0_0_3px_#fff,0_12px_30px_-10px_#000] sm:text-5xl"
+            aria-label={bestMock ? t("dashboard.score.bestOf", { score, total }) : t("dashboard.score.none")}
+          >
+            {bestMock ? <NumberFlow value={score} /> : "–"}
+          </div>
+          <p className="max-w-[18ch] text-sm text-muted-foreground">{bestMock ? t("dashboard.score.best", { total }) : t("dashboard.score.none")}</p>
+          {!bestMock && (
+            <Link to={ROUTES.MOCK_TEST} className="inline-flex min-h-11 items-center rounded-lg border-2 border-foreground px-4 text-sm font-extrabold no-underline transition-colors hover:bg-foreground/10">
+              {t("dashboard.score.take")}
+            </Link>
+          )}
+        </div>
+        <div className="panel grid gap-3 px-5 py-5">
+          {bestMock
+            ? <p className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <span className="font-semibold">{t("dashboard.score.passMarkIs", { pass: passMark })}</span>
+              <span className={passed ? "text-sm font-bold text-success" : "text-sm font-bold text-muted-foreground"}>
+                {t(passed ? "dashboard.score.above" : "dashboard.score.short", { n: Math.abs(headroom ?? 0) })}
+              </span>
+            </p>
+            : <p className="text-muted-foreground">{t("dashboard.score.passNote", { pass: passMark, total })}</p>}
+          <div className="relative h-4 rounded-full bg-muted" role="img" aria-label={t("dashboard.score.barLabel", { score, total, pass: passMark })}>
+            <span className={`absolute inset-y-0 left-0 rounded-full ${passed ? "bg-success" : "bg-brand"}`} style={{ width: `${(score / total) * 100}%` }} />
+            <span aria-hidden="true" className="absolute -inset-y-1.5 w-1 -translate-x-1/2 rounded-full bg-foreground" style={{ left: `${(passMark / total) * 100}%` }} />
+          </div>
+          <div aria-hidden="true" className="flex justify-between text-xs tabular-nums text-muted-foreground"><span>0</span><span>{total}</span></div>
+        </div>
+      </div>
+    </section>
   );
 }
 

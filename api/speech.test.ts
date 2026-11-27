@@ -35,4 +35,14 @@ describe("narration endpoint", () => {
     expect(String(response.end.mock.calls[0][0])).not.toContain(env.FISH_AUDIO_API_KEY);
     expect(fetcher.mock.calls[2][1].headers.model).toBe("s2.1-pro-free");
   });
+  it("says whether narration is set up, with no key or sign-in needed, and never the key itself", async () => {
+    for (const [config, available] of [[env, true], [{ ...env, FISH_AUDIO_API_KEY: undefined }, false], [{ ...env, FISH_AUDIO_MODEL: "unknown" }, false]] as const) {
+      const req = { method: "GET", headers: {} } as unknown as IncomingMessage;
+      const response = { statusCode: 200, setHeader: vi.fn(), end: vi.fn(), writableEnded: false };
+      await handleSpeech(req, response as unknown as ServerResponse, config);
+      expect(response.statusCode).toBe(200);
+      expect(JSON.parse(String(response.end.mock.calls[0][0]))).toEqual({ available });
+      expect(String(response.end.mock.calls[0][0])).not.toContain("private-test-key");
+    }
+  });
 });

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,6 +26,10 @@ import {
 } from "@/content/theory";
 import { TrafficRulesLab } from "@/components/theory/TrafficRulesLab";
 import { SafetyPrinciplesLab } from "@/components/theory/SafetyPrinciplesLab";
+import { SignColourBoard } from "@/components/theory/SignColourBoard";
+import { SignMiniQuizzes } from "@/components/theory/SignMiniQuizzes";
+import { categoryProgress } from "@/lib/signQuiz";
+import { searchRpk } from "@/lib/rpkSearch";
 import { toast } from "sonner";
 
 const LEARNED_STORAGE_KEY = "drivemy_theory_learned_signs_v2";
@@ -95,32 +99,45 @@ export function TheoryPage() {
 
   // Card flip and learned states
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
-  const [learned, setLearned] = useState<Record<string, boolean>>(() => {
+  const learnedKey = user ? `${LEARNED_STORAGE_KEY}:${user.id}` : LEARNED_STORAGE_KEY;
+  const readLearned = (key: string): Record<string, boolean> => {
     try {
-      const saved = localStorage.getItem(LEARNED_STORAGE_KEY);
+      // A user's own record first; the older shared one seeds a first visit so nobody loses what they had.
+      const saved = localStorage.getItem(key) ?? localStorage.getItem(LEARNED_STORAGE_KEY);
       return saved ? JSON.parse(saved) : {};
     } catch {
       return {};
     }
-  });
-
-  // Spot-the-sign mini drill state
-  const [drillIndex, setDrillIndex] = useState<number>(0);
-  const [drillPicked, setDrillPicked] = useState<number | null>(null);
-  const [drillScore, setDrillScore] = useState<number>(0);
+  };
+  const [learned, setLearned] = useState<Record<string, boolean>>(() => readLearned(learnedKey));
+  const [loadedKey, setLoadedKey] = useState(learnedKey);
+  if (loadedKey !== learnedKey) {
+    // Signed in or switched user: show that user's record.
+    setLoadedKey(learnedKey);
+    setLearned(readLearned(learnedKey));
+  }
 
   // Sync learned state to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(LEARNED_STORAGE_KEY, JSON.stringify(learned));
+      localStorage.setItem(learnedKey, JSON.stringify(learned));
     } catch {
       // Ignore localStorage write errors in private mode
     }
-  }, [learned]);
+  }, [learned, learnedKey]);
 
   const moduleCompleted = progress.data?.some(
     (row) => row.module_id === `theory-${activeTab}` && row.completed,
   );
+
+  // Learning every sign finishes the Road Signs module, so there is no button to press.
+  const signsLearnt = categoryProgress(roadSigns.map((sign) => sign.id), learned).done;
+  useEffect(() => {
+    if (!user || !signsLearnt || progress.isPending || progress.isError || completion.isPending) return;
+    if (progress.data?.some((row) => row.module_id === "theory-signs" && row.completed)) return;
+    completion.mutate({ user_id: user.id, module_id: "theory-signs", completed: true, completed_at: new Date().toISOString() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, signsLearnt, progress.isPending, progress.isError, progress.data]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -154,6 +171,9 @@ export function TheoryPage() {
         card?.querySelector<HTMLButtonElement>("button[data-flip]:not([inert] button)")?.focus(),
       );
   };
+
+  // Vehicle-check (RPK) steps that the search is after, so "brake fluid" finds its step.
+  const rpkHits = useMemo(() => searchRpk(search), [search]);
 
   // Filtered signs based on search, category pill, and favorites filter
   const filteredSigns = useMemo(() => {
@@ -192,30 +212,6 @@ export function TheoryPage() {
   const totalMasteredCount = useMemo(() => {
     return roadSigns.filter((sign) => learned[sign.id]).length;
   }, [learned]);
-
-  const drillNumber = drillIndex % roadSigns.length;
-  const drillSign = roadSigns[drillNumber];
-  const correctSlot = drillNumber % 4;
-  const drillOptions = Array.from({ length: 4 }, (_, slot) => {
-    const offset = (slot - correctSlot + 4) % 4;
-    return {
-      img: roadSigns[(drillNumber + offset) % roadSigns.length].img,
-      correct: offset === 0,
-    };
-  });
-
-  const handlePickDrill = (index: number) => {
-    if (drillPicked !== null) return;
-    setDrillPicked(index);
-    if (drillOptions[index]?.correct) {
-      setDrillScore((s) => s + 1);
-    }
-  };
-
-  const handleNextDrill = () => {
-    setDrillPicked(null);
-    setDrillIndex((i) => i + 1);
-  };
 
   const learnedLabel = (done: boolean) =>
     lang === "en"
@@ -288,7 +284,50 @@ export function TheoryPage() {
       </div>
 
       <TabsContent value={activeTab} className="mt-6">
-        {search &&
+        {rpkHits.length > 0 && (
+          <section className="panel mb-6 space-y-3 p-4 sm:p-5" aria-label={lang === "en" ? "Vehicle check steps" : "Langkah pemeriksaan kenderaan"}>
+            <h3 className="text-base font-bold font-heading">
+              {lang === "en" ? "Vehicle check (RPK)" : "Pemeriksaan kenderaan (RPK)"}
+            </h3>
+            <ul className="space-y-2">
+              {rpkHits.map((hit) => (
+                <li key={`${hit.topicId}-${hit.step}`}>
+                  <Link
+                    to={`${ROUTES.RPK_RSM}?topic=${hit.topicId}&step=${hit.step + 1}`}
+                    className="tile block p-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-ink"
+                  >
+                    <span className="block text-xs font-semibold text-muted-foreground">
+                      {hit.routine.toUpperCase()} · {lang === "en" ? hit.title.en : hit.title.ms} ·{" "}
+                      {lang === "en" ? `step ${hit.step + 1}` : `langkah ${hit.step + 1}`}
+                    </span>
+                    <span className="line-clamp-2">{lang === "en" ? hit.text.en : hit.text.ms}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {!search && (
+          <Link
+            to={ROUTES.RPK_RSM}
+            className="panel mb-6 flex items-center justify-between gap-3 p-4 outline-none transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-brand-ink sm:p-5"
+          >
+            <span>
+              <span className="block text-base font-bold font-heading">
+                {lang === "en" ? "Vehicle check (RPK)" : "Pemeriksaan kenderaan (RPK)"}
+              </span>
+              <span className="block text-xs text-muted-foreground">
+                {lang === "en"
+                  ? "Tyres, lights, engine bay and boot: the checks before you drive."
+                  : "Tayar, lampu, ruang enjin dan but: pemeriksaan sebelum memandu."}
+              </span>
+            </span>
+            <ChevronRight size={18} aria-hidden="true" />
+          </Link>
+        )}
+
+        {search && rpkHits.length === 0 &&
           !(activeTab === "signs"
             ? filteredSigns.length
             : activeTab === "rules"
@@ -388,92 +427,9 @@ export function TheoryPage() {
               </div>
             </div>
 
-            {/* Interactive "Spot-the-Sign" Rapid Drill */}
-            <div className="panel p-4 sm:p-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <span className="pill pill-info">
-                    {lang === "en" ? "Interactive knowledge drill" : "Latihan uji minda pantas"}
-                  </span>
-                  <span className="text-xs tabular-nums text-muted-foreground">
-                    {lang === "en" ? "Question" : "Soalan"} {drillNumber + 1} of{" "}
-                    {roadSigns.length}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold tabular-nums text-foreground">
-                    {lang === "en" ? "Score:" : "Skor:"} {drillScore}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-4">
-                <p className="text-sm sm:text-base font-semibold text-foreground leading-snug">
-                  {lang === "en" ? `Which sign means “${drillSign.meaning}”?` : `Papan tanda manakah bermaksud “${drillSign.meaningMs}”?`}
-                </p>
-
-                {/* Four sourced sign options */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {drillOptions.map((opt, idx) => {
-                    const picked = drillPicked === idx;
-                    const answered = drillPicked !== null;
-                    let stateClass = "";
-                    if (answered) {
-                      if (opt.correct) stateClass = "border-success bg-success/10 shadow-xs";
-                      else if (picked) stateClass = "border-destructive bg-destructive/10";
-                    }
-
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        disabled={answered}
-                        onClick={() => handlePickDrill(idx)}
-                        className={`tile p-4 h-36 flex flex-col items-center justify-center gap-2 cursor-pointer transition-[color,background-color,border-color,box-shadow,opacity,transform] disabled:cursor-default ${stateClass} ${
-                          picked ? "tile-selected" : ""
-                        }`}
-                      >
-                        <img
-                          src={opt.img}
-                          alt={lang === "en" ? "Road sign option" : "Pilihan papan tanda"}
-                          className="max-w-[72px] max-h-[72px] object-contain drop-shadow-xs"
-                          loading="lazy"
-                        />
-                        {answered && opt.correct && (
-                          <span className="text-[0.8125rem] font-bold text-success flex items-center gap-1">
-                            <Check size={13} aria-hidden="true" />
-                            {lang === "en" ? "Correct" : "Tepat"}
-                          </span>
-                        )}
-                        {answered && picked && !opt.correct && (
-                          <span className="text-[0.8125rem] font-bold text-destructive flex items-center gap-1">
-                            <X size={13} aria-hidden="true" />
-                            {lang === "en" ? "Incorrect" : "Salah"}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {drillPicked !== null && (
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <p className="text-xs text-muted-foreground">
-                      {drillOptions[drillPicked]?.correct
-                        ? lang === "en"
-                          ? "Great eye! Verified against the official KPP curriculum."
-                          : "Tepat sekali! Disahkan mengikut kurikulum rasmi KPP."
-                        : lang === "en"
-                          ? "Review the correct sign above, checked against the textbook."
-                          : "Lihat tanda yang betul di atas, disahkan mengikut buku teks."}
-                    </p>
-                    <Button size="sm" onClick={handleNextDrill}>
-                      {lang === "en" ? "Next challenge" : "Cabaran seterusnya"}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* What the colour and shape mean (a chosen category), then the mini quizzes */}
+            {selectedCategory !== "all" && <SignColourBoard category={selectedCategory} lang={lang} />}
+            <SignMiniQuizzes lang={lang} learnt={learned} onChange={setLearned} />
 
             {/* Sign Flashcards and Reference Grid */}
             <div className="space-y-4">
@@ -812,7 +768,8 @@ export function TheoryPage() {
           </motion.div>
         )}
 
-        {/* Bottom Module Completion Panel */}
+        {/* Bottom Module Completion Panel (Road Signs finishes through its mini quizzes instead) */}
+        {activeTab !== "signs" && (
         <div className="panel mt-8 p-5 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -883,6 +840,7 @@ export function TheoryPage() {
             </p>
           )}
         </div>
+        )}
       </TabsContent>
     </Tabs>
   );

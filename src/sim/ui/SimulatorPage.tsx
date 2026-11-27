@@ -58,7 +58,9 @@ const stationStart = (id: StationId): Pose => {
 const zoomNow = () => useDriver.getState().zoom;
 const zoomBy = (f: number) => useDriver.getState().zoomBy(f);
 
-const portraitNow = () => window.innerHeight > window.innerWidth;
+// Only a phone must turn sideways: the controls do not fit its portrait. A tablet in portrait (an iPad on a rotation
+// lock) has room, and the wall used to cover every button there.
+const portraitNow = () => window.innerHeight > window.innerWidth && window.innerWidth < 700;
 const onResize = (cb: () => void) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); };
 
 /** A duplicate key means the row is already there: this run was saved. */
