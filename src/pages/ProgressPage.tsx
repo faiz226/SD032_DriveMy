@@ -67,6 +67,7 @@ export function ProgressPage() {
   const header = (
     <header className="page-header">
       <h1 className="page-title">{t("progress.title")}</h1>
+      <p className="page-lead">{t("progress.lead")}</p>
     </header>
   );
 
@@ -188,7 +189,7 @@ export function ProgressPage() {
   });
 
   return (
-    <div className="page-shell page-enter">
+    <div className="page-shell">
       {header}
 
       <div className="grid items-start gap-[var(--panel-gap)] lg:grid-cols-[20rem_1fr]">
@@ -202,7 +203,7 @@ export function ProgressPage() {
           <ul className="mt-3 divide-y divide-border">
             {stand.map(row => (
               <li key={row.label}>
-                <Link to={row.to} className="group -mx-2 flex min-h-16 items-center gap-3 rounded-xl px-2 py-3 text-foreground no-underline transition-base hover:bg-muted/60">
+                <Link to={row.to} className="group -mx-2 flex min-h-16 items-center gap-3 rounded-lg px-2 py-3 text-foreground no-underline transition-base hover:bg-muted/60">
                   <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full", row.done ? "bg-success/15 text-success" : "bg-muted text-muted-foreground")}>
                     {row.done ? <CheckCircle size={18} aria-label={t("progress.completed")} /> : <span aria-hidden="true" className="h-4 w-4 rounded-full border-2 border-current opacity-60" />}
                   </span>
@@ -220,7 +221,7 @@ export function ProgressPage() {
       </div>
 
       <section aria-labelledby="progress-history" className="space-y-4">
-        <h2 id="progress-history" className="text-[1.75rem]">{t("progress.history.title")}</h2>
+        <h2 id="progress-history" className="text-xl sm:text-2xl">{t("progress.history.title")}</h2>
         <Tabs defaultValue="mocks">
           <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="mocks" className="min-h-11 flex-1 sm:flex-none">{t("progress.tab.mocks")}</TabsTrigger>
@@ -233,7 +234,11 @@ export function ProgressPage() {
               {mock.trend.length >= 2 && (
                 <ScoreTrendChart data={mock.trend} label={t("progress.chart.mockTrend")} limit={10} passMark={PASS_PERCENT} />
               )}
-              <AttemptList items={mockAttempts} empty={t("progress.noMockAttempts")} />
+              <AttemptList
+                items={mockAttempts}
+                empty={t("progress.noMockAttempts")}
+                emptyAction={{ label: t("dashboard.takeMockTest"), to: ROUTES.MOCK_TEST }}
+              />
             </Panel>
           </TabsContent>
 
@@ -248,7 +253,11 @@ export function ProgressPage() {
               {quiz.trend.length >= 2 && (
                 <ScoreTrendChart data={quiz.trend.map(point => ({ ...point, title: point.title ? categoryName(point.title) : undefined }))} label={t("progress.chart.quizTrend")} limit={20} />
               )}
-              <AttemptList items={quizAttempts} empty={t("progress.noQuizAttempts")} />
+              <AttemptList
+                items={quizAttempts}
+                empty={t("progress.noQuizAttempts")}
+                emptyAction={{ label: t("dashboard.practiceQuiz"), to: ROUTES.QUIZ }}
+              />
             </Panel>
           </TabsContent>
 
@@ -260,7 +269,11 @@ export function ProgressPage() {
                   <ManeuverScoresBar data={sim.byManeuver} />
                 </div>
               )}
-              <AttemptList items={simAttempts} empty={t("progress.noSimAttempts")} />
+              <AttemptList
+                items={simAttempts}
+                empty={t("progress.noSimAttempts")}
+                emptyAction={{ label: t("dashboard.startSimulations"), to: ROUTES.SIMULATIONS }}
+              />
             </Panel>
           </TabsContent>
         </Tabs>

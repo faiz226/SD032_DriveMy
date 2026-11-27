@@ -34,14 +34,14 @@ const READING: Record<Reading, { key: TranslationKey; tone: PillTone }> = {
 function PlateImage({ plate, className }: { plate: Plate; className?: string }) {
   const { t } = useLanguage();
   return (
-    <span className={cn("block aspect-square shrink-0 overflow-hidden rounded-full bg-card shadow-sm ring-1 ring-border dark:bg-white", className)}>
+    <span className={cn("block aspect-square shrink-0 overflow-hidden rounded-full bg-card shadow-sm ring-1 ring-border dark:bg-white dark:ring-white/25", className)}>
       <img src={plateImage(plate.n)} alt={t("color.plateAlt", { num: plate.n })} className="h-full w-full scale-[1.04] object-cover mix-blend-multiply dark:mix-blend-normal" width={233} height={233} />
     </span>
   );
 }
 
 export function ColorVisionPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const user = useAuthStore(s => s.user);
   const queryClient = useQueryClient();
 
@@ -104,16 +104,18 @@ export function ColorVisionPage() {
     start();
   };
 
-  const goTo = (next: number, all: Record<number, string>) => {
+  const goTo = (next: number, all: Record<number, string>, focusInput = true) => {
     setIndex(next);
     setDraft(all[PLATES[next].n] ?? "");
-    input.current?.focus();
+    if (focusInput) input.current?.focus();
   };
 
   const answer = (value: string) => {
     const next = { ...answers, [plate.n]: value };
     setAnswers(next);
-    if (index < PLATES.length - 1) return goTo(index + 1, next);
+    const isCoarsePointer = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+    const focusInput = !(value === "" && isCoarsePointer);
+    if (index < PLATES.length - 1) return goTo(index + 1, next, focusInput);
 
     if (user?.id) {
       clearProgress(PROGRESS_SCOPES.colorVision, user.id);
@@ -130,7 +132,7 @@ export function ColorVisionPage() {
 
   if (phase === "intro") {
     return (
-      <div className="page-shell page-enter">
+      <div className="page-shell">
         <header className="page-header">
           <h1 className="page-title">{t("color.title")}</h1>
           <p className="page-lead">{t("color.lead")}</p>
@@ -176,21 +178,21 @@ export function ColorVisionPage() {
   if (phase === "test") {
     const last = index === PLATES.length - 1;
     return (
-      <div className="page-shell page-enter">
+      <div className="page-shell">
         <header className="page-header">
           <h1 className="page-title">{t("color.title")}</h1>
         </header>
         <Panel className="mx-auto w-full max-w-xl p-5 sm:p-8">
-          <div className="flex items-center justify-between gap-4 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
             <p className="type-figure" aria-live="polite">{t("color.plate", { current: index + 1, total: PLATES.length })}</p>
-            <div className="-mr-3 flex items-center gap-1">
+            <div className="-mr-3 flex flex-wrap items-center gap-1">
               {index > 0 && (
-                <Button variant="ghost" className="px-3" onClick={() => goTo(index - 1, answers)}>
+                <Button variant="ghost" className="min-h-11 px-3" onClick={() => goTo(index - 1, answers)}>
                   <ArrowLeft aria-hidden="true" />
                   {t("color.previous")}
                 </Button>
               )}
-              <Button variant="ghost" className="px-3" onClick={() => setShowStartOver(true)}>
+              <Button variant="ghost" className="min-h-11 px-3" onClick={() => setShowStartOver(true)}>
                 <ArrowCounterClockwise aria-hidden="true" />
                 {t("exam.startOver")}
               </Button>
@@ -235,39 +237,73 @@ export function ColorVisionPage() {
 
   const result = scoreTest(answers);
   const verdict = {
-    clear: { tile: "tile-done", icon: CheckCircle, title: t("color.result.clear.title"), body: t("color.result.clear.body") },
-    check: { tile: "tile-progress", icon: Warning, title: t("color.result.check.title", { count: result.differ }), body: t("color.result.check.body", { redGreen: result.redGreen }) },
-    invalid: { tile: "tile-fail", icon: Warning, title: t("color.result.invalid.title"), body: t("color.result.invalid.body") },
+    clear: { accent: "border-success/55", iconClass: "text-success", icon: CheckCircle, title: t("color.result.clear.title"), body: t("color.result.clear.body") },
+    check: { accent: "border-brand-ink/50", iconClass: "text-brand-ink", icon: Warning, title: t("color.result.check.title", { count: result.differ }), body: t("color.result.check.body", { redGreen: result.redGreen }) },
+    invalid: { accent: "border-destructive/55", iconClass: "text-destructive", icon: Warning, title: t("color.result.invalid.title"), body: t("color.result.invalid.body") },
   }[result.outcome];
   const VerdictIcon = verdict.icon;
 
+  const filterDifferLabel = language === "ms" ? "Berbeza sahaja" : "Differing only";
+  const filterAllLabel = language === "ms" ? `Semua ${PLATES.length} plat` : `All ${PLATES.length} plates`;
+
   return (
-    <div className="page-shell page-enter">
+    <div className="page-shell">
       <header className="page-header">
         <h1 className="page-title">{t("color.result.title")}</h1>
       </header>
 
-      <section className={cn("tile p-5 sm:p-8", verdict.tile)} aria-labelledby="color-verdict">
+      <Panel role="region" className={cn("p-5 sm:p-8", verdict.accent)} aria-labelledby="color-verdict">
         <div className="max-w-readable space-y-3">
-          <h2 id="color-verdict" className="flex items-start gap-3 text-2xl">
-            <VerdictIcon size={28} className="mt-0.5 shrink-0" aria-hidden="true" />
+          <h2 id="color-verdict" className="flex items-start gap-3 text-xl sm:text-2xl">
+            <VerdictIcon size={28} className={cn("mt-0.5 shrink-0", verdict.iconClass)} aria-hidden="true" />
             {verdict.title}
           </h2>
           <p>{verdict.body}</p>
           {result.outcome === "check" && <p className="text-muted-foreground">{t("color.result.check.advice")}</p>}
         </div>
-        <Button variant="outline" className="mt-6" onClick={start}>
+        <Button variant="brand" size="lg" className="mt-6 min-h-11" onClick={start}>
           <ArrowClockwise aria-hidden="true" />
           {t("color.retake")}
         </Button>
-      </section>
+      </Panel>
 
       <section aria-labelledby="color-review" className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="color-review" className="text-2xl">{t(showAll ? "color.review.title" : "color.review.differ")}</h2>
-          <Button variant="outline" aria-pressed={showAll} onClick={() => setShowAll(v => !v)}>
-            {showAll ? t("color.review.showDiffer") : t("color.review.showAll", { total: PLATES.length })}
-          </Button>
+          <h2 id="color-review" className="text-xl sm:text-2xl">{t(showAll ? "color.review.title" : "color.review.differ")}</h2>
+          <div
+            role="radiogroup"
+            aria-label={t("color.review.title")}
+            className="inline-flex w-full sm:w-auto rounded-full bg-muted dark:bg-background p-1 border border-border/70 select-none"
+          >
+            <button
+              type="button"
+              role="radio"
+              aria-checked={!showAll}
+              onClick={() => setShowAll(false)}
+              className={cn(
+                "flex-1 sm:flex-none min-h-11 rounded-full px-4 text-xs font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-200 ease-spring active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                !showAll
+                  ? "bg-card text-foreground shadow-sm border border-border/70 dark:bg-secondary dark:text-foreground dark:border-white/20"
+                  : "text-muted-foreground hover:text-foreground border border-transparent"
+              )}
+            >
+              {filterDifferLabel}
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={showAll}
+              onClick={() => setShowAll(true)}
+              className={cn(
+                "flex-1 sm:flex-none min-h-11 rounded-full px-4 text-xs font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-200 ease-spring active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                showAll
+                  ? "bg-card text-foreground shadow-sm border border-border/70 dark:bg-secondary dark:text-foreground dark:border-white/20"
+                  : "text-muted-foreground hover:text-foreground border border-transparent"
+              )}
+            >
+              {filterAllLabel}
+            </button>
+          </div>
         </div>
         {!showAll && result.differ === 0 && result.outcome !== "invalid" && <p className="text-muted-foreground">{t("color.review.noneDiffer")}</p>}
         <ul className="grid gap-3 lg:grid-cols-2">

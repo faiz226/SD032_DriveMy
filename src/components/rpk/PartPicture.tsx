@@ -49,14 +49,18 @@ export function PartPicture({ topicId, label, stepCount, active, stepName, onSel
             onClick={() => onSelect(index)}
             onPointerEnter={() => onHover(index)}
             onPointerLeave={() => onHover(null)}
+            onFocus={() => onHover(index)}
+            onBlur={() => onHover(null)}
             style={{ left: `${x}%`, top: `${y}%` }}
             className="group absolute grid h-7 w-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span
               aria-hidden="true"
               className={cn(
-                "type-figure grid h-7 w-7 place-items-center rounded-full border-2 text-sm font-bold shadow-sm transition-[background-color,color,transform] duration-150 motion-reduce:transition-none",
-                on ? "scale-110 border-foreground bg-brand text-brand-foreground motion-reduce:scale-100" : "border-foreground/70 bg-card text-foreground group-hover:bg-brand/40"
+                "type-figure grid h-7 w-7 place-items-center rounded-full border-2 text-sm font-bold shadow-md ring-2 ring-background/90 transition-[background-color,color,border-color,transform] duration-150 motion-reduce:transition-none",
+                on
+                  ? "scale-110 border-foreground bg-brand text-brand-foreground ring-brand-ink/70 motion-reduce:scale-100"
+                  : "border-foreground/85 bg-card/95 text-foreground group-hover:bg-brand group-hover:text-brand-foreground"
               )}
             >
               {index + 1}

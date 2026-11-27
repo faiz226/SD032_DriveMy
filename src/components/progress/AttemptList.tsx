@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/surface";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -14,13 +16,33 @@ export interface Attempt {
   passed?: boolean;
 }
 
+interface AttemptListProps {
+  items: Attempt[];
+  empty: string;
+  emptyAction?: { label: string; to: string };
+}
+
 const PAGE = 10;
 
 /** Past attempts, newest first, ten at a time. A list rather than a table, so it reads on a phone. */
-export function AttemptList({ items, empty }: { items: Attempt[]; empty: string }) {
+export function AttemptList({ items, empty, emptyAction }: AttemptListProps) {
   const { t, language } = useLanguage();
   const [shown, setShown] = useState(PAGE);
-  if (items.length === 0) return <p className="py-6 text-muted-foreground">{empty}</p>;
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col items-start gap-4 py-6">
+        <p className="text-muted-foreground">{empty}</p>
+        {emptyAction && (
+          <Button asChild variant="outline" className="min-h-11">
+            <Link to={emptyAction.to}>
+              {emptyAction.label}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </Button>
+        )}
+      </div>
+    );
+  }
 
   const sorted = [...items].sort((a, b) => (b.date ? Date.parse(b.date) : Infinity) - (a.date ? Date.parse(a.date) : Infinity));
   const when = (date: string | null) => date
@@ -34,17 +56,12 @@ export function AttemptList({ items, empty }: { items: Attempt[]; empty: string 
           <li key={item.id} className="flex items-center justify-between gap-4 py-3.5">
             <div className="min-w-0">
               <p className="font-semibold">{item.title}</p>
-              <p className="text-sm text-muted-foreground">
-                {when(item.date)}
-                {item.details?.length ? (
-                  <>
-                    {/* Inline after the date where there is room; on its own line on a phone, with no dangling rule. */}
-                    <span aria-hidden="true" className="mx-2 hidden h-3 w-px bg-border align-[-1px] sm:inline-block" />
-                    <span className="sr-only">, </span>
-                    <span className="block sm:inline">{item.details.join(", ")}</span>
-                  </>
-                ) : null}
-              </p>
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
+                <span>{when(item.date)}</span>
+                {item.details?.map((detail) => (
+                  <span key={detail}>{detail}</span>
+                ))}
+              </div>
             </div>
             <div className="flex shrink-0 items-center gap-3">
               <span className="type-figure text-lg">{item.score}</span>
@@ -54,7 +71,7 @@ export function AttemptList({ items, empty }: { items: Attempt[]; empty: string 
         ))}
       </ul>
       {sorted.length > shown && (
-        <Button variant="ghost" className="mt-2 -ml-3 px-3" onClick={() => setShown(n => n + PAGE)}>
+        <Button variant="ghost" className="mt-2 -ml-3 min-h-11 px-3" onClick={() => setShown(n => n + PAGE)}>
           {t("progress.showMore", { count: Math.min(PAGE, sorted.length - shown) })}
         </Button>
       )}

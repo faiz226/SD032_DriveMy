@@ -67,20 +67,24 @@ export function SafetyPage() {
     const missed = EMERGENCIES.filter((_, i) => picks[i] !== 0);
     const score = EMERGENCIES.length - missed.length;
     return (
-      <div className="page-shell page-enter">
+      <div className="page-shell">
         {header}
-        <section className={cn("tile p-5 sm:p-8", missed.length === 0 && "tile-done")} aria-labelledby="safety-score">
-          <h2 id="safety-score" className="text-2xl">{t("safety.result.title", { score, total: EMERGENCIES.length })}</h2>
+        <Panel
+          role="region"
+          className={cn("mx-auto w-full max-w-3xl p-5 sm:p-8", missed.length === 0 && "border-success/55")}
+          aria-labelledby="safety-score"
+        >
+          <h2 id="safety-score" className="text-xl sm:text-2xl">{t("safety.result.title", { score, total: EMERGENCIES.length })}</h2>
           <p className="mt-2 max-w-readable text-muted-foreground">{missed.length === 0 ? t("safety.result.allRight") : t("safety.result.someMissed")}</p>
-          <Button variant="outline" className="mt-6" onClick={restart}>
+          <Button variant="brand" size="lg" className="mt-6 min-h-11" onClick={restart}>
             <ArrowClockwise aria-hidden="true" />
             {t("safety.restart")}
           </Button>
-        </section>
+        </Panel>
 
         {missed.length > 0 && (
-          <section aria-labelledby="safety-review" className="space-y-4">
-            <h2 id="safety-review" className="text-2xl">{t("safety.result.review")}</h2>
+          <section aria-labelledby="safety-review" className="mx-auto w-full max-w-3xl space-y-4">
+            <h2 id="safety-review" className="text-xl sm:text-2xl">{t("safety.result.review")}</h2>
             {missed.map(item => (
               <Panel key={item.id} className="space-y-4 p-5 sm:p-6">
                 <h3 className="text-lg">{item.situation[language]}</h3>
@@ -94,17 +98,26 @@ export function SafetyPage() {
   }
 
   const answered = pick !== undefined;
+  const answeredCount = picks.filter((p) => p !== undefined).length;
   const right = pick === 0;
   const last = index === EMERGENCIES.length - 1;
 
   return (
-    <div className="page-shell page-enter">
+    <div className="page-shell">
       {header}
       <Panel className="mx-auto w-full max-w-3xl p-5 sm:p-8">
-        <p className="type-figure text-sm" aria-live="polite">{t("safety.progress", { current: index + 1, total: EMERGENCIES.length })}</p>
-        <Progress value={((index + 1) / EMERGENCIES.length) * 100} className="mt-3" aria-label={t("safety.progress", { current: index + 1, total: EMERGENCIES.length })} />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="type-figure text-sm" aria-live="polite">{t("safety.progress", { current: index + 1, total: EMERGENCIES.length })}</p>
+          {(index > 0 || answered) && (
+            <Button variant="ghost" className="-mr-3 min-h-11 px-3 text-muted-foreground hover:text-foreground" onClick={restart}>
+              <ArrowClockwise aria-hidden="true" />
+              {t("safety.restart")}
+            </Button>
+          )}
+        </div>
+        <Progress value={(answeredCount / EMERGENCIES.length) * 100} className="mt-3" aria-label={t("safety.progress", { current: index + 1, total: EMERGENCIES.length })} />
 
-        <h2 className="mt-8 text-2xl sm:text-[1.75rem]">{emergency.situation[language]}</h2>
+        <h2 className="mt-8 text-xl sm:text-2xl">{emergency.situation[language]}</h2>
         <p className="mt-2 text-muted-foreground" id="safety-question">{t("safety.question")}</p>
 
         <div className="mt-5 grid gap-3" role="group" aria-labelledby="safety-question">
@@ -119,7 +132,7 @@ export function SafetyPage() {
                 aria-pressed={isPick}
                 onClick={() => setPicks(prev => { const next = [...prev]; next[index] = option; return next; })}
                 className={cn(
-                  "tile flex min-h-14 w-full items-start gap-3 p-4 text-left disabled:cursor-default",
+                  "tile flex min-h-14 w-full items-start gap-3 rounded-xl p-4 text-left disabled:cursor-default",
                   answered && isKpp && "tile-done",
                   answered && isPick && !isKpp && "tile-fail",
                   answered && !isKpp && !isPick && "opacity-60",
@@ -133,20 +146,22 @@ export function SafetyPage() {
           })}
         </div>
 
-        {answered && (
-          <div className="mt-8 space-y-4 border-t border-border pt-6">
-            <h3 ref={feedback} tabIndex={-1} className="flex items-center gap-2 text-xl focus-visible:shadow-none focus-visible:outline-none">
-              <SwapIcon id={right ? "right" : "wrong"}>{right ? <CheckCircle size={24} className="text-success" aria-hidden="true" /> : <XCircle size={24} className="text-destructive" aria-hidden="true" />}</SwapIcon>
-              {right ? t("safety.right") : t("safety.wrong")}
-            </h3>
-            <p className="font-bold">{t("safety.steps")}</p>
-            <Steps emergency={emergency} />
-            <Button variant="brand" size="lg" className="mt-2 w-full sm:w-auto" onClick={() => setIndex(index + 1)}>
-              {last ? t("safety.finish") : t("safety.next")}
-              <ArrowRight aria-hidden="true" />
-            </Button>
-          </div>
-        )}
+        <div aria-live="polite">
+          {answered && (
+            <div className="mt-8 space-y-4 border-t border-border pt-6">
+              <h3 ref={feedback} tabIndex={-1} className="flex items-center gap-2 text-xl focus-visible:shadow-none focus-visible:outline-none">
+                <SwapIcon id={right ? "right" : "wrong"}>{right ? <CheckCircle size={24} className="text-success" aria-hidden="true" /> : <XCircle size={24} className="text-destructive" aria-hidden="true" />}</SwapIcon>
+                {right ? t("safety.right") : t("safety.wrong")}
+              </h3>
+              <p className="font-bold">{t("safety.steps")}</p>
+              <Steps emergency={emergency} />
+              <Button variant="brand" size="lg" className="mt-2 w-full sm:w-auto" onClick={() => setIndex(index + 1)}>
+                {last ? t("safety.finish") : t("safety.next")}
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            </div>
+          )}
+        </div>
       </Panel>
     </div>
   );

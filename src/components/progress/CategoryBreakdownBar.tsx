@@ -53,7 +53,10 @@ export function CategoryBreakdownBar({ data }: CategoryBreakdownBarProps) {
         <BarYAxis showAllLabels />
         <ChartTooltip
           showDatePill={false}
-          rows={point => [{ color: "var(--chart-line-primary)", label: t("progress.averageScore"), value: `${point.score as number}% · ${t("progress.attempts", { count: point.attempts as number })}` }]}
+          rows={point => [
+            { color: "var(--chart-line-primary)", label: t("progress.averageScore"), value: `${point.score as number}%` },
+            { color: "var(--chart-4)", label: t("progress.chart.attemptCount"), value: point.attempts as number },
+          ]}
         />
       </BarChart>
     </ChartFigure>
