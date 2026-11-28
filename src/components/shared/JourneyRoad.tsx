@@ -78,7 +78,7 @@ export function JourneyRoad({ value, label, horn = true, lReached = false }: { v
         </span>
       </div>
 
-      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-[#0b2234] px-16 ring-1 ring-border">
+      <div className="relative h-[104px] overflow-hidden rounded-3xl bg-road px-16 ring-1 ring-border">
         <span aria-hidden="true" className="absolute inset-x-0 top-3 h-[3px] bg-white/75" />
         <span aria-hidden="true" className="absolute inset-x-0 bottom-3 h-[3px] bg-white/75" />
         <div
@@ -99,7 +99,7 @@ export function JourneyRoad({ value, label, horn = true, lReached = false }: { v
                   key={i}
                   className={cn(
                     "h-[9px] w-[9px] rounded-full transition-colors duration-300",
-                    on ? "bg-brand ring-1 ring-brand/40" : "bg-[#2c4a63]",
+                    on ? "bg-brand ring-1 ring-brand/40" : "bg-[#3d3b36]",
                   )}
                   style={{ transitionDelay: on ? `${i * 14}ms` : "0ms" }}
                 />

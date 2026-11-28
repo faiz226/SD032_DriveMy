@@ -528,7 +528,7 @@ export function SafetyPrinciplesLab({ lang, onScenarioSolved }: SafetyPrinciples
                 <div key={drill.id} className="rounded-2xl border border-border bg-muted/35 p-4 flex flex-col justify-between gap-3">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="pill pill-brand">
+                      <span className="pill pill-brand whitespace-normal leading-snug">
                         {lang === "en" ? drill.titleEn : drill.titleMs}
                       </span>
                     </div>

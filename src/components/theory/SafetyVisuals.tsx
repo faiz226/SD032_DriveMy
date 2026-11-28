@@ -120,13 +120,13 @@ function TopCar({ x, y, className = "text-brand" }: { x: number; y: number; clas
 }
 
 const CITO_BADGES: [number, number][] = [
-  [14, 88],
-  [16, 52],
-  [66, 40],
-  [170, 20],
+  [14, 15],
+  [16, 48],
+  [70, 57],
+  [174, 83],
 ];
 
-/** Small top-down pictures for the three hazard drills. Traffic drives on the left and moves to the right of the picture. */
+/** Small top-down pictures for the three hazard drills. Malaysian left-hand traffic moving left to right: travel lane & shoulder are on the top edge, overtaking lane is on the bottom. */
 export function HazardVisual({ id, lang }: { id: string; lang: Lang }) {
   const copy = CAPTIONS[id];
   if (!copy) return null;
@@ -138,12 +138,15 @@ export function HazardVisual({ id, lang }: { id: string; lang: Lang }) {
           <g>
             <rect y="12" width="260" height="76" className="fill-muted" />
             <path d="M0 50 H260" className="stroke-background" strokeWidth="2" strokeDasharray="12 10" />
-            <rect x="120" y="58" width="56" height="22" rx="3" className="fill-muted-foreground/60" />
-            <TopCar x={30} y={60} />
-            <path d="M64 68 C100 68 104 30 150 30 H200" fill="none" className="stroke-brand" strokeWidth="2.5" strokeDasharray="6 5" />
-            <path d="M200 30 l-7 -5 v10z" className="fill-brand" />
-            <circle cx="33" cy="60" r="3" className="fill-warning" />
-            <path d="M44 60 L30 34 L62 38 Z" className="fill-info/25 stroke-info" strokeDasharray="3 3" />
+            {/* Slower lorry in the left (top) lane going east */}
+            <rect x="120" y="20" width="56" height="22" rx="3" className="fill-muted-foreground/60" />
+            {/* Learner car starts in the left (top) lane, signals right (bottom edge), checks right blind spot, overtakes in the right (bottom) lane */}
+            <TopCar x={30} y={23} />
+            <path d="M64 31 C100 31 104 69 150 69 H200" fill="none" className="stroke-brand" strokeWidth="2.5" strokeDasharray="6 5" />
+            <path d="M200 69 l-7 -5 v10z" className="fill-brand" />
+            <circle cx="33" cy="39" r="3" className="fill-warning" />
+            <circle cx="62" cy="39" r="3" className="fill-warning" />
+            <path d="M44 39 L30 65 L62 61 Z" className="fill-info/25 stroke-info" strokeDasharray="3 3" />
             {CITO_BADGES.map(([cx, cy], i) => (
               <g key={i}>
                 <circle cx={cx} cy={cy} r="8" className="fill-foreground" />
@@ -156,25 +159,28 @@ export function HazardVisual({ id, lang }: { id: string; lang: Lang }) {
         )}
         {id === "drill-under-oversteer" && (
           <g>
-            <path d="M0 62 H130 C190 62 200 62 214 30 C222 12 240 10 260 10" fill="none" className="stroke-muted" strokeWidth="30" />
-            <path d="M0 62 H130 C190 62 200 62 214 30 C222 12 240 10 260 10" fill="none" className="stroke-background" strokeWidth="2" strokeDasharray="10 8" />
-            <rect x="48" y="44" width="92" height="36" rx="6" className="fill-warning/30 stroke-warning" strokeDasharray="4 3" />
-            <TopCar x={62} y={54} />
-            <path d="M100 62 h26 l-6 -5 m6 5 l-6 5" fill="none" className="stroke-foreground" strokeWidth="2" />
+            <path d="M0 64 H130 C190 64 200 64 214 32 C222 14 240 12 260 12" fill="none" className="stroke-muted" strokeWidth="38" />
+            <path d="M0 64 H130 C190 64 200 64 214 32 C222 14 240 12 260 12" fill="none" className="stroke-background" strokeWidth="2" strokeDasharray="10 8" />
+            {/* Slowing zone & car in the left (top) lane before entering the bend */}
+            <rect x="46" y="42" width="94" height="24" rx="6" className="fill-warning/30 stroke-warning" strokeDasharray="4 3" />
+            <TopCar x={56} y={46} />
+            <path d="M96 54 h26 l-6 -5 m6 5 l-6 5" fill="none" className="stroke-foreground" strokeWidth="2" />
           </g>
         )}
         {id === "drill-breakdown" && (
           <g>
-            <rect y="14" width="260" height="62" className="fill-muted" />
-            <rect y="62" width="260" height="14" className="fill-muted-foreground/25" />
-            <path d="M0 40 H260" className="stroke-background" strokeWidth="2" strokeDasharray="12 10" />
-            <TopCar x={168} y={66} className="text-muted-foreground" />
-            <circle cx="170" cy="68" r="2.8" className="fill-warning" />
-            <circle cx="170" cy="80" r="2.8" className="fill-warning" />
-            <path d="M40 70 L52 70 L46 59 Z" className="fill-destructive" />
-            <path d="M46 88 H168" className="stroke-foreground" strokeWidth="1.5" />
-            <path d="M46 84 v8 M168 84 v8" className="stroke-foreground" strokeWidth="1.5" />
-            <text x="107" y="97" textAnchor="middle" fontSize="10" fontWeight="700" className="fill-foreground">
+            {/* Emergency shoulder on the left (top) edge of an eastbound Malaysian expressway */}
+            <rect y="24" width="260" height="62" className="fill-muted" />
+            <rect y="24" width="260" height="16" className="fill-muted-foreground/25" />
+            <path d="M0 40 H260" className="stroke-background" strokeWidth="2" />
+            <path d="M0 63 H260" className="stroke-background" strokeWidth="2" strokeDasharray="12 10" />
+            <TopCar x={168} y={24} className="text-muted-foreground" />
+            <circle cx="170" cy="26" r="2.8" className="fill-warning" />
+            <circle cx="170" cy="38" r="2.8" className="fill-warning" />
+            <path d="M40 38 L52 38 L46 27 Z" className="fill-destructive" />
+            <path d="M46 15 H168" className="stroke-foreground" strokeWidth="1.5" />
+            <path d="M46 11 v8 M168 11 v8" className="stroke-foreground" strokeWidth="1.5" />
+            <text x="107" y="12" textAnchor="middle" fontSize="10" fontWeight="700" className="fill-foreground">
               50 m
             </text>
           </g>

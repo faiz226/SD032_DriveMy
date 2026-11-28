@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="201" height="201">
+  <g font-family="DIN145_14H_08 0.87000000000000000" font-size="14.6875" font-weight="400" letter-spacing="0" word-spacing="0">
+    <path fill="#f9fbf8" stroke="#000" d="M-287.63373 13.175903h200v200h-200z" paint-order="stroke fill markers" style="line-height:125%;text-align:start" transform="translate(288.13373 -12.675903)" />
+    <path fill="#037748" d="M-281.69214 19.117508h188.11679v188.11679h-188.11679z" style="line-height:125%;text-align:start" transform="translate(288.13373 -12.675903)" />
+  </g>
+  <path fill="#fff" d="M43.74505 18.607746V184.94975h29.42343v-60.83982h33.19659c29.22444 0 52.75204-23.5276 52.75204-52.752043 0-29.224444-23.5276-52.750141-52.75204-52.750141h-2.112zM73.16848 43.83624h30.42087c15.24754 0 27.52164 12.276012 27.52164 27.523544 0 15.247546-12.2741 27.521646-27.52164 27.521646H73.16848z" />
+</svg>

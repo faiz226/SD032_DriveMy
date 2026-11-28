@@ -14,6 +14,7 @@ const TITLES: Record<string, TranslationKey> = {
   "/simulations": "nav.simulator",
   "/progress": "nav.progress",
   "/safety": "nav.roadSafety",
+  "/sign-credits": "settings.signCredits",
   "/settings": "nav.settings",
   "/privacy": "privacy.title",
   "/auth": "auth.signIn",

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850.52802mm" height="850.52802mm" viewBox="0 0 850.52802 850.52802" version="1.1">
+  <defs />
+  <g transform="translate(0,553.52799)">
+    <rect style="fill:#fad20a;fill-opacity:1;stroke:none;stroke-width:0.340808" width="600" height="600" x="91.403503" y="-89.989288" transform="rotate(-45)" />
+    <rect style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.329448" width="580" height="580" x="101.40351" y="-79.989288" transform="rotate(-45)" />
+    <rect style="fill:#fad20a;fill-opacity:1;stroke:none;stroke-width:0.312408" width="550" height="550" x="116.40351" y="-64.989288" transform="rotate(-45)" />
+    <path style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26052" d="M 462.76366,171.73598 V -203.2639 h 112.50011 v -75.00006 H 462.76366 V -428.26411 H 387.76359 V -53.264256 H 275.264 v 75.00006 H 387.76359 V 171.73598 Z" />
+    <circle style="fill:#c8141e;fill-opacity:1;stroke:none;stroke-width:0.276963" cx="560.26398" cy="-240.76408" r="75" />
+    <rect style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.24165" width="75" height="30.000002" x="522.76404" y="-255.76408" />
+  </g>
+</svg>

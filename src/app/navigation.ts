@@ -6,7 +6,6 @@ import {
   Clipboard,
   Car,
   TrendUp,
-  ShieldWarning,
   Eye,
   type Icon,
 } from "@/components/ui/icons";
@@ -31,6 +30,5 @@ export const NAV_DESTINATIONS: NavDestination[] = [
   { labelKey: "nav.mockTest",   href: ROUTES.MOCK_TEST,    icon: Clipboard,     tabKey: "nav.tab.test" },
   { labelKey: "nav.simulator",  href: ROUTES.SIMULATIONS,  icon: Car },
   { labelKey: "nav.progress",   href: ROUTES.PROGRESS,     icon: TrendUp },
-  { labelKey: "nav.roadSafety", href: ROUTES.SAFETY,       icon: ShieldWarning },
   { labelKey: "nav.colorblind", href: ROUTES.COLOR_VISION, icon: Eye },
 ];

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
@@ -332,6 +332,25 @@ export function DangerZoneSection() {
                 {queueStatus.deadLetterCount > 0 ? t("settings.retryFailedSubmissions") : t("settings.syncPendingResults")}
               </Button>
             </div>
+          </div>
+        </div>
+      </SettingsPanel>
+
+      {/* About panel — road sign attribution & licences */}
+      <SettingsPanel title={t("settings.about")}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-foreground">{t("settings.signCredits")}</p>
+            <p className="text-sm text-muted-foreground">{t("settings.signCreditsDesc")}</p>
+          </div>
+          <div className="shrink-0">
+            <Button
+              asChild
+              variant="outline"
+              className="w-full sm:w-auto min-h-11 no-underline"
+            >
+              <Link to={ROUTES.SIGN_CREDITS}>{t("settings.signCredits")}</Link>
+            </Button>
           </div>
         </div>
       </SettingsPanel>

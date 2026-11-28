@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850.52802mm" height="850.52802mm" viewBox="0 0 850.52802 850.52802" version="1.1">
+  <defs />
+  <g transform="translate(0,553.52799)">
+    <rect style="fill:#fad20a;fill-opacity:1;stroke:none;stroke-width:0.340808" width="600" height="600" x="91.403503" y="-89.989288" transform="rotate(-45)" />
+    <rect style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.329448" width="580" height="580" x="101.40351" y="-79.989288" transform="rotate(-45)" />
+    <rect style="fill:#fad20a;fill-opacity:1;stroke:none;stroke-width:0.312408" width="550" height="550" x="116.40351" y="-64.989288" transform="rotate(-45)" />
+    <path style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583" d="M 425.26401,194.23597 230.4083,-143.264 l 389.71143,-1e-5 z" />
+    <path style="fill:#c8141e;fill-opacity:1;stroke:none;stroke-width:0.229304" d="m 425.26399,164.23601 -168.87496,-292.49998 337.74991,-3e-5 z" />
+    <path style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.0881949" d="M 425.264,44.236014 360.31207,-68.263984 H 490.2159 Z" />
+    <path style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583" d="m 425.26402,-474.74626 -105.60649,105.60646 12.88295,25.43357 47.72371,-7.32666 -1.9e-4,101.28687 90,-2e-5 -1.5e-4,-101.28687 47.72371,7.32671 12.88292,-25.43358 z" />
+    <circle style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.065909" cx="330.26401" cy="-358.53302" r="15" />
+    <circle style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.065909" cx="520.26404" cy="-358.53302" r="15" />
+  </g>
+</svg>
