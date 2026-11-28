@@ -15,7 +15,7 @@ afterEach(() => { cleanup(); vi.clearAllMocks(); });
 it("saves theory completion only after the learner explicitly confirms it", () => {
   render(<MemoryRouter><TheoryPage /></MemoryRouter>);
   expect(mutate).not.toHaveBeenCalled();
-  fireEvent.mouseDown(screen.getByRole("tab", { name: "Traffic Rules" }), { button: 0, ctrlKey: false });
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Traffic rules" }), { button: 0, ctrlKey: false });
   expect(mutate).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Mark module complete" }));
   expect(mutate).toHaveBeenCalledOnce();

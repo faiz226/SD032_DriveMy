@@ -11,6 +11,7 @@ export const ROUTES = {
   PROGRESS: "/progress",
   SAFETY: "/safety",
   RPK_RSM: "/rpk-rsm",
+  SIGN_CREDITS: "/sign-credits",
   SETTINGS: "/settings",
   AUTH: "/auth",
   FORGOT_PASSWORD: "/forgot-password",

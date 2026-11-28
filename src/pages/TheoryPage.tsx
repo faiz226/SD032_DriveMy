@@ -32,6 +32,7 @@ import { SafetyPage } from "@/pages/SafetyPage";
 import { categoryProgress } from "@/lib/signQuiz";
 import { searchRpk } from "@/lib/rpkSearch";
 import { learnedKeyFor, readLearned } from "@/lib/learnedSigns";
+import { creditForImg, signFilenameFromImg } from "@/lib/signCredits";
 import { toast } from "sonner";
 
 
@@ -243,8 +244,8 @@ export function TheoryPage() {
                 type="text"
                 placeholder={
                   lang === "en"
-                    ? "Search signs, rules, or safety…"
-                    : "Cari tanda, undang-undang, keselamatan…"
+                    ? "Search signs, rules, or safety"
+                    : "Cari tanda, undang-undang, keselamatan"
                 }
                 className="w-full h-11 pl-9 pr-12 rounded-xl border border-input bg-card text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-colors"
                 aria-label={
@@ -273,10 +274,10 @@ export function TheoryPage() {
         <div className="mt-3">
           <TabsList aria-label={lang === "en" ? "Theory topics" : "Topik teori"} className="h-auto w-full sm:w-auto justify-start inline-flex flex-wrap">
             <TabsTrigger value="signs" className="min-h-11 px-3">
-              {lang === "en" ? "Road Signs" : "Papan Tanda"}
+              {lang === "en" ? "Road signs" : "Papan tanda"}
             </TabsTrigger>
             <TabsTrigger value="rules" className="min-h-11 px-3">
-              {lang === "en" ? "Traffic Rules" : "Undang-undang"}
+              {lang === "en" ? "Traffic rules" : "Undang-undang"}
             </TabsTrigger>
             <TabsTrigger value="safety" className="min-h-11 px-3">
               {lang === "en" ? "Hazards and safety" : "Bahaya dan keselamatan"}
@@ -483,16 +484,25 @@ export function TheoryPage() {
                   {filteredSigns.map((sign) => {
                     const isFlipped = !!flipped[sign.id];
                     const isLearned = !!learned[sign.id];
+                    const credit = creditForImg(sign.img);
+                    const creditFile = signFilenameFromImg(sign.img);
+                    const creditSummary = !credit
+                      ? null
+                      : credit.isPublicDomain
+                        ? lang === "en"
+                          ? "Public domain"
+                          : "Domain awam"
+                        : `${credit.author} · ${credit.licenceName}`;
 
                     return (
                       <div
                         key={sign.id}
                         data-sign-card
                         onClick={(event) => {
-                          // Anywhere on the card flips it; the star and the footer button keep their own jobs.
-                          if (!(event.target as HTMLElement).closest("button")) flipCard(event.currentTarget, sign.id, false);
+                          // Anywhere on the card flips it; the star, credit link and footer button keep their own jobs.
+                          if (!(event.target as HTMLElement).closest("button, a")) flipCard(event.currentTarget, sign.id, false);
                         }}
-                        className="cv-auto relative h-[290px] perspective-1000 cursor-pointer group"
+                        className="cv-auto relative h-[316px] perspective-1000 cursor-pointer group"
                       >
                         <div
                           className={`w-full h-full transition-transform [transition-duration:var(--motion-slow)] [transition-timing-function:var(--ease-spring)] motion-reduce:transition-none transform-style-3d ${
@@ -594,6 +604,21 @@ export function TheoryPage() {
                               </div>
                             </div>
 
+                            {creditSummary && (
+                              <div className="pt-1.5 text-[0.75rem] text-muted-foreground truncate">
+                                <Link
+                                  to={`${ROUTES.SIGN_CREDITS}?sign=${encodeURIComponent(creditFile)}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-link inline-flex items-center gap-1 max-w-full truncate"
+                                >
+                                  <span className="truncate">
+                                    {lang === "en" ? "Credit: " : "Kredit: "}
+                                    {creditSummary}
+                                  </span>
+                                </Link>
+                              </div>
+                            )}
+
                             <div className="-mx-4 mt-auto border-t border-border">
                               <button
                                 type="button"
@@ -635,6 +660,22 @@ export function TheoryPage() {
                   {lang === "en" ? "Start Part A Quiz" : "Mula Kuiz Bahagian A"}
                   <ChevronRight size={14} className="ml-1" aria-hidden="true" />
                 </Button>
+              </div>
+
+              {/* Road sign image credits link */}
+              <div className="panel p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <p className="text-xs text-muted-foreground">
+                  {lang === "en"
+                    ? "Malaysian road sign images are sourced from Wikimedia Commons under open licences."
+                    : "Imej papan tanda jalan Malaysia diperoleh daripada Wikimedia Commons di bawah lesen terbuka."}
+                </p>
+                <Link
+                  to={ROUTES.SIGN_CREDITS}
+                  className="inline-link inline-flex min-h-11 shrink-0 items-center gap-1 text-xs font-semibold"
+                >
+                  <span>{lang === "en" ? "Road sign credits" : "Kredit papan tanda jalan"}</span>
+                  <ChevronRight size={13} aria-hidden="true" />
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -782,17 +823,17 @@ export function TheoryPage() {
                 {lang === "en"
                   ? `Completed review of module: ${
                       activeTab === "signs"
-                        ? "Road Signs"
+                        ? "Road signs"
                         : activeTab === "rules"
-                          ? "Traffic Rules"
-                          : "Safety Principles"
+                          ? "Traffic rules"
+                          : "Hazards and safety"
                     }`
                   : `Selesai mengulang kaji modul: ${
                       activeTab === "signs"
-                        ? "Papan Tanda"
+                        ? "Papan tanda"
                         : activeTab === "rules"
                           ? "Undang-undang"
-                          : "Prinsip Keselamatan"
+                          : "Bahaya dan keselamatan"
                     }`}
               </h4>
               <p className="text-xs text-muted-foreground mt-0.5">
